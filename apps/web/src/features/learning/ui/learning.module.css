@@ -1,0 +1,229 @@
+.onboarding {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  display: grid;
+  justify-items: stretch;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.heading {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-heavy);
+}
+
+.muted {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.fieldset legend {
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-2);
+}
+
+.option {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.option:has(input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-surface-muted);
+}
+
+.option input {
+  margin-top: 0.35em;
+  accent-color: var(--color-primary);
+}
+
+.optionHint {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.segment {
+  text-align: center;
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.segment input {
+  position: absolute;
+  opacity: 0;
+}
+
+.segment:has(input:checked) {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.segment:has(input:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.browser {
+  display: grid;
+  gap: var(--space-4);
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+}
+
+.levelTabs {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+}
+
+.levelTab {
+  flex: none;
+  min-width: 4.5rem;
+  min-height: 2.75rem;
+  border-radius: var(--radius-pill);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.levelTab[aria-selected="true"] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.levelTab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tabLock {
+  font-size: 0.7em;
+  margin-right: 0.25em;
+}
+
+.chapterList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+@media (min-width: 768px) {
+  .chapterList {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+.chapter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  text-decoration: none;
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
+  transition:
+    border-color var(--motion-fast),
+    background var(--motion-fast),
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-base) var(--ease-out);
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+}
+
+a.chapter:hover {
+  border-color: var(--color-primary-soft);
+  background: var(--color-surface-muted);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+a.chapter:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.chapter[data-status="completed"] {
+  border-color: var(--color-success);
+}
+
+.chapter[data-status="locked"] {
+  opacity: 0.55;
+}
+
+.chapterNum {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--color-surface-muted);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-sm);
+}
+
+.chapter[data-status="completed"] .chapterNum {
+  background: var(--color-success);
+  color: var(--color-surface);
+}
+
+.chapterInfo {
+  flex: 1;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.chapterTitle {
+  font-size: var(--font-size-md);
+}
+
+.chapterSub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.chapterStars {
+  font-size: var(--font-size-xs);
+  color: var(--color-accent);
+  letter-spacing: 0.05em;
+}
+
+.chapterStatus {
+  flex: none;
+  font-size: 1.1rem;
+}

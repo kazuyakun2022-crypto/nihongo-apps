@@ -1,0 +1,1407 @@
+/* ─────────────────────────────────────────────────────────────
+   DAILY MISSION ("MISI HARI INI") STYLES — RESPONSIVE
+   Mobile, Tablet, and Desktop Adaptive Gamified Learning Hub
+   ───────────────────────────────────────────────────────────── */
+
+.container {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-4) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-6));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+}
+
+/* ──────── Mode Switcher Tab (Misi Hari Ini vs Semua Bab) ──────── */
+.modeTabs {
+  display: flex;
+  background: var(--color-surface-muted);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  gap: 4px;
+  margin-bottom: var(--space-1);
+  max-width: 28rem;
+}
+
+.modeTabBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.65rem var(--space-3);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.modeTabBtnActive {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ──────── RESPONSIVE DESKTOP HUB GRID ──────── */
+.hubGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .hubGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 390px);
+    align-items: start;
+    gap: var(--space-6);
+  }
+}
+
+/* Left Main Area: Map & Quest Header */
+.mapMainArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+/* ──────── MAP SCREEN HEADER ──────── */
+.mapHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.mapTitle {
+  font-size: clamp(1.5rem, 3.5vw, 1.85rem);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.streakPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.95rem;
+  background: #fdf5d6;
+  border: 1.5px solid #f2b705;
+  border-radius: var(--radius-pill);
+  color: #8c6300;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-heavy);
+  box-shadow: 0 2px 8px rgba(242, 183, 5, 0.2);
+  animation: popIn var(--motion-base) var(--ease-spring);
+}
+
+/* ──────── Mascot Encouragement Banner ──────── */
+.mascotBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-card);
+  animation: scaleIn var(--motion-base) var(--ease-spring);
+}
+
+.mascotAvatarWrap {
+  flex: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-accent);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(242, 183, 5, 0.2);
+}
+
+.mascotTextWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mascotSpeechJa {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.mascotSpeechId {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ──────── Winding Node Map Trail Card ──────── */
+.trailMapCard {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-4);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .trailMapCard {
+    padding: var(--space-6) var(--space-8);
+  }
+}
+
+.trailMap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4) 0;
+  gap: var(--space-6);
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .trailMap {
+    gap: var(--space-7);
+    max-width: 32rem;
+  }
+}
+
+/* Connecting dashed SVG background curve */
+.trailSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.trailPath {
+  fill: none;
+  stroke: #d8d0c5;
+  stroke-width: 4;
+  stroke-dasharray: 6 8;
+  stroke-linecap: round;
+}
+
+/* Node item along the trail */
+.trailNodeItem {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 24rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: var(--space-1);
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.trailNodeItem:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Alternating zigzag positions */
+.nodeAlignLeft {
+  flex-direction: row;
+  justify-content: flex-start;
+  padding-left: var(--space-3);
+}
+
+.nodeAlignCenter {
+  flex-direction: row;
+  justify-content: center;
+}
+
+.nodeAlignRight {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  padding-right: var(--space-3);
+}
+
+/* Circle Node Button */
+.nodeCircle {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all var(--motion-fast) var(--ease-spring);
+}
+
+@media (min-width: 768px) {
+  .nodeCircle {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+/* Active Node State */
+.nodeActive {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-strong) 100%);
+  color: #fff;
+  border: 4px solid #fff;
+  box-shadow: 0 6px 18px rgba(217, 37, 52, 0.35);
+  animation: activeNodePulse 2.2s infinite ease-in-out;
+}
+
+@keyframes activeNodePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(217, 37, 52, 0.4), 0 6px 18px rgba(217, 37, 52, 0.3);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(217, 37, 52, 0), 0 6px 18px rgba(217, 37, 52, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 37, 52, 0), 0 6px 18px rgba(217, 37, 52, 0.3);
+  }
+}
+
+/* Completed Node State */
+.nodeCompleted {
+  background: #3f7d32;
+  color: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 10px rgba(63, 125, 50, 0.25);
+}
+
+/* Locked Node State */
+.nodeLocked {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  opacity: 0.85;
+}
+
+/* Treasure Chest Node (Peti Hadiah) */
+.nodeRewardBox {
+  width: 76px;
+  height: 76px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #fff9e6 0%, #fef0c7 100%);
+  border: 2.5px solid #f2b705;
+  box-shadow: 0 8px 24px rgba(242, 183, 5, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  animation: chestWiggle 3.5s ease-in-out infinite;
+}
+
+@media (min-width: 768px) {
+  .nodeRewardBox {
+    width: 84px;
+    height: 84px;
+    font-size: 2.25rem;
+  }
+}
+
+@keyframes chestWiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  15% { transform: rotate(-4deg) scale(1.05); }
+  30% { transform: rotate(4deg) scale(1.05); }
+  45% { transform: rotate(-2deg) scale(1.02); }
+  60% { transform: rotate(0deg) scale(1); }
+}
+
+.nodeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nodeName {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.nodeDuration {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Bottom CTA Stickied / Float on Mobile */
+.bottomCtaBar {
+  padding: var(--space-2) 0;
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 1023px) {
+  .bottomCtaBar {
+    position: sticky;
+    bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-2));
+    z-index: 20;
+    background: linear-gradient(to top, var(--color-bg) 80%, transparent 100%);
+  }
+}
+
+.startMissionBtn {
+  width: 100%;
+  min-height: 3.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  box-shadow: 0 4px 0 var(--color-primary-strong), 0 8px 20px rgba(217, 37, 52, 0.3);
+  transition: transform var(--motion-fast) var(--ease-spring), box-shadow var(--motion-fast);
+}
+
+.startMissionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--color-primary-strong), 0 12px 24px rgba(217, 37, 52, 0.35);
+}
+
+.startMissionBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--color-primary-strong);
+}
+
+/* ──────── DESKTOP & TABLET COMPANION SIDEBAR ──────── */
+.desktopSidebar {
+  display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .desktopSidebar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    width: 100%;
+    margin-top: var(--space-2);
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktopSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: sticky;
+    top: calc(var(--space-5));
+  }
+}
+
+.sidebarCard {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sidebarCardTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Step Checklist in Sidebar */
+.stepsChecklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stepCheckItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  transition: all var(--motion-fast);
+}
+
+.stepCheckItemActive {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  border: 1px solid rgba(217, 37, 52, 0.2);
+}
+
+.stepIconBadge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  flex: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ACTIVE QUEST VIEW (FULLSCREEN / MULTI-STEP FLOW)
+   ───────────────────────────────────────────────────────────── */
+.questWrap {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+  min-height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px) - var(--space-6));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4) var(--space-6);
+  gap: var(--space-5);
+  animation: fadeInUp var(--motion-fast) var(--ease-entrance) both;
+}
+
+@media (min-width: 860px) {
+  .questWrap {
+    max-width: 56rem;
+    padding: var(--space-4) var(--space-6) var(--space-8);
+  }
+}
+
+/* Top Progress Header: [X]  [====--]  [Kombo x2 / +15 XP] */
+.questTopBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.closeQuestBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.35rem;
+  padding: var(--space-1);
+  cursor: pointer;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-fast);
+}
+
+.closeQuestBtn:hover {
+  color: var(--color-text);
+}
+
+/* 5-Segment Progress Track */
+.segmentedProgress {
+  flex: 1;
+  display: flex;
+  gap: 6px;
+  height: 8px;
+}
+
+.progressSegment {
+  flex: 1;
+  background: #e8e2d8;
+  border-radius: var(--radius-pill);
+  transition: background 0.35s ease;
+}
+
+.progressSegmentFilled {
+  background: #f2b705;
+}
+
+.progressSegmentActive {
+  background: var(--color-primary);
+  box-shadow: 0 0 8px rgba(217, 37, 52, 0.4);
+}
+
+.questBadge {
+  flex: none;
+  padding: 0.25rem 0.65rem;
+  background: #fff9e6;
+  border: 1px solid #f2b705;
+  border-radius: var(--radius-pill);
+  color: #8c6300;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-heavy);
+  animation: popIn var(--motion-fast) var(--ease-spring);
+}
+
+/* Quest Content Card Area */
+.questBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.questStepTag {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.questQuestion {
+  font-size: clamp(1.4rem, 4vw, 1.75rem);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.25;
+}
+
+/* ──────── STEP 1: PEMANASAN (Flashcard Card - Responsive Split) ──────── */
+.step1ResponsiveGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+@media (min-width: 860px) {
+  .step1ResponsiveGrid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: var(--space-6);
+    align-items: stretch;
+  }
+}
+
+.step1CardCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+.step1OptionsCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+.flashcardHero {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  animation: scaleIn var(--motion-fast) var(--ease-spring);
+  width: 100%;
+}
+
+.flashcardKanji {
+  font-size: clamp(3.5rem, 8vw, 5.5rem);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1.1;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.flashcardFurigana {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-muted);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.flashcardAudioHint {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stepCompanionTip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 4 Options Grid */
+.optionsGrid2x2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 540px) {
+  .optionsGrid2x2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.optionIndexPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-surface-muted);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text-muted);
+  margin-right: 6px;
+  flex: none;
+}
+
+.stepKeyboardHint {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: var(--space-1);
+}
+
+@media (min-width: 540px) {
+  .optionsGrid2x2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.optionTileBtn {
+  min-height: 3.5rem;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: transform var(--motion-fast) var(--ease-spring), border-color var(--motion-fast), background var(--motion-fast);
+}
+
+.optionTileBtn:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.optionTileBtnCorrect {
+  background: #3f7d32 !important;
+  color: #fff !important;
+  border-color: #3f7d32 !important;
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(63, 125, 50, 0.3);
+}
+
+.optionTileBtnWrong {
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  border-color: var(--color-primary) !important;
+  opacity: 0.75;
+}
+
+/* ──────── STEP 2: POLA BARU (Grammar Card - Responsive Split) ──────── */
+.step2ResponsiveGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 860px) {
+  .step2ResponsiveGrid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--space-5);
+    align-items: start;
+  }
+}
+
+.grammarHeroCard {
+  background: linear-gradient(135deg, #b31b28 0%, #8c101c 100%);
+  color: #fff;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  box-shadow: 0 8px 24px rgba(179, 27, 40, 0.25);
+  animation: scaleIn var(--motion-fast) var(--ease-spring);
+}
+
+.grammarPatternTitle {
+  font-size: clamp(2rem, 5vw, 2.6rem);
+  font-weight: var(--font-weight-heavy);
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+.grammarPatternMeaning {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.grammarRuleText {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.grammarFormulaBox {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.grammarFormulaArrow {
+  color: #f2b705;
+}
+
+.step2ExamplesCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Audio Example Items */
+.exampleCard {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-spring), border-color var(--motion-fast);
+}
+
+.exampleCard:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.exampleAudioBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: none;
+  font-size: 1.25rem;
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.exampleAudioBtn:hover {
+  transform: scale(1.1);
+}
+
+.exampleJapanese {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.exampleMeaning {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 2px 0 0 0;
+}
+
+.toggleMeaningBtn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  padding: var(--space-1) 0;
+}
+
+.nekoTipCard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background: #fff9e6;
+  border: 1.5px solid #f2b705;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+.nekoTipText {
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  color: #594200;
+  margin: 0;
+}
+
+/* ──────── STEP 3: SUSUN KALIMAT (Word Ordering - Responsive Split) ──────── */
+.step3ResponsiveGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+@media (min-width: 860px) {
+  .step3ResponsiveGrid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.95fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+}
+
+.step3LeftCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.step3RightCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.step3Actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.resetChipsBtn {
+  padding: 0.75rem 1.15rem;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+  white-space: nowrap;
+}
+
+.resetChipsBtn:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
+.validationBanner {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  animation: popIn var(--motion-fast) var(--ease-spring);
+}
+
+.validationCorrect {
+  background: #eef6ec;
+  color: #276721;
+  border: 1.5px solid #3f7d32;
+}
+
+.validationWrong {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+}
+
+.sentenceBuilderBox {
+  min-height: 6.5rem;
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.placeholderPrompt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+}
+
+.wordChipsPool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-start;
+  padding: var(--space-2) 0;
+}
+
+.wordChipBtn {
+  padding: 0.75rem 1.35rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--color-border);
+  transition: transform var(--motion-fast) var(--ease-spring), border-color var(--motion-fast);
+}
+
+.wordChipBtn:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.wordChipSelected {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary-strong);
+  box-shadow: 0 3px 0 var(--color-primary-strong);
+  animation: popIn var(--motion-fast) var(--ease-spring);
+}
+
+.wordChipUsedInPool {
+  opacity: 0.25;
+  pointer-events: none;
+  box-shadow: none;
+  border-style: dashed;
+}
+
+/* ──────── STEP 4: TANTANGAN DENGAR (Responsive Split) ──────── */
+.step4ResponsiveGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 860px) {
+  .step4ResponsiveGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+    align-items: center;
+  }
+}
+
+.audioChallengeHero {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  animation: scaleIn var(--motion-fast) var(--ease-spring);
+}
+
+.audioPlayCircle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #f2b705;
+  border: none;
+  color: #1a1215;
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(242, 183, 5, 0.4);
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.audioPlayCircle:hover {
+  transform: scale(1.08);
+}
+
+.audioPlayCircle:active {
+  transform: scale(0.95);
+}
+
+/* Dancing Soundwave Bars */
+.soundwave {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+}
+
+.soundwaveBar {
+  width: 4px;
+  background: #f2b705;
+  border-radius: var(--radius-pill);
+  height: 8px;
+}
+
+.soundwavePlaying .soundwaveBar:nth-child(1) { animation: wavePulse 0.6s infinite ease-in-out alternate; }
+.soundwavePlaying .soundwaveBar:nth-child(2) { animation: wavePulse 0.8s infinite ease-in-out alternate 0.15s; }
+.soundwavePlaying .soundwaveBar:nth-child(3) { animation: wavePulse 0.5s infinite ease-in-out alternate 0.3s; }
+.soundwavePlaying .soundwaveBar:nth-child(4) { animation: wavePulse 0.9s infinite ease-in-out alternate 0.1s; }
+.soundwavePlaying .soundwaveBar:nth-child(5) { animation: wavePulse 0.7s infinite ease-in-out alternate 0.25s; }
+
+@keyframes wavePulse {
+  0% { height: 6px; }
+  100% { height: 26px; }
+}
+
+.countdownRingWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #fff9e6;
+  border: 1.5px solid #f2b705;
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.75rem;
+  color: #8c6300;
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-sm);
+}
+
+.audioOptionsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.audioOptionRowBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--motion-fast) var(--ease-spring), border-color var(--motion-fast);
+}
+
+.audioOptionRowBtn:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.audioOptionJa {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+}
+
+.audioOptionId {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STEP 5: SELESAI / CELEBRATION (Responsive Desktop Split)
+   ───────────────────────────────────────────────────────────── */
+.completionWrap {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-7) var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  animation: scaleIn var(--motion-entrance) var(--ease-spring);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+@media (min-width: 860px) {
+  .completionWrap {
+    padding: var(--space-8) var(--space-8);
+  }
+}
+
+.step5ResponsiveGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+@media (min-width: 860px) {
+  .step5ResponsiveGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+    align-items: start;
+    text-align: left;
+  }
+}
+
+.cheerBubble {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+  letter-spacing: 0.05em;
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.completionTitle {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: var(--font-weight-heavy);
+  margin: 0;
+  color: var(--color-text);
+}
+
+/* 3 Stat counters in pill */
+.statsPillsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.statPillCard {
+  background: var(--color-surface-muted);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+
+.statPillValue {
+  font-size: 1.6rem;
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.statPillLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Streak calendar card */
+.streakCalendarCard {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.streakCalendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-heavy);
+}
+
+.streakDaysList {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-1);
+}
+
+.streakDayCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.streakDayDot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f2b705;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-heavy);
+  color: #fff;
+}
+
+.streakDayDotInactive {
+  background: #e2e8f0;
+  color: #94a3b8;
+}
+
+.streakDayDotToday {
+  border: 3px solid var(--color-primary);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(242, 183, 5, 0.5);
+}
+
+.streakDayName {
+  font-size: 0.65rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+/* Sticker reward card */
+.stickerRewardCard {
+  background: #fff9e6;
+  border: 1.5px solid #f2b705;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: #594200;
+  text-align: left;
+}
+
+.stickerStarIcon {
+  font-size: 2.25rem;
+  flex: none;
+}
+
+.stickerTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+  margin: 0 0 4px 0;
+  color: #8c6300;
+}
+
+.stickerDesc {
+  font-size: var(--font-size-xs);
+  margin: 0;
+  line-height: 1.4;
+  color: #6e5200;
+}
+
+.tomorrowTeaser {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.bonusActionBtn {
+  width: 100%;
+  min-height: 3.25rem;
+  background: #f2b705;
+  color: #1a1215;
+  border-radius: var(--radius-pill);
+  border: none;
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c79602;
+  transition: transform var(--motion-fast) var(--ease-spring);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bonusActionBtn:hover {
+  transform: translateY(-2px);
+}
+
+.returnHomeLink {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.returnHomeLink:hover {
+  color: #fff;
+}

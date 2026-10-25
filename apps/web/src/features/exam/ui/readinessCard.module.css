@@ -1,0 +1,145 @@
+.card {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.levelBadge {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 0.2em 0.7em;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  border-radius: var(--radius-pill);
+}
+
+.stats {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.stat {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.statBar {
+  height: 0.45rem;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.statBarFill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.6s var(--ease-out);
+}
+
+.statBarFillSuccess { background: var(--color-success); }
+.statBarFillPrimary { background: var(--color-primary); }
+
+.statLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  display: block;
+}
+
+.statRow {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-3) var(--space-2);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-md);
+}
+
+.chipNum {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1;
+}
+
+.chipNumSuccess { color: var(--color-success); }
+.chipNumAccent  { color: var(--color-accent); }
+.chipNumMuted   { color: var(--color-text-muted); }
+.chipNumDanger  { color: var(--color-danger); }
+
+.chipLabel {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.suggestion {
+  font-size: var(--font-size-sm);
+  margin: 0;
+  color: var(--color-text-muted);
+  padding: var(--space-3);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-md);
+}
+
+.warning {
+  font-size: var(--font-size-sm);
+  margin: 0;
+  color: var(--color-accent);
+  font-weight: var(--font-weight-bold);
+}
+
+.cooldown {
+  font-size: var(--font-size-sm);
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.testBtn {
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  transition: opacity var(--motion-fast), transform var(--motion-fast);
+  text-align: center;
+  width: 100%;
+}
+
+.testBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.testBtn:not(:disabled):hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}

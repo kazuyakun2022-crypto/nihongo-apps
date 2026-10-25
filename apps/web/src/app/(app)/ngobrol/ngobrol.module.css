@@ -1,0 +1,53 @@
+.wrapper {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: calc(100dvh - var(--nav-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .wrapper {
+    height: 100dvh;
+  }
+}
+
+/* ── Tab bar ── */
+.tabs {
+  display: flex;
+  border-bottom: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  padding: 0 var(--space-4);
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--motion-fast), border-color var(--motion-fast);
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: var(--color-text);
+}
+
+.tabActive {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* ── Konten ── */
+.content {
+  overflow: hidden;
+  display: grid;
+}

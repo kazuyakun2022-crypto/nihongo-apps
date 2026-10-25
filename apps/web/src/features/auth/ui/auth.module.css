@@ -1,0 +1,406 @@
+/* ─────────────────────────────────────────────────────────────
+   AUTHENTICATION STYLES - NIHONGO BERSAMA NEKO-SENSEI
+   Desain modern dengan sentuhan Jepang (Washi, Sakura, Ai to Tamago)
+   ───────────────────────────────────────────────────────────── */
+
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4) var(--space-3);
+  background: var(--color-bg);
+  position: relative;
+  overflow-x: hidden;
+}
+
+@media (min-width: 480px) {
+  .page {
+    padding: var(--space-6) var(--space-4);
+  }
+}
+
+/* ──────── Sakura Petals Animation ──────── */
+.sakuraContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.petal {
+  position: absolute;
+  top: -40px;
+  width: 14px;
+  height: 20px;
+  background: var(--color-sakura);
+  opacity: 0.55;
+  border-radius: 12px 1px 14px 1px;
+  animation: sakuraFall linear infinite, sakuraDrift ease-in-out infinite alternate;
+  filter: drop-shadow(0 2px 4px rgba(248, 114, 141, 0.15));
+}
+
+@keyframes sakuraFall {
+  0% {
+    top: -5%;
+    transform: rotate(0deg) scale(0.9);
+  }
+  100% {
+    top: 105%;
+    transform: rotate(360deg) scale(1.1);
+  }
+}
+
+@keyframes sakuraDrift {
+  0% {
+    margin-left: -20px;
+  }
+  100% {
+    margin-left: 20px;
+  }
+}
+
+/* ──────── Top Back Link ──────── */
+.topNav {
+  width: 100%;
+  max-width: 30rem;
+  margin-bottom: var(--space-4);
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all var(--motion-fast);
+}
+
+.backLink:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateX(-2px);
+}
+
+.brandBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: inherit;
+}
+
+.brandIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  border: 1.5px solid var(--color-accent);
+}
+
+.brandText {
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+}
+
+/* ──────── Elevated Auth Card ──────── */
+.card {
+  width: 100%;
+  max-width: 30rem;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-4);
+  box-shadow: var(--shadow-card);
+  display: grid;
+  gap: var(--space-4);
+  position: relative;
+  z-index: 5;
+  animation: cardEntrance 400ms var(--ease-out) both;
+}
+
+@media (min-width: 480px) {
+  .card {
+    padding: var(--space-6) var(--space-6);
+    gap: var(--space-5);
+  }
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ──────── Card Header & Mascot ──────── */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+}
+
+.mascotWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mascotAura {
+  position: absolute;
+  inset: -8px;
+  background: radial-gradient(circle, var(--color-surface-muted) 0%, rgba(177, 42, 58, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.mascotImg {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(107, 21, 32, 0.14));
+  animation: mascotFloat 4s ease-in-out infinite alternate;
+}
+
+@keyframes mascotFloat {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(1.5deg); }
+  100% { transform: translateY(-2px) rotate(-1.5deg); }
+}
+
+/* Speech bubble from mascot in card */
+.speechBubble {
+  position: relative;
+  background: var(--color-accent-soft);
+  color: #8c6300;
+  border: 1px solid rgba(242, 183, 5, 0.35);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.85rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 2px 6px rgba(242, 183, 5, 0.12);
+}
+
+
+.speechBubble::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: var(--color-accent-soft) transparent transparent transparent;
+  display: block;
+  width: 0;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.japaneseBadge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  background: var(--color-surface-muted);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-pill);
+  font-weight: var(--font-weight-heavy);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.lead {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  max-width: 32ch;
+}
+
+/* ──────── Form Controls ──────── */
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.togglePassBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-fast);
+}
+
+.togglePassBtn:hover {
+  color: var(--color-primary);
+}
+
+.smallLink {
+  justify-self: end;
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-bold);
+  margin-top: calc(var(--space-2) * -1);
+  transition: opacity var(--motion-fast);
+}
+
+.smallLink:hover {
+  text-decoration: underline;
+}
+
+/* ──────── Divider & Social Buttons ──────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: var(--space-1) 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: var(--border-width);
+  background: var(--color-border);
+}
+
+.secondaryActions {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 3.125rem;
+  width: 100%;
+  border-radius: var(--radius-pill);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  cursor: not-allowed;
+  opacity: 0.75;
+  transition: background var(--motion-fast);
+}
+
+.googleIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.guestBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 3.125rem;
+  width: 100%;
+  border-radius: var(--radius-pill);
+  border: 1.5px dashed var(--color-border);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.guestBtn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-surface-muted);
+  transform: translateY(-1px);
+}
+
+.guestBtn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.legal {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.footer {
+  margin: 0;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
+}
+
+.footer a {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .petal,
+  .mascotImg,
+  .card {
+    animation: none !important;
+  }
+}

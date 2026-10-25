@@ -1,0 +1,105 @@
+.muted {
+  color: var(--color-text-muted);
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.heading {
+  font-size: clamp(var(--font-size-lg), 5vw, var(--font-size-xl));
+  font-weight: var(--font-weight-heavy);
+  animation: fadeInUp var(--motion-fast) var(--ease-entrance) both;
+  margin: 0;
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  animation: scaleIn var(--motion-entrance) var(--ease-entrance) both;
+}
+
+.deck {
+  display: grid;
+  gap: var(--space-4);
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  max-width: 32rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.card {
+  min-height: 13rem;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5) var(--space-4);
+  transition: transform var(--motion-fast) var(--ease-spring), box-shadow var(--motion-fast), border-color var(--motion-fast);
+}
+
+@media (min-width: 480px) {
+  .card {
+    min-height: 16rem;
+    padding: var(--space-6);
+  }
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: 0 12px 28px rgba(179, 27, 40, 0.08);
+}
+
+.front {
+  margin: 0;
+  font-size: clamp(2.25rem, 9vw, 3.5rem);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  line-height: 1.15;
+  word-break: break-word;
+  animation: popIn var(--motion-fast) var(--ease-spring) both;
+}
+
+.back {
+  display: grid;
+  gap: var(--space-1);
+  animation: fadeInUp var(--motion-fast) var(--ease-spring) both;
+}
+
+.back p {
+  margin: 0;
+  font-size: clamp(var(--font-size-md), 4vw, var(--font-size-lg));
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  word-break: break-word;
+}
+
+.grades {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+@media (max-width: 360px) {
+  .grades {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+}
+
+.grades button {
+  padding: var(--space-2) var(--space-2);
+  font-size: var(--font-size-sm);
+  transition: transform var(--motion-fast) var(--ease-spring);
+  min-height: 2.75rem;
+}
+
+.grades button:hover {
+  transform: translateY(-2px);
+}

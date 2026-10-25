@@ -1,0 +1,225 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { apiRequest } from "@/core/http/apiClient";
+
+export type VoiceState = "idle" | "listening" | "processing" | "speaking";
+
+export interface VoiceMessage {
+  id: string;
+  role: "user" | "ai";
+  text: string;
+}
+
+type HistoryItem = { role: "user" | "assistant"; content: string };
+
+const MIN_RECORDING_MS = 400;
+const MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"];
+
+function isRecordingSupported(): boolean {
+  return typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined";
+}
+
+function pickMimeType(): string | undefined {
+  return MIME_CANDIDATES.find((t) => MediaRecorder.isTypeSupported(t));
+}
+
+async function transcribe(audio: Blob): Promise<string> {
+  const res = await fetch("/api/ask/transcribe", {
+    method: "POST",
+    headers: { "content-type": audio.type || "audio/webm" },
+    body: audio,
+  });
+  const data = (await res.json().catch(() => ({}))) as { text?: string; error?: { message?: string } };
+  if (!res.ok) throw new Error(data.error?.message ?? "Gagal mengenali suara.");
+  return data.text?.trim() ?? "";
+}
+
+async function fetchAnswer(question: string, history: HistoryItem[]): Promise<string> {
+  const res = await apiRequest<{ answer: string }>("/ask", {
+    method: "POST",
+    body: { question, history, mode: "voice" },
+  });
+  return res.answer;
+}
+
+// Suara cadangan (MP3, dipakai saat kuota Gemini habis) diputar lebih cepat tanpa menjaga pitch,
+// sehingga nadanya naik ±3 semitone dan terdengar lebih imut seperti karakter kartun.
+const FALLBACK_PLAYBACK_RATE = 1.18;
+
+async function fetchVoice(text: string): Promise<{ url: string; isFallback: boolean }> {
+  const res = await fetch("/api/ask/speak", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new Error("Suara Neko-sensei gagal dibuat.");
+  const blob = await res.blob();
+  return { url: URL.createObjectURL(blob), isFallback: blob.type === "audio/mpeg" };
+}
+
+function makeAudio(url: string, isFallback: boolean): HTMLAudioElement {
+  const audio = new Audio(url);
+  if (isFallback) {
+    audio.preservesPitch = false;
+    (audio as HTMLAudioElement & { webkitPreservesPitch?: boolean }).webkitPreservesPitch = false;
+    audio.playbackRate = FALLBACK_PLAYBACK_RATE;
+  }
+  return audio;
+}
+
+export function useVoiceChat() {
+  const [state, setState] = useState<VoiceState>("idle");
+  const [messages, setMessages] = useState<VoiceMessage[]>([]);
+  const [transcript, setTranscript] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSupported, setIsSupported] = useState(true);
+
+  const streamRef = useRef<MediaStream | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const stopRequestedRef = useRef(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const historyRef = useRef<HistoryItem[]>([]);
+
+  useEffect(() => {
+    setIsSupported(isRecordingSupported());
+    return () => {
+      audioRef.current?.pause();
+      if (recorderRef.current?.state === "recording") recorderRef.current.stop();
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
+  const stopAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  }, []);
+
+  const processQuestion = useCallback(async (question: string) => {
+    setState("processing");
+    setTranscript(question);
+    setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", text: question }]);
+
+    try {
+      const answer = await fetchAnswer(question, historyRef.current);
+      historyRef.current = [
+        ...historyRef.current,
+        { role: "user" as const, content: question },
+        { role: "assistant" as const, content: answer },
+      ].slice(-10);
+      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text: answer }]);
+
+      const { url: audioUrl, isFallback } = await fetchVoice(answer);
+      const audio = makeAudio(audioUrl, isFallback);
+      audioRef.current = audio;
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        if (audioRef.current === audio) setState("idle");
+      };
+      audio.onerror = () => setState("idle");
+      setTranscript("");
+      setState("speaking");
+      await audio.play();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal mendapat jawaban.");
+      setTranscript("");
+      setState("idle");
+    }
+  }, []);
+
+  const handleRecording = useCallback(async (audio: Blob) => {
+    setState("processing");
+    try {
+      const text = await transcribe(audio);
+      if (!text) {
+        setError("Neko-sensei tidak menangkap suaramu, coba bicara lagi ya.");
+        setState("idle");
+        return;
+      }
+      await processQuestion(text);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal mengenali suara.");
+      setState("idle");
+    }
+  }, [processQuestion]);
+
+  const startListening = useCallback(async () => {
+    if (!isRecordingSupported()) {
+      setError("Browser kamu tidak mendukung perekaman suara.");
+      return;
+    }
+    setError(null);
+    stopAudio();
+    stopRequestedRef.current = false;
+    setState("listening");
+
+    try {
+      streamRef.current ??= await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true },
+      });
+    } catch {
+      setError("Izin mikrofon ditolak. Aktifkan mikrofon di pengaturan browser.");
+      setState("idle");
+      return;
+    }
+
+    const mimeType = pickMimeType();
+    const recorder = new MediaRecorder(streamRef.current, mimeType ? { mimeType } : undefined);
+    const chunks: Blob[] = [];
+    const startedAt = Date.now();
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" });
+      if (Date.now() - startedAt < MIN_RECORDING_MS || blob.size < 1000) {
+        setState("idle");
+        return;
+      }
+      void handleRecording(blob);
+    };
+
+    recorderRef.current = recorder;
+    recorder.start();
+    // Tombol bisa sudah dilepas selagi menunggu izin mikrofon.
+    if (stopRequestedRef.current) recorder.stop();
+  }, [stopAudio, handleRecording]);
+
+  const stopListening = useCallback(() => {
+    stopRequestedRef.current = true;
+    if (recorderRef.current?.state === "recording") recorderRef.current.stop();
+  }, []);
+
+  const stop = useCallback(() => {
+    const recorder = recorderRef.current;
+    if (recorder?.state === "recording") {
+      recorder.onstop = null;
+      recorder.stop();
+    }
+    stopAudio();
+    setState("idle");
+    setTranscript("");
+  }, [stopAudio]);
+
+  const clear = useCallback(() => {
+    stop();
+    setMessages([]);
+    setError(null);
+    historyRef.current = [];
+  }, [stop]);
+
+  return {
+    state,
+    messages,
+    transcript,
+    error,
+    isSupported,
+    startListening,
+    stopListening,
+    stop,
+    clear,
+  };
+}

@@ -1,0 +1,192 @@
+.shell {
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.main {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: var(--space-4) var(--space-2) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-4));
+  display: grid;
+  gap: var(--space-3);
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  overflow-x: hidden;
+}
+
+@media (min-width: 480px) {
+  .main {
+    padding: var(--space-4) var(--space-3) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-4));
+  }
+}
+
+/* Ponsel: navigasi di bawah agar mudah dijangkau jempol. */
+.nav {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 10;
+  background: var(--color-surface);
+  border-top: var(--border-width) solid var(--color-border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.brand {
+  display: none;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  height: var(--nav-height);
+}
+
+.navLink {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1px;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  font-size: 0.625rem;   /* 10px — cukup terbaca untuk 6 item */
+  font-weight: var(--font-weight-bold);
+  transition: color var(--motion-fast), transform var(--motion-fast) var(--ease-spring);
+  padding: 0 2px;
+  overflow: hidden;
+}
+
+.navLink svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.navLink span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+}
+
+.navLink:active {
+  transform: scale(0.88);
+}
+
+.navLink[aria-current="page"] {
+  color: var(--color-primary);
+}
+
+/* Layar ≥480px: label huruf sedikit lebih besar */
+@media (min-width: 480px) {
+  .navLink {
+    font-size: 0.6875rem;  /* 11px */
+    gap: 2px;
+  }
+  .navLink svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Desktop: sidebar di kiri. */
+@media (min-width: 900px) {
+  .shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    border-top: 0;
+    border-right: var(--border-width) solid var(--color-border);
+    padding: var(--space-5) var(--space-3);
+    backdrop-filter: none;
+    animation: slideInLeft var(--motion-entrance) var(--ease-entrance) both;
+  }
+
+  .brand {
+    display: block;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-heavy);
+    color: var(--color-primary);
+    padding: 0 var(--space-3) var(--space-5);
+  }
+
+  .navList {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: var(--space-1);
+  }
+
+  .navLink {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    overflow: visible;
+    transition:
+      color var(--motion-fast),
+      background var(--motion-fast),
+      transform var(--motion-fast) var(--ease-spring);
+  }
+
+  .navLink svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .navLink span {
+    max-width: none;
+    white-space: normal;
+    text-overflow: unset;
+  }
+
+  .navLink:hover {
+    background: var(--color-surface-muted);
+    transform: translateX(3px);
+  }
+
+  .navLink:active {
+    transform: translateX(1px) scale(0.98);
+  }
+
+  .navLink[aria-current="page"] {
+    background: var(--color-surface-muted);
+    color: var(--color-primary);
+    position: relative;
+  }
+
+  .navLink[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 25%;
+    bottom: 25%;
+    width: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--color-primary);
+  }
+
+  .main {
+    padding: var(--space-6) var(--space-4);
+    gap: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .main {
+    padding: var(--space-6) var(--space-5);
+  }
+}
+

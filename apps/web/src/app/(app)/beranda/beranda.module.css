@@ -1,0 +1,140 @@
+.greeting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+}
+
+.hello {
+  margin: 0;
+  font-weight: var(--font-weight-heavy);
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* ── Stats row ── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.statCard {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-base) var(--ease-out);
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+}
+
+.statCard:nth-child(1) { animation-delay: 80ms; }
+.statCard:nth-child(2) { animation-delay: 160ms; }
+.statCard:nth-child(3) { animation-delay: 240ms; }
+
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.statIcon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.statValue {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ── Action cards ── */
+.actions {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .actionMain {
+    grid-column: 1 / -1;
+  }
+}
+
+.action {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-base) var(--ease-out),
+    border-color var(--motion-fast);
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation-delay: 300ms;
+}
+
+.action:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary-soft);
+}
+
+.action:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.action span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.actionEyebrow {
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary) !important;
+}
+
+/* Lanjutkan belajar adalah aksi utama. */
+.actionMain {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  padding-block: var(--space-5);
+  animation-delay: 100ms;
+}
+
+.actionMain:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 16px rgba(230, 168, 23, 0.15);
+}
+
+.actionMain strong {
+  font-size: var(--font-size-lg);
+}
