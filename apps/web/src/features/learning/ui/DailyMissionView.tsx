@@ -189,10 +189,10 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
         {onBackToCatalog && (
           <div className={styles.modeTabs}>
             <button className={`${styles.modeTabBtn} ${styles.modeTabBtnActive}`}>
-              🎯 Misi Hari Ini
+              Misi Hari Ini
             </button>
             <button className={styles.modeTabBtn} onClick={onBackToCatalog}>
-              📚 Semua Bab (N5-N1)
+              Semua Bab (N5-N1)
             </button>
           </div>
         )}
@@ -203,7 +203,9 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             <div className={styles.mapHeader}>
               <h1 className={styles.mapTitle}>Misi hari ini</h1>
               <div className={styles.streakPill}>
-                <span>🔥</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                </svg>
                 <span>{streak} hari berturut</span>
               </div>
             </div>
@@ -254,7 +256,10 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                   onClick={() => setCurrentStep("pola_baru")}
                 >
                   <div className={`${styles.nodeCircle} ${styles.nodeLocked}`}>
-                    <span style={{ fontSize: "1.35rem" }}>📖</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
                   </div>
                   <div className={styles.nodeInfo} style={{ textAlign: "right" }}>
                     <p className={styles.nodeName}>Pola baru</p>
@@ -268,7 +273,12 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                   onClick={() => setCurrentStep("susun_kalimat")}
                 >
                   <div className={`${styles.nodeCircle} ${styles.nodeLocked}`}>
-                    <span style={{ fontSize: "1.35rem" }}>🧩</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="7" height="7" />
+                      <rect x="14" y="3" width="7" height="7" />
+                      <rect x="14" y="14" width="7" height="7" />
+                      <rect x="3" y="14" width="7" height="7" />
+                    </svg>
                   </div>
                   <div className={styles.nodeInfo}>
                     <p className={styles.nodeName}>Susun kalimat</p>
@@ -282,7 +292,10 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                   onClick={() => setCurrentStep("tantangan_dengar")}
                 >
                   <div className={`${styles.nodeCircle} ${styles.nodeLocked}`}>
-                    <span style={{ fontSize: "1.35rem" }}>🎧</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                      <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                    </svg>
                   </div>
                   <div className={styles.nodeInfo} style={{ textAlign: "right" }}>
                     <p className={styles.nodeName}>Tantangan dengar</p>
@@ -296,7 +309,13 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                   onClick={() => setCurrentStep("selesai")}
                 >
                   <div className={styles.nodeRewardBox}>
-                    <span>🎁</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 12 20 22 4 22 4 12" />
+                      <rect x="2" y="7" width="20" height="5" />
+                      <line x1="12" y1="22" x2="12" y2="7" />
+                      <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+                      <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+                    </svg>
                   </div>
                   <div className={styles.nodeInfo}>
                     <p className={styles.nodeName}>Peti hadiah</p>
@@ -308,7 +327,6 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
               {/* Start Mission Button inside card / bottom bar */}
               <div className={styles.bottomCtaBar}>
                 <button className={styles.startMissionBtn} onClick={() => setCurrentStep("pemanasan")}>
-                  <span>🚀</span>
                   <span>Mulai misi hari ini</span>
                 </button>
               </div>
@@ -320,7 +338,6 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             {/* Mission Overview Card */}
             <div className={styles.sidebarCard}>
               <h3 className={styles.sidebarCardTitle}>
-                <span>🎯</span>
                 <span>Target Belajar Hari Ini</span>
               </h3>
               <p style={{ margin: 0, fontSize: "var(--font-size-sm)", color: "var(--color-text-muted)" }}>
@@ -329,48 +346,48 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
 
               <ul className={styles.stepsChecklist}>
                 <li className={`${styles.stepCheckItem} ${styles.stepCheckItemActive}`}>
-                  <span className={styles.stepIconBadge}>▶</span>
+                  <span className={styles.stepIconBadge}>1</span>
                   <div style={{ flex: 1 }}>
-                    <strong>1. Pemanasan</strong>
+                    <strong>Pemanasan</strong>
                     <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Review kosakata dasar</div>
                   </div>
                   <span style={{ fontSize: "0.75rem", color: "var(--color-primary)" }}>Mulai</span>
                 </li>
 
                 <li className={styles.stepCheckItem}>
-                  <span className={styles.stepIconBadge}>📖</span>
+                  <span className={styles.stepIconBadge}>2</span>
                   <div style={{ flex: 1 }}>
-                    <span>2. Pola Baru</span>
+                    <span>Pola Baru</span>
                     <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Tata bahasa 〜たいです</div>
                   </div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>🔒</span>
+                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Terkunci</span>
                 </li>
 
                 <li className={styles.stepCheckItem}>
-                  <span className={styles.stepIconBadge}>🧩</span>
+                  <span className={styles.stepIconBadge}>3</span>
                   <div style={{ flex: 1 }}>
-                    <span>3. Susun Kalimat</span>
+                    <span>Susun Kalimat</span>
                     <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Latihan susun chip kata</div>
                   </div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>🔒</span>
+                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Terkunci</span>
                 </li>
 
                 <li className={styles.stepCheckItem}>
-                  <span className={styles.stepIconBadge}>🎧</span>
+                  <span className={styles.stepIconBadge}>4</span>
                   <div style={{ flex: 1 }}>
-                    <span>4. Tantangan Dengar</span>
+                    <span>Tantangan Dengar</span>
                     <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Uji audio pelafalan</div>
                   </div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>🔒</span>
+                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Terkunci</span>
                 </li>
 
                 <li className={styles.stepCheckItem}>
-                  <span className={styles.stepIconBadge}>🎁</span>
+                  <span className={styles.stepIconBadge}>5</span>
                   <div style={{ flex: 1 }}>
-                    <span>5. Peti Hadiah</span>
+                    <span>Peti Hadiah</span>
                     <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Stiker Neko Yukata & +45 XP</div>
                   </div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>🔒</span>
+                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>Terkunci</span>
                 </li>
               </ul>
             </div>
@@ -379,7 +396,6 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             <div className={styles.sidebarCard}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h3 className={styles.sidebarCardTitle}>
-                  <span>🔥</span>
                   <span>Streak {streak} Hari</span>
                 </h3>
                 <span style={{ fontSize: "0.75rem", color: "#3f7d32", fontWeight: "bold" }}>Konsisten!</span>
@@ -392,7 +408,6 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             {/* Sticker Collection Widget */}
             <div className={styles.sidebarCard}>
               <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-                <span style={{ fontSize: "2rem" }}>⭐</span>
                 <div>
                   <h4 style={{ margin: 0, fontSize: "var(--font-size-sm)", fontWeight: "bold" }}>
                     Koleksi Stiker Neko
@@ -428,7 +443,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             <div className={styles.progressSegment} />
             <div className={styles.progressSegment} />
           </div>
-          <div className={styles.questBadge}>🔥 Kombo x2</div>
+          <div className={styles.questBadge}>Kombo x2</div>
         </div>
 
         <div className={styles.questBody}>
@@ -452,7 +467,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                   {card.furigana}
                 </p>
                 <span className={styles.flashcardAudioHint}>
-                  🔊 Ketuk untuk dengar pelafalan
+                  Ketuk untuk dengar pelafalan
                 </span>
               </div>
 
@@ -487,7 +502,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                 })}
               </div>
               <div className={styles.stepKeyboardHint}>
-                <span>💡 Tip: Di layar tablet & desktop, ketuk pilihan untuk langsung memvalidasi jawaban</span>
+                <span>Tip: Di layar tablet & desktop, ketuk pilihan untuk langsung memvalidasi jawaban</span>
               </div>
             </div>
           </div>
@@ -544,7 +559,10 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                 onClick={() => speak("すしをたべたいです")}
               >
                 <button className={styles.exampleAudioBtn} aria-label="Putar audio">
-                  🔊
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  </svg>
                 </button>
                 <div>
                   <p className={styles.exampleJapanese} lang="ja">
@@ -560,7 +578,10 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                 onClick={() => speak("にほんへいきたいです")}
               >
                 <button className={styles.exampleAudioBtn} aria-label="Putar audio">
-                  🔊
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  </svg>
                 </button>
                 <div>
                   <p className={styles.exampleJapanese} lang="ja">
@@ -574,7 +595,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                 className={styles.toggleMeaningBtn}
                 onClick={() => setShowMeaning((prev) => !prev)}
               >
-                {showMeaning ? "✕ Sembunyikan arti" : "👁 Tampilkan arti kalimat"}
+                {showMeaning ? "✕ Sembunyikan arti" : "Tampilkan arti kalimat"}
               </button>
 
               <div className={styles.nekoTipCard}>
@@ -611,7 +632,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             <div className={styles.progressSegment} />
             <div className={styles.progressSegment} />
           </div>
-          <div className={styles.questBadge}>⚡ +25 XP</div>
+          <div className={styles.questBadge}>+25 XP</div>
         </div>
 
         <div className={styles.questBody}>
@@ -660,7 +681,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                     sentenceIsCorrect ? styles.validationCorrect : styles.validationWrong
                   }`}
                 >
-                  <span>{sentenceIsCorrect ? "🎉 Bagus sekali! Susunan kalimat benar!" : "⚠️ Kurang tepat, perhatikan susunan kata kerja yuk!"}</span>
+                  <span>{sentenceIsCorrect ? "Bagus sekali! Susunan kalimat benar!" : "Kurang tepat, perhatikan susunan kata kerja yuk!"}</span>
                 </div>
               )}
             </div>
@@ -693,7 +714,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                     className={styles.resetChipsBtn}
                     onClick={() => setSelectedChips([])}
                   >
-                    🔄 Mulai Ulang
+                    Mulai Ulang
                   </button>
                 )}
                 <button
@@ -729,14 +750,13 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             <div className={`${styles.progressSegment} ${styles.progressSegmentActive}`} />
             <div className={styles.progressSegment} />
           </div>
-          <div className={styles.questBadge}>🎯 +35 XP</div>
+          <div className={styles.questBadge}>+35 XP</div>
         </div>
 
         <div className={styles.questBody}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <p className={styles.questStepTag}>Tantangan cepat</p>
             <div className={styles.countdownRingWrap}>
-              <span>⏱</span>
               <span>0:{audioTimer < 10 ? `0${audioTimer}` : audioTimer}</span>
             </div>
           </div>
@@ -751,7 +771,10 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
                 onClick={playAudioChallenge}
                 aria-label="Putar audio pertanyaan"
               >
-                <span>🔊</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                </svg>
               </button>
 
               <div className={`${styles.soundwave} ${isAudioPlaying ? styles.soundwavePlaying : ""}`}>
@@ -844,7 +867,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
               <div className={styles.streakCalendarCard}>
                 <div className={styles.streakCalendarHeader}>
                   <span>{streak + 1} hari berturut-turut</span>
-                  <span style={{ color: "#3f7d32" }}>🔥 Rekor baru!</span>
+                  <span style={{ color: "#3f7d32" }}>Rekor baru!</span>
                 </div>
                 <div className={styles.streakDaysList}>
                   {[
@@ -875,7 +898,6 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
               {/* Sticker Reward Card */}
               <div className={styles.stickerRewardCard}>
-                <span className={styles.stickerStarIcon}>⭐</span>
                 <div>
                   <p className={styles.stickerTitle}>Stiker baru: Neko pakai yukata</p>
                   <p className={styles.stickerDesc}>
@@ -890,7 +912,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
 
               {/* Bonus Action: Chat with AI */}
               <Link href="/ngobrol" className={styles.bonusActionBtn}>
-                <span>💬 Bonus: ngobrol pakai 〜たい</span>
+                <span>Bonus: ngobrol pakai 〜たい</span>
               </Link>
 
               <button className={styles.returnHomeLink} onClick={() => router.push("/beranda")}>

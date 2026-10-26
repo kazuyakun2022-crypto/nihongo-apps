@@ -12,7 +12,10 @@ import {
 export class GetPlacementQuestions {
   constructor(private readonly deps: { repo: ExamRepository }) {}
 
-  async execute(_user: AuthUser, targetLevelId: number) {
+  async execute(user: AuthUser, targetLevelId: number) {
+    if (user.role === "admin" || user.role === "super_admin") {
+      throw Errors.forbidden("Akun Administrator tidak mengikuti tes penempatan siswa.");
+    }
     if (!requiresPlacementTest(targetLevelId)) {
       throw Errors.validation("Level ini tidak memerlukan tes penempatan.");
     }
@@ -29,6 +32,9 @@ export class SubmitPlacementExam {
   constructor(private readonly deps: { repo: ExamRepository }) {}
 
   async execute(user: AuthUser, targetLevelId: number, answers: PlacementAnswer[]) {
+    if (user.role === "admin" || user.role === "super_admin") {
+      throw Errors.forbidden("Akun Administrator tidak mengikuti tes penempatan siswa.");
+    }
     if (!requiresPlacementTest(targetLevelId)) {
       throw Errors.validation("Level ini tidak memerlukan tes penempatan.");
     }

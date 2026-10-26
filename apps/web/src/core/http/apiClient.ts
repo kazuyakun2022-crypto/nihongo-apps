@@ -29,8 +29,9 @@ export const tokenStore = {
 async function refreshAccessToken(): Promise<boolean> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
+  const base = getApiBase();
 
-  refreshing ??= fetch("/api/auth/refresh", {
+  refreshing ??= fetch(`${base}/api/auth/refresh`, {
     method: "POST",
     credentials: "include",
     signal: controller.signal,
@@ -52,6 +53,14 @@ async function refreshAccessToken(): Promise<boolean> {
   return refreshing;
 }
 
+function getApiBase(): string {
+  if (typeof window !== "undefined") {
+    const envBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (envBase) return envBase.replace(/\/$/, "");
+  }
+  return "";
+}
+
 export async function apiRequest<T>(
   path: string,
   init: { method?: string; body?: unknown; retry?: boolean; timeoutMs?: number } = {},
@@ -61,9 +70,11 @@ export async function apiRequest<T>(
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), init.timeoutMs ?? 15000);
+  const base = getApiBase();
+  const url = path.startsWith("http") ? path : `${base}/api${path}`;
 
   try {
-    const res = await fetch(`/api${path}`, {
+    const res = await fetch(url, {
       method: init.method ?? "GET",
       headers,
       credentials: "include",

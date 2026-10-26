@@ -14,6 +14,9 @@ export class ListLevels {
 export class ListChapters {
   constructor(private readonly deps: { repo: LearningRepository }) {}
   async execute(user: AuthUser, levelId: number) {
+    if (user.role === "admin" || user.role === "super_admin") {
+      throw Errors.forbidden("Akun Administrator tidak ditujukan untuk jalur belajar siswa.");
+    }
     const level = await this.deps.repo.findLevel(levelId);
     if (!level) throw Errors.notFound("Level");
     if (!canAccessLevel(level, user.role)) throw Errors.forbidden("Level ini tersedia untuk pengguna Premium.");
@@ -24,6 +27,9 @@ export class ListChapters {
 export class GetChapter {
   constructor(private readonly deps: { repo: LearningRepository }) {}
   async execute(user: AuthUser, chapterId: string) {
+    if (user.role === "admin" || user.role === "super_admin") {
+      throw Errors.forbidden("Akun Administrator tidak ditujukan untuk jalur belajar siswa.");
+    }
     const chapter = await this.deps.repo.getChapter(chapterId);
     if (!chapter) throw Errors.notFound("Bab");
     const level = await this.deps.repo.findLevel(chapter.levelId);
@@ -35,6 +41,7 @@ export class GetChapter {
 export class GetNextChapter {
   constructor(private readonly deps: { repo: LearningRepository; users: UserRepository }) {}
   async execute(user: AuthUser) {
+    if (user.role === "admin" || user.role === "super_admin") return { chapter: null };
     const fullUser = await this.deps.users.findById(user.id);
     if (!fullUser?.currentLevelId) return { chapter: null };
     const chapter = await this.deps.repo.getNextChapter(user.id, fullUser.currentLevelId);
@@ -46,6 +53,9 @@ export class GetNextChapter {
 export class SubmitQuiz {
   constructor(private readonly deps: { repo: LearningRepository; clock: Clock }) {}
   async execute(user: AuthUser, chapterId: string, answers: QuizAnswer[]) {
+    if (user.role === "admin" || user.role === "super_admin") {
+      throw Errors.forbidden("Akun Administrator tidak dapat mengikuti kuis belajar.");
+    }
     if (answers.length === 0) throw Errors.validation("Jawaban tidak boleh kosong.");
     const chapter = await this.deps.repo.getChapter(chapterId);
     if (!chapter) throw Errors.notFound("Bab");
@@ -67,6 +77,16 @@ export class GetLevelProgress {
   constructor(private readonly deps: { repo: LearningRepository }) {}
 
   async execute(user: AuthUser, levelId: number): Promise<LevelProgress> {
+    if (user.role === "admin" || user.role === "super_admin") {
+      return {
+        vocabLearned: 0,
+        vocabTarget: 0,
+        kanjiLearned: 0,
+        kanjiTarget: 0,
+        chaptersCompleted: 0,
+        chaptersTotal: 0,
+      };
+    }
     return this.deps.repo.getLevelProgress(user.id, levelId);
   }
 }

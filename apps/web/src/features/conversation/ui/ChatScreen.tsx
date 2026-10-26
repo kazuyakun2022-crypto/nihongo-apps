@@ -6,6 +6,8 @@ import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
 import { ArrowRightIcon } from "@/shared/ui/icons";
 import { useConversation } from "../application/useConversation";
+import { FuriganaText } from "./FuriganaText";
+import { MicroFeedbackCard } from "./MicroFeedbackCard";
 import styles from "./chat.module.css";
 
 export function ChatScreen() {
@@ -75,19 +77,16 @@ export function ChatScreen() {
       <ol ref={listRef} className={styles.messages} aria-live="polite">
         {messages.map((m) => (
           <li key={m.id} className={m.sender === "user" ? styles.userRow : styles.mascotRow}>
-            <p lang="ja" className={m.sender === "user" ? styles.userBubble : styles.mascotBubble}>
-              {m.text}
-            </p>
-            {m.correction && (
-              <details className={styles.correction}>
-                <summary>Lihat koreksi</summary>
-                <p lang="ja">
-                  <s>{m.correction.original}</s> <ArrowRightIcon size={14} />{" "}
-                  <strong>{m.correction.corrected}</strong>
-                </p>
-                <p>{m.correction.explanation}</p>
-              </details>
+            {m.sender === "mascot" ? (
+              <p className={styles.mascotBubble}>
+                <FuriganaText text={m.text} />
+              </p>
+            ) : (
+              <p lang="ja" className={styles.userBubble}>
+                {m.text}
+              </p>
             )}
+            {m.correction && <MicroFeedbackCard correction={m.correction} />}
           </li>
         ))}
         {phase === "waiting" && (

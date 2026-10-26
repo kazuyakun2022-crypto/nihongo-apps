@@ -29,16 +29,19 @@ export interface YoonChar {
   voiced: boolean;
 }
 
+export type JlptLevel = "N5" | "N4" | "N3" | "N2" | "N1";
+
 export interface KanjiChar {
   character: string;
   onyomi: string;
   kunyomi: string;
-  meaningId: string;
-  level: "N5" | "N4" | "N3" | "N2" | "N1";
+  meaningId?: string;
+  meaningEn?: string;
+  level: JlptLevel;
   strokeCount: number;
-  example: string;
-  exampleReading: string;
-  exampleMeaning: string;
+  example?: string;
+  exampleReading?: string;
+  exampleMeaning?: string;
 }
 
 export const HIRAGANA_BASIC: HiraganaChar[] = [
@@ -272,7 +275,7 @@ export const KANJI_N5: KanjiChar[] = [
   { character: "二", onyomi: "ニ", kunyomi: "ふた(つ)", meaningId: "dua", level: "N5", strokeCount: 2, example: "二月", exampleReading: "にがつ", exampleMeaning: "Februari" },
   { character: "本", onyomi: "ホン", kunyomi: "もと", meaningId: "buku, asal", level: "N5", strokeCount: 5, example: "日本", exampleReading: "にほん", exampleMeaning: "Jepang" },
   { character: "中", onyomi: "チュウ", kunyomi: "なか", meaningId: "tengah, dalam", level: "N5", strokeCount: 4, example: "中国", exampleReading: "ちゅうごく", exampleMeaning: "Tiongkok" },
-  { character: "長", onyomi: "チョウ", kunyomi: "なが(い)", meaningId: "panjang", level: "N5", strokeCount: 8, example: "長い", exampleReading: "ながい", exampleMeaning: "panjang" },
+  { character: "長", onyomi: "チョウ", kunyomi: "なが(い)", meaningId: "panjang, kepala (pemimpin)", level: "N5", strokeCount: 8, example: "長い", exampleReading: "ながい", exampleMeaning: "panjang" },
   { character: "出", onyomi: "シュツ", kunyomi: "で(る)", meaningId: "keluar", level: "N5", strokeCount: 5, example: "出口", exampleReading: "でぐち", exampleMeaning: "pintu keluar" },
   { character: "三", onyomi: "サン", kunyomi: "みっ(つ)", meaningId: "tiga", level: "N5", strokeCount: 3, example: "三月", exampleReading: "さんがつ", exampleMeaning: "Maret" },
   { character: "時", onyomi: "ジ", kunyomi: "とき", meaningId: "waktu, jam", level: "N5", strokeCount: 10, example: "何時", exampleReading: "なんじ", exampleMeaning: "jam berapa" },
@@ -280,7 +283,7 @@ export const KANJI_N5: KanjiChar[] = [
   { character: "見", onyomi: "ケン", kunyomi: "み(る)", meaningId: "melihat", level: "N5", strokeCount: 7, example: "見る", exampleReading: "みる", exampleMeaning: "melihat" },
   { character: "月", onyomi: "ゲツ・ガツ", kunyomi: "つき", meaningId: "bulan, bulan (kalender)", level: "N5", strokeCount: 4, example: "月曜日", exampleReading: "げつようび", exampleMeaning: "Senin" },
   { character: "分", onyomi: "フン・ブン", kunyomi: "わ(かる)", meaningId: "menit, mengerti", level: "N5", strokeCount: 4, example: "五分", exampleReading: "ごふん", exampleMeaning: "5 menit" },
-  { character: "後", onyomi: "ゴ・コウ", kunyomi: "あと・うし(ろ)", meaningId: "setelah, belakang", level: "N5", strokeCount: 9, example: "午後", exampleReading: "ごご", exampleMeaning: "sore hari" },
+  { character: "後", onyomi: "ゴ・コウ", kunyomi: "あと・うし(ろ)", meaningId: "setelah, belakang", level: "N5", strokeCount: 9, example: "午後", exampleReading: "ごご", exampleMeaning: "siang/sore hari (p.m.)" },
   { character: "前", onyomi: "ゼン", kunyomi: "まえ", meaningId: "sebelum, depan", level: "N5", strokeCount: 9, example: "午前", exampleReading: "ごぜん", exampleMeaning: "pagi hari" },
   { character: "生", onyomi: "セイ・ショウ", kunyomi: "い(きる)・う(まれる)", meaningId: "hidup, lahir", level: "N5", strokeCount: 5, example: "先生", exampleReading: "せんせい", exampleMeaning: "guru" },
   { character: "五", onyomi: "ゴ", kunyomi: "いつ(つ)", meaningId: "lima", level: "N5", strokeCount: 4, example: "五月", exampleReading: "ごがつ", exampleMeaning: "Mei" },
@@ -301,14 +304,14 @@ export const KANJI_N5: KanjiChar[] = [
   { character: "六", onyomi: "ロク", kunyomi: "むっ(つ)", meaningId: "enam", level: "N5", strokeCount: 4, example: "六月", exampleReading: "ろくがつ", exampleMeaning: "Juni" },
   { character: "下", onyomi: "カ・ゲ", kunyomi: "した・さ(がる)", meaningId: "bawah, turun", level: "N5", strokeCount: 3, example: "地下", exampleReading: "ちか", exampleMeaning: "bawah tanah" },
   { character: "来", onyomi: "ライ", kunyomi: "く(る)", meaningId: "datang", level: "N5", strokeCount: 7, example: "来年", exampleReading: "らいねん", exampleMeaning: "tahun depan" },
-  { character: "気", onyomi: "キ・ケ", kunyomi: "き", meaningId: "semangat, udara, perasaan", level: "N5", strokeCount: 6, example: "元気", exampleReading: "げんき", exampleMeaning: "sehat/bersemangat" },
+  { character: "気", onyomi: "キ・ケ", kunyomi: "", meaningId: "semangat, udara, perasaan", level: "N5", strokeCount: 6, example: "元気", exampleReading: "げんき", exampleMeaning: "sehat/bersemangat" },
   { character: "小", onyomi: "ショウ", kunyomi: "ちい(さい)・こ", meaningId: "kecil", level: "N5", strokeCount: 3, example: "小学校", exampleReading: "しょうがっこう", exampleMeaning: "sekolah dasar" },
   { character: "七", onyomi: "シチ", kunyomi: "なな(つ)", meaningId: "tujuh", level: "N5", strokeCount: 2, example: "七月", exampleReading: "しちがつ", exampleMeaning: "Juli" },
   { character: "山", onyomi: "サン", kunyomi: "やま", meaningId: "gunung", level: "N5", strokeCount: 3, example: "富士山", exampleReading: "ふじさん", exampleMeaning: "Gunung Fuji" },
   { character: "話", onyomi: "ワ", kunyomi: "はな(す)・はなし", meaningId: "bicara, percakapan", level: "N5", strokeCount: 13, example: "電話", exampleReading: "でんわ", exampleMeaning: "telepon" },
   { character: "女", onyomi: "ジョ・ニョ", kunyomi: "おんな", meaningId: "perempuan", level: "N5", strokeCount: 3, example: "女性", exampleReading: "じょせい", exampleMeaning: "wanita" },
   { character: "北", onyomi: "ホク", kunyomi: "きた", meaningId: "utara", level: "N5", strokeCount: 5, example: "北海道", exampleReading: "ほっかいどう", exampleMeaning: "Hokkaido" },
-  { character: "午", onyomi: "ゴ", kunyomi: "-", meaningId: "siang", level: "N5", strokeCount: 4, example: "午後", exampleReading: "ごご", exampleMeaning: "sore hari" },
+  { character: "午", onyomi: "ゴ", kunyomi: "", meaningId: "siang", level: "N5", strokeCount: 4, example: "午後", exampleReading: "ごご", exampleMeaning: "siang/sore hari (p.m.)" },
   { character: "百", onyomi: "ヒャク", kunyomi: "もも", meaningId: "seratus", level: "N5", strokeCount: 6, example: "百円", exampleReading: "ひゃくえん", exampleMeaning: "100 yen" },
   { character: "書", onyomi: "ショ", kunyomi: "か(く)", meaningId: "menulis", level: "N5", strokeCount: 10, example: "書く", exampleReading: "かく", exampleMeaning: "menulis" },
   { character: "先", onyomi: "セン", kunyomi: "さき", meaningId: "dulu, sebelum, ujung", level: "N5", strokeCount: 6, example: "先生", exampleReading: "せんせい", exampleMeaning: "guru" },
@@ -319,7 +322,7 @@ export const KANJI_N5: KanjiChar[] = [
   { character: "半", onyomi: "ハン", kunyomi: "なか(ば)", meaningId: "setengah", level: "N5", strokeCount: 5, example: "半分", exampleReading: "はんぶん", exampleMeaning: "setengah" },
   { character: "男", onyomi: "ダン・ナン", kunyomi: "おとこ", meaningId: "laki-laki", level: "N5", strokeCount: 7, example: "男性", exampleReading: "だんせい", exampleMeaning: "pria" },
   { character: "西", onyomi: "セイ・サイ", kunyomi: "にし", meaningId: "barat", level: "N5", strokeCount: 6, example: "西口", exampleReading: "にしぐち", exampleMeaning: "pintu barat" },
-  { character: "電", onyomi: "デン", kunyomi: "-", meaningId: "listrik", level: "N5", strokeCount: 13, example: "電車", exampleReading: "でんしゃ", exampleMeaning: "kereta listrik" },
+  { character: "電", onyomi: "デン", kunyomi: "", meaningId: "listrik", level: "N5", strokeCount: 13, example: "電車", exampleReading: "でんしゃ", exampleMeaning: "kereta listrik" },
   { character: "語", onyomi: "ゴ", kunyomi: "かた(る)", meaningId: "bahasa, cerita", level: "N5", strokeCount: 14, example: "日本語", exampleReading: "にほんご", exampleMeaning: "bahasa Jepang" },
   { character: "何", onyomi: "カ", kunyomi: "なに・なん", meaningId: "apa", level: "N5", strokeCount: 7, example: "何時", exampleReading: "なんじ", exampleMeaning: "jam berapa" },
   { character: "食", onyomi: "ショク・ジキ", kunyomi: "た(べる)", meaningId: "makan, makanan", level: "N5", strokeCount: 9, example: "食べ物", exampleReading: "たべもの", exampleMeaning: "makanan" },
@@ -330,10 +333,10 @@ export const KANJI_N5: KanjiChar[] = [
   { character: "父", onyomi: "フ", kunyomi: "ちち", meaningId: "ayah", level: "N5", strokeCount: 4, example: "父", exampleReading: "ちち", exampleMeaning: "ayah (saya)" },
   { character: "思", onyomi: "シ", kunyomi: "おも(う)", meaningId: "berpikir, merasa", level: "N5", strokeCount: 9, example: "思う", exampleReading: "おもう", exampleMeaning: "berpikir" },
   { character: "母", onyomi: "ボ", kunyomi: "はは", meaningId: "ibu", level: "N5", strokeCount: 5, example: "母", exampleReading: "はは", exampleMeaning: "ibu (saya)" },
-  { character: "毎", onyomi: "マイ", kunyomi: "-", meaningId: "setiap", level: "N5", strokeCount: 6, example: "毎日", exampleReading: "まいにち", exampleMeaning: "setiap hari" },
+  { character: "毎", onyomi: "マイ", kunyomi: "", meaningId: "setiap", level: "N5", strokeCount: 6, example: "毎日", exampleReading: "まいにち", exampleMeaning: "setiap hari" },
   { character: "安", onyomi: "アン", kunyomi: "やす(い)", meaningId: "murah, aman", level: "N5", strokeCount: 6, example: "安い", exampleReading: "やすい", exampleMeaning: "murah" },
   { character: "少", onyomi: "ショウ", kunyomi: "すく(ない)・すこ(し)", meaningId: "sedikit", level: "N5", strokeCount: 4, example: "少し", exampleReading: "すこし", exampleMeaning: "sedikit" },
-  { character: "万", onyomi: "マン・バン", kunyomi: "-", meaningId: "sepuluh ribu", level: "N5", strokeCount: 3, example: "一万", exampleReading: "いちまん", exampleMeaning: "10.000" },
+  { character: "万", onyomi: "マン・バン", kunyomi: "", meaningId: "sepuluh ribu", level: "N5", strokeCount: 3, example: "一万", exampleReading: "いちまん", exampleMeaning: "10.000" },
   { character: "車", onyomi: "シャ", kunyomi: "くるま", meaningId: "mobil, kendaraan", level: "N5", strokeCount: 7, example: "電車", exampleReading: "でんしゃ", exampleMeaning: "kereta" },
   { character: "歩", onyomi: "ホ・ブ", kunyomi: "ある(く)", meaningId: "berjalan", level: "N5", strokeCount: 8, example: "歩く", exampleReading: "あるく", exampleMeaning: "berjalan kaki" },
   { character: "白", onyomi: "ハク・ビャク", kunyomi: "しろ・しろ(い)", meaningId: "putih", level: "N5", strokeCount: 5, example: "白い", exampleReading: "しろい", exampleMeaning: "putih" },
@@ -346,7 +349,7 @@ export const KANJI_N5: KanjiChar[] = [
   { character: "雨", onyomi: "ウ", kunyomi: "あめ・あま", meaningId: "hujan", level: "N5", strokeCount: 8, example: "雨", exampleReading: "あめ", exampleMeaning: "hujan" },
   { character: "火", onyomi: "カ", kunyomi: "ひ・ほ", meaningId: "api, Selasa", level: "N5", strokeCount: 4, example: "火曜日", exampleReading: "かようび", exampleMeaning: "Selasa" },
   { character: "花", onyomi: "カ", kunyomi: "はな", meaningId: "bunga", level: "N5", strokeCount: 7, example: "花", exampleReading: "はな", exampleMeaning: "bunga" },
-  { character: "校", onyomi: "コウ", kunyomi: "-", meaningId: "sekolah", level: "N5", strokeCount: 10, example: "学校", exampleReading: "がっこう", exampleMeaning: "sekolah" },
+  { character: "校", onyomi: "コウ", kunyomi: "", meaningId: "sekolah", level: "N5", strokeCount: 10, example: "学校", exampleReading: "がっこう", exampleMeaning: "sekolah" },
   { character: "木", onyomi: "モク・ボク", kunyomi: "き・こ", meaningId: "pohon, kayu, Kamis", level: "N5", strokeCount: 4, example: "木曜日", exampleReading: "もくようび", exampleMeaning: "Kamis" },
   { character: "空", onyomi: "クウ", kunyomi: "そら・あ(く)", meaningId: "langit, kosong", level: "N5", strokeCount: 8, example: "空", exampleReading: "そら", exampleMeaning: "langit" },
   { character: "手", onyomi: "シュ", kunyomi: "て", meaningId: "tangan", level: "N5", strokeCount: 4, example: "手紙", exampleReading: "てがみ", exampleMeaning: "surat" },
@@ -360,5 +363,5 @@ export const KANJI_N5: KanjiChar[] = [
   { character: "力", onyomi: "リョク・リキ", kunyomi: "ちから", meaningId: "kekuatan", level: "N5", strokeCount: 2, example: "力", exampleReading: "ちから", exampleMeaning: "kekuatan" },
   { character: "犬", onyomi: "ケン", kunyomi: "いぬ", meaningId: "anjing", level: "N5", strokeCount: 4, example: "犬", exampleReading: "いぬ", exampleMeaning: "anjing" },
   { character: "虫", onyomi: "チュウ", kunyomi: "むし", meaningId: "serangga, cacing", level: "N5", strokeCount: 6, example: "虫", exampleReading: "むし", exampleMeaning: "serangga" },
-  { character: "口", onyomi: "コウ・ク", kunyomi: "くち", meaningId: "mulut, pintu", level: "N5", strokeCount: 3, example: "出口", exampleReading: "でぐち", exampleMeaning: "pintu keluar" },
+  { character: "口", onyomi: "コウ・ク", kunyomi: "くち", meaningId: "mulut, lubang masuk/keluar", level: "N5", strokeCount: 3, example: "出口", exampleReading: "でぐち", exampleMeaning: "pintu keluar" },
 ];

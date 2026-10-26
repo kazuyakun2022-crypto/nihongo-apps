@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { learningApi } from "@/features/learning/data/learningApi";
 import type { NextChapter } from "@/features/learning/domain/types";
@@ -12,13 +13,23 @@ import styles from "./beranda.module.css";
 
 export default function BerandaPage() {
   const { user } = useAuth();
+  const router = useRouter();
+  const isAdmin = user?.role === "admin" || user?.role === "super_admin";
   const [due, setDue] = useState<number | null>(null);
   const [nextChapter, setNextChapter] = useState<NextChapter | null | undefined>(undefined);
 
   useEffect(() => {
+    if (isAdmin) {
+      router.replace("/admin");
+      return;
+    }
     srsApi.due().then((r) => setDue(r.total)).catch(() => setDue(0));
     learningApi.nextChapter().then(setNextChapter).catch(() => setNextChapter(null));
-  }, []);
+  }, [isAdmin, router]);
+
+  if (isAdmin) {
+    return null;
+  }
 
   const dailyTarget = user?.dailyTargetMin ?? 10;
   const streak = user?.streakCount ?? 0;
@@ -36,6 +47,21 @@ export default function BerandaPage() {
         </div>
       </section>
 
+      {/* Role specific notification banners (No Emojis) */}
+      {user?.role === "teacher" && (
+        <div className={`${styles.roleBanner} ${styles.bannerTeacher}`}>
+          <span>Mode Sensei: Seluruh kurikulum N5–N1 & Voice Chat aktif tanpa kuota.</span>
+          <span className={styles.bannerActionText}>Pengajar Aktif</span>
+        </div>
+      )}
+
+      {user?.role === "premium" && (
+        <div className={`${styles.roleBanner} ${styles.bannerPremium}`}>
+          <span>Akses VIP Premium: Seluruh materi N5–N1, Ujian Kenaikan Tahap, & Voice Chat aktif.</span>
+          <span className={styles.bannerActionText}>VIP Aktif</span>
+        </div>
+      )}
+
       {user?.isGuest && (
         <Alert tone="info">
           Kamu sedang mencoba sebagai Tamu. <Link href="/daftar">Simpan progresmu</Link> sebelum terhapus dalam 30 hari.
@@ -47,17 +73,30 @@ export default function BerandaPage() {
 
       <div className={styles.statsRow}>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>🔥</span>
+          <span className={styles.statIcon} aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+            </svg>
+          </span>
           <span className={styles.statValue}>{streak}</span>
           <span className={styles.statLabel}>Hari berturut</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>⚡</span>
+          <span className={styles.statIcon} aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+          </span>
           <span className={styles.statValue}>{xp.toLocaleString("id")}</span>
           <span className={styles.statLabel}>Total XP</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>🎯</span>
+          <span className={styles.statIcon} aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </span>
           <span className={styles.statValue}>{dailyTarget}</span>
           <span className={styles.statLabel}>Menit/hari</span>
         </div>

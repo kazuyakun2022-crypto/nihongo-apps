@@ -12,6 +12,7 @@ interface AuthContextValue {
   user: User | null;
   register: AuthRepository["register"];
   login: AuthRepository["login"];
+  loginWithOAuth: (input: { provider: "google" | "apple"; idToken: string }) => Promise<AuthResponse>;
   startGuest: AuthRepository["startGuest"];
   logout: (allDevices?: boolean) => Promise<void>;
 }
@@ -98,6 +99,7 @@ export function AuthProvider({ children, repository = authApi }: { children: Rea
       user,
       register: (input) => repository.register(input).then(accept),
       login: (input) => repository.login(input).then(accept),
+      loginWithOAuth: (input) => (repository.loginWithOAuth ? repository.loginWithOAuth(input) : Promise.reject(new Error("OAuth tidak tersedia"))).then(accept),
       startGuest: () => repository.startGuest().then(accept),
       async logout(allDevices) {
         await repository.logout(allDevices).catch(() => undefined);

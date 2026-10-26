@@ -1,0 +1,145 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  line-height: 1.65;
+  font-size: 0.925rem;
+  word-break: break-word;
+}
+
+.paragraph {
+  margin: 0;
+}
+
+.boldText {
+  font-weight: 750;
+  color: var(--color-text, #0f172a);
+}
+
+.italicText {
+  font-style: italic;
+  color: var(--color-text-muted, #64748b);
+}
+
+.inlineCode {
+  background: rgba(99, 102, 241, 0.1);
+  color: #4338ca;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.jpQuote {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-family: var(--font-japanese, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif);
+  display: inline-block;
+  margin: 1px 2px;
+}
+
+.blockHeading {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--color-text, #0f172a);
+  margin: 8px 0 2px 0;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.bulletList {
+  margin: 4px 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style-type: disc;
+}
+
+.bulletItem {
+  margin: 0;
+}
+
+.numberList {
+  margin: 4px 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style-type: decimal;
+}
+
+.numberItem {
+  margin: 0;
+}
+
+.quoteBox {
+  border-left: 3px solid var(--color-primary, #b31b28);
+  background: rgba(179, 27, 40, 0.04);
+  padding: 6px 12px;
+  border-radius: 0 8px 8px 0;
+  margin: 6px 0;
+  font-size: 0.9em;
+  color: var(--color-text, #334155);
+}
+
+/* ── Action bar under AI message ── */
+.messageFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.actionsLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text-muted, #64748b);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.actionBtn:hover {
+  background: var(--color-surface-raised, #f8fafc);
+  color: var(--color-primary, #b31b28);
+  border-color: var(--color-primary, #b31b28);
+}
+
+.actionBtnActive {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+  animation: pulseAudio 1.5s infinite;
+}
+
+@keyframes pulseAudio {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.timestamp {
+  font-size: 0.7rem;
+  color: var(--color-text-muted, #94a3b8);
+}

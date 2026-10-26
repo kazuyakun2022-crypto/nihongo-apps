@@ -71,10 +71,15 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
                 <button
                   type="button"
                   onClick={() => speak(card.data.word)}
-                  style={{ marginLeft: "0.5rem", fontSize: "1.25rem", background: "none", border: "none", cursor: "pointer", verticalAlign: "middle" }}
+                  style={{ marginLeft: "0.5rem", background: "none", border: "none", cursor: "pointer", verticalAlign: "middle", display: "inline-flex", color: "var(--color-primary)" }}
                   title="Dengarkan"
                   aria-label="Putar suara"
-                >🔊</button>
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  </svg>
+                </button>
               </p>
               <p className={styles.cardReading} lang="ja">{card.data.reading}</p>
               <p className={styles.cardMeaning}>{card.data.meaningId}</p>
@@ -92,10 +97,15 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
                 <button
                   type="button"
                   onClick={() => speak(card.data.character)}
-                  style={{ marginLeft: "0.5rem", fontSize: "1.25rem", background: "none", border: "none", cursor: "pointer", verticalAlign: "middle" }}
+                  style={{ marginLeft: "0.5rem", background: "none", border: "none", cursor: "pointer", verticalAlign: "middle", display: "inline-flex", color: "var(--color-primary)" }}
                   title="Dengarkan"
                   aria-label="Putar suara"
-                >🔊</button>
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  </svg>
+                </button>
               </p>
               <div className={styles.cardReadings}>
                 {card.data.onyomi && (
@@ -248,7 +258,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
         <div className={styles.resultHero}>
           <Mascot mood={passed ? "senang" : "berpikir"} size={80} />
           <h1 className={styles.resultHeading}>
-            {passed ? "Bab selesai! 🎉" : "Belum lulus, ayo coba lagi!"}
+            {passed ? "Bab Selesai!" : "Belum Lulus, Ayo Coba Lagi!"}
           </h1>
           <div className={styles.resultScore}>{score}%</div>
           <p className={styles.resultSub}>
@@ -263,7 +273,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
             if (!q) return null;
             return (
               <div key={r.questionId} className={styles.reviewItem} data-correct={r.correct}>
-                <span className={styles.reviewIcon}>{r.correct ? "✅" : "❌"}</span>
+                <span className={styles.reviewIcon}>{r.correct ? "✓" : "✕"}</span>
                 <div>
                   <p className={styles.reviewQ} lang="ja">{q.question}</p>
                   {!r.correct && (

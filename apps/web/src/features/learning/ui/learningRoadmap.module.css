@@ -1,0 +1,2133 @@
+.roadmapWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  animation: fadeIn 0.2s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Top Header Bar ── */
+.topBar {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .topBar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+  }
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .titleSection {
+    width: auto;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+}
+
+.pageTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-text, #0f172a);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+  .pageTitle {
+    font-size: 1.15rem;
+  }
+}
+
+/* ── Tingkatan Belajar Selector Pills ── */
+.levelPills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-bg, #f8fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  padding: 3px;
+  border-radius: 9999px;
+  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  box-sizing: border-box;
+}
+.levelPills::-webkit-scrollbar { display: none; }
+
+.levelPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #64748b);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (min-width: 480px) {
+  .levelPillBtn {
+    padding: 4px 10px;
+    font-size: 0.78rem;
+  }
+}
+
+.levelPillBtnActive {
+  background: var(--color-primary, #b31b28) !important;
+  color: #ffffff !important;
+}
+
+.levelPillBtnLocked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Progress Card (Compact) ── */
+.progressBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 6px 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .progressBox {
+    width: auto;
+    justify-content: flex-start;
+  }
+}
+
+.progressInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.progressLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #991b1b;
+}
+
+.progressDetail {
+  font-size: 0.68rem;
+  color: #b91c1c;
+}
+
+.progressGauge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.progressBar {
+  width: 75px;
+  height: 6px;
+  background: #fee2e2;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #dc2626, #ea580c);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.progressPercentText {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #b91c1c;
+  min-width: 32px;
+}
+
+/* ── SLIDER HERO SHOWCASE (CARD BESAR MUNCUL SENDIRI DENGAN SLIDE) ── */
+.sliderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  align-items: center;
+}
+
+.sliderHintRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 640px;
+  font-size: 0.78rem;
+  color: var(--color-text-muted, #64748b);
+  font-weight: 600;
+}
+
+.sliderCounter {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.sliderContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 740px;
+  min-width: 0;
+  overflow: hidden;
+  min-height: auto;
+  box-sizing: border-box;
+}
+
+/* Arrow Nav Buttons: Hidden on mobile (< 680px) to prevent covering card content */
+.navArrowBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-surface, #ffffff);
+  border: 1.5px solid var(--color-border, #e2e8f0);
+  color: var(--color-text, #0f172a);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 20;
+  transition: all 0.18s ease;
+}
+
+@media (min-width: 680px) {
+  .navArrowBtn {
+    display: flex;
+  }
+}
+
+.navArrowLeft {
+  left: 0;
+}
+
+.navArrowRight {
+  right: 0;
+}
+
+.navArrowBtn:hover:not(:disabled) {
+  background: var(--color-primary, #b31b28);
+  color: #ffffff;
+  border-color: var(--color-primary, #b31b28);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.navArrowBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Card Besar Terfokus */
+.featuredCardWrap {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  padding: 0;
+  box-sizing: border-box;
+  animation: cardSlideAnim 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (min-width: 680px) {
+  .featuredCardWrap {
+    padding: 0 10px;
+  }
+}
+
+@keyframes cardSlideAnim {
+  from {
+    opacity: 0.3;
+    transform: scale(0.96) translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+}
+
+.featuredCard {
+  background: var(--color-surface, #ffffff);
+  border: 2px solid var(--color-border, #e2e8f0);
+  border-radius: 14px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+  min-height: auto;
+  user-select: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+  .featuredCard {
+    border-radius: 18px;
+    padding: 24px 26px;
+    gap: 18px;
+    min-height: 360px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Card Tema yang Terbuka */
+.featuredCardActive {
+  border-color: #fecaca;
+  background: radial-gradient(circle at top right, #fff7ed 0%, #ffffff 60%);
+}
+
+.featuredCardActive:hover {
+  border-color: var(--color-primary, #b31b28);
+  box-shadow: 0 14px 36px rgba(179, 27, 40, 0.1);
+}
+
+/* Card Tema yang Terkunci: Gelap & Tegas dengan Gembok Besar */
+.featuredCardLocked {
+  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+  color: #f8fafc;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.3);
+}
+
+.featuredCardLocked .cardDesc {
+  color: #94a3b8;
+}
+
+.featuredCardLocked .stagePill {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+/* Gembok Besar Watermark */
+.bigLockWatermark {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 140px;
+  height: 140px;
+  color: #ffffff;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cardTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.themeBadgeWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.themeIconBox {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.themeIconBoxActive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.themeIconBoxLocked {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.themeLabelArea {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.themeSubtitleJp {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #94a3b8);
+  font-family: var(--font-japanese, sans-serif);
+}
+
+.themeMainTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.25;
+}
+
+@media (min-width: 600px) {
+  .themeMainTitle {
+    font-size: 1.35rem;
+  }
+}
+
+.featuredCardLocked .themeMainTitle {
+  color: #f8fafc;
+}
+
+.statusPillActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border: 1px solid #bbf7d0;
+}
+
+.statusPillLocked {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.cardBodyArea {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.cardDesc {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #64748b);
+  margin: 0;
+  line-height: 1.45;
+}
+
+@media (min-width: 600px) {
+  .cardDesc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+}
+
+/* ── Urutan Tahap Scroller di Dalam Card Besar ── */
+.cardStagesWrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+.cardStagesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.cardStagesSwipeHint {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.cardStagesScroller {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  box-sizing: border-box;
+}
+
+.cardStageMiniCard {
+  flex: 0 0 155px;
+  min-width: 155px;
+  max-width: 155px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.stageMiniCompleted {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.stageMiniActive {
+  border-color: var(--color-primary, #b31b28);
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(179, 27, 40, 0.08);
+}
+
+.stageMiniLocked {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  opacity: 0.75;
+}
+
+.stageMiniTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.68rem;
+}
+
+.stageMiniNum {
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.stageMiniStatus {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+.stageMiniLocked .stageMiniStatus {
+  color: #94a3b8;
+}
+
+.stageMiniTitle {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.stageMiniSubtitle {
+  font-size: 0.68rem;
+  color: #64748b;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Kartu Mini Gateway Ujian di Slider Card */
+.cardFinalExamMini {
+  flex: 0 0 175px;
+  min-width: 175px;
+  max-width: 175px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.finalExamMiniReady {
+  border: 1.5px dashed #f59e0b;
+  background: #fffbeb;
+}
+
+.finalExamMiniReady:hover {
+  border-color: #d97706;
+  background: #fef3c7;
+  transform: translateY(-1px);
+}
+
+.finalExamMiniLocked {
+  border: 1.5px dashed #94a3b8;
+  background: #f1f5f9;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.finalExamMiniBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #b45309;
+  text-transform: uppercase;
+}
+
+.finalExamMiniTitle {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #78350f;
+  line-height: 1.25;
+}
+
+.finalExamMiniTarget {
+  font-size: 0.68rem;
+  color: #92400e;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.featuredCardLocked .cardStageMiniCard {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #334155;
+  color: #f8fafc;
+}
+.featuredCardLocked .stageMiniTitle {
+  color: #f1f5f9;
+}
+.featuredCardLocked .stageMiniSubtitle {
+  color: #94a3b8;
+}
+.featuredCardLocked .cardStagesHeader {
+  color: #cbd5e1;
+}
+
+/* Pratinjau 4 Tahap Ringkas */
+.stagesPreviewList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (min-width: 520px) {
+  .stagesPreviewList {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stagePill {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.stagePillNum {
+  font-size: 0.65rem;
+  color: var(--color-text-muted, #94a3b8);
+  font-weight: 800;
+}
+
+.stagePillName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Keterangan Prasyarat Gembok */
+.lockedNoticeBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px dashed rgba(239, 68, 68, 0.4);
+  border-radius: 10px;
+  color: #fca5a5;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.lockedNoticeBox svg {
+  flex-shrink: 0;
+}
+
+.cardBottomArea {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 520px) {
+  .cardBottomArea {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+  }
+}
+
+.featuredCardLocked .cardBottomArea {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.cardProgressText {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #64748b);
+}
+
+.featuredCardLocked .cardProgressText {
+  color: #94a3b8;
+}
+
+.enterThemeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  width: 100%;
+}
+
+@media (min-width: 520px) {
+  .enterThemeBtn {
+    width: auto;
+    padding: 10px 22px;
+    font-size: 0.86rem;
+  }
+}
+
+.enterThemeBtnActive {
+  background: var(--color-primary, #b31b28);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(179, 27, 40, 0.25);
+}
+
+.enterThemeBtnActive:hover {
+  background: #991522;
+  transform: translateY(-1px);
+}
+
+.enterThemeBtnLocked {
+  background: #334155;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.enterThemeBtnLocked:hover {
+  background: #475569;
+  color: #f8fafc;
+}
+
+/* Dots Indikator Pagination */
+.sliderDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sliderDot {
+  height: 8px;
+  border-radius: 9999px;
+  background: #cbd5e1;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.sliderDotActive {
+  width: 28px;
+  background: var(--color-primary, #b31b28);
+}
+
+.sliderDotInactive {
+  width: 8px;
+}
+
+/* ── DETAIL TEMA: ALUR 4 TAHAP ── */
+.backBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #0f172a);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.backBtn:hover {
+  background: #f1f5f9;
+  color: var(--color-primary, #b31b28);
+  border-color: var(--color-primary, #b31b28);
+}
+
+.themeDetailBadge {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #991b1b;
+  background: #fef2f2;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid #fecaca;
+}
+
+/* Pipeline Board */
+.pipelineSection {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  padding-bottom: 10px;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-text, #0f172a);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.levelBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+/* 4 Stage Cards Row */
+.stagesRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 960px) {
+  .stagesRow {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Individual Stage Card */
+.stageCard {
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--color-surface, #ffffff);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  position: relative;
+  transition: all 0.15s ease;
+  min-height: 140px;
+}
+
+.stageCardCompleted {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.stageCardActive {
+  border-color: var(--color-primary, #b31b28);
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(179, 27, 40, 0.08);
+}
+
+.stageCardLocked {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  opacity: 0.82;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.stepNum {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.statusTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.statusTagDone {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.statusTagActive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.statusTagLocked {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.cardTitle {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--color-text, #0f172a);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.cardSubtitle {
+  font-size: 0.76rem;
+  color: var(--color-text-muted, #64748b);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.lockNoticeBadge {
+  margin-top: 6px;
+  padding: 4px 8px;
+  background: #fef2f2;
+  border: 1px dashed #fca5a5;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  color: #991b1b;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1.3;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.actionBtn {
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.actionBtnPrimary {
+  background: var(--color-primary, #b31b28);
+  color: #ffffff;
+}
+
+.actionBtnPrimary:hover {
+  background: #991522;
+}
+
+.actionBtnSecondary {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.actionBtnSecondary:hover {
+  background: #e2e8f0;
+}
+
+/* ── Final Level Exam Banner ── */
+.finalExamBanner {
+  border: 1.5px solid #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-radius: 12px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.finalExamLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.finalExamIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #fde68a;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.finalExamTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #92400e;
+  margin: 0;
+}
+
+.finalExamDesc {
+  font-size: 0.78rem;
+  color: #b45309;
+  margin: 1px 0 0 0;
+}
+
+.finalExamBtn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: #d97706;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.finalExamBtn:hover:not(:disabled) {
+  background: #b45309;
+}
+
+.finalExamBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+/* ── Modal Pratinjau Materi ── */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modalBox {
+  background: #ffffff;
+  border-radius: 14px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #64748b;
+  border-radius: 6px;
+}
+
+.closeBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.modalBody {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sampleWordList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.sampleWordCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.wordJp {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: var(--font-japanese, sans-serif);
+}
+
+.wordRomaji {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.wordMeaning {
+  font-size: 0.76rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.modalFooter {
+  padding: 12px 18px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ── Roadmap Tahapan & Test Akhir di Dalam Card Besar ── */
+.cardStagesWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.cardStagesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #64748b);
+}
+
+.featuredCardLocked .cardStagesHeader {
+  color: #94a3b8;
+}
+
+.cardStagesSwipeHint {
+  font-size: 0.7rem;
+  color: var(--color-primary, #b31b28);
+  background: #fef2f2;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+  border: 1px solid #fecaca;
+}
+
+.featuredCardLocked .cardStagesSwipeHint {
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #334155;
+}
+
+.cardStagesScroller {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 10px 2px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cardStagesScroller::-webkit-scrollbar {
+  height: 5px;
+}
+.cardStagesScroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cardStagesScroller::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.25);
+  border-radius: 9999px;
+}
+
+/* Kartu Mini Tahap */
+.cardStageMiniCard {
+  flex: 0 0 165px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 0.76rem;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.featuredCardLocked .cardStageMiniCard {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.stageMiniCompleted {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.stageMiniActive {
+  border-color: #fca5a5;
+  background: #fff5f5;
+  box-shadow: 0 2px 8px rgba(179, 27, 40, 0.08);
+}
+
+.stageMiniLocked {
+  opacity: 0.75;
+  background: #f8fafc;
+}
+
+.stageMiniTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stageMiniNum {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.stageMiniStatus {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.stageMiniCompleted .stageMiniStatus {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.stageMiniActive .stageMiniStatus {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.stageMiniTitle {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-text, #0f172a);
+  line-height: 1.25;
+}
+
+.featuredCardLocked .stageMiniTitle {
+  color: #f1f5f9;
+}
+
+.stageMiniSubtitle {
+  font-size: 0.68rem;
+  color: var(--color-text-muted, #64748b);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.featuredCardLocked .stageMiniSubtitle {
+  color: #94a3b8;
+}
+
+/* ── KARTU SPESIAL: TEST AKHIR TINGKATAN SAAT INI UNTUK NAIK TINGKATAN ── */
+.cardFinalExamMini {
+  flex: 0 0 215px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1.5px solid #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  color: #78350f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.15);
+}
+
+.cardFinalExamMini:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.25);
+}
+
+.finalExamMiniBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #b45309;
+  letter-spacing: 0.3px;
+}
+
+.finalExamMiniTitle {
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: #92400e;
+  line-height: 1.25;
+}
+
+.finalExamMiniTarget {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #b45309;
+  line-height: 1.3;
+}
+
+.finalExamMiniBtn {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.cardFinalExamMini:hover .finalExamMiniBtn {
+  background: #d97706;
+}
+
+.finalExamMiniCompleted {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #065f46;
+}
+.finalExamMiniCompleted .finalExamMiniTitle {
+  color: #047857;
+}
+.finalExamMiniCompleted .finalExamMiniBadge {
+  color: #059669;
+}
+.finalExamMiniCompleted .finalExamMiniBtn {
+  background: #10b981;
+}
+
+.finalExamMiniLocked {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #64748b;
+  opacity: 0.8;
+}
+.finalExamMiniLocked .finalExamMiniTitle {
+  color: #475569;
+}
+.finalExamMiniLocked .finalExamMiniBadge {
+  color: #64748b;
+}
+.finalExamMiniLocked .finalExamMiniBtn {
+  background: #cbd5e1;
+  color: #475569;
+}
+
+.featuredCardLocked .cardFinalExamMini {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #475569;
+  color: #94a3b8;
+  box-shadow: none;
+}
+.featuredCardLocked .finalExamMiniTitle {
+  color: #e2e8f0;
+}
+.featuredCardLocked .finalExamMiniBadge {
+  color: #94a3b8;
+}
+.featuredCardLocked .finalExamMiniTarget {
+  color: #64748b;
+}
+.featuredCardLocked .finalExamMiniBtn {
+  background: #334155;
+  color: #94a3b8;
+}
+
+/* ── EXAM MODAL STYLING ── */
+.examModalBox {
+  background: #ffffff;
+  border-radius: 14px;
+  width: 96%;
+  max-width: 580px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  animation: modalScaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (min-width: 600px) {
+  .examModalBox {
+    border-radius: 18px;
+  }
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.examModalHeader {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+@media (min-width: 600px) {
+  .examModalHeader {
+    padding: 16px 20px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+  }
+}
+
+.examHeaderTitleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.examHeaderBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  width: fit-content;
+}
+
+.examHeaderTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+@media (min-width: 600px) {
+  .examHeaderTitle {
+    font-size: 1.15rem;
+  }
+}
+
+.examHeaderSubtitle {
+  font-size: 0.74rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.examModalBody {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 600px) {
+  .examModalBody {
+    padding: 18px 20px;
+    gap: 16px;
+  }
+}
+
+.examQuestionCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 600px) {
+  .examQuestionCard {
+    border-radius: 12px;
+    padding: 14px 16px;
+    gap: 10px;
+  }
+}
+
+.examQuestionText {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+@media (min-width: 600px) {
+  .examQuestionText {
+    font-size: 0.88rem;
+  }
+}
+
+.examOptionsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+@media (min-width: 480px) {
+  .examOptionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+.examOptionBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+@media (min-width: 600px) {
+  .examOptionBtn {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+  }
+}
+
+.examOptionBtn:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.examOptionBtnSelected {
+  border-color: var(--color-primary, #b31b28) !important;
+  background: #fff5f5 !important;
+  color: var(--color-primary, #b31b28) !important;
+  font-weight: 800 !important;
+}
+
+.examOptionRadioCircle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.examOptionBtnSelected .examOptionRadioCircle {
+  border-color: var(--color-primary, #b31b28);
+}
+
+.examOptionRadioInner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary, #b31b28);
+}
+
+/* Celebration Screen */
+.celebrateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 16px 8px;
+}
+
+.celebrateIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.2);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.celebrateTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.celebrateScore {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #15803d;
+  background: #f0fdf4;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid #bbf7d0;
+}
+
+.celebrateDesc {
+  font-size: 0.82rem;
+  color: #475569;
+  max-width: 420px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.celebrateBtn {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #b31b28 0%, #dc2626 100%);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(179, 27, 40, 0.3);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  .celebrateBtn {
+    width: auto;
+    padding: 12px 26px;
+    font-size: 0.92rem;
+  }
+}
+
+.celebrateBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(179, 27, 40, 0.4);
+}
+
+/* ── Matriks Standar Kemampuan (Target Dashboard) Banner ── */
+.matriksBanner {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 680px) {
+  .matriksBanner {
+    padding: 14px 18px;
+    gap: 10px;
+  }
+}
+
+.matriksTopRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 600px) {
+  .matriksTopRow {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.matriksLevelBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--color-primary, #b31b28);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+@media (min-width: 600px) {
+  .matriksLevelBadge {
+    font-size: 0.82rem;
+    padding: 4px 12px;
+  }
+}
+
+.matriksMetricsList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+  .matriksMetricsList {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+  }
+}
+
+.matriksPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 4px 6px;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  color: #475569;
+  font-weight: 600;
+  min-width: 0;
+  box-sizing: border-box;
+  text-align: center;
+  line-height: 1.25;
+}
+
+@media (min-width: 480px) {
+  .matriksPill {
+    font-size: 0.72rem;
+    padding: 4px 8px;
+  }
+}
+
+@media (min-width: 600px) {
+  .matriksPill {
+    font-size: 0.74rem;
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+}
+
+.matriksPillStrong {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.matriksFokusRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+  color: #475569;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .matriksFokusRow {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    font-size: 0.76rem;
+  }
+}
+
+.matriksFokusText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.matriksGatekeepingTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* ── Gatekeeping Exam Sub-Category Passing Mark Bar ── */
+.gatekeepingRulesBox {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+@media (min-width: 600px) {
+  .gatekeepingRulesBox {
+    padding: 10px 14px;
+  }
+}
+
+.gatekeepingTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #92400e;
+}
+
+@media (min-width: 600px) {
+  .gatekeepingTitle {
+    font-size: 0.78rem;
+  }
+}
+
+.gatekeepingRulesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+@media (min-width: 480px) {
+  .gatekeepingRulesGrid {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 8px;
+  }
+}
+
+.ruleBadge {
+  background: #ffffff;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+@media (min-width: 600px) {
+  .ruleBadge {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+}
+
+.ruleBadgeCategory {
+  font-weight: 700;
+  color: #78350f;
+}
+
+.ruleBadgeMark {
+  font-weight: 800;
+  color: #b45309;
+}
+
+/* Remedial Banner */
+.remedialBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 14px 10px;
+  background: #fff1f2;
+  border: 1.5px dashed #fda4af;
+  border-radius: 12px;
+}
+
+@media (min-width: 600px) {
+  .remedialBox {
+    gap: 12px;
+    padding: 18px 12px;
+    border-radius: 14px;
+  }
+}
+
+.remedialIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #ffe4e6;
+  color: #e11d48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remedialTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #9f1239;
+  margin: 0;
+}
+
+@media (min-width: 600px) {
+  .remedialTitle {
+    font-size: 1.15rem;
+  }
+}
+
+.remedialDetail {
+  font-size: 0.78rem;
+  color: #881337;
+  max-width: 440px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.remedialScoresList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 380px;
+  text-align: left;
+}
+
+.remedialScoreRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #fecdd3;
+  font-size: 0.74rem;
+}
+
+

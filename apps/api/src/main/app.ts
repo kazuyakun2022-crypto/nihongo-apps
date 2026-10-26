@@ -20,8 +20,27 @@ export function createApp(env: Env, c: Container) {
   const app = express();
   app.set("trust proxy", 1);
   app.use(helmet());
-  const allowedOrigins = Array.from(new Set([env.WEB_ORIGIN, "http://localhost:3000", "http://127.0.0.1:3000"]));
-  app.use(cors({ origin: allowedOrigins, credentials: true }));
+  const allowedOrigins = Array.from(
+    new Set([
+      env.WEB_ORIGIN,
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      process.env.NGROK_WEB_ORIGIN,
+      process.env.PUBLIC_WEB_ORIGIN,
+    ].filter((o): o is string => Boolean(o))),
+  );
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        if (/\.ngrok(-free)?\.app$/.test(origin) || /\.ngrok\.io$/.test(origin)) return callback(null, true);
+        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return callback(null, true);
+        return callback(null, true);
+      },
+      credentials: true,
+    }),
+  );
   app.use(express.json({ limit: "100kb" }));
   app.use(cookieParser());
 
@@ -54,7 +73,7 @@ export function createApp(env: Env, c: Container) {
   app.use("/api/conversation", auth, conversationRoutes(c.conversation));
   app.use("/api/exam", auth, examRoutes(c.exam));
   app.use("/api/exam", auth, examLevelUpRoutes());
-  app.use("/api/admin/users", auth, requireRole("admin"), adminUserRoutes(c.adminUsers));
+  app.use("/api/admin", auth, requireRole("admin"), adminUserRoutes(c.adminUsers));
   app.use("/api/ask", askRoutes(c.askUc, c.transcriber, c.speaker));
 
   app.use((_req, res) => res.status(404).json({ error: { code: "NOT_FOUND", message: "Endpoint tidak ditemukan." } }));

@@ -38,14 +38,44 @@ function mergeSameRole(messages: { role: string; content: string }[]) {
   }, []);
 }
 
-/** Mengurai JSON dari model dengan aman; jika gagal, anggap seluruh teks sebagai balasan. */
-export function parseAiJson(text: string): AiReply {
+/** Mengurai balasan AI: memisahkan teks percakapan dan tag <correction_data> sesuai PRD. */
+export function parseAiReply(text: string): AiReply {
+  const correctionMatch = text.match(/<correction_data>([\s\S]*?)<\/correction_data>/i);
+  if (correctionMatch) {
+    const reply = text.replace(/<correction_data>[\s\S]*?<\/correction_data>/i, "").trim();
+    const jsonStr = correctionMatch[1].replace(/```json|```/g, "").trim();
+    try {
+      const parsed = JSON.parse(jsonStr) as {
+        hasCorrection?: boolean;
+        userMistake?: string | null;
+        correctedSentence?: string | null;
+        explanation?: string | null;
+      };
+      if (parsed.hasCorrection && parsed.userMistake && parsed.correctedSentence) {
+        return {
+          reply,
+          correction: {
+            original: parsed.userMistake,
+            corrected: parsed.correctedSentence,
+            explanation: parsed.explanation ?? "",
+          },
+        };
+      }
+      return { reply, correction: null };
+    } catch {
+      return { reply, correction: null };
+    }
+  }
+
+  // Fallback ke format JSON legacy: {"reply": "...", "correction": ...}
   const cleaned = text.replace(/```json|```/g, "").trim();
   try {
     const parsed = JSON.parse(cleaned) as Partial<AiReply>;
     if (typeof parsed.reply === "string") return { reply: parsed.reply, correction: parsed.correction ?? null };
   } catch {
-    /* jatuh ke fallback */
+    /* jatuh ke fallback teks biasa */
   }
   return { reply: cleaned, correction: null };
 }
+
+export const parseAiJson = parseAiReply;

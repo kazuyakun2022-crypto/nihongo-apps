@@ -35,4 +35,22 @@ describe("Kebijakan level maskot", () => {
     expect(parseAiJson('```json\n{"reply":"はい","correction":null}\n```')).toEqual({ reply: "はい", correction: null });
     expect(parseAiJson("こんにちは")).toEqual({ reply: "こんにちは", correction: null });
   });
+
+  it("mengurai format <correction_data> sesuai PRD", () => {
+    const raw = `こんにちは！お元気ですか？\n\n<correction_data>\n{\n  "hasCorrection": true,\n  "userMistake": "わたしわ元気",\n  "correctedSentence": "わたしは元気",\n  "explanation": "Partikel topik ditulis は."\n}\n</correction_data>`;
+    expect(parseAiJson(raw)).toEqual({
+      reply: "こんにちは！お元気ですか？",
+      correction: {
+        original: "わたしわ元気",
+        corrected: "わたしは元気",
+        explanation: "Partikel topik ditulis は.",
+      },
+    });
+
+    const noCorrectionRaw = `すごいですね！\n<correction_data>\n{\n  "hasCorrection": false,\n  "userMistake": null,\n  "correctedSentence": null,\n  "explanation": null\n}\n</correction_data>`;
+    expect(parseAiJson(noCorrectionRaw)).toEqual({
+      reply: "すごいですね！",
+      correction: null,
+    });
+  });
 });

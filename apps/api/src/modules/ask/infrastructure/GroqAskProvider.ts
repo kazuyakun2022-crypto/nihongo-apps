@@ -19,7 +19,7 @@ ATURAN WAJIB:
 3. Untuk contoh Jepang, gunakan format: teks Jepang (romaji) — artinya.
 4. Jawaban harus LENGKAP dan TUNTAS. Jangan potong di tengah kalimat.
 5. Maksimal 5 poin atau contoh per jawaban.
-6. Gunakan emoji seperlunya agar lebih hidup.
+6. JANGAN gunakan emoji apapun dalam jawaban. Tulis teks bersih dan profesional.
 7. JANGAN gunakan format markdown seperti **teks** atau # heading. Tulis teks biasa. Gunakan angka (1. 2. 3.) atau bullet (•) jika perlu daftar.`;
 
 
@@ -33,7 +33,10 @@ interface GroqResponse {
 }
 
 export class GroqAskProvider implements AskProvider {
-  constructor(private readonly apiKey: string) {}
+  constructor(
+    private readonly apiKey: string,
+    private readonly fallbackProvider?: AskProvider,
+  ) {}
 
   async answer(
     question: string,
@@ -49,23 +52,30 @@ export class GroqAskProvider implements AskProvider {
       { role: "user", content: question },
     ];
 
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "authorization": `Bearer ${this.apiKey}`,
-      },
-      // gpt-oss-120b terdengar lebih hidup untuk obrolan suara; reasoning_effort rendah menjaga latensi < 1 detik.
-      body: JSON.stringify(
-        voice
-          ? { model: "openai/gpt-oss-120b", messages, max_tokens: 1024, temperature: 0.9, reasoning_effort: "low" }
-          : { model: "qwen/qwen3.8-27b", messages, max_tokens: 1024, temperature: 0.75 },
-      ),
-    });
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "authorization": `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify(
+          voice
+            ? { model: "openai/gpt-oss-120b", messages, max_tokens: 1024, temperature: 0.9, reasoning_effort: "low" }
+            : { model: "qwen/qwen3.8-27b", messages, max_tokens: 1024, temperature: 0.75 },
+        ),
+      });
 
-    if (!res.ok) throw new Error(`Groq API error ${res.status}: ${await res.text()}`);
+      if (!res.ok) throw new Error(`Groq API error ${res.status}: ${await res.text()}`);
 
-    const data = (await res.json()) as GroqResponse;
-    return data.choices[0]?.message?.content ?? "Maaf, tidak ada jawaban dari Neko-sensei.";
+      const data = (await res.json()) as GroqResponse;
+      return data.choices[0]?.message?.content ?? "Maaf, tidak ada jawaban dari Neko-sensei.";
+    } catch (err) {
+      if (this.fallbackProvider) {
+        console.warn("[GroqAskProvider] Groq gagal atau kena batas kuota, beralih ke penyedia cadangan:", (err as Error).message);
+        return this.fallbackProvider.answer(question, history, mode);
+      }
+      throw err;
+    }
   }
 }

@@ -19,7 +19,7 @@ ATURAN WAJIB:
 3. Untuk contoh Jepang, gunakan format: teks Jepang (romaji) — artinya.
 4. WAJIB: Setiap jawaban harus LENGKAP dan TUNTAS. Jangan pernah memotong jawaban di tengah kalimat.
 5. Maksimal 5 poin atau contoh per jawaban agar tetap singkat dan selesai.
-6. Gunakan emoji seperlunya agar lebih hidup.
+6. JANGAN gunakan emoji apapun dalam jawaban. Tulis teks bersih dan profesional.
 7. JANGAN gunakan format markdown seperti **teks**, *teks*, atau # heading. Tulis dalam teks biasa. Gunakan angka (1. 2. 3.) atau bullet (•) jika perlu daftar.`;
 
 
@@ -49,7 +49,7 @@ export class GeminiAskProvider implements AskProvider {
     }));
     contents.push({ role: "user", parts: [{ text: question }] });
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${this.apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
 
     const res = await fetch(url, {
       method: "POST",

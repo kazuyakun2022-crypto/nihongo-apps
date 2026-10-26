@@ -1,4 +1,4 @@
-export type Role = "guest" | "student" | "premium" | "teacher" | "admin";
+export type Role = "guest" | "student" | "premium" | "teacher" | "admin" | "super_admin";
 
 export interface User {
   id: string;
@@ -23,6 +23,7 @@ export interface AuthResponse {
 export interface AuthRepository {
   register(input: { displayName: string; email: string; password: string }): Promise<AuthResponse>;
   login(input: { email: string; password: string }): Promise<AuthResponse>;
+  loginWithOAuth?(input: { provider: "google" | "apple"; idToken: string }): Promise<AuthResponse>;
   startGuest(): Promise<AuthResponse>;
   restore(): Promise<AuthResponse | null>;
   logout(allDevices?: boolean): Promise<void>;

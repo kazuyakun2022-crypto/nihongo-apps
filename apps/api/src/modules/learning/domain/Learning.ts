@@ -39,10 +39,11 @@ export interface QuizGradeResult {
   results: { questionId: string; correct: boolean; correctAnswer: string }[];
 }
 
-/** Aturan akses level (dokumen bagian 7): level premium hanya untuk Premium, Pengajar, Admin. */
+/** Aturan akses level: Belajar hanya untuk pelajar (siswa, premium, guru untuk tinjau kurikulum). Admin dan Super Admin bukan akun pelajar. */
 export function canAccessLevel(level: Level, role: Role): boolean {
+  if (role === "admin" || role === "super_admin") return false;
   if (!level.isPremium) return true;
-  return role === "premium" || role === "teacher" || role === "admin";
+  return role === "premium" || role === "teacher";
 }
 
 /** Nilai minimal kuis untuk menyelesaikan bab (dokumen 8.2). */

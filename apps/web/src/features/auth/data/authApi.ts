@@ -4,6 +4,7 @@ import type { AuthRepository, AuthResponse } from "../domain/types";
 export const authApi: AuthRepository = {
   register: (input) => api.post<AuthResponse>("/auth/register", input),
   login: (input) => api.post<AuthResponse>("/auth/login", input),
+  loginWithOAuth: (input) => api.post<AuthResponse>("/auth/oauth", input),
   startGuest: () => api.post<AuthResponse>("/auth/guest"),
   async restore() {
     try {

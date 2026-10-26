@@ -36,6 +36,19 @@ async function main() {
     });
   }
 
+  const superAdmin = await db.user.upsert({
+    where: { email: "superadmin@nihongo.local" },
+    create: {
+      email: "superadmin@nihongo.local",
+      passwordHash: await bcrypt.hash("SuperAdmin12345", 12),
+      displayName: "Super Admin",
+      role: "super_admin",
+      currentLevelId: 6,
+      emailVerifiedAt: new Date(),
+    },
+    update: { role: "super_admin" },
+  });
+
   const admin = await db.user.upsert({
     where: { email: "admin@nihongo.local" },
     create: {

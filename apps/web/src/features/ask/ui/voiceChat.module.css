@@ -7,6 +7,7 @@
   justify-content: space-between;
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
   padding: var(--space-4) var(--space-4) var(--space-6);
   background: var(--color-surface);
   animation: fadeIn var(--motion-base) var(--ease-entrance) both;
@@ -264,6 +265,9 @@
 .transcriptList {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   padding: var(--space-4);
   display: flex;
   flex-direction: column;

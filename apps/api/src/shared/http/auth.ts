@@ -33,8 +33,10 @@ export function requireAuth(verifier: AccessTokenVerifier) {
 export function requireRole(...roles: Role[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) return next(Errors.unauthorized());
-    if (!roles.includes(req.user.role)) return next(Errors.forbidden());
-    next();
+    if (req.user.role === "super_admin" || roles.includes(req.user.role)) {
+      return next();
+    }
+    next(Errors.forbidden());
   };
 }
 

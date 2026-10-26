@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { useVoiceChat, type VoiceState } from "../application/useVoiceChat";
+import { FormattedChatMessage } from "./FormattedChatMessage";
 import styles from "./voiceChat.module.css";
 
 /* ── Label status ── */
@@ -174,9 +175,9 @@ export function VoiceChatScreen() {
                 <div className={`${styles.msgAvatar} ${m.role === "user" ? styles.msgAvatarUser : ""}`}>
                   {m.role === "ai" ? <img src="/images/neko-idle.png" alt="Neko" className={styles.transcriptMascotImg} /> : "Kamu"}
                 </div>
-                <p className={`${styles.msgBubble} ${m.role === "ai" ? styles.msgBubbleAi : styles.msgBubbleUser}`}>
-                  {m.text}
-                </p>
+                <div className={`${styles.msgBubble} ${m.role === "ai" ? styles.msgBubbleAi : styles.msgBubbleUser}`}>
+                  <FormattedChatMessage content={m.text} isAi={m.role === "ai"} />
+                </div>
               </div>
             ))}
           </div>

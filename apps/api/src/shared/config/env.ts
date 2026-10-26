@@ -14,6 +14,8 @@ const schema = z.object({
   GEMINI_API_KEY: z.string().optional().default(""),
   GROQ_API_KEY: z.string().optional().default(""),
   FREE_DAILY_AI_SESSIONS: z.coerce.number().default(5),
+  GOOGLE_CLIENT_ID: z.string().optional().default(""),
+  GOOGLE_CLIENT_SECRET: z.string().optional().default(""),
 });
 
 export type Env = z.infer<typeof schema>;

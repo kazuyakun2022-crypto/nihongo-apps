@@ -73,11 +73,11 @@ export function ReadinessCard({ levelId, levelCode }: Props) {
       <p className={styles.suggestion}>{data.suggestion}</p>
 
       {!!status?.consecutiveFails && status.consecutiveFails >= 3 && (
-        <p className={styles.warning}>⚠️ Sudah {status.consecutiveFails}× gagal. Disarankan mengulang bab yang lemah dulu.</p>
+        <p className={styles.warning}>Perhatian: Sudah {status.consecutiveFails}× belum lulus. Disarankan mengulang bab yang lemah dulu.</p>
       )}
 
       {cooldownLabel && (
-        <p className={styles.cooldown}>⏳ Bisa ikut tes lagi dalam {cooldownLabel}</p>
+        <p className={styles.cooldown}>Bisa ikut tes lagi dalam {cooldownLabel}</p>
       )}
 
       <button

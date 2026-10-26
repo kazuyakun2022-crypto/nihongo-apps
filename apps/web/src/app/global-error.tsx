@@ -23,7 +23,7 @@ export default function GlobalError({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          fontFamily: "'M PLUS Rounded 1c', -apple-system, BlinkMacSystemFont, sans-serif",
+          fontFamily: "'Plus Jakarta Sans', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif",
           background: "#fdfbf7",
           color: "#1a1215",
           padding: "2rem",

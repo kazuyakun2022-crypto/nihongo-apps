@@ -12,7 +12,7 @@ import { PrismaOAuthAccountRepository } from "../modules/auth/infrastructure/Pri
 import { PrismaSessionRepository } from "../modules/auth/infrastructure/PrismaSessionRepository";
 import { PrismaOneTimeTokenRepository } from "../modules/auth/infrastructure/PrismaOneTimeTokenRepository";
 import { BcryptPasswordHasher, CryptoTokenGenerator, JwtAccessTokenService } from "../modules/auth/infrastructure/security";
-import { ConsoleEmailSender, NotConfiguredOAuthVerifier } from "../modules/auth/infrastructure/adapters";
+import { ConsoleEmailSender, GoogleOAuthVerifier, NotConfiguredOAuthVerifier } from "../modules/auth/infrastructure/adapters";
 import { SessionIssuer } from "../modules/auth/application/SessionIssuer";
 import { SendEmailVerification } from "../modules/auth/application/SendEmailVerification";
 import { RegisterWithEmail } from "../modules/auth/application/RegisterWithEmail";
@@ -53,9 +53,24 @@ import { AskQuestion } from "../modules/ask/application/AskUseCase";
 import { PrismaExamRepository } from "../modules/exam/infrastructure/PrismaExamRepository";
 import { GetPlacementQuestions, SubmitPlacementExam } from "../modules/exam/application/ExamUseCases";
 
-// Users (admin)
-import { PrismaAuditLogger, PrismaUserAdminRepository } from "../modules/users/infrastructure/PrismaUserAdmin";
-import { ChangeUserRole, SearchUsers, SuspendUser } from "../modules/users/application/UserAdminUseCases";
+// Users (admin & super_admin)
+import {
+  PrismaAiPromptRepository,
+  PrismaAuditLogger,
+  PrismaSubscriptionAdminRepository,
+  PrismaUserAdminRepository,
+} from "../modules/users/infrastructure/PrismaUserAdmin";
+import {
+  ChangeUserRole,
+  GetSystemStats,
+  GrantSubscription,
+  ListAiLevelPrompts,
+  ListAuditLogs,
+  SearchUsers,
+  SuspendUser,
+  UnsuspendUser,
+  UpdateAiLevelPrompt,
+} from "../modules/users/application/UserAdminUseCases";
 
 export function buildContainer(env: Env, db: Db) {
   const clock = systemClock;
@@ -74,10 +89,14 @@ export function buildContainer(env: Env, db: Db) {
   const sessionIssuer = new SessionIssuer({ sessions, tokens, accessTokens, clock, refreshTtlDays });
   const sendVerification = new SendEmailVerification({ users, oneTimeTokens, tokens, email, clock, webOrigin: env.WEB_ORIGIN });
 
+  const oauthVerifier = env.GOOGLE_CLIENT_ID
+    ? new GoogleOAuthVerifier(env.GOOGLE_CLIENT_ID)
+    : new NotConfiguredOAuthVerifier();
+
   const auth = {
     register: new RegisterWithEmail({ users, hasher, sessions: sessionIssuer, sendVerification, clock }),
     login: new LoginWithEmail({ users, hasher, sessions: sessionIssuer, clock }),
-    loginWithOAuth: new LoginWithOAuth({ users, oauthAccounts, verifier: new NotConfiguredOAuthVerifier(), sessions: sessionIssuer, clock }),
+    loginWithOAuth: new LoginWithOAuth({ users, oauthAccounts, verifier: oauthVerifier, sessions: sessionIssuer, clock }),
     startGuest: new StartGuestSession({ users, sessions: sessionIssuer }),
     refresh: new RefreshSession({ users, sessions, tokens, accessTokens, clock, refreshTtlDays }),
     logout: new Logout({ sessions, tokens, clock }),
@@ -108,13 +127,15 @@ export function buildContainer(env: Env, db: Db) {
   const ai = env.ANTHROPIC_API_KEY ? new AnthropicChatProvider(env.ANTHROPIC_API_KEY, env.AI_MODEL) : new MockChatProvider();
 
   // ── Tanya Sensei (Q&A) — prioritas: Groq → Gemini → Anthropic → Mock ──
+  const backupAskProvider = env.GEMINI_API_KEY
+    ? new GeminiAskProvider(env.GEMINI_API_KEY)
+    : env.ANTHROPIC_API_KEY
+      ? new AnthropicAskProvider(env.ANTHROPIC_API_KEY, env.AI_MODEL)
+      : new MockAskProvider();
+
   const askProvider = env.GROQ_API_KEY
-    ? new GroqAskProvider(env.GROQ_API_KEY)
-    : env.GEMINI_API_KEY
-      ? new GeminiAskProvider(env.GEMINI_API_KEY)
-      : env.ANTHROPIC_API_KEY
-        ? new AnthropicAskProvider(env.ANTHROPIC_API_KEY, env.AI_MODEL)
-        : new MockAskProvider();
+    ? new GroqAskProvider(env.GROQ_API_KEY, backupAskProvider)
+    : backupAskProvider;
   const askUc = { ask: new AskQuestion({ ask: askProvider }) };
   const transcriber = env.GROQ_API_KEY ? new GroqTranscriber(env.GROQ_API_KEY) : null;
   const speaker = env.GEMINI_API_KEY ? new GeminiTts(env.GEMINI_API_KEY) : null;
@@ -132,13 +153,24 @@ export function buildContainer(env: Env, db: Db) {
     submitPlacementExam: new SubmitPlacementExam({ repo: examRepo }),
   };
 
-  // ── Admin: pengguna ──
+  // ── Admin & Super Admin ──
   const adminRepo = new PrismaUserAdminRepository(db);
   const audit = new PrismaAuditLogger(db);
+  const aiPromptRepo = new PrismaAiPromptRepository(db);
+  const subscriptionRepo = new PrismaSubscriptionAdminRepository(db);
+
   const adminUsers = {
     search: new SearchUsers({ repo: adminRepo }),
     changeRole: new ChangeUserRole({ repo: adminRepo, audit }),
     suspend: new SuspendUser({ repo: adminRepo, audit, clock }),
+    unsuspend: new UnsuspendUser({ repo: adminRepo, audit }),
+    stats: new GetSystemStats({ repo: adminRepo }),
+    auditLogs: new ListAuditLogs({ audit }),
+    aiPrompts: {
+      list: new ListAiLevelPrompts({ repo: aiPromptRepo }),
+      update: new UpdateAiLevelPrompt({ repo: aiPromptRepo, audit }),
+    },
+    subscription: new GrantSubscription({ repo: subscriptionRepo, audit }),
   };
 
   return { accessTokens, auth, learning, srs, conversation, exam, adminUsers, askUc, transcriber, speaker, aiMode: env.ANTHROPIC_API_KEY ? "anthropic" : "mock" };

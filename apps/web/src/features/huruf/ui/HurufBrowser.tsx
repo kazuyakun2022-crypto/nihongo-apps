@@ -8,17 +8,19 @@ import {
   KATAKANA_BASIC,
   DAKUTEN_CHARS,
   YOON_CHARS,
-  KANJI_N5,
   type HiraganaChar,
   type KatakanaChar,
   type DakutenChar,
   type YoonChar,
   type KanjiChar,
+  type JlptLevel,
 } from "../data/characters";
+import { loadKanji } from "../data/kanjiByLevel";
+import { HiraganaWritingPractice, extractJapaneseWord } from "./HiraganaWritingPractice";
 import styles from "./huruf.module.css";
 
 type Tab = "hiragana" | "katakana" | "dakuten" | "yoon" | "kanji";
-type Mode = "table" | "quiz";
+type Mode = "table" | "quiz" | "writing";
 type KanaScript = "hiragana" | "katakana";
 
 export interface CharCard {
@@ -39,8 +41,8 @@ function toCard(
     return {
       char: k.character,
       romaji: k.kunyomi || k.onyomi,
-      detail: `${k.meaningId} · ${k.strokeCount} goresan · Level ${k.level}`,
-      example: `${k.example} (${k.exampleReading}) = ${k.exampleMeaning}`,
+      detail: `${k.meaningId ?? k.meaningEn} · ${k.strokeCount} goresan · Level ${k.level}`,
+      example: k.example ? `${k.example} (${k.exampleReading}) = ${k.exampleMeaning}` : undefined,
       category: `Kanji ${k.level}`,
     };
   }
@@ -428,10 +430,14 @@ function YoonTable({
 const KANJI_PER_PAGE = 24;
 
 function KanjiTable({
+  kanji,
+  level,
   selected,
   onSelect,
   searchQuery,
 }: {
+  kanji: KanjiChar[] | null;
+  level: JlptLevel;
   selected: CharCard | null;
   onSelect: (c: CharCard) => void;
   searchQuery: string;
@@ -439,27 +445,29 @@ function KanjiTable({
   const [page, setPage] = useState(0);
 
   const filtered = useMemo(() => {
+    const list = kanji ?? [];
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return KANJI_N5;
-    return KANJI_N5.filter(
-      (k) =>
-        k.character.includes(q) ||
-        k.meaningId.toLowerCase().includes(q) ||
-        k.onyomi.toLowerCase().includes(q) ||
-        k.kunyomi.toLowerCase().includes(q) ||
-        k.exampleMeaning.toLowerCase().includes(q)
+    if (!q) return list;
+    return list.filter((k) =>
+      [k.character, k.meaningId, k.meaningEn, k.onyomi, k.kunyomi, k.exampleMeaning].some((f) =>
+        f?.toLowerCase().includes(q)
+      )
     );
-  }, [searchQuery]);
+  }, [kanji, searchQuery]);
+
+  useEffect(() => setPage(0), [searchQuery]);
 
   const total = filtered.length;
   const pageCount = Math.max(1, Math.ceil(total / KANJI_PER_PAGE));
   const pageChars = filtered.slice(page * KANJI_PER_PAGE, (page + 1) * KANJI_PER_PAGE);
 
+  if (!kanji) return <p className={styles.muted}>Memuat kanji {level}…</p>;
+
   return (
     <div style={{ display: "grid", gap: "var(--space-3)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <p className={styles.muted}>
-          Kanji JLPT N5 — Menampilkan {total} kanji · Halaman {page + 1} dari {pageCount}
+          Kanji JLPT {level} — Menampilkan {total} kanji · Halaman {page + 1} dari {pageCount}
         </p>
       </div>
 
@@ -510,7 +518,15 @@ function KanjiTable({
 }
 
 // ── CHARACTER INSPECTOR (Sticky on Desktop) ──
-function CharacterInspector({ card, onQuiz }: { card: CharCard | null; onQuiz: () => void }) {
+function CharacterInspector({
+  card,
+  onQuiz,
+  onWrite,
+}: {
+  card: CharCard | null;
+  onQuiz: () => void;
+  onWrite: (char?: string) => void;
+}) {
   const { speak } = useSpeech();
   if (!card) return null;
 
@@ -528,7 +544,11 @@ function CharacterInspector({ card, onQuiz }: { card: CharCard | null; onQuiz: (
           onClick={() => speak(card.char)}
           title="Dengarkan pelafalan penutur asli"
         >
-          🔊 Putar Suara
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: 6, display: "inline-block", verticalAlign: "middle" }}>
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg>
+          Putar Suara
         </button>
       </div>
 
@@ -549,19 +569,32 @@ function CharacterInspector({ card, onQuiz }: { card: CharCard | null; onQuiz: (
             <button
               type="button"
               className={styles.miniAudioBtn}
-              onClick={() => speak(card.example!)}
+              onClick={() => speak(extractJapaneseWord(card.example))}
               title="Putar contoh kosakata"
+              aria-label="Putar contoh kosakata"
             >
-              🔊
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+              </svg>
             </button>
           </p>
           <p className={styles.inspectorExampleSub}>Klik ikon audio untuk mendengarkan kalimat/kata ini.</p>
         </div>
       )}
 
-      <Button onClick={onQuiz} variant="secondary">
-        ✏️ Latihan Kuis
-      </Button>
+      <div className={styles.inspectorActions}>
+        <Button onClick={() => onWrite(card.char)} variant="primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: 6 }}>
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+          </svg>
+          Latihan Tulis Hiragana
+        </Button>
+        <Button onClick={onQuiz} variant="secondary">
+          Latihan Kuis
+        </Button>
+      </div>
     </aside>
   );
 }
@@ -660,13 +693,35 @@ const TABS: Array<{ id: Tab; label: string; count: number }> = [
   { id: "katakana", label: "Katakana", count: 46 },
   { id: "dakuten", label: "Dakuten & ゜", count: 25 },
   { id: "yoon", label: "Yoon", count: 36 },
-  { id: "kanji", label: "Kanji N5", count: 80 },
+  { id: "kanji", label: "Kanji", count: 0 },
 ];
 
-export function HurufBrowser() {
+export function HurufBrowser({ kanjiLevel }: { kanjiLevel: JlptLevel }) {
   const { speak } = useSpeech();
   const [tab, setTab] = useState<Tab>("hiragana");
+  const [kanji, setKanji] = useState<KanjiChar[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setKanji(null);
+    loadKanji(kanjiLevel).then((list) => {
+      if (!cancelled) setKanji(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [kanjiLevel]);
+
+  const tabs = useMemo(
+    () =>
+      TABS.map((t) =>
+        t.id === "kanji" ? { ...t, label: `Kanji ${kanjiLevel}`, count: kanji?.length ?? 0 } : t
+      ),
+    [kanjiLevel, kanji]
+  );
+  const kanjiForTab = tab === "kanji" ? kanji : null;
   const [mode, setMode] = useState<Mode>("table");
+  const [writingInitialChar, setWritingInitialChar] = useState<string>("あ");
   const [selected, setSelected] = useState<CharCard | null>(null);
   const [mobileModalOpen, setMobileModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -685,8 +740,8 @@ export function HurufBrowser() {
     if (tab === "katakana") return KATAKANA_BASIC.map(toCard);
     if (tab === "dakuten") return DAKUTEN_CHARS.filter((c) => c.kana === "hiragana").map(toCard);
     if (tab === "yoon") return YOON_CHARS.filter((c) => c.kana === "hiragana").map(toCard);
-    return KANJI_N5.map(toCard);
-  }, [tab]);
+    return (kanjiForTab ?? []).map(toCard);
+  }, [tab, kanjiForTab]);
 
   // Set default selected character when tab changes
   useEffect(() => {
@@ -709,7 +764,13 @@ export function HurufBrowser() {
     setSearchQuery("");
   };
 
-  const currentTabInfo = TABS.find((t) => t.id === tab);
+  const handleStartWriting = (c?: string) => {
+    if (c) setWritingInitialChar(c);
+    else if (selected?.char) setWritingInitialChar(selected.char);
+    setMode("writing");
+  };
+
+  const currentTabInfo = tabs.find((t) => t.id === tab);
 
   return (
     <div className={styles.wrap}>
@@ -721,48 +782,72 @@ export function HurufBrowser() {
             <span className={styles.badgeCount}>{currentTabInfo?.count} karakter</span>
           </div>
           <p className={styles.subheading}>
-            Eksplorasi huruf bahasa Jepang dengan tabel rapi, audio pelafalan, dan latihan kuis interaktif.
+            Eksplorasi huruf bahasa Jepang dengan tabel rapi, audio pelafalan, latihan menulis hiragana, dan kuis interaktif.
           </p>
         </div>
 
         <div className={styles.headerControls}>
-          <input
-            type="search"
-            className={styles.searchInput}
-            placeholder="Cari romaji, huruf, arti..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Cari huruf atau romaji"
-          />
           {mode === "table" ? (
-            <Button onClick={() => setMode("quiz")} variant="secondary">
-              ✏️ Mulai Kuis {currentTabInfo?.label}
-            </Button>
+            <>
+              <input
+                type="search"
+                className={styles.searchInput}
+                placeholder="Cari romaji, huruf, arti..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Cari huruf atau romaji"
+              />
+              <Button onClick={() => handleStartWriting(selected?.char || "あ")} variant="primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ marginRight: 6, display: "inline-block", verticalAlign: "middle" }}>
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                Latihan Menulis
+              </Button>
+              <Button onClick={() => setMode("quiz")} variant="secondary" disabled={quizCards.length === 0}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ marginRight: 6, display: "inline-block", verticalAlign: "middle" }}>
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+                Mulai Kuis {currentTabInfo?.label}
+              </Button>
+            </>
           ) : (
             <Button onClick={() => setMode("table")} variant="ghost">
-              ← Kembali ke Tabel
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ marginRight: 6, display: "inline-block", verticalAlign: "middle" }}>
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              Kembali ke Tabel Huruf
             </Button>
           )}
         </div>
       </header>
 
-      {/* Tabs navigation */}
-      <nav className={styles.tabsBar} aria-label="Kategori huruf">
-        <div className={styles.tabs}>
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              className={`${styles.tab} ${tab === t.id ? styles.tabActive : ""}`}
-              onClick={() => handleTabChange(t.id)}
-            >
-              {t.label} ({t.count})
-            </button>
-          ))}
-        </div>
-      </nav>
+      {/* Tabs navigation: hanya saat mode tabel */}
+      {mode === "table" && (
+        <nav className={styles.tabsBar} aria-label="Kategori huruf">
+          <div className={styles.tabs}>
+            {tabs.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                className={`${styles.tab} ${tab === t.id ? styles.tabActive : ""}`}
+                onClick={() => handleTabChange(t.id)}
+              >
+                {t.label} ({t.count})
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
 
-      {mode === "quiz" ? (
+      {/* Render Workspace Sesuai Mode */}
+      {mode === "writing" ? (
+        <HiraganaWritingPractice
+          initialChar={writingInitialChar}
+          onBack={() => setMode("table")}
+        />
+      ) : mode === "quiz" ? (
         <QuizView cards={quizCards} onBack={() => setMode("table")} />
       ) : (
         <div className={styles.workspace}>
@@ -777,12 +862,24 @@ export function HurufBrowser() {
             {tab === "dakuten" && <DakutenTable selected={selected} onSelect={handleSelectChar} />}
             {tab === "yoon" && <YoonTable selected={selected} onSelect={handleSelectChar} />}
             {tab === "kanji" && (
-              <KanjiTable selected={selected} onSelect={handleSelectChar} searchQuery={searchQuery} />
+              <KanjiTable
+                kanji={kanji}
+                level={kanjiLevel}
+                selected={selected}
+                onSelect={handleSelectChar}
+                searchQuery={searchQuery}
+              />
             )}
           </section>
 
           {/* Persistent Character Inspector on Desktop */}
-          {isDesktop && <CharacterInspector card={selected} onQuiz={() => setMode("quiz")} />}
+          {isDesktop && (
+            <CharacterInspector
+              card={selected}
+              onQuiz={() => setMode("quiz")}
+              onWrite={handleStartWriting}
+            />
+          )}
         </div>
       )}
 
@@ -799,21 +896,62 @@ export function HurufBrowser() {
               type="button"
               className={styles.audioBtn}
               onClick={() => speak(selected.char)}
-              style={{ margin: "0 auto" }}
+              style={{ margin: "0 auto", display: "inline-flex", alignItems: "center", gap: 6 }}
             >
-              🔊 Putar Pelafalan
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+              </svg>
+              Putar Pelafalan Huruf
             </button>
             {selected.counterpart && (
               <p className={styles.modalMeaning} lang="ja">
                 {selected.counterpart}
               </p>
             )}
+
+            {/* ── Contoh Kosakata dengan Tombol Speaker Audio ── */}
             {selected.example && (
-              <p className={styles.modalExample} lang="ja">
-                📝 {selected.example}
-              </p>
+              <div className={styles.modalExampleBox}>
+                <div className={styles.modalExampleInfo}>
+                  <span className={styles.modalExampleHeading}>Contoh Kata</span>
+                  <span className={styles.modalExampleWord} lang="ja">
+                    {selected.example}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className={styles.modalSpeakerBtn}
+                  onClick={() => speak(extractJapaneseWord(selected.example))}
+                  aria-label="Dengarkan pelafalan contoh kata"
+                  title="Dengarkan pelafalan contoh kata"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  </svg>
+                </button>
+              </div>
             )}
-            <Button onClick={() => setMobileModalOpen(false)}>Tutup</Button>
+
+            <div className={styles.modalBtnGroup}>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setMobileModalOpen(false);
+                  handleStartWriting(selected.char);
+                }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: 6 }}>
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                Latihan Tulis Huruf Ini
+              </Button>
+              <Button onClick={() => setMobileModalOpen(false)} variant="secondary">
+                Tutup
+              </Button>
+            </div>
           </div>
         </div>
       )}
