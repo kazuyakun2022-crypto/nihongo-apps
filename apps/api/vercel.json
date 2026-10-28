@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "regions": ["sin1"],
+  "buildCommand": "prisma generate && prisma migrate deploy --schema prisma/schema.prisma && mkdir -p public",
+  "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" != \"main\" ] && [ \"$VERCEL_GIT_COMMIT_REF\" != \"dev\" ]",
+  "functions": {
+    "api/index.ts": { "maxDuration": 60 }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}

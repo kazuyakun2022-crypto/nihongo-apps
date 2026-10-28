@@ -1,0 +1,52 @@
+# Cek wajib sebelum merge dan sebelum Render deploy (render.yaml: autoDeployTrigger: checksPass).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: nihongo
+          POSTGRES_PASSWORD: nihongo
+          POSTGRES_DB: nihongo
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U nihongo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://nihongo:nihongo@localhost:5432/nihongo?schema=public
+      JWT_ACCESS_SECRET: ci-only-secret-not-for-production
+      API_URL: http://localhost:4000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run db:generate -w apps/api
+
+      - name: Migrasi berjalan dan sesuai schema.prisma
+        run: |
+          npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+          # Gagal jika schema.prisma diubah tanpa membuat file migrasi
+          npx prisma migrate diff --from-schema-datasource apps/api/prisma/schema.prisma --to-schema-datamodel apps/api/prisma/schema.prisma --exit-code
+
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
