@@ -36,11 +36,24 @@ async function main() {
     });
   }
 
+  // Akun pengelola. Di produksi email dan password wajib dari env (SEED_*), bukan password contoh yang ada di repo.
+  const isProduction = process.env.NODE_ENV === "production";
+  const account = (key: "SUPERADMIN" | "ADMIN", devEmail: string, devPassword: string) => {
+    const email = process.env[`SEED_${key}_EMAIL`] ?? (isProduction ? undefined : devEmail);
+    const password = process.env[`SEED_${key}_PASSWORD`] ?? (isProduction ? undefined : devPassword);
+    if (email && password && isProduction && password.length < 12) {
+      throw new Error(`SEED_${key}_PASSWORD minimal 12 karakter di produksi.`);
+    }
+    return email && password ? { email: email.toLowerCase(), password } : null;
+  };
+
+  const superAccount = account("SUPERADMIN", "superadmin@nihongo.local", "SuperAdmin12345");
+  if (!superAccount) throw new Error("Isi SEED_SUPERADMIN_EMAIL dan SEED_SUPERADMIN_PASSWORD sebelum menjalankan seed di produksi.");
   const superAdmin = await db.user.upsert({
-    where: { email: "superadmin@nihongo.local" },
+    where: { email: superAccount.email },
     create: {
-      email: "superadmin@nihongo.local",
-      passwordHash: await bcrypt.hash("SuperAdmin12345", 12),
+      email: superAccount.email,
+      passwordHash: await bcrypt.hash(superAccount.password, 12),
       displayName: "Super Admin",
       role: "super_admin",
       currentLevelId: 6,
@@ -49,18 +62,22 @@ async function main() {
     update: { role: "super_admin" },
   });
 
-  const admin = await db.user.upsert({
-    where: { email: "admin@nihongo.local" },
-    create: {
-      email: "admin@nihongo.local",
-      passwordHash: await bcrypt.hash("Admin12345", 12),
-      displayName: "Admin",
-      role: "admin",
-      currentLevelId: 6,
-      emailVerifiedAt: new Date(),
-    },
-    update: {},
-  });
+  // Akun Admin opsional di produksi; tanpa itu, bab contoh dicatat atas nama Super Admin
+  const adminAccount = account("ADMIN", "admin@nihongo.local", "Admin12345");
+  const admin = adminAccount
+    ? await db.user.upsert({
+        where: { email: adminAccount.email },
+        create: {
+          email: adminAccount.email,
+          passwordHash: await bcrypt.hash(adminAccount.password, 12),
+          displayName: "Admin",
+          role: "admin",
+          currentLevelId: 6,
+          emailVerifiedAt: new Date(),
+        },
+        update: {},
+      })
+    : superAdmin;
 
   // ── 25 Bab N5 (idempotent per judul) ──
   const n5Chapters = [
@@ -972,7 +989,7 @@ async function main() {
     });
   }
 
-  console.info("Seed selesai. Akun Admin: admin@nihongo.local / Admin12345");
+  console.info(`Seed selesai. Super Admin: ${superAccount.email}${adminAccount ? `, Admin: ${adminAccount.email}` : ""}`);
 }
 
 main()
