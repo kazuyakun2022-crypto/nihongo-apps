@@ -217,6 +217,40 @@
   animation: fadeIn var(--motion-fast) both;
 }
 
+/* ── Subtitle animasi saat Miu-chan berbicara ── */
+.subtitle {
+  font-size: var(--font-size-sm);
+  text-align: center;
+  max-width: 38ch;
+  margin: 0;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  line-height: 1.6;
+  animation: fadeIn var(--motion-fast) both;
+}
+
+.subtitleWord {
+  display: inline;
+  color: var(--color-text-muted, #94a3b8);
+  font-weight: 400;
+  transition: color 0.15s ease, font-weight 0.15s ease, text-shadow 0.15s ease;
+}
+
+.subtitlePast {
+  color: var(--color-text-muted, #94a3b8);
+  font-weight: 400;
+}
+
+.subtitleActive {
+  color: var(--color-text, #1e293b);
+  font-weight: 700;
+  text-shadow: 0 0 12px rgba(var(--color-accent-rgb, 239 68 68) / 0.35);
+}
+
 /* ── Floating Error Alert (posisi melayang tanpa menggeser layout) ── */
 .floatingAlert {
   position: absolute;

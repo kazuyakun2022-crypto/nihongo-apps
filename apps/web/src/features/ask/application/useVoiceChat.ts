@@ -77,9 +77,45 @@ export function useVoiceChat() {
   const [state, setState] = useState<VoiceState>("idle");
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [transcript, setTranscript] = useState("");
+  const [subtitle, setSubtitle] = useState<{ words: string[]; activeIndex: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
   const [emotion, setEmotion] = useState<VoiceEmotion>("biasa");
+  const subtitleTimerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  /** Animasikan subtitle kata per kata, disinkronkan dengan durasi audio */
+  const startSubtitle = useCallback((text: string, audioDurationSec: number) => {
+    // Bersihkan timer lama
+    subtitleTimerRef.current.forEach(clearTimeout);
+    subtitleTimerRef.current = [];
+
+    const words = text.split(/\s+/).filter(Boolean);
+    if (words.length === 0) return;
+
+    // Distribusikan waktu antar kata secara merata, sedikit lebih awal dari akhir audio
+    const totalMs = Math.min(audioDurationSec * 1000 * 0.95, 30_000);
+    const perWord = totalMs / words.length;
+
+    setSubtitle({ words, activeIndex: 0 });
+
+    words.forEach((_, i) => {
+      if (i === 0) return;
+      const t = setTimeout(() => {
+        setSubtitle((prev) => prev ? { ...prev, activeIndex: i } : null);
+      }, perWord * i);
+      subtitleTimerRef.current.push(t);
+    });
+
+    // Hapus subtitle setelah audio selesai
+    const endT = setTimeout(() => setSubtitle(null), totalMs + 500);
+    subtitleTimerRef.current.push(endT);
+  }, []);
+
+  const clearSubtitle = useCallback(() => {
+    subtitleTimerRef.current.forEach(clearTimeout);
+    subtitleTimerRef.current = [];
+    setSubtitle(null);
+  }, []);
 
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -107,24 +143,38 @@ export function useVoiceChat() {
       audioRef.current = null;
     }
     meterRef.current?.detachVoice();
-  }, []);
+    clearSubtitle();
+  }, [clearSubtitle]);
 
   // Dibaca setiap frame oleh animasi Neko-sensei
   const getMicLevel = useCallback(() => meterRef.current?.micLevel() ?? 0, []);
   const getVoiceLevel = useCallback(() => meterRef.current?.voiceLevel() ?? 0, []);
 
-  const playVoice = useCallback(async (audioUrl: string, isFallback: boolean) => {
+  const playVoice = useCallback(async (audioUrl: string, isFallback: boolean, subtitleText?: string) => {
     const audio = makeAudio(audioUrl, isFallback);
     audioRef.current = audio;
     (meterRef.current ??= new AudioMeter()).attachVoice(audio);
     audio.onended = () => {
       URL.revokeObjectURL(audioUrl);
+      clearSubtitle();
       if (audioRef.current === audio) setState("idle");
     };
-    audio.onerror = () => setState("idle");
+    audio.onerror = () => { clearSubtitle(); setState("idle"); };
     setState("speaking");
     await audio.play();
-  }, []);
+    // Mulai subtitle setelah durasi audio diketahui
+    if (subtitleText && audio.duration && isFinite(audio.duration)) {
+      startSubtitle(subtitleText, audio.duration);
+    } else if (subtitleText) {
+      // Fallback: estimasi 150 ms/kata
+      const words = subtitleText.split(/\s+/).filter(Boolean);
+      startSubtitle(subtitleText, words.length * 0.15);
+      // Coba lagi setelah metadata tersedia
+      audio.onloadedmetadata = () => {
+        if (isFinite(audio.duration)) startSubtitle(subtitleText, audio.duration);
+      };
+    }
+  }, [startSubtitle, clearSubtitle]);
 
   /** Sapaan pembuka. Teks tetap tampil walau browser memblokir autoplay suara. */
   const greet = useCallback(async (text: string) => {
@@ -137,7 +187,7 @@ export function useVoiceChat() {
         URL.revokeObjectURL(url);
         return;
       }
-      await playVoice(url, isFallback);
+      await playVoice(url, isFallback, text);
     } catch {
       if (turnRef.current === turn) setState("idle");
     }
@@ -161,7 +211,7 @@ export function useVoiceChat() {
       const { url: audioUrl, isFallback } = await fetchVoice(answer);
       setEmotion(mood);
       setTranscript("");
-      await playVoice(audioUrl, isFallback);
+      await playVoice(audioUrl, isFallback, answer);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal mendapat jawaban.");
       setTranscript("");
@@ -264,6 +314,7 @@ export function useVoiceChat() {
     getVoiceLevel,
     messages,
     transcript,
+    subtitle,
     error,
     isSupported,
     startListening,

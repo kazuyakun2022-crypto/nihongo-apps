@@ -72,6 +72,7 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
     getVoiceLevel,
     messages,
     transcript,
+    subtitle,
     error,
     isSupported,
     startListening,
@@ -276,13 +277,28 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
           {STATUS[state]}
         </p>
 
-        {/* Slot transkrip sementara berukuran tetap agar posisi maskot tidak berpindah */}
+        {/* Slot transkrip & subtitle — ukuran tetap agar maskot tidak berpindah */}
         <div className={styles.transcriptSlot}>
-          {transcript && (
+          {state === "speaking" && subtitle ? (
+            <p className={styles.subtitle} aria-live="polite" aria-label="Miu-chan berkata">
+              {subtitle.words.map((word, i) => (
+                <span
+                  key={i}
+                  className={[
+                    styles.subtitleWord,
+                    i === subtitle.activeIndex ? styles.subtitleActive : "",
+                    i < subtitle.activeIndex ? styles.subtitlePast : "",
+                  ].filter(Boolean).join(" ")}
+                >
+                  {word}{" "}
+                </span>
+              ))}
+            </p>
+          ) : transcript ? (
             <p className={styles.liveTranscript} aria-live="polite">
               "{transcript}"
             </p>
-          )}
+          ) : null}
         </div>
       </div>
 
