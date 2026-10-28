@@ -60,8 +60,8 @@ async function fetchAnswer(
 }
 
 // Suara cadangan (MP3, dipakai saat kuota Gemini habis) diputar lebih cepat tanpa menjaga pitch,
-// sehingga nadanya naik ±3 semitone dan terdengar lebih imut seperti karakter kartun.
-const FALLBACK_PLAYBACK_RATE = 1.18;
+// sehingga nadanya naik ±1,3 semitone; sisanya dinaikkan lewat pitch di server supaya tempo tidak terlalu cepat.
+const FALLBACK_PLAYBACK_RATE = 1.08;
 
 /** Suara Miu-chan; nada, tempo, dan volume disesuaikan server dengan emosinya. */
 async function fetchVoice(text: string, emotion: VoiceEmotion): Promise<{ url: string; isFallback: boolean }> {
