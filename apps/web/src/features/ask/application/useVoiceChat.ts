@@ -176,13 +176,28 @@ export function useVoiceChat() {
     }
   }, [startSubtitle, clearSubtitle]);
 
-  /** Sapaan pembuka. Teks tetap tampil walau browser memblokir autoplay suara. */
+  /**
+   * Mulai fetch audio sapaan di background (sebelum tab aktif).
+   * Hasilnya disimpan di ref; greet() tinggal memutarnya tanpa delay fetch.
+   */
+  const prefetchedGreetRef = useRef<Promise<{ url: string; isFallback: boolean; text: string }> | null>(null);
+
+  const prefetchGreet = useCallback((text: string) => {
+    prefetchedGreetRef.current = fetchVoice(text).then((v) => ({ ...v, text }));
+  }, []);
+
+  /** Sapaan pembuka. Teks langsung tampil; audio diputar dari cache prefetch jika sudah siap. */
   const greet = useCallback(async (text: string) => {
     const turn = turnRef.current;
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text, emotion: "senang" }]);
     setEmotion("senang");
     try {
-      const { url, isFallback } = await fetchVoice(text);
+      // Pakai hasil prefetch kalau teksnya sama; jika tidak cocok fetch ulang
+      const promise = prefetchedGreetRef.current;
+      prefetchedGreetRef.current = null;
+      const { url, isFallback } = promise
+        ? await promise.then((p) => (p.text === text ? p : fetchVoice(text)))
+        : await fetchVoice(text);
       if (turnRef.current !== turn) {
         URL.revokeObjectURL(url);
         return;
@@ -319,6 +334,7 @@ export function useVoiceChat() {
     isSupported,
     startListening,
     stopListening,
+    prefetchGreet,
     greet,
     stop,
     clear,

@@ -77,12 +77,14 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
     isSupported,
     startListening,
     stopListening,
+    prefetchGreet,
     greet,
     stop,
     clear,
   } = useVoiceChat();
   const { status, user } = useAuth();
   const hasGreeted = useRef(false);
+  const hasPrefetched = useRef(false);
   const [showTranscript, setShowTranscript] = useState(false);
   const transcriptListRef = useRef<HTMLDivElement>(null);
   const isHolding = useRef(false);
@@ -102,6 +104,15 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
       stop();
     }
   }, [isActiveTab, stop]);
+
+  // Prefetch audio sapaan segera setelah data akun siap — tidak perlu tunggu tab aktif.
+  // Hasilnya di-cache di dalam useVoiceChat; greet() tinggal memutarnya tanpa fetch ulang.
+  useEffect(() => {
+    if (hasPrefetched.current || status === "loading" || !isSupported) return;
+    hasPrefetched.current = true;
+    const name = user && !user.isGuest ? user.displayName.trim() || null : null;
+    prefetchGreet(buildGreeting(name, name ? user?.gender : null));
+  }, [status, user, isSupported, prefetchGreet]);
 
   // Sapa hanya saat tab suara aktif, setelah data akun siap, dan belum pernah menyapa
   useEffect(() => {
