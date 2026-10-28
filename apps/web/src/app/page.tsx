@@ -803,6 +803,16 @@ export default function LandingPage() {
               </Link>
             </li>
             <li>
+              <Link href="/privasi" className={styles.footerLink}>
+                Privasi
+              </Link>
+            </li>
+            <li>
+              <Link href="/ketentuan" className={styles.footerLink}>
+                Ketentuan
+              </Link>
+            </li>
+            <li>
               <button
                 type="button"
                 onClick={handleStartGuest}
