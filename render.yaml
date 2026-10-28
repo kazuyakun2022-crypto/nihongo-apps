@@ -4,23 +4,9 @@
 # Web (Next.js) meneruskan /api/* ke API lewat rewrite di apps/web/next.config.mjs,
 # jadi browser hanya bicara ke satu origin dan cookie login tetap first-party.
 # Deploy otomatis baru jalan setelah CI GitHub (.github/workflows/ci.yml) hijau.
-
-databases:
-  - name: nihongo-db
-    databaseName: nihongo
-    user: nihongo
-    region: singapore
-    postgresMajorVersion: "16"
-    # Berbayar supaya data produksi tidak dihapus; database gratis Render kedaluwarsa setelah 30 hari
-    plan: basic-256mb
-
-  - name: nihongo-db-staging
-    databaseName: nihongo
-    user: nihongo
-    region: singapore
-    postgresMajorVersion: "16"
-    # Satu workspace hanya boleh punya satu database gratis; kedaluwarsa 30 hari, cukup untuk staging
-    plan: free
+#
+# Database ada di Neon (Postgres gratis tanpa kartu kredit): branch Neon `main` untuk
+# produksi dan `dev` untuk staging. Database Render butuh kartu kredit atau kedaluwarsa 30 hari.
 
 services:
   # ───────────── Produksi (main) ─────────────
@@ -42,10 +28,9 @@ services:
         value: "22"
       - key: NODE_ENV
         value: production
+      # Connection string Neon branch `main` (direct, bukan pooled), diakhiri ?sslmode=require
       - key: DATABASE_URL
-        fromDatabase:
-          name: nihongo-db
-          property: connectionString
+        sync: false
       - key: JWT_ACCESS_SECRET
         generateValue: true
       # URL web produksi, mis. https://nihongo-web.onrender.com (dipakai di link email)
@@ -103,10 +88,9 @@ services:
         value: "22"
       - key: NODE_ENV
         value: production
+      # Connection string Neon branch `dev`
       - key: DATABASE_URL
-        fromDatabase:
-          name: nihongo-db-staging
-          property: connectionString
+        sync: false
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: WEB_ORIGIN
