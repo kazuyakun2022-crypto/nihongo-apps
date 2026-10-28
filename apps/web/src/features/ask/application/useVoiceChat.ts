@@ -13,6 +13,14 @@ export interface VoiceMessage {
   role: "user" | "ai";
   text: string;
   emotion?: VoiceEmotion;
+  /** Kalimat Jepang yang benar, bila Miu-chan meluruskan ucapan user. */
+  correction?: string | null;
+}
+
+/** Kalimat yang sedang dibacakan Miu-chan, untuk subtitle. */
+export interface SpokenLine {
+  id: string;
+  text: string;
 }
 
 type HistoryItem = { role: "user" | "assistant"; content: string };
@@ -39,24 +47,28 @@ async function transcribe(audio: Blob): Promise<string> {
   return data.text?.trim() ?? "";
 }
 
-async function fetchAnswer(question: string, history: HistoryItem[]): Promise<{ answer: string; emotion: VoiceEmotion }> {
-  const res = await apiRequest<{ answer: string; emotion?: string }>("/ask", {
+async function fetchAnswer(
+  question: string,
+  history: HistoryItem[],
+): Promise<{ answer: string; emotion: VoiceEmotion; correction: string | null }> {
+  const res = await apiRequest<{ answer: string; emotion?: string; correction?: string | null }>("/ask", {
     method: "POST",
     body: { question, history, mode: "voice" },
   });
   const emotion = EMOTIONS.find((e) => e === res.emotion) ?? "biasa";
-  return { answer: res.answer, emotion };
+  return { answer: res.answer, emotion, correction: res.correction ?? null };
 }
 
 // Suara cadangan (MP3, dipakai saat kuota Gemini habis) diputar lebih cepat tanpa menjaga pitch,
 // sehingga nadanya naik ±3 semitone dan terdengar lebih imut seperti karakter kartun.
 const FALLBACK_PLAYBACK_RATE = 1.18;
 
-async function fetchVoice(text: string): Promise<{ url: string; isFallback: boolean }> {
+/** Suara Miu-chan; nada, tempo, dan volume disesuaikan server dengan emosinya. */
+async function fetchVoice(text: string, emotion: VoiceEmotion): Promise<{ url: string; isFallback: boolean }> {
   const res = await fetch("/api/ask/speak", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, emotion }),
   });
   if (!res.ok) throw new Error("Suara Miu-chan gagal dibuat.");
   const blob = await res.blob();
@@ -77,46 +89,10 @@ export function useVoiceChat() {
   const [state, setState] = useState<VoiceState>("idle");
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [transcript, setTranscript] = useState("");
-  const [subtitle, setSubtitle] = useState<{ words: string[]; activeIndex: number } | null>(null);
+  const [spoken, setSpoken] = useState<SpokenLine | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
   const [emotion, setEmotion] = useState<VoiceEmotion>("biasa");
-  const subtitleTimerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-  /** Animasikan subtitle kata per kata, disinkronkan dengan durasi audio */
-  const startSubtitle = useCallback((text: string, audioDurationSec: number) => {
-    // Bersihkan timer lama
-    subtitleTimerRef.current.forEach(clearTimeout);
-    subtitleTimerRef.current = [];
-
-    const words = text.split(/\s+/).filter(Boolean);
-    if (words.length === 0) return;
-
-    // Distribusikan waktu antar kata secara merata, sedikit lebih awal dari akhir audio
-    const totalMs = Math.min(audioDurationSec * 1000 * 0.95, 30_000);
-    const perWord = totalMs / words.length;
-
-    setSubtitle({ words, activeIndex: 0 });
-
-    words.forEach((_, i) => {
-      if (i === 0) return;
-      const t = setTimeout(() => {
-        setSubtitle((prev) => prev ? { ...prev, activeIndex: i } : null);
-      }, perWord * i);
-      subtitleTimerRef.current.push(t);
-    });
-
-    // Hapus subtitle setelah audio selesai
-    const endT = setTimeout(() => setSubtitle(null), totalMs + 500);
-    subtitleTimerRef.current.push(endT);
-  }, []);
-
-  const clearSubtitle = useCallback(() => {
-    subtitleTimerRef.current.forEach(clearTimeout);
-    subtitleTimerRef.current = [];
-    setSubtitle(null);
-  }, []);
-
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const stopRequestedRef = useRef(false);
@@ -143,47 +119,48 @@ export function useVoiceChat() {
       audioRef.current = null;
     }
     meterRef.current?.detachVoice();
-    clearSubtitle();
-  }, [clearSubtitle]);
+    setSpoken(null);
+  }, []);
 
   // Dibaca setiap frame oleh animasi Neko-sensei
   const getMicLevel = useCallback(() => meterRef.current?.micLevel() ?? 0, []);
   const getVoiceLevel = useCallback(() => meterRef.current?.voiceLevel() ?? 0, []);
+  /** Posisi suara yang sedang diputar (0–1), dibaca subtitle setiap frame; null bila durasi belum diketahui. */
+  const getSpeechProgress = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio || !isFinite(audio.duration) || audio.duration <= 0) return null;
+    return audio.ended ? 1 : audio.currentTime / audio.duration;
+  }, []);
 
-  const playVoice = useCallback(async (audioUrl: string, isFallback: boolean, subtitleText?: string) => {
+  const playVoice = useCallback(async (audioUrl: string, isFallback: boolean, text: string) => {
     const audio = makeAudio(audioUrl, isFallback);
     audioRef.current = audio;
     (meterRef.current ??= new AudioMeter()).attachVoice(audio);
+    const finish = () => {
+      if (audioRef.current !== audio) return;
+      setSpoken(null);
+      setState("idle");
+    };
     audio.onended = () => {
       URL.revokeObjectURL(audioUrl);
-      clearSubtitle();
-      if (audioRef.current === audio) setState("idle");
+      finish();
     };
-    audio.onerror = () => { clearSubtitle(); setState("idle"); };
+    audio.onerror = finish;
+    setSpoken({ id: crypto.randomUUID(), text });
     setState("speaking");
     await audio.play();
-    // Mulai subtitle setelah durasi audio diketahui
-    if (subtitleText && audio.duration && isFinite(audio.duration)) {
-      startSubtitle(subtitleText, audio.duration);
-    } else if (subtitleText) {
-      // Fallback: estimasi 150 ms/kata
-      const words = subtitleText.split(/\s+/).filter(Boolean);
-      startSubtitle(subtitleText, words.length * 0.15);
-      // Coba lagi setelah metadata tersedia
-      audio.onloadedmetadata = () => {
-        if (isFinite(audio.duration)) startSubtitle(subtitleText, audio.duration);
-      };
-    }
-  }, [startSubtitle, clearSubtitle]);
+  }, []);
 
   /**
    * Mulai fetch audio sapaan di background (sebelum tab aktif).
    * Hasilnya disimpan di ref; greet() tinggal memutarnya tanpa delay fetch.
    */
-  const prefetchedGreetRef = useRef<Promise<{ url: string; isFallback: boolean; text: string }> | null>(null);
+  const prefetchedGreetRef = useRef<{ text: string; voice: Promise<{ url: string; isFallback: boolean }> } | null>(null);
 
   const prefetchGreet = useCallback((text: string) => {
-    prefetchedGreetRef.current = fetchVoice(text).then((v) => ({ ...v, text }));
+    const voice = fetchVoice(text, "senang");
+    voice.catch(() => {});
+    prefetchedGreetRef.current = { text, voice };
   }, []);
 
   /** Sapaan pembuka. Teks langsung tampil; audio diputar dari cache prefetch jika sudah siap. */
@@ -193,11 +170,10 @@ export function useVoiceChat() {
     setEmotion("senang");
     try {
       // Pakai hasil prefetch kalau teksnya sama; jika tidak cocok fetch ulang
-      const promise = prefetchedGreetRef.current;
+      const prefetched = prefetchedGreetRef.current;
       prefetchedGreetRef.current = null;
-      const { url, isFallback } = promise
-        ? await promise.then((p) => (p.text === text ? p : fetchVoice(text)))
-        : await fetchVoice(text);
+      const { url, isFallback } =
+        prefetched?.text === text ? await prefetched.voice : await fetchVoice(text, "senang");
       if (turnRef.current !== turn) {
         URL.revokeObjectURL(url);
         return;
@@ -214,16 +190,16 @@ export function useVoiceChat() {
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", text: question }]);
 
     try {
-      const { answer, emotion: mood } = await fetchAnswer(question, historyRef.current);
+      const { answer, emotion: mood, correction } = await fetchAnswer(question, historyRef.current);
       historyRef.current = [
         ...historyRef.current,
         { role: "user" as const, content: question },
-        // Tanda emosi ikut disimpan supaya AI konsisten memakai formatnya
-        { role: "assistant" as const, content: `[${mood}] ${answer}` },
+        // Tanda emosi dan koreksi ikut disimpan supaya AI konsisten memakai formatnya
+        { role: "assistant" as const, content: `[${mood}] ${answer}${correction ? ` {{benar: ${correction}}}` : ""}` },
       ].slice(-10);
-      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text: answer, emotion: mood }]);
+      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text: answer, emotion: mood, correction }]);
 
-      const { url: audioUrl, isFallback } = await fetchVoice(answer);
+      const { url: audioUrl, isFallback } = await fetchVoice(answer, mood);
       setEmotion(mood);
       setTranscript("");
       await playVoice(audioUrl, isFallback, answer);
@@ -329,7 +305,8 @@ export function useVoiceChat() {
     getVoiceLevel,
     messages,
     transcript,
-    subtitle,
+    spoken,
+    getSpeechProgress,
     error,
     isSupported,
     startListening,

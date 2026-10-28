@@ -6,6 +6,7 @@ import type { AskQuestion } from "../application/AskUseCase";
 import type { GroqTranscriber } from "../infrastructure/GroqTranscriber";
 import type { GeminiTts } from "../../../shared/infrastructure/geminiTts";
 import { synthesizeChildVoice } from "../../../shared/infrastructure/edgeTts";
+import { EMOTIONS } from "../domain/emotion";
 
 const messageSchema = z.object({ role: z.enum(["user", "assistant"]), content: z.string() });
 
@@ -28,8 +29,8 @@ export function askRoutes(
       req.body,
     );
 
-    const { answer, emotion } = await uc.ask.execute(question, history, mode, req.user?.id);
-    res.json({ answer, emotion });
+    const { answer, emotion, correction } = await uc.ask.execute(question, history, mode, req.user?.id);
+    res.json({ answer, emotion, correction });
   }));
 
   // POST /api/ask/transcribe — body: audio mentah (webm/ogg/mp4), bahasa dideteksi otomatis (?lang=ja untuk memaksa Jepang)
@@ -51,14 +52,17 @@ export function askRoutes(
     }),
   );
 
-  // POST /api/ask/speak — suara karakter Neko-sensei; kalau Gemini gagal/kuota habis, pakai TTS cadangan.
+  // POST /api/ask/speak — suara karakter Neko-sensei dengan nada sesuai emosi; kalau Gemini gagal/kuota habis, pakai TTS cadangan.
   r.post("/speak", asyncHandler(async (req, res) => {
-    const { text } = parseBody(z.object({ text: z.string().trim().min(1).max(2000) }), req.body);
+    const { text, emotion } = parseBody(
+      z.object({ text: z.string().trim().min(1).max(2000), emotion: z.enum(EMOTIONS).optional() }),
+      req.body,
+    );
     res.setHeader("Cache-Control", "no-store");
 
     if (speaker) {
       try {
-        const wav = await speaker.speak(text);
+        const wav = await speaker.speak(text, emotion);
         res.setHeader("Content-Type", "audio/wav");
         res.send(wav);
         return;
@@ -66,7 +70,7 @@ export function askRoutes(
         console.warn("[speak] Gemini TTS gagal, pakai cadangan:", err instanceof Error ? err.message : err);
       }
     }
-    const mp3 = await synthesizeChildVoice(text);
+    const mp3 = await synthesizeChildVoice(text, "nanami", emotion ?? "biasa");
     res.setHeader("Content-Type", "audio/mpeg");
     res.send(mp3);
   }));

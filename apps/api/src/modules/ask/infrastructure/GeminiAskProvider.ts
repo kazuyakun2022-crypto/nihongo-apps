@@ -50,7 +50,9 @@ export class GeminiAskProvider implements AskProvider {
     }));
     contents.push({ role: "user", parts: [{ text: question }] });
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
+    // Alias "latest" mengikuti Flash-Lite terbaru (versi bernomor lama dipensiunkan Google dan membalas 404).
+    // Lite dipilih karena menjawab ±1,5 detik; Flash biasa bisa lebih dari 40 detik.
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${this.apiKey}`;
 
     const res = await fetch(url, {
       method: "POST",
@@ -58,8 +60,10 @@ export class GeminiAskProvider implements AskProvider {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: systemPrompt }] },
         contents,
-        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.75 },
+        // Berpikir seminimal mungkin: lebih cepat, dan jatah token output tidak habis untuk berpikir
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.75, thinkingConfig: { thinkingLevel: "minimal" } },
       }),
+      signal: AbortSignal.timeout(20000),
     });
 
     if (!res.ok) throw new Error(`Gemini API error ${res.status}: ${await res.text()}`);

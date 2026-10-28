@@ -14,6 +14,13 @@ const HALLUCINATIONS = [
   "thank you for watching",
 ];
 
+// Contoh ucapan campuran sebagai konteks Whisper: kata Jepang di tengah kalimat Indonesia tetap ditulis
+// huruf Jepang (bukan dipaksa jadi kata Indonesia), dan sebaliknya.
+const CODE_SWITCH_PROMPT: Record<"id" | "ja", string> = {
+  id: "Miu-chan, aku mau latihan 日本語. Kemarin aku 学校に行きました terus makan ラーメン. ありがとう ya!",
+  ja: "ミウちゃん、今日はちょっと capek なの。でも日本語の勉強、頑張りたい！",
+};
+
 interface WhisperResult {
   text: string;
   score: number;
@@ -45,7 +52,9 @@ export class GroqTranscriber {
     const best = id && id.score >= ja.score ? id : ja;
 
     const normalized = best.text.toLowerCase().replace(/[.!?。！？\s]+$/u, "");
-    return HALLUCINATIONS.includes(normalized) ? "" : best.text;
+    // Rekaman hampir hening kadang membuat Whisper mengulang prompt konteks.
+    const echoesPrompt = Object.values(CODE_SWITCH_PROMPT).some((p) => best.text.includes(p.slice(0, 20)));
+    return HALLUCINATIONS.includes(normalized) || echoesPrompt ? "" : best.text;
   }
 
   private async request(file: Blob, fileName: string, language: "id" | "ja"): Promise<WhisperResult> {
@@ -55,6 +64,7 @@ export class GroqTranscriber {
     form.append("response_format", "verbose_json");
     form.append("language", language);
     form.append("temperature", "0");
+    form.append("prompt", CODE_SWITCH_PROMPT[language]);
 
     const res = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
       method: "POST",
