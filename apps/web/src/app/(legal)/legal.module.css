@@ -1,0 +1,25 @@
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-7);
+  line-height: 1.7;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.updated {
+  color: var(--color-text-muted);
+  margin-top: 0;
+}
+
+.page h2 {
+  margin-top: var(--space-6);
+}
+
+.page ul {
+  padding-left: 1.25rem;
+}
