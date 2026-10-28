@@ -175,7 +175,8 @@ export function buildContainer(env: Env, db: Db) {
     subscription: new GrantSubscription({ repo: subscriptionRepo, audit }),
   };
 
-  return { accessTokens, auth, learning, srs, conversation, adminUsers, askUc, transcriber, speaker, aiMode: env.ANTHROPIC_API_KEY ? "anthropic" : "mock" };
+  const aiMode = env.ANTHROPIC_API_KEY ? "anthropic" : env.GROQ_API_KEY ? "groq" : env.GEMINI_API_KEY ? "gemini" : "mock";
+  return { accessTokens, auth, learning, srs, conversation, adminUsers, askUc, transcriber, speaker, aiMode };
 }
 
 export type Container = ReturnType<typeof buildContainer>;
