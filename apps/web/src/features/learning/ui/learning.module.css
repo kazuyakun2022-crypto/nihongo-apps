@@ -61,7 +61,8 @@
 
 .segmented {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Jumlah pilihan menit diatur admin (1–6) */
+  grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
   gap: var(--space-2);
 }
 

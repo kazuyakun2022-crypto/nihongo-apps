@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { ReadinessCard } from "@/features/exam/ui/ReadinessCard";
 import { Mascot } from "@/shared/ui/Mascot";
+import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { learningApi } from "../data/learningApi";
 import { useChapters, useLevels } from "../application/useLevels";
 import type { ChapterSummary, LevelProgress } from "../domain/types";
@@ -52,8 +53,42 @@ function Pct({ value, total }: { value: number; total: number }) {
   const pct = total > 0 ? Math.min(100, Math.round((value / total) * 100)) : 0;
   return (
     <div className={styles.meter} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-      <div className={styles.meterFill} style={{ width: `${pct}%` }} />
+      <div className={styles.meterFill} style={{ width: `${pct}%` }}>
+        <div className={styles.meterShimmer} aria-hidden />
+      </div>
     </div>
+  );
+}
+
+function LearningPathSkeleton() {
+  return (
+    <SkeletonRegion label="Memuat bab…" style={{ display: "contents" }}>
+      <section className={styles.hero}>
+        <div className={styles.heroMain}>
+          <Skeleton width="5rem" height="0.75rem" />
+          <Skeleton width="10rem" height="1.25rem" />
+          <Skeleton height="0.5rem" radius="var(--radius-pill)" />
+        </div>
+        <div className={styles.heroMain}>
+          <Skeleton width="6rem" height="0.75rem" />
+          <SkeletonText lines={2} />
+          <Skeleton width="9rem" height="2.75rem" radius="var(--radius-pill)" />
+        </div>
+      </section>
+      <section className={styles.units}>
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className={styles.unit}>
+            <div className={styles.unitHead}>
+              <Skeleton circle width={36} />
+              <div style={{ flex: 1, display: "grid", gap: "var(--space-2)" }}>
+                <Skeleton width={`${60 - i * 8}%`} />
+                <Skeleton width="25%" height="0.75rem" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+    </SkeletonRegion>
   );
 }
 
@@ -101,6 +136,8 @@ export function LearningPath() {
           <h1 className={styles.title}>Belajar</h1>
         </div>
         <div className={styles.levelTabs} role="tablist" aria-label="Pilih level">
+          {!levels &&
+            [0, 1, 2, 3].map((i) => <Skeleton key={i} width="3.5rem" height="2.25rem" radius="var(--radius-pill)" />)}
           {(levels ?? []).map((l) => (
             <button
               key={l.id}
@@ -110,7 +147,7 @@ export function LearningPath() {
               className={`${styles.levelTab} ${l.id === levelId ? styles.levelTabActive : ""}`}
               onClick={() => setLevelId(l.id)}
               disabled={l.locked}
-              title={l.locked ? "Tersedia untuk pengguna Premium" : l.name}
+              title={l.lockReason === "level" ? "Terbuka setelah lulus tes naik tahap" : l.locked ? "Tersedia untuk pengguna Premium" : l.name}
             >
               {l.locked && <span aria-hidden>🔒</span>}
               {l.code === "PEMULA" ? "Pemula" : l.code}
@@ -120,9 +157,7 @@ export function LearningPath() {
       </header>
 
       {!chapters || !level ? (
-        <div className={styles.state}>
-          <Mascot mood="berpikir" size={72} />
-        </div>
+        <LearningPathSkeleton />
       ) : chapters.length === 0 ? (
         <div className={styles.state}>
           <Mascot mood="berpikir" size={72} />
@@ -163,11 +198,15 @@ export function LearningPath() {
             <div className={styles.heroNext}>
               {next ? (
                 <>
-                  <span className={styles.nextLabel}>{done === 0 ? "Mulai dari sini" : "Lanjutkan"}</span>
+                  <span className={styles.nextLabel}>
+                    <span className={styles.pulseDot} aria-hidden />
+                    {done === 0 ? "Mulai dari sini" : "Lanjutkan"}
+                  </span>
                   <p className={styles.nextTitle}>{next.title}</p>
                   {countLabel(next) && <p className={styles.nextMeta}>{countLabel(next)}</p>}
                   <Link href={`/belajar/${next.id}`} className={styles.primaryBtn}>
-                    {done === 0 ? "Mulai belajar" : "Lanjut belajar"} →
+                    <span>{done === 0 ? "Mulai belajar" : "Lanjut belajar"}</span>
+                    <span className={styles.btnArrow} aria-hidden>→</span>
                   </Link>
                 </>
               ) : (
@@ -207,12 +246,24 @@ export function LearningPath() {
                       </span>
                     </span>
                     <span className={styles.unitChevron} aria-hidden>
-                      {open ? "−" : "+"}
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={`${styles.chevronIcon} ${open ? styles.chevronIconOpen : ""}`}
+                      >
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
                     </span>
                   </button>
                   {open && (
                     <ol className={styles.chapterList}>
-                      {unit.chapters.map((c) => {
+                      {unit.chapters.map((c, ci) => {
                         const isNext = c.id === next?.id;
                         const inner = (
                           <>
@@ -227,7 +278,11 @@ export function LearningPath() {
                           </>
                         );
                         return (
-                          <li key={c.id}>
+                          <li
+                            key={c.id}
+                            className={styles.chapterItem}
+                            style={{ "--ci": ci } as React.CSSProperties}
+                          >
                             {c.status === "locked" ? (
                               <div className={`${styles.chapterRow} ${styles.chapterRowLocked}`} title="Selesaikan bab sebelumnya dulu">
                                 {inner}

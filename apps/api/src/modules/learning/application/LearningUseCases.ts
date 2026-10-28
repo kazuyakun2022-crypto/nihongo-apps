@@ -1,13 +1,25 @@
 import { Errors } from "../../../shared/domain/errors";
 import type { AuthUser, Clock } from "../../../shared/domain/types";
 import type { UserRepository } from "../../auth/domain/ports";
-import { PASSING_QUIZ_SCORE, canAccessLevel, type LearningRepository, type LevelProgress, type QuizAnswer } from "../domain/Learning";
+import type { OnboardingConfig } from "../domain/Onboarding";
+import { PASSING_QUIZ_SCORE, levelLockReason, type LearningRepository, type Level, type LevelProgress, type QuizAnswer } from "../domain/Learning";
+
+/** Tolak akses ke level yang terkunci untuk pelajar ini, dengan pesan sesuai alasannya. */
+async function assertLevelOpen(repo: LearningRepository, user: AuthUser, level: Level) {
+  const reason = levelLockReason(level, user.role, await repo.getLevelCeiling(user.id));
+  if (reason === "premium") throw Errors.forbidden("Level ini tersedia untuk pengguna Premium.");
+  if (reason === "level") throw Errors.forbidden("Level ini terbuka setelah kamu lulus tes naik tahap.");
+}
 
 export class ListLevels {
   constructor(private readonly deps: { repo: LearningRepository }) {}
   async execute(user: AuthUser) {
-    const levels = await this.deps.repo.listLevels();
-    return levels.map((l) => ({ ...l, locked: !canAccessLevel(l, user.role) }));
+    const [levels, ceiling] = await Promise.all([this.deps.repo.listLevels(), this.deps.repo.getLevelCeiling(user.id)]);
+    const isAdmin = user.role === "admin" || user.role === "super_admin";
+    return levels.map((l) => {
+      const lockReason = isAdmin ? null : levelLockReason(l, user.role, ceiling);
+      return { ...l, locked: isAdmin || lockReason !== null, lockReason };
+    });
   }
 }
 
@@ -19,7 +31,7 @@ export class ListChapters {
     }
     const level = await this.deps.repo.findLevel(levelId);
     if (!level) throw Errors.notFound("Level");
-    if (!canAccessLevel(level, user.role)) throw Errors.forbidden("Level ini tersedia untuk pengguna Premium.");
+    await assertLevelOpen(this.deps.repo, user, level);
     return this.deps.repo.listChaptersWithProgress(levelId, user.id);
   }
 }
@@ -33,7 +45,7 @@ export class GetChapter {
     const chapter = await this.deps.repo.getChapter(chapterId);
     if (!chapter) throw Errors.notFound("Bab");
     const level = await this.deps.repo.findLevel(chapter.levelId);
-    if (level && !canAccessLevel(level, user.role)) throw Errors.forbidden("Bab ini tersedia untuk pengguna Premium.");
+    if (level) await assertLevelOpen(this.deps.repo, user, level);
     return chapter;
   }
 }
@@ -59,6 +71,8 @@ export class SubmitQuiz {
     if (answers.length === 0) throw Errors.validation("Jawaban tidak boleh kosong.");
     const chapter = await this.deps.repo.getChapter(chapterId);
     if (!chapter) throw Errors.notFound("Bab");
+    const level = await this.deps.repo.findLevel(chapter.levelId);
+    if (level) await assertLevelOpen(this.deps.repo, user, level);
     const { score, results } = await this.deps.repo.gradeQuizAnswers(chapterId, answers);
     const now = this.deps.clock.now();
     const passed = score >= PASSING_QUIZ_SCORE;
@@ -88,5 +102,18 @@ export class GetLevelProgress {
       };
     }
     return this.deps.repo.getLevelProgress(user.id, levelId);
+  }
+}
+
+/** Isi layar pendaftaran untuk siswa: hanya titik mulai yang aktif, lengkap dengan kode level. */
+export class GetOnboardingOptions {
+  constructor(private readonly deps: { repo: LearningRepository; loadConfig: () => Promise<OnboardingConfig> }) {}
+  async execute() {
+    const [config, levels] = await Promise.all([this.deps.loadConfig(), this.deps.repo.listLevels()]);
+    const starts = config.starts.flatMap((s) => {
+      const level = levels.find((l) => l.id === s.levelId);
+      return s.enabled && level ? [{ ...s, levelCode: level.code, levelName: level.name }] : [];
+    });
+    return { ...config, starts };
   }
 }

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { contentApi, type ChapterRow, type ContentLevel, type ContentStatus } from "@/features/admin/data/contentApi";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
+import { SkeletonRegion, SkeletonTableRows } from "@/shared/ui/Skeleton";
 import { FormModal } from "./FormModal";
 import { STATUS_LABEL, useFlash } from "./ContentShell";
 import styles from "./content.module.css";
@@ -15,7 +16,12 @@ export function useLevelParam(levels: ContentLevel[]) {
   const router = useRouter();
   const fromUrl = Number(params.get("level"));
   const levelId = levels.some((l) => l.id === fromUrl) ? fromUrl : levels[0]?.id;
-  const select = (id: number) => router.replace(`?level=${id}`, { scroll: false });
+  const select = (id: number) => {
+    // Pertahankan parameter lain (mis. jenis ujian) saat berganti level
+    const sp = new URLSearchParams(params.toString());
+    sp.set("level", String(id));
+    router.replace(`?${sp}`, { scroll: false });
+  };
   return [levelId, select] as const;
 }
 
@@ -146,7 +152,13 @@ export function ChapterManager() {
         {isFiltered && <p className={styles.muted}>Urutan bab hanya bisa diubah saat filter dikosongkan.</p>}
 
         {loading ? (
-          <p className={adminStyles.emptyState}>Memuat bab…</p>
+          <SkeletonRegion label="Memuat bab…" className={adminStyles.tableWrap}>
+            <table className={adminStyles.table}>
+              <tbody>
+                <SkeletonTableRows rows={6} columns={4} />
+              </tbody>
+            </table>
+          </SkeletonRegion>
         ) : filtered.length === 0 ? (
           <p className={adminStyles.emptyState}>{chapters.length ? "Tidak ada bab yang cocok." : "Belum ada bab di level ini."}</p>
         ) : (

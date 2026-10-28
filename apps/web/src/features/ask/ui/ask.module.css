@@ -250,6 +250,7 @@
 
 .aiRow {
   align-self: flex-start;
+  align-items: flex-start;
 }
 
 .aiAvatarImg {
@@ -333,42 +334,36 @@
 }
 
 .userBubble {
+  position: relative;
   background: linear-gradient(135deg, var(--color-primary, #b31b28) 0%, #d9381e 100%);
   color: #ffffff;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 14px rgba(179, 27, 40, 0.25);
+  box-shadow: 0 4px 14px rgba(179, 27, 40, 0.22);
   transform-origin: bottom right;
-  animation: userBubblePop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
-             userBubbleGlow 0.6s ease-out both;
+  animation: userWaterWave 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes userBubblePop {
+@keyframes userWaterWave {
   0% {
     opacity: 0;
-    transform: scale(0.65) translateY(14px) rotate(1.5deg);
+    transform: scale(0.88, 0.76) translateY(12px);
+    border-radius: 28px 28px 10px 26px;
+    filter: blur(1px);
   }
-  60% {
-    opacity: 1;
-    transform: scale(1.035) translateY(-3px) rotate(-0.5deg);
+  42% {
+    opacity: 0.96;
+    transform: scale(1.02, 0.985) translateY(-2px);
+    border-radius: 22px 20px 5px 20px;
+    filter: blur(0);
   }
-  85% {
-    transform: scale(0.985) translateY(1px) rotate(0.2deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0) rotate(0deg);
-  }
-}
-
-@keyframes userBubbleGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(179, 27, 40, 0.4), 0 4px 14px rgba(179, 27, 40, 0.25);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(179, 27, 40, 0), 0 6px 20px rgba(179, 27, 40, 0.35);
+  75% {
+    transform: scale(0.995, 1.005) translateY(1px);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(179, 27, 40, 0), 0 4px 14px rgba(179, 27, 40, 0.25);
+    opacity: 1;
+    transform: scale(1, 1) translateY(0);
+    border-radius: 18px;
+    border-bottom-right-radius: 4px;
   }
 }
 
@@ -377,54 +372,68 @@
 }
 
 .aiBubble {
+  position: relative;
   background: var(--color-surface, #ffffff);
   border: 1px solid var(--color-border, #e2e8f0);
   border-bottom-left-radius: 4px;
   color: var(--color-text, #0f172a);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
   transform-origin: bottom left;
-  animation: aiBubblePop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
-             aiBubbleGlow 0.6s ease-out both;
+  animation: aiWaterWave 0.68s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.aiBubble > * {
-  animation: contentFadeIn 0.25s ease-out 0.06s both;
+/* Gelombang riak air halus yang menyebar dari gelembung */
+.aiBubble::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1.5px solid rgba(177, 42, 58, 0.28);
+  animation: waterRippleWave 1.15s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes contentFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes aiBubblePop {
+@keyframes aiWaterWave {
   0% {
     opacity: 0;
-    transform: scale(0.65) translateY(16px) rotate(-2deg);
-    filter: brightness(1.05);
+    transform: scale(0.85, 0.72) translateY(14px);
+    border-radius: 28px 28px 26px 10px;
+    filter: blur(1.5px);
   }
-  60% {
-    opacity: 1;
-    transform: scale(1.04) translateY(-3px) rotate(0.6deg);
-    filter: brightness(1);
+  38% {
+    opacity: 0.96;
+    transform: scale(1.025, 0.985) translateY(-2px);
+    border-radius: 20px 22px 20px 5px;
+    filter: blur(0px);
   }
-  85% {
-    transform: scale(0.985) translateY(1px) rotate(-0.2deg);
+  70% {
+    transform: scale(0.992, 1.008) translateY(1px);
+    border-radius: 19px 18px 18px 4px;
   }
   100% {
     opacity: 1;
-    transform: scale(1) translateY(0) rotate(0deg);
+    transform: scale(1, 1) translateY(0);
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    filter: blur(0);
   }
 }
 
-@keyframes aiBubbleGlow {
+@keyframes waterRippleWave {
   0% {
-    box-shadow: 0 0 0 0 rgba(179, 27, 40, 0.2), 0 2px 8px rgba(0, 0, 0, 0.04);
+    transform: scale(0.96);
+    opacity: 0.75;
+    box-shadow: 0 0 0 0 rgba(177, 42, 58, 0.2);
   }
-  50% {
-    box-shadow: 0 0 0 7px rgba(179, 27, 40, 0), 0 4px 16px rgba(0, 0, 0, 0.08);
+  45% {
+    transform: scale(1.035);
+    opacity: 0.35;
+    box-shadow: 0 0 12px 2px rgba(177, 42, 58, 0.12);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(179, 27, 40, 0), 0 2px 8px rgba(0, 0, 0, 0.04);
+    transform: scale(1.075);
+    opacity: 0;
+    box-shadow: 0 0 20px 4px rgba(177, 42, 58, 0);
   }
 }
 
@@ -438,6 +447,7 @@
 }
 
 .typingBubble {
+  position: relative;
   background: var(--color-surface, #ffffff);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 18px;
@@ -448,25 +458,24 @@
   gap: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transform-origin: bottom left;
-  animation: typingBubblePop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
-             typingFloat 3s ease-in-out infinite 0.4s;
+  animation: typingWaterWave 0.58s cubic-bezier(0.16, 1, 0.3, 1) both,
+             typingFloat 3.2s ease-in-out infinite 0.6s;
 }
 
-@keyframes typingBubblePop {
+@keyframes typingWaterWave {
   0% {
     opacity: 0;
-    transform: scale(0.6) translateY(12px);
+    transform: scale(0.85, 0.75) translateY(12px);
+    filter: blur(1px);
   }
-  65% {
-    opacity: 1;
-    transform: scale(1.05) translateY(-2px);
-  }
-  85% {
-    transform: scale(0.98) translateY(1px);
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02, 0.985) translateY(-2px);
+    filter: blur(0);
   }
   100% {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: scale(1, 1) translateY(0);
   }
 }
 
@@ -492,15 +501,15 @@
   height: 6px;
   border-radius: 50%;
   background: var(--color-primary, #b31b28);
-  animation: dotBounce 1.4s ease-in-out infinite;
+  animation: waterDotRipple 1.4s ease-in-out infinite;
 }
 
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
 
-@keyframes dotBounce {
-  0%, 60%, 100% { transform: translateY(0) scale(0.85); opacity: 0.35; }
-  30%            { transform: translateY(-6px) scale(1.2); opacity: 1; }
+@keyframes waterDotRipple {
+  0%, 100% { transform: translateY(0) scale(0.85); opacity: 0.4; }
+  50%      { transform: translateY(-4px) scale(1.2); opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

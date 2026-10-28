@@ -1,8 +1,11 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { contentApi, type ContentLevel, type ExamConfig, type ExamQuestionItem, type ExamSection } from "@/features/admin/data/contentApi";
+import { contentApi, type ContentLevel, type ExamConfig, type ExamQuestionItem, type ExamSection, type ExamType } from "@/features/admin/data/contentApi";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
+import { Skeleton, SkeletonRegion, SkeletonTableRows } from "@/shared/ui/Skeleton";
 import { Field, type FieldDef, type FormValues } from "./FormModal";
 import { ExerciseSummary } from "./ChapterEditor";
 import { ExerciseForm } from "./ExerciseForm";
@@ -18,7 +21,16 @@ const SECTIONS: { value: ExamSection; label: string }[] = [
 ];
 const sectionLabel = (s: ExamSection) => SECTIONS.find((x) => x.value === s)?.label ?? s;
 
-const DEFAULT_CONFIG: ExamConfig = { questionCount: 30, timeLimitMin: 25, passScore: 75, sectionMinScore: 60, cooldownHours: 24, minChapterCompletion: 80 };
+/** Aturan awal di formulir sebelum admin menyimpan; aturan penempatan sama dengan bawaan server. */
+const DEFAULT_CONFIG: Record<ExamType, ExamConfig> = {
+  level_up: { questionCount: 30, timeLimitMin: 25, passScore: 75, sectionMinScore: 60, cooldownHours: 24, minChapterCompletion: 80 },
+  placement: { questionCount: 20, timeLimitMin: 20, passScore: 70, sectionMinScore: 0, cooldownHours: 0, minChapterCompletion: 0 },
+};
+
+const EXAM_TYPES: { value: ExamType; param: string; label: string }[] = [
+  { value: "level_up", param: "naik-tahap", label: "Tes naik tahap" },
+  { value: "placement", param: "penempatan", label: "Tes penempatan (saat daftar)" },
+];
 
 const CONFIG_FIELDS: { key: keyof ExamConfig; label: string; hint: string; min: number; max: number }[] = [
   { key: "questionCount", label: "Jumlah soal", hint: "Dibagi rata ke 4 bagian.", min: 4, max: 200 },
@@ -38,6 +50,9 @@ const EXAM_FIELDS: FieldDef[] = [
 
 export function ExamManager() {
   const flash = useFlash();
+  const params = useSearchParams();
+  const router = useRouter();
+  const examType: ExamType = params.get("jenis") === "penempatan" ? "placement" : "level_up";
   const [levels, setLevels] = useState<ContentLevel[]>([]);
   const [levelId, selectLevel] = useLevelParam(levels);
   const [config, setConfig] = useState<ExamConfig | null>(null);
@@ -57,8 +72,8 @@ export function ExamManager() {
   const load = useCallback(async () => {
     if (!levelId) return;
     try {
-      const r = await contentApi.exam(levelId, filter);
-      setConfig(r.config ?? DEFAULT_CONFIG);
+      const r = await contentApi.exam(levelId, examType, filter);
+      setConfig(r.config ?? DEFAULT_CONFIG[examType]);
       setSavedConfig(r.config);
       setQuestions(r.questions.map((q) => ({ ...q, options: q.options as string[] })));
       setPerSection(r.publishedPerSection);
@@ -67,7 +82,7 @@ export function ExamManager() {
     } catch (err) {
       flash.fail(err);
     }
-  }, [levelId, filter, flash.fail]);
+  }, [levelId, examType, filter, flash.fail]);
   useEffect(() => {
     void load();
   }, [load]);
@@ -79,7 +94,10 @@ export function ExamManager() {
   }, [search]);
 
   const level = levels.find((l) => l.id === levelId);
-  const isTopLevel = !!level && level.id === Math.max(...levels.map((l) => l.id));
+  const isPlacement = examType === "placement";
+  // Level tertinggi tidak punya ujian naik level; tes penempatan tetap bisa diatur untuk semua level
+  const isTopLevel = !isPlacement && !!level && level.id === Math.max(...levels.map((l) => l.id));
+  const configFields = isPlacement ? CONFIG_FIELDS.filter((f) => f.key !== "minChapterCompletion") : CONFIG_FIELDS;
   const configDirty = JSON.stringify(config) !== JSON.stringify(savedConfig);
   const neededPerSection = config ? Math.floor(config.questionCount / SECTIONS.length) : 0;
   const pages = Math.max(1, Math.ceil(total / pageSize));
@@ -87,7 +105,7 @@ export function ExamManager() {
   async function saveConfig() {
     if (!levelId || !config) return;
     try {
-      await contentApi.saveExamConfig(levelId, config);
+      await contentApi.saveExamConfig(levelId, examType, config);
       setSavedConfig(config);
       flash.ok("Pengaturan ujian disimpan.");
     } catch (err) {
@@ -106,9 +124,38 @@ export function ExamManager() {
     }
   }
 
+  function selectType(type: ExamType) {
+    const sp = new URLSearchParams(params.toString());
+    sp.set("jenis", EXAM_TYPES.find((t) => t.value === type)!.param);
+    setConfig(null);
+    setSavedConfig(null);
+    setFilter({ search: "", page: 1 });
+    setSearch("");
+    router.replace(`?${sp}`, { scroll: false });
+  }
+
   return (
     <>
-      <LevelPicker levels={levels} value={levelId} onChange={(id) => { selectLevel(id); setFilter({ search: "", page: 1 }); setSearch(""); }} meta={(l) => `${l.examQuestions} soal`} />
+      <div className={adminStyles.tabs} role="tablist" aria-label="Jenis tes">
+        {EXAM_TYPES.map((t) => (
+          <button
+            key={t.value}
+            type="button"
+            role="tab"
+            aria-selected={examType === t.value}
+            className={`${adminStyles.tabBtn} ${examType === t.value ? adminStyles.tabBtnActive : ""}`}
+            onClick={() => selectType(t.value)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <LevelPicker
+        levels={levels}
+        value={levelId}
+        onChange={(id) => { selectLevel(id); setConfig(null); setFilter({ search: "", page: 1 }); setSearch(""); }}
+        meta={(l) => `${isPlacement ? l.placementQuestions : l.examQuestions} soal`}
+      />
       {flash.node}
 
       {isTopLevel ? (
@@ -119,12 +166,34 @@ export function ExamManager() {
         <>
           <section className={adminStyles.panel}>
             <div className={styles.toolbar}>
-              <h2 className={adminStyles.panelTitle}>Aturan ujian {level?.code} → level berikutnya</h2>
-              {!savedConfig && <span className={styles.warn}>Belum diatur, siswa belum bisa ujian.</span>}
+              <h2 className={adminStyles.panelTitle}>
+                {isPlacement ? `Aturan tes penempatan untuk mulai di ${level?.code ?? ""}` : `Aturan ujian ${level?.code ?? ""} → level berikutnya`}
+              </h2>
+              {config && !savedConfig && (
+                <span className={styles.warn}>
+                  {isPlacement ? "Belum diatur, tes memakai aturan bawaan di bawah." : "Belum diatur, siswa belum bisa ujian."}
+                </span>
+              )}
             </div>
+            {isPlacement && (
+              <p className={styles.muted}>
+                Dikerjakan siswa yang memilih mulai di {level?.name} saat mendaftar. Atur apakah titik mulai ini wajib tes di tab{" "}
+                <Link href="/admin/konten/pendaftaran">Pendaftaran</Link>.
+              </p>
+            )}
+            {!config && (
+              <SkeletonRegion label="Memuat aturan ujian…" className={styles.formGrid}>
+                {configFields.map((f) => (
+                  <div key={f.key} className={styles.field}>
+                    <Skeleton width="60%" height="0.875rem" />
+                    <Skeleton height="2.5rem" radius="8px" />
+                  </div>
+                ))}
+              </SkeletonRegion>
+            )}
             {config && (
               <div className={styles.formGrid}>
-                {CONFIG_FIELDS.map((f) => (
+                {configFields.map((f) => (
                   <div key={f.key} className={styles.field}>
                     <label htmlFor={`cfg-${f.key}`} className={adminStyles.fieldLabel}>{f.label}</label>
                     <input
@@ -163,7 +232,12 @@ export function ExamManager() {
                 );
               })}
             </div>
-            <p className={styles.muted}>Setiap ujian mengambil {neededPerSection} soal acak dari tiap bagian. Semakin banyak soal, semakin bervariasi ujiannya.</p>
+            <p className={styles.muted}>
+              Setiap tes mengambil {neededPerSection} soal acak dari tiap bagian; kekurangan di satu bagian diisi dari bagian lain.
+              {isPlacement
+                ? " Selama bank soal penempatan masih kosong, tes memakai soal pilihan ganda dari bab level sebelumnya."
+                : " Selama bank soal belum cukup untuk satu ujian, ujian memakai soal pilihan ganda dari bab level ini."}
+            </p>
           </section>
         </>
       )}
@@ -192,7 +266,15 @@ export function ExamManager() {
           </select>
         </div>
 
-        {questions.length === 0 ? (
+        {!config ? (
+          <SkeletonRegion label="Memuat soal…" className={adminStyles.tableWrap}>
+            <table className={adminStyles.table}>
+              <tbody>
+                <SkeletonTableRows rows={6} columns={3} />
+              </tbody>
+            </table>
+          </SkeletonRegion>
+        ) : questions.length === 0 ? (
           <p className={adminStyles.emptyState}>Belum ada soal.</p>
         ) : (
           <div className={adminStyles.tableWrap}>
@@ -243,7 +325,7 @@ export function ExamManager() {
           defaultSection={filter.section ?? "kosakata"}
           onClose={() => setEditing(null)}
           onSubmit={async (data) => {
-            if (editing === "new") await contentApi.createExamQuestion(levelId, data);
+            if (editing === "new") await contentApi.createExamQuestion(levelId, examType, data);
             else await contentApi.updateExamQuestion(editing.id, data);
             setEditing(null);
             await load();

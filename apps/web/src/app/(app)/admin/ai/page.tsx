@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { adminApi, type AiPromptItem } from "@/features/admin/data/adminApi";
 import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
+import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import styles from "@/app/(app)/admin/admin.module.css";
 
 export default function AdminAiPage() {
@@ -104,7 +105,19 @@ export default function AdminAiPage() {
         </div>
 
         {loading ? (
-          <p className={styles.emptyState}>Memuat konfigurasi AI...</p>
+          <SkeletonRegion label="Memuat konfigurasi AI…" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {[0, 1, 2].map((i) => (
+              <div key={i} className={styles.promptCard}>
+                <div className={styles.promptHead}>
+                  <Skeleton width="12rem" height="1.5rem" radius="6px" />
+                  <Skeleton width="8rem" height="0.75rem" />
+                </div>
+                <Skeleton width="10rem" height="0.875rem" />
+                <Skeleton height="7rem" radius="8px" />
+                <SkeletonText lines={1} lastWidth="40%" />
+              </div>
+            ))}
+          </SkeletonRegion>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {prompts.map((p, idx) => (

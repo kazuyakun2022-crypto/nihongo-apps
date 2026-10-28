@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { adminApi, type SystemStats } from "@/features/admin/data/adminApi";
 import { Mascot } from "@/shared/ui/Mascot";
+import { Skeleton } from "@/shared/ui/Skeleton";
 import styles from "./adminExecutiveBeranda.module.css";
 
 export function AdminExecutiveBeranda() {
@@ -60,7 +61,7 @@ export function AdminExecutiveBeranda() {
             <span className={styles.statIcon}>👥</span>
           </div>
           <span className={styles.statValue}>
-            {loading ? "…" : stats?.totalUsers.toLocaleString("id") ?? "0"}
+            {loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.totalUsers.toLocaleString("id") ?? "0"}
           </span>
           <span className={styles.statLabel}>Akun terdaftar</span>
         </div>
@@ -71,7 +72,7 @@ export function AdminExecutiveBeranda() {
             <span className={styles.statIcon}>🟢</span>
           </div>
           <span className={styles.statValue}>
-            {loading ? "…" : stats?.activeUsers.toLocaleString("id") ?? "0"}
+            {loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.activeUsers.toLocaleString("id") ?? "0"}
           </span>
           <span className={styles.statLabel}>Status normal</span>
         </div>
@@ -82,7 +83,7 @@ export function AdminExecutiveBeranda() {
             <span className={styles.statIcon}>⭐</span>
           </div>
           <span className={styles.statValue}>
-            {loading ? "…" : stats?.roleBreakdown.premium.toLocaleString("id") ?? "0"}
+            {loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.roleBreakdown.premium.toLocaleString("id") ?? "0"}
           </span>
           <span className={styles.statLabel}>Pelajar VIP</span>
         </div>
@@ -93,7 +94,7 @@ export function AdminExecutiveBeranda() {
             <span className={styles.statIcon}>💬</span>
           </div>
           <span className={styles.statValue}>
-            {loading ? "…" : stats?.totalConversations.toLocaleString("id") ?? "0"}
+            {loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.totalConversations.toLocaleString("id") ?? "0"}
           </span>
           <span className={styles.statLabel}>Sesi dialog tersimpan</span>
         </div>

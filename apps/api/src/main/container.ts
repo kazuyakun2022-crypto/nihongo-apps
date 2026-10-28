@@ -29,7 +29,8 @@ import { UpdateAvatar } from "../modules/auth/application/UpdateAvatar";
 
 // Learning
 import { PrismaLearningRepository } from "../modules/learning/infrastructure/PrismaLearningRepository";
-import { GetChapter, GetLevelProgress, GetNextChapter, ListChapters, ListLevels, SubmitQuiz } from "../modules/learning/application/LearningUseCases";
+import { PrismaOnboardingGuard, loadOnboardingConfig } from "../modules/learning/infrastructure/onboardingSettings";
+import { GetChapter, GetLevelProgress, GetNextChapter, GetOnboardingOptions, ListChapters, ListLevels, SubmitQuiz } from "../modules/learning/application/LearningUseCases";
 
 // SRS
 import { PrismaSrsRepository } from "../modules/srs/infrastructure/PrismaSrsRepository";
@@ -50,9 +51,6 @@ import { GroqTranscriber } from "../modules/ask/infrastructure/GroqTranscriber";
 import { GeminiTts } from "../shared/infrastructure/geminiTts";
 import { AskQuestion } from "../modules/ask/application/AskUseCase";
 
-// Exam
-import { PrismaExamRepository } from "../modules/exam/infrastructure/PrismaExamRepository";
-import { GetPlacementQuestions, SubmitPlacementExam } from "../modules/exam/application/ExamUseCases";
 
 // Users (admin & super_admin)
 import {
@@ -106,7 +104,7 @@ export function buildContainer(env: Env, db: Db) {
     requestPasswordReset: new RequestPasswordReset({ users, oneTimeTokens, tokens, email, clock, webOrigin: env.WEB_ORIGIN }),
     resetPassword: new ResetPassword({ users, oneTimeTokens, sessions, tokens, hasher, clock }),
     getCurrentUser: new GetCurrentUser({ users }),
-    completeOnboarding: new CompleteOnboarding({ users }),
+    completeOnboarding: new CompleteOnboarding({ users, guard: new PrismaOnboardingGuard(db) }),
     updateAvatar: new UpdateAvatar({ users }),
   };
 
@@ -119,6 +117,7 @@ export function buildContainer(env: Env, db: Db) {
     getNextChapter: new GetNextChapter({ repo: learningRepo, users }),
     submitQuiz: new SubmitQuiz({ repo: learningRepo, clock }),
     getLevelProgress: new GetLevelProgress({ repo: learningRepo }),
+    getOnboardingOptions: new GetOnboardingOptions({ repo: learningRepo, loadConfig: () => loadOnboardingConfig(db) }),
   };
 
   // ── SRS ──
@@ -156,13 +155,6 @@ export function buildContainer(env: Env, db: Db) {
     end: new EndConversation(convDeps),
   };
 
-  // ── Exam ──
-  const examRepo = new PrismaExamRepository(db);
-  const exam = {
-    getPlacementQuestions: new GetPlacementQuestions({ repo: examRepo }),
-    submitPlacementExam: new SubmitPlacementExam({ repo: examRepo }),
-  };
-
   // ── Admin & Super Admin ──
   const adminRepo = new PrismaUserAdminRepository(db);
   const audit = new PrismaAuditLogger(db);
@@ -183,7 +175,7 @@ export function buildContainer(env: Env, db: Db) {
     subscription: new GrantSubscription({ repo: subscriptionRepo, audit }),
   };
 
-  return { accessTokens, auth, learning, srs, conversation, exam, adminUsers, askUc, transcriber, speaker, aiMode: env.ANTHROPIC_API_KEY ? "anthropic" : "mock" };
+  return { accessTokens, auth, learning, srs, conversation, adminUsers, askUc, transcriber, speaker, aiMode: env.ANTHROPIC_API_KEY ? "anthropic" : "mock" };
 }
 
 export type Container = ReturnType<typeof buildContainer>;

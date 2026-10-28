@@ -78,12 +78,19 @@ export function FormattedChatMessage({ content, isAi = false, timestamp }: Forma
   const lines = cleanedContent.split("\n");
   const blocks: React.ReactNode[] = [];
   let currentList: { type: "bullet" | "number"; items: string[] } | null = null;
+  let blockCount = 0;
 
   function flushList() {
     if (!currentList) return;
+    const blockIndex = blockCount++;
+    const staggerStyle = isAi ? ({ "--stagger-index": blockIndex } as React.CSSProperties) : undefined;
     if (currentList.type === "bullet") {
       blocks.push(
-        <ul key={`ul-${blocks.length}`} className={styles.bulletList}>
+        <ul
+          key={`ul-${blocks.length}`}
+          className={`${styles.bulletList} ${isAi ? styles.staggerBlock : ""}`}
+          style={staggerStyle}
+        >
           {currentList.items.map((item, i) => (
             <li key={i} className={styles.bulletItem}>
               {renderInlineTokens(item)}
@@ -93,7 +100,11 @@ export function FormattedChatMessage({ content, isAi = false, timestamp }: Forma
       );
     } else {
       blocks.push(
-        <ol key={`ol-${blocks.length}`} className={styles.numberList}>
+        <ol
+          key={`ol-${blocks.length}`}
+          className={`${styles.numberList} ${isAi ? styles.staggerBlock : ""}`}
+          style={staggerStyle}
+        >
           {currentList.items.map((item, i) => (
             <li key={i} className={styles.numberItem}>
               {renderInlineTokens(item)}
@@ -117,8 +128,13 @@ export function FormattedChatMessage({ content, isAi = false, timestamp }: Forma
     if (rawLine.startsWith("### ") || rawLine.startsWith("## ")) {
       flushList();
       const title = rawLine.replace(/^#+\s*/, "");
+      const blockIndex = blockCount++;
       blocks.push(
-        <h4 key={`h-${i}`} className={styles.blockHeading}>
+        <h4
+          key={`h-${i}`}
+          className={`${styles.blockHeading} ${isAi ? styles.staggerBlock : ""}`}
+          style={isAi ? ({ "--stagger-index": blockIndex } as React.CSSProperties) : undefined}
+        >
           {renderInlineTokens(title)}
         </h4>
       );
@@ -150,8 +166,13 @@ export function FormattedChatMessage({ content, isAi = false, timestamp }: Forma
     // Blockquote (> )
     if (rawLine.startsWith("> ")) {
       flushList();
+      const blockIndex = blockCount++;
       blocks.push(
-        <div key={`quote-${i}`} className={styles.quoteBox}>
+        <div
+          key={`quote-${i}`}
+          className={`${styles.quoteBox} ${isAi ? styles.staggerBlock : ""}`}
+          style={isAi ? ({ "--stagger-index": blockIndex } as React.CSSProperties) : undefined}
+        >
           {renderInlineTokens(rawLine.slice(2))}
         </div>
       );
@@ -160,8 +181,13 @@ export function FormattedChatMessage({ content, isAi = false, timestamp }: Forma
 
     // Normal paragraph
     flushList();
+    const blockIndex = blockCount++;
     blocks.push(
-      <p key={`p-${i}`} className={styles.paragraph}>
+      <p
+        key={`p-${i}`}
+        className={`${styles.paragraph} ${isAi ? styles.staggerBlock : ""}`}
+        style={isAi ? ({ "--stagger-index": blockIndex } as React.CSSProperties) : undefined}
+      >
         {renderInlineTokens(rawLine)}
       </p>
     );
@@ -213,7 +239,10 @@ export function FormattedChatMessage({ content, isAi = false, timestamp }: Forma
       {blocks}
 
       {isAi && (
-        <div className={styles.messageFooter}>
+        <div
+          className={styles.messageFooter}
+          style={{ "--total-blocks": blockCount } as React.CSSProperties}
+        >
           <div className={styles.actionsLeft}>
             <button
               type="button"

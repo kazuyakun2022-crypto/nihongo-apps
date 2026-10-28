@@ -47,9 +47,10 @@ const oauthSchema = z.object({ provider: z.enum(["google", "apple"]), idToken: z
 const tokenSchema = z.object({ token: z.string().min(1) });
 const forgotSchema = z.object({ email: z.string().email() });
 const onboardingSchema = z.object({
-  currentLevelId: z.number().int().min(1).max(6),
-  learningGoal: z.enum(["jlpt", "kerja", "hobi", "wisata"]),
-  dailyTargetMin: z.union([z.literal(5), z.literal(10), z.literal(20)]),
+  // Pilihan yang sah diatur admin; dicek CompleteOnboarding
+  currentLevelId: z.number().int().min(1),
+  learningGoal: z.string().trim().min(1).max(50),
+  dailyTargetMin: z.number().int().min(1).max(240),
   gender: z.enum(["male", "female", "other"]).optional(),
 });
 const resetSchema = z.object({ token: z.string().min(1), password: z.string().min(8).max(128) });

@@ -3,9 +3,12 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { Errors } from "../../../shared/domain/errors";
 import { asyncHandler } from "../../../shared/http/asyncHandler";
+import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
 import { EXERCISE_TYPES, exerciseProblem, type ExerciseType } from "../../learning/domain/Exercise";
+import { withLevels } from "../../learning/domain/Onboarding";
+import { loadOnboardingConfig, saveOnboardingConfig } from "../../learning/infrastructure/onboardingSettings";
 
 /**
  * Pengelolaan konten belajar & ujian oleh admin (dipasang di /api/admin/content, sudah melewati requireRole("admin")).
@@ -97,6 +100,36 @@ const examConfigSchema = z.object({
   minChapterCompletion: z.number().int().min(0).max(100),
 });
 
+/** Jenis ujian yang dikelola: tes naik tahap (bawaan) atau tes penempatan saat daftar. */
+const examTypeQuery = (query: unknown) =>
+  parseBody(z.object({ type: z.enum(["level_up", "placement"]).default("level_up") }), query).type;
+
+const text = (max: number) => z.string().trim().min(1).max(max);
+const onboardingSchema = z
+  .object({
+    title: text(120),
+    goalQuestion: text(120),
+    goals: z
+      .array(z.object({ value: z.string().trim().regex(/^[a-z0-9_-]{1,50}$/, "Kunci tujuan hanya huruf kecil, angka, - atau _."), label: text(80) }))
+      .min(1, "Minimal satu tujuan belajar.")
+      .max(12),
+    minutesQuestion: text(120),
+    minuteOptions: z.array(z.number().int().min(1).max(240)).min(1, "Minimal satu pilihan menit.").max(6),
+    defaultMinutes: z.number().int(),
+    startQuestion: text(120),
+    starts: z
+      .array(z.object({ levelId: z.number().int().min(1), label: text(80), hint: z.string().trim().max(120), enabled: z.boolean(), requiresTest: z.boolean() }))
+      .min(1),
+  })
+  .superRefine((c, ctx) => {
+    const fail = (message: string) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+    if (new Set(c.goals.map((g) => g.value)).size !== c.goals.length) fail("Kunci tujuan belajar tidak boleh kembar.");
+    if (new Set(c.minuteOptions).size !== c.minuteOptions.length) fail("Pilihan menit tidak boleh kembar.");
+    if (!c.minuteOptions.includes(c.defaultMinutes)) fail("Menit bawaan harus salah satu pilihan menit.");
+    // Siswa yang gagal tes penempatan harus tetap punya titik mulai
+    if (!c.starts.some((s) => s.enabled && !s.requiresTest)) fail("Minimal satu titik mulai aktif tanpa tes.");
+  });
+
 const examQuestionSchema = z
   .object({
     section: z.enum(["kosakata", "tata_bahasa", "membaca", "mendengar"]),
@@ -113,15 +146,17 @@ export function contentAdminRoutes() {
     const [levels, chapterCounts, questionCounts, configs] = await Promise.all([
       prisma.level.findMany({ orderBy: { sortOrder: "asc" } }),
       prisma.chapter.groupBy({ by: ["levelId", "status"], _count: { _all: true } }),
-      prisma.examQuestion.groupBy({ by: ["levelId"], _count: { _all: true } }),
-      prisma.levelExam.findMany({ where: { type: "level_up" } }),
+      prisma.examQuestion.groupBy({ by: ["levelId", "examType"], _count: { _all: true } }),
+      prisma.levelExam.findMany(),
     ]);
     res.json({
       levels: levels.map((l) => ({
         ...l,
         chapters: Object.fromEntries(chapterCounts.filter((c) => c.levelId === l.id).map((c) => [c.status, c._count._all])),
-        examQuestions: questionCounts.find((q) => q.levelId === l.id)?._count._all ?? 0,
-        hasExam: configs.some((c) => c.levelId === l.id),
+        examQuestions: questionCounts.find((q) => q.levelId === l.id && q.examType === "level_up")?._count._all ?? 0,
+        placementQuestions: questionCounts.find((q) => q.levelId === l.id && q.examType === "placement")?._count._all ?? 0,
+        hasExam: configs.some((c) => c.levelId === l.id && c.type === "level_up"),
+        hasPlacement: configs.some((c) => c.levelId === l.id && c.type === "placement"),
       })),
     });
   }));
@@ -226,28 +261,45 @@ export function contentAdminRoutes() {
     res.status(204).end();
   }));
 
-  // ── Ujian naik level ──
+  // ── Pendaftaran awal (layar /mulai) ──
+  r.get("/onboarding", asyncHandler(async (_req, res) => {
+    res.json({ config: await loadOnboardingConfig(prisma) });
+  }));
+
+  r.put("/onboarding", asyncHandler(async (req, res) => {
+    // Tampilkan alasan pertama apa adanya supaya admin tahu bagian mana yang perlu diperbaiki
+    const parsed = onboardingSchema.safeParse(req.body);
+    if (!parsed.success) throw Errors.validation(parsed.error.issues[0]?.message ?? "Pengaturan belum sesuai.");
+    const config = withLevels(parsed.data, await prisma.level.findMany({ orderBy: { sortOrder: "asc" } }));
+    await saveOnboardingConfig(prisma, config, currentUser(req).id);
+    res.json({ config });
+  }));
+
+  // ── Ujian naik level & tes penempatan (?type=level_up|placement) ──
   r.get("/levels/:levelId/exam", asyncHandler(async (req, res) => {
     const levelId = levelIdParam(req.params.levelId);
+    const examType = examTypeQuery(req.query);
     const q = parseBody(
       z.object({
         section: z.enum(["kosakata", "tata_bahasa", "membaca", "mendengar"]).optional(),
         search: z.string().trim().max(100).optional(),
         page: z.coerce.number().int().min(1).default(1),
+        type: z.string().optional(),
       }),
       req.query,
     );
     const where: Prisma.ExamQuestionWhereInput = {
       levelId,
+      examType,
       ...(q.section ? { section: q.section } : {}),
       ...(q.search ? { OR: [{ question: { contains: q.search, mode: "insensitive" } }, { correctAnswer: { contains: q.search, mode: "insensitive" } }] } : {}),
     };
     const pageSize = 25;
     const [config, total, questions, sections] = await Promise.all([
-      prisma.levelExam.findUnique({ where: { levelId_type: { levelId, type: "level_up" } } }),
+      prisma.levelExam.findUnique({ where: { levelId_type: { levelId, type: examType } } }),
       prisma.examQuestion.count({ where }),
       prisma.examQuestion.findMany({ where, orderBy: [{ section: "asc" }, { id: "asc" }], skip: (q.page - 1) * pageSize, take: pageSize }),
-      prisma.examQuestion.groupBy({ by: ["section"], where: { levelId, status: "published" }, _count: { _all: true } }),
+      prisma.examQuestion.groupBy({ by: ["section"], where: { levelId, examType, status: "published" }, _count: { _all: true } }),
     ]);
     res.json({
       config,
@@ -261,10 +313,11 @@ export function contentAdminRoutes() {
 
   r.put("/levels/:levelId/exam", asyncHandler(async (req, res) => {
     const levelId = levelIdParam(req.params.levelId);
+    const type = examTypeQuery(req.query);
     const data = parseBody(examConfigSchema, req.body);
     const config = await prisma.levelExam.upsert({
-      where: { levelId_type: { levelId, type: "level_up" } },
-      create: { levelId, type: "level_up", ...data },
+      where: { levelId_type: { levelId, type } },
+      create: { levelId, type, ...data },
       update: data,
     });
     res.json({ config });
@@ -274,7 +327,7 @@ export function contentAdminRoutes() {
     const levelId = levelIdParam(req.params.levelId);
     const data = parseBody(examQuestionSchema, req.body);
     await checkExercise({ levelId }, data);
-    const question = await prisma.examQuestion.create({ data: { ...data, levelId, options: data.options } });
+    const question = await prisma.examQuestion.create({ data: { ...data, levelId, examType: examTypeQuery(req.query), options: data.options } });
     res.status(201).json({ question });
   }));
 

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { contentApi, type ChapterDetail, type ContentStatus, type ItemKind, type QuizItem } from "@/features/admin/data/contentApi";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
+import { Skeleton, SkeletonRegion, SkeletonTableRows } from "@/shared/ui/Skeleton";
 import { EXERCISES, SKILLS, countBySkill, type SkillId } from "@/shared/lib/exercises";
 import { ExerciseForm } from "./ExerciseForm";
 import { FormModal, type FieldDef, type FormValues } from "./FormModal";
@@ -160,7 +161,38 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
 
   const backHref = `/admin/konten?level=${level ?? chapter?.levelId ?? ""}`;
 
-  if (!chapter) return <p className={adminStyles.emptyState}>{flash.node ?? "Memuat bab…"}</p>;
+  if (!chapter && flash.node) return <p className={adminStyles.emptyState}>{flash.node}</p>;
+  if (!chapter) {
+    return (
+      <SkeletonRegion label="Memuat bab…" style={{ display: "contents" }}>
+        <Skeleton width="10rem" />
+        <section className={adminStyles.panel}>
+          <div className={styles.toolbar}>
+            <Skeleton width="6rem" height="1.25rem" />
+            <Skeleton width="4rem" height="1.5rem" radius="var(--radius-pill)" />
+          </div>
+          <div className={styles.formGrid}>
+            <div className={`${styles.field} ${styles.fieldWide}`}>
+              <Skeleton width="4rem" height="0.875rem" />
+              <Skeleton height="2.5rem" radius="8px" />
+            </div>
+            <div className={`${styles.field} ${styles.fieldWide}`}>
+              <Skeleton width="7rem" height="0.875rem" />
+              <Skeleton height="6rem" radius="8px" />
+            </div>
+          </div>
+        </section>
+        <section className={adminStyles.panel}>
+          <Skeleton width="60%" height="2.25rem" radius="8px" />
+          <table className={adminStyles.table}>
+            <tbody>
+              <SkeletonTableRows rows={5} columns={3} />
+            </tbody>
+          </table>
+        </section>
+      </SkeletonRegion>
+    );
+  }
 
   const dirty = meta.title !== chapter.title || meta.explanation !== (chapter.explanation ?? "") || meta.status !== chapter.status;
 

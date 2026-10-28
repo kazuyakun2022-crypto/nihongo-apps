@@ -8,6 +8,7 @@ import { learningApi } from "@/features/learning/data/learningApi";
 import type { Level, LevelProgress, NextChapter } from "@/features/learning/domain/types";
 import { srsApi } from "@/features/srs/data/srsApi";
 import { Alert } from "@/shared/ui/Alert";
+import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import styles from "./beranda.module.css";
 
 /** Salam Jepang sesuai jam lokal. */
@@ -93,7 +94,11 @@ export default function BerandaPage() {
           </p>
 
           {nextChapter === undefined ? (
-            <p className={styles.heroLoading}>Mencari bab berikutnya…</p>
+            <SkeletonRegion label="Mencari bab berikutnya…" style={{ display: "grid", gap: "var(--space-2)" }}>
+              <Skeleton onColor width="9rem" height="0.875rem" />
+              <Skeleton onColor width="min(18rem, 90%)" height="2rem" />
+              <Skeleton onColor width="8rem" height="2.75rem" radius="var(--radius-pill)" style={{ marginTop: "var(--space-3)" }} />
+            </SkeletonRegion>
           ) : nextChapter ? (
             <>
               <p className={styles.heroEyebrow}>Bab berikutnya · {nextChapter.levelCode}</p>
@@ -146,7 +151,19 @@ export default function BerandaPage() {
             <Link href="/belajar" className={styles.panelLink}>Semua bab</Link>
           </div>
           {progress === undefined ? (
-            <p className={styles.muted}>Memuat progres…</p>
+            <SkeletonRegion label="Memuat progres…">
+              <ul className={styles.meters}>
+                {[0, 1, 2].map((i) => (
+                  <li key={i} className={styles.meter}>
+                    <div className={styles.meterHead}>
+                      <Skeleton width="6rem" />
+                      <Skeleton width="3rem" />
+                    </div>
+                    <Skeleton height={i === 0 ? 12 : 8} radius="var(--radius-pill)" />
+                  </li>
+                ))}
+              </ul>
+            </SkeletonRegion>
           ) : progress === null ? (
             <p className={styles.muted}>Progres belum bisa dimuat. Buka halaman Belajar untuk melihat bab-babmu.</p>
           ) : (
@@ -204,7 +221,7 @@ export default function BerandaPage() {
               <span className={styles.practiceText}>
                 <strong>Review kosakata</strong>
                 <span>
-                  {due === null ? "Memuat…" : due === 0 ? "Tidak ada kartu jatuh tempo. Kartu baru muncul setelah kamu menyelesaikan bab." : "Ulangi sebelum lupa."}
+                  {due === null ? <Skeleton width="80%" style={{ marginTop: 4 }} /> : due === 0 ? "Tidak ada kartu jatuh tempo. Kartu baru muncul setelah kamu menyelesaikan bab." : "Ulangi sebelum lupa."}
                 </span>
               </span>
               {!!due && <span className={styles.count}>{due} kartu</span>}

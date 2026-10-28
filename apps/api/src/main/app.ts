@@ -11,8 +11,7 @@ import { learningRoutes } from "../modules/learning/presentation/learningRoutes"
 import { srsRoutes } from "../modules/srs/presentation/srsRoutes";
 import { conversationRoutes } from "../modules/conversation/presentation/conversationRoutes";
 import { adminUserRoutes } from "../modules/users/presentation/adminUserRoutes";
-import { examRoutes } from "../modules/exam/presentation/examRoutes";
-import { examLevelUpRoutes } from "../modules/exam/presentation/examLevelUpRoutes";
+import { levelExamRoutes } from "../modules/exam/presentation/levelExamRoutes";
 import { askRoutes } from "../modules/ask/presentation/askRoutes";
 import { contentAdminRoutes } from "../modules/content/presentation/contentAdminRoutes";
 import { synthesizeChildVoice } from "../shared/infrastructure/edgeTts";
@@ -72,8 +71,7 @@ export function createApp(env: Env, c: Container) {
   app.use("/api/learning", auth, learningRoutes(c.learning));
   app.use("/api/srs", auth, srsRoutes(c.srs));
   app.use("/api/conversation", auth, conversationRoutes(c.conversation));
-  app.use("/api/exam", auth, examRoutes(c.exam));
-  app.use("/api/exam", auth, examLevelUpRoutes());
+  app.use("/api/exam", auth, levelExamRoutes());
   app.use("/api/admin/content", auth, requireRole("admin"), contentAdminRoutes());
   app.use("/api/admin", auth, requireRole("admin"), adminUserRoutes(c.adminUsers));
   app.use("/api/ask", askRoutes(c.askUc, c.transcriber, c.speaker, optionalAuth(c.accessTokens)));

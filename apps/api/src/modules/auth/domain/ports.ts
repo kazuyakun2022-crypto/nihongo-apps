@@ -21,13 +21,17 @@ export interface UserRepository {
   updateProfile(id: string, data: OnboardingProfile): Promise<User>;
 }
 
-export type LearningGoal = "jlpt" | "kerja" | "hobi" | "wisata";
-
 export interface OnboardingProfile {
   currentLevelId: number;
-  learningGoal: LearningGoal;
-  dailyTargetMin: 5 | 10 | 20;
+  /** Kunci tujuan belajar dari pengaturan pendaftaran. */
+  learningGoal: string;
+  dailyTargetMin: number;
   gender?: Gender;
+}
+
+/** Memastikan pilihan pendaftaran sesuai pengaturan admin (titik mulai aktif, tes penempatan sudah lulus). */
+export interface OnboardingGuard {
+  assertAllowed(userId: string, profile: OnboardingProfile): Promise<void>;
 }
 
 export interface OAuthAccountRepository {

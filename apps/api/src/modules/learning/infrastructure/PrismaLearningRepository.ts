@@ -13,6 +13,15 @@ export class PrismaLearningRepository implements LearningRepository {
     return this.db.level.findUnique({ where: { id } });
   }
 
+  async getLevelCeiling(userId: string): Promise<number | null> {
+    const user = await this.db.user.findUnique({
+      where: { id: userId },
+      select: { currentLevel: { select: { sortOrder: true } }, pendingLevel: { select: { sortOrder: true } } },
+    });
+    const orders = [user?.currentLevel?.sortOrder, user?.pendingLevel?.sortOrder].filter((n): n is number => n != null);
+    return orders.length ? Math.max(...orders) : null;
+  }
+
   async listChaptersWithProgress(levelId: number, userId: string): Promise<ChapterSummary[]> {
     const chapters = await this.db.chapter.findMany({
       where: { levelId, status: "published" },

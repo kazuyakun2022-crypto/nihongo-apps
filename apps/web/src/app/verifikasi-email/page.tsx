@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { authApi } from "@/features/auth/data/authApi";
 import { AuthCard } from "@/features/auth/ui/AuthCard";
 import { Alert } from "@/shared/ui/Alert";
+import { SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 
 function Verify() {
   const token = useSearchParams().get("token");
@@ -18,7 +19,11 @@ function Verify() {
 
   return (
     <AuthCard title="Verifikasi email" mood={state === "ok" ? "semangat" : "berpikir"}>
-      {state === "loading" && <p>Memeriksa link…</p>}
+      {state === "loading" && (
+        <SkeletonRegion label="Memeriksa link…">
+          <SkeletonText lines={2} />
+        </SkeletonRegion>
+      )}
       {state === "ok" && <Alert tone="success">Email terverifikasi. Sekarang kamu bisa ngobrol dengan Neko-sensei!</Alert>}
       {state === "error" && <Alert>Link tidak valid atau sudah kedaluwarsa. Minta link baru dari halaman Profil.</Alert>}
       <Link href="/beranda">Ke Beranda</Link>

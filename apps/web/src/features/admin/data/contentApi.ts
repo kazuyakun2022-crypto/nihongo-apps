@@ -4,6 +4,8 @@ import type { ExerciseType } from "@/shared/lib/exercises";
 export type ContentStatus = "draft" | "review" | "published";
 export type ExamSection = "kosakata" | "tata_bahasa" | "membaca" | "mendengar";
 export type ItemKind = "vocab" | "kanji" | "grammar" | "quiz";
+/** Tes naik tahap atau tes penempatan saat daftar; masing-masing punya aturan dan bank soal sendiri. */
+export type ExamType = "level_up" | "placement";
 
 export interface ContentLevel {
   id: number;
@@ -12,7 +14,9 @@ export interface ContentLevel {
   isPremium: boolean;
   chapters: Partial<Record<ContentStatus, number>>;
   examQuestions: number;
+  placementQuestions: number;
   hasExam: boolean;
+  hasPlacement: boolean;
 }
 
 export interface ChapterRow {
@@ -75,6 +79,18 @@ export interface ChapterDetail {
   quizQuestions: QuizItem[];
 }
 
+/** Isi layar pendaftaran awal (/mulai); satu titik mulai per level. */
+export interface OnboardingConfig {
+  title: string;
+  goalQuestion: string;
+  goals: { value: string; label: string }[];
+  minutesQuestion: string;
+  minuteOptions: number[];
+  defaultMinutes: number;
+  startQuestion: string;
+  starts: { levelId: number; label: string; hint: string; enabled: boolean; requiresTest: boolean }[];
+}
+
 export interface ExamConfig {
   questionCount: number;
   timeLimitMin: number;
@@ -112,8 +128,11 @@ export const contentApi = {
   updateItem: (kind: ItemKind, id: string, data: object) => apiRequest(`${base}/items/${kind}/${id}`, json("PATCH", data)),
   deleteItem: (kind: ItemKind, id: string) => apiRequest(`${base}/items/${kind}/${id}`, json("DELETE")),
 
-  exam: (levelId: number, params: { section?: ExamSection; search?: string; page?: number }) => {
-    const sp = new URLSearchParams();
+  onboarding: () => apiRequest<{ config: OnboardingConfig }>(`${base}/onboarding`),
+  saveOnboarding: (data: OnboardingConfig) => apiRequest<{ config: OnboardingConfig }>(`${base}/onboarding`, json("PUT", data)),
+
+  exam: (levelId: number, type: ExamType, params: { section?: ExamSection; search?: string; page?: number }) => {
+    const sp = new URLSearchParams({ type });
     if (params.section) sp.set("section", params.section);
     if (params.search) sp.set("search", params.search);
     if (params.page) sp.set("page", String(params.page));
@@ -126,9 +145,10 @@ export const contentApi = {
       publishedPerSection: Partial<Record<ExamSection, number>>;
     }>(`${base}/levels/${levelId}/exam?${sp.toString()}`);
   },
-  saveExamConfig: (levelId: number, data: ExamConfig) => apiRequest(`${base}/levels/${levelId}/exam`, json("PUT", data)),
-  createExamQuestion: (levelId: number, data: Omit<ExamQuestionItem, "id">) =>
-    apiRequest(`${base}/levels/${levelId}/exam/questions`, json("POST", data)),
+  saveExamConfig: (levelId: number, type: ExamType, data: ExamConfig) =>
+    apiRequest(`${base}/levels/${levelId}/exam?type=${type}`, json("PUT", data)),
+  createExamQuestion: (levelId: number, type: ExamType, data: Omit<ExamQuestionItem, "id">) =>
+    apiRequest(`${base}/levels/${levelId}/exam/questions?type=${type}`, json("POST", data)),
   updateExamQuestion: (id: string, data: Partial<Omit<ExamQuestionItem, "id">>) => apiRequest(`${base}/exam/questions/${id}`, json("PATCH", data)),
   deleteExamQuestion: (id: string) => apiRequest<{ archived?: boolean } | undefined>(`${base}/exam/questions/${id}`, json("DELETE")),
 };

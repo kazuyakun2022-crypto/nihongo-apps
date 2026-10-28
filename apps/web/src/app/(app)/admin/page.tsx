@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { adminApi, type SystemStats } from "@/features/admin/data/adminApi";
 import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
+import { PageSkeleton, Skeleton } from "@/shared/ui/Skeleton";
 import styles from "./admin.module.css";
 
 export default function AdminDashboardPage() {
@@ -37,7 +38,7 @@ export default function AdminDashboardPage() {
   if (!isAdmin) {
     return (
       <div className={styles.container}>
-        <p className={styles.emptyState}>Memeriksa hak akses administrator...</p>
+        <PageSkeleton label="Memeriksa hak akses administrator…" />
       </div>
     );
   }
@@ -78,7 +79,7 @@ export default function AdminDashboardPage() {
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
           </div>
-          <span className={styles.statValue}>{loading ? "…" : stats?.totalUsers ?? 0}</span>
+          <span className={styles.statValue}>{loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.totalUsers ?? 0}</span>
           <span className={styles.statFoot}>{stats?.activeUsers ?? 0} akun aktif</span>
         </div>
 
@@ -89,7 +90,7 @@ export default function AdminDashboardPage() {
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
           </div>
-          <span className={styles.statValue}>{loading ? "…" : stats?.roleBreakdown.premium ?? 0}</span>
+          <span className={styles.statValue}>{loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.roleBreakdown.premium ?? 0}</span>
           <span className={styles.statFoot}>Langganan VIP aktif</span>
         </div>
 
@@ -100,7 +101,7 @@ export default function AdminDashboardPage() {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
-          <span className={styles.statValue}>{loading ? "…" : stats?.totalConversations ?? 0}</span>
+          <span className={styles.statValue}>{loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.totalConversations ?? 0}</span>
           <span className={styles.statFoot}>Dialog dengan maskot AI</span>
         </div>
 
@@ -112,7 +113,7 @@ export default function AdminDashboardPage() {
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
             </svg>
           </div>
-          <span className={styles.statValue}>{loading ? "…" : stats?.totalChapters ?? 0}</span>
+          <span className={styles.statValue}>{loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.totalChapters ?? 0}</span>
           <span className={styles.statFoot}>Bab tersedia (N5–N1)</span>
         </div>
       </div>

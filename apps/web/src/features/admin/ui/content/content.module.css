@@ -436,3 +436,62 @@
 @media (max-width: 640px) {
   .typeGroup { grid-template-columns: 1fr; gap: 4px; }
 }
+
+/* ── Pengaturan pendaftaran ── */
+.startList {
+  display: grid;
+  gap: 10px;
+}
+
+.startCard {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+}
+
+.startCardOff {
+  background: var(--surface-subtle, #f8fafc);
+}
+
+.startCardOff .startFields {
+  opacity: 0.55;
+}
+
+.startHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.startFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary, #6366f1);
+}
+
+.minuteChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 9.5rem;
+}

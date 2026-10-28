@@ -3,10 +3,14 @@ import { z } from "zod";
 import { asyncHandler } from "../../../shared/http/asyncHandler";
 import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
-import type { GetChapter, GetLevelProgress, GetNextChapter, ListChapters, ListLevels, SubmitQuiz } from "../application/LearningUseCases";
+import type { GetChapter, GetLevelProgress, GetNextChapter, GetOnboardingOptions, ListChapters, ListLevels, SubmitQuiz } from "../application/LearningUseCases";
 
-export function learningRoutes(uc: { listLevels: ListLevels; listChapters: ListChapters; getChapter: GetChapter; getNextChapter: GetNextChapter; submitQuiz: SubmitQuiz; getLevelProgress: GetLevelProgress }) {
+export function learningRoutes(uc: { listLevels: ListLevels; listChapters: ListChapters; getChapter: GetChapter; getNextChapter: GetNextChapter; submitQuiz: SubmitQuiz; getLevelProgress: GetLevelProgress; getOnboardingOptions: GetOnboardingOptions }) {
   const r = Router();
+
+  r.get("/onboarding", asyncHandler(async (_req, res) => {
+    res.json({ config: await uc.getOnboardingOptions.execute() });
+  }));
 
   r.get("/levels", asyncHandler(async (req, res) => {
     res.json({ levels: await uc.listLevels.execute(currentUser(req)) });

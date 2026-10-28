@@ -27,13 +27,6 @@ enum UserStatus {
   pending_deletion
 }
 
-enum LearningGoal {
-  jlpt
-  kerja
-  hobi
-  wisata
-}
-
 enum OAuthProvider {
   google
   apple
@@ -139,7 +132,8 @@ model User {
   status              UserStatus    @default(active)
   currentLevelId      Int?          @map("current_level_id") @db.SmallInt
   pendingLevelId      Int?          @map("pending_level_id") @db.SmallInt
-  learningGoal        LearningGoal? @map("learning_goal")
+  // Kunci tujuan belajar dari pengaturan pendaftaran (lihat AppSetting "onboarding")
+  learningGoal        String?       @map("learning_goal") @db.VarChar(50)
   gender              Gender?       @map("gender")
   avatarUrl           String?       @map("avatar_url") @db.Text
   dailyTargetMin      Int?          @map("daily_target_min") @db.SmallInt
@@ -481,6 +475,7 @@ model LevelExam {
 model ExamQuestion {
   id            String      @id @default(uuid())
   levelId       Int         @map("level_id") @db.SmallInt
+  examType      ExamType    @default(level_up) @map("exam_type")
   section       ExamSection
   type          String      @default("pilihan_ganda")
   question      String
@@ -495,6 +490,7 @@ model ExamQuestion {
   level         Level       @relation(fields: [levelId], references: [id])
   answers       ExamAttemptAnswer[]
 
+  @@index([levelId, examType])
   @@map("exam_questions")
 }
 
@@ -508,6 +504,18 @@ model ExamAttemptAnswer {
   question   ExamQuestion? @relation(fields: [questionId], references: [id])
 
   @@map("exam_attempt_answers")
+}
+
+// ───────────── Pengaturan aplikasi ─────────────
+
+/// Pengaturan yang bisa diubah admin tanpa deploy, disimpan per kunci (mis. "onboarding").
+model AppSetting {
+  key         String   @id @db.VarChar(50)
+  value       Json
+  updatedById String?  @map("updated_by") @db.Uuid
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("app_settings")
 }
 
 // ───────────── AI maskot ─────────────

@@ -1,41 +1,55 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
+import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { learningApi } from "../data/learningApi";
-import type { LearningGoal } from "../domain/types";
+import type { OnboardingOptions } from "../domain/types";
 import styles from "./learning.module.css";
 
-const goals: { value: LearningGoal; label: string }[] = [
-  { value: "jlpt", label: "Lulus JLPT" },
-  { value: "kerja", label: "Kerja atau magang di Jepang" },
-  { value: "hobi", label: "Anime, manga, dan musik" },
-  { value: "wisata", label: "Jalan-jalan ke Jepang" },
-];
-
-const starts = [
-  { levelId: 1, label: "Mulai dari nol", hint: "Belum bisa membaca hiragana", requiresTest: false },
-  { levelId: 2, label: "Sudah bisa kana", hint: "Langsung ke materi N5", requiresTest: false },
-  { levelId: 3, label: "Sudah lulus N5", hint: "Lanjut ke N4 — perlu tes singkat dulu", requiresTest: true },
-  { levelId: 4, label: "Sudah lulus N4", hint: "Lanjut ke N3 — perlu tes singkat dulu", requiresTest: true },
-  { levelId: 5, label: "Sudah lulus N3", hint: "Lanjut ke N2 — perlu tes singkat dulu", requiresTest: true },
-  { levelId: 6, label: "Sudah lulus N2", hint: "Lanjut ke N1 — perlu tes singkat dulu", requiresTest: true },
-];
-
+/** Layar pendaftaran awal. Pertanyaan dan pilihannya diatur admin di Konten → Pendaftaran. */
 export function OnboardingForm() {
   const router = useRouter();
-  const [goal, setGoal] = useState<LearningGoal>("jlpt");
-  const [minutes, setMinutes] = useState<5 | 10 | 20>(10);
-  const [levelId, setLevelId] = useState(1);
+  const [options, setOptions] = useState<OnboardingOptions | null>(null);
+  const [goal, setGoal] = useState("");
+  const [minutes, setMinutes] = useState(0);
+  const [levelId, setLevelId] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const selected = starts.find((s) => s.levelId === levelId)!;
+  function load() {
+    setError(null);
+    learningApi
+      .onboardingOptions()
+      .then((o) => {
+        // Tujuan dan titik mulai sengaja tidak dipilihkan: siswa harus memilih sendiri
+        setOptions(o);
+        setMinutes(o.defaultMinutes);
+      })
+      .catch(() => setError("Pilihan belum bisa dimuat. Coba lagi."));
+  }
+  useEffect(load, []);
+
+  if (!options) {
+    return error ? (
+      <main className={styles.onboarding}>
+        <Alert>{error}</Alert>
+        <Button onClick={load}>Coba lagi</Button>
+      </main>
+    ) : (
+      <OnboardingSkeleton />
+    );
+  }
+
+  const selected = options.starts.find((s) => s.levelId === levelId);
+
+  const missing = !goal ? "Pilih tujuan belajarmu dulu." : !selected ? "Pilih dari mana kamu mulai dulu." : null;
 
   async function submit() {
+    if (!selected || !goal) return;
     setBusy(true);
     setError(null);
     if (selected.requiresTest) {
@@ -46,8 +60,8 @@ export function OnboardingForm() {
     try {
       await learningApi.completeOnboarding({ currentLevelId: levelId, learningGoal: goal, dailyTargetMin: minutes });
       window.location.assign("/beranda");
-    } catch {
-      setError("Belum bisa menyimpan. Coba lagi.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Belum bisa menyimpan. Coba lagi.");
       setBusy(false);
     }
   }
@@ -55,11 +69,11 @@ export function OnboardingForm() {
   return (
     <main className={styles.onboarding}>
       <Mascot mood="semangat" size={96} />
-      <h1 className={styles.heading}>Halo! Ceritakan sedikit tentangmu.</h1>
+      <h1 className={styles.heading}>{options.title}</h1>
 
       <fieldset className={styles.fieldset}>
-        <legend>Kenapa kamu belajar bahasa Jepang?</legend>
-        {goals.map((g) => (
+        <legend>{options.goalQuestion}</legend>
+        {options.goals.map((g) => (
           <label key={g.value} className={styles.option}>
             <input type="radio" name="goal" checked={goal === g.value} onChange={() => setGoal(g.value)} />
             {g.label}
@@ -68,9 +82,9 @@ export function OnboardingForm() {
       </fieldset>
 
       <fieldset className={styles.fieldset}>
-        <legend>Berapa menit sehari?</legend>
+        <legend>{options.minutesQuestion}</legend>
         <div className={styles.segmented}>
-          {([5, 10, 20] as const).map((m) => (
+          {options.minuteOptions.map((m) => (
             <label key={m} className={styles.segment}>
               <input type="radio" name="minutes" checked={minutes === m} onChange={() => setMinutes(m)} />
               {m} menit
@@ -80,25 +94,48 @@ export function OnboardingForm() {
       </fieldset>
 
       <fieldset className={styles.fieldset}>
-        <legend>Dari mana kamu mulai?</legend>
-        {starts.map((s) => (
+        <legend>{options.startQuestion}</legend>
+        {options.starts.map((s) => (
           <label key={s.levelId} className={styles.option}>
             <input type="radio" name="level" checked={levelId === s.levelId} onChange={() => setLevelId(s.levelId)} />
             <span>
               {s.label}
-              <small className={styles.optionHint}>{s.hint}</small>
+              {s.hint && <small className={styles.optionHint}>{s.hint}</small>}
             </span>
           </label>
         ))}
       </fieldset>
 
       {error && <Alert>{error}</Alert>}
-      <Button block onClick={submit} disabled={busy}>
-        {busy ? "Menyimpan…" : selected.requiresTest ? "Lanjut ke Tes Penempatan →" : "Mulai belajar"}
+      {missing && <p className={styles.optionHint} role="status" style={{ textAlign: "center" }}>{missing}</p>}
+      <Button block onClick={submit} disabled={busy || !!missing}>
+        {busy ? "Menyimpan…" : selected?.requiresTest ? "Lanjut ke Tes Penempatan →" : "Mulai belajar"}
       </Button>
       <Button variant="ghost" onClick={() => router.back()}>
         Kembali
       </Button>
     </main>
+  );
+}
+
+function OnboardingSkeleton() {
+  return (
+    <SkeletonRegion label="Memuat pilihan…" className={styles.onboarding}>
+      <Skeleton circle width={96} style={{ justifySelf: "center" }} />
+      <Skeleton width="80%" height="1.75rem" style={{ justifySelf: "center" }} />
+      {[4, 1, 6].map((rows, i) => (
+        <div key={i} className={styles.fieldset} style={{ border: 0 }}>
+          <Skeleton width="60%" height="1.1rem" />
+          {i === 1 ? (
+            <div className={styles.segmented}>
+              {[0, 1, 2].map((j) => <Skeleton key={j} height="2.75rem" radius="var(--radius-pill)" />)}
+            </div>
+          ) : (
+            Array.from({ length: rows }, (_, j) => <Skeleton key={j} height="3rem" radius="var(--radius-md)" />)
+          )}
+        </div>
+      ))}
+      <Skeleton height="3rem" radius="var(--radius-pill)" />
+    </SkeletonRegion>
   );
 }

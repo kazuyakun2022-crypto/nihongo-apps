@@ -8,6 +8,18 @@
   padding: var(--space-4) var(--space-3) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-7));
   box-sizing: border-box;
   min-width: 0;
+  animation: pageEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pageEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header {
@@ -21,7 +33,8 @@
   font-family: var(--font-japanese);
   font-size: var(--font-size-sm);
   color: var(--color-primary);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
+  font-weight: var(--font-weight-medium);
 }
 
 .title {
@@ -36,7 +49,7 @@
   gap: var(--space-2);
   overflow-x: auto;
   scrollbar-width: none;
-  padding-bottom: 2px;
+  padding-bottom: 4px;
 }
 
 .levelTabs::-webkit-scrollbar {
@@ -47,7 +60,7 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-height: 40px;
   padding: 0 var(--space-4);
   border-radius: var(--radius-pill);
@@ -58,17 +71,23 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   cursor: pointer;
-  transition: border-color var(--motion-fast), background var(--motion-fast);
+  transition: all var(--motion-fast) var(--ease-out);
 }
 
 .levelTab:hover:not(:disabled) {
-  border-color: var(--color-primary);
+  border-color: var(--color-primary-soft);
+  transform: translateY(-1.5px);
+  box-shadow: 0 3px 8px rgba(107, 21, 32, 0.06);
+}
+
+.levelTab:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .levelTab:disabled {
   color: var(--color-text-muted);
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 .levelTab:focus-visible,
@@ -80,9 +99,11 @@
 }
 
 .levelTabActive {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary), var(--palette-beni-900));
   border-color: var(--color-primary);
   color: var(--color-on-primary);
+  box-shadow: 0 3px 10px rgba(177, 42, 58, 0.28);
+  transform: translateY(-1px);
 }
 
 .state {
@@ -101,9 +122,21 @@
   gap: var(--space-4);
   padding: var(--space-5);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: linear-gradient(135deg, var(--color-surface) 0%, #fffdfd 100%);
   border: var(--border-width) solid var(--color-border);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 18px rgba(107, 21, 32, 0.05);
+  animation: heroCardEntrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes heroCardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (min-width: 640px) {
@@ -124,7 +157,7 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .heroStat {
@@ -137,18 +170,34 @@
   color: var(--color-text);
 }
 
+/* ── Meter Progress bar dengan kilau halus ── */
 .meter {
-  height: 8px;
+  height: 10px;
   border-radius: var(--radius-pill);
   background: var(--color-surface-muted);
   overflow: hidden;
+  position: relative;
 }
 
 .meterFill {
   height: 100%;
   border-radius: inherit;
-  background: var(--color-primary);
+  background: linear-gradient(90deg, var(--color-primary), #e85564);
   transition: width var(--motion-slow) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.meterShimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  animation: meterShimmerSweep 3s ease-in-out infinite;
+}
+
+@keyframes meterShimmerSweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
 }
 
 .heroMetrics {
@@ -181,13 +230,45 @@
   gap: var(--space-1);
   padding: var(--space-4);
   border-radius: var(--radius-md);
-  background: var(--color-sakura-soft);
+  background: linear-gradient(135deg, rgba(255, 240, 243, 0.9) 0%, rgba(254, 232, 234, 0.6) 100%);
+  border: 1px solid rgba(242, 135, 160, 0.28);
+  border-left: 3.5px solid var(--color-primary);
+  transition: box-shadow var(--motion-base), transform var(--motion-base);
+}
+
+.heroNext:hover {
+  box-shadow: 0 4px 14px rgba(242, 135, 160, 0.2);
 }
 
 .nextLabel {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+}
+
+.pulseDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  margin-right: 6px;
+  vertical-align: middle;
+  box-shadow: 0 0 0 0 rgba(177, 42, 58, 0.5);
+  animation: pulseDotGlow 2s infinite;
+}
+
+@keyframes pulseDotGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(177, 42, 58, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(177, 42, 58, 0);
+    transform: scale(1.08);
+  }
 }
 
 .nextTitle {
@@ -207,24 +288,35 @@
   margin-top: var(--space-3);
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 44px;
   padding: 0 var(--space-5);
   border-radius: var(--radius-pill);
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary), var(--palette-beni-900));
   color: var(--color-on-primary);
   font-weight: var(--font-weight-bold);
   text-decoration: none;
-  box-shadow: 0 3px 0 var(--color-primary-strong);
-  transition: transform var(--motion-fast);
+  box-shadow: 0 3px 0 var(--color-primary-strong), 0 4px 12px rgba(177, 42, 58, 0.25);
+  transition: all var(--motion-fast) var(--ease-out);
 }
 
 .primaryBtn:hover {
-  background: var(--color-primary-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--color-primary-strong), 0 6px 16px rgba(177, 42, 58, 0.32);
 }
 
 .primaryBtn:active {
   transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--color-primary-strong);
+  box-shadow: 0 1px 0 var(--color-primary-strong), 0 2px 8px rgba(177, 42, 58, 0.2);
+}
+
+.btnArrow {
+  display: inline-block;
+  transition: transform var(--motion-fast);
+}
+
+.primaryBtn:hover .btnArrow {
+  transform: translateX(4px);
 }
 
 /* ── Unit & bab ── */
@@ -239,10 +331,16 @@
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   overflow: hidden;
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast), transform var(--motion-fast);
+}
+
+.unit:hover:not(.unitLocked) {
+  border-color: rgba(177, 42, 58, 0.28);
+  box-shadow: 0 3px 12px rgba(107, 21, 32, 0.05);
 }
 
 .unitLocked {
-  opacity: 0.75;
+  opacity: 0.72;
 }
 
 .unitHead {
@@ -257,6 +355,7 @@
   color: inherit;
   text-align: left;
   cursor: pointer;
+  transition: background var(--motion-fast);
 }
 
 .unitHead:hover {
@@ -274,11 +373,13 @@
   color: var(--color-primary);
   font-weight: var(--font-weight-heavy);
   font-size: var(--font-size-sm);
+  transition: transform var(--motion-fast);
 }
 
 .unitBadgeDone {
   background: var(--color-success);
   color: #fff;
+  box-shadow: 0 2px 6px rgba(58, 133, 68, 0.22);
 }
 
 .unitText {
@@ -298,10 +399,20 @@
 }
 
 .unitChevron {
-  font-size: var(--font-size-lg);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
   color: var(--color-text-muted);
-  width: 24px;
-  text-align: center;
+}
+
+.chevronIcon {
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+
+.chevronIconOpen {
+  transform: rotate(180deg);
 }
 
 .chapterList {
@@ -311,6 +422,35 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  animation: chapterListOpen 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes chapterListOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chapterItem {
+  opacity: 0;
+  animation: chapterItemSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--ci, 0) * 0.035s);
+}
+
+@keyframes chapterItemSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .chapterRow {
@@ -322,15 +462,17 @@
   border-radius: var(--radius-sm);
   color: inherit;
   text-decoration: none;
-  transition: background var(--motion-fast);
+  transition: all var(--motion-fast) var(--ease-out);
 }
 
 a.chapterRow:hover {
   background: var(--color-bg);
+  transform: translateX(4px);
 }
 
 .chapterRowNext {
   background: var(--color-sakura-soft);
+  border-left: 3px solid var(--color-primary);
 }
 
 .chapterRowLocked {
@@ -348,6 +490,7 @@ a.chapterRow:hover {
   font-size: 0.7rem;
   border: var(--border-width) solid var(--color-border);
   background: var(--color-surface);
+  transition: transform var(--motion-fast);
 }
 
 .dot_completed {
@@ -371,6 +514,18 @@ a.chapterRow:hover {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-on-primary);
+  animation: dotNextPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes dotNextPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(177, 42, 58, 0.45);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(177, 42, 58, 0);
+    transform: scale(1.06);
+  }
 }
 
 .chapterText {
@@ -396,4 +551,20 @@ a.chapterRow:hover {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
   color: var(--color-success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page,
+  .hero,
+  .meterShimmer,
+  .pulseDot,
+  .dotNext,
+  .chevronIcon,
+  .chapterList,
+  .chapterItem,
+  .primaryBtn {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
 }

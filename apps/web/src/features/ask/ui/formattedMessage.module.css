@@ -87,17 +87,56 @@
   color: var(--color-text, #334155);
 }
 
+/* ── Progressive water-ink reveal for content blocks ── */
+.staggerBlock {
+  opacity: 0;
+  animation: waterInkReveal 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(0.22s + var(--stagger-index, 0) * 0.1s);
+  will-change: opacity, transform;
+}
+
+@keyframes waterInkReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(1.5px);
+  }
+  50% {
+    opacity: 0.85;
+    filter: blur(0.3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
 /* ── Action bar under AI message ── */
 .messageFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   font-size: 0.75rem;
   color: var(--color-text-muted, #94a3b8);
+  opacity: 0;
+  animation: footerWaterReveal 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(0.28s + var(--total-blocks, 1) * 0.1s);
+}
+
+@keyframes footerWaterReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .actionsLeft {

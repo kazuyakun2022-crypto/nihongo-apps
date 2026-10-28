@@ -10,6 +10,7 @@ import {
 } from "@/features/admin/data/adminApi";
 import type { Role } from "@/features/auth/domain/types";
 import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
+import { SkeletonTableRows } from "@/shared/ui/Skeleton";
 import styles from "@/app/(app)/admin/admin.module.css";
 
 export default function AdminPenggunaPage() {
@@ -239,10 +240,12 @@ export default function AdminPenggunaPage() {
               </tr>
             </thead>
             <tbody>
-              {users.length === 0 ? (
+              {loading && users.length === 0 ? (
+                <SkeletonTableRows rows={8} columns={5} />
+              ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={5} className={styles.emptyState}>
-                    {loading ? "Memuat data..." : "Tidak ada pengguna ditemukan."}
+                    Tidak ada pengguna ditemukan.
                   </td>
                 </tr>
               ) : (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
+import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { useReview } from "../application/useReview";
 import type { ReviewGrade } from "../domain/types";
 import styles from "./srs.module.css";
@@ -17,7 +18,18 @@ const grades: { value: ReviewGrade; label: string }[] = [
 export function ReviewDeck() {
   const { loading, current, remaining, revealed, reveal, grade } = useReview();
 
-  if (loading) return <p className={styles.muted}>Memuat kartu…</p>;
+  if (loading) {
+    return (
+      <SkeletonRegion label="Memuat kartu…" className={styles.deck}>
+        <Skeleton width="7rem" />
+        <div className={styles.card} style={{ justifyItems: "center" }}>
+          <Skeleton width="8rem" height="3rem" />
+          <Skeleton width="5rem" />
+        </div>
+        <Skeleton height="3rem" radius="var(--radius-pill)" />
+      </SkeletonRegion>
+    );
+  }
   if (!current) {
     return (
       <section className={styles.empty}>

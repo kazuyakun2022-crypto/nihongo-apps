@@ -1,0 +1,99 @@
+/* Placeholder shimmer selama data dimuat. Bentuknya meniru konten asli supaya layout tidak loncat. */
+
+.bone {
+  display: block;
+  width: 100%;
+  height: 1em;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--color-skeleton) 0%,
+    var(--color-skeleton) 35%,
+    var(--color-skeleton-highlight) 50%,
+    var(--color-skeleton) 65%,
+    var(--color-skeleton) 100%
+  );
+  background-size: 300% 100%;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+
+/* Untuk dipakai di atas blok berwarna (misalnya hero beranda). */
+.onColor {
+  --color-skeleton: rgba(255, 255, 255, 0.18);
+  --color-skeleton-highlight: rgba(255, 255, 255, 0.38);
+}
+
+@keyframes skeletonShimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bone {
+    animation: none;
+    background: var(--color-skeleton);
+  }
+}
+
+.text {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.page {
+  display: grid;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: min(var(--content-max), 100%);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-3);
+  box-sizing: border-box;
+}
+
+.pageGrid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .pageGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

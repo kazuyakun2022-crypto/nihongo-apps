@@ -1,5 +1,5 @@
 import { api, apiRequest } from "@/core/http/apiClient";
-import type { ChapterDetail, ChapterSummary, Level, LearningRepository, LevelProgress, NextChapter, QuizAnswer, QuizResult } from "../domain/types";
+import type { ChapterDetail, ChapterSummary, Level, LearningRepository, LevelProgress, NextChapter, OnboardingOptions, QuizAnswer, QuizResult } from "../domain/types";
 
 export const learningApi: LearningRepository = {
   levels: () => api.get<{ levels: Level[] }>("/learning/levels").then((r) => r.levels),
@@ -7,6 +7,7 @@ export const learningApi: LearningRepository = {
   getChapter: (id) => api.get<{ chapter: ChapterDetail }>(`/learning/chapters/${id}`).then((r) => r.chapter),
   submitQuiz: (chapterId, answers: QuizAnswer[]) =>
     apiRequest<QuizResult>(`/learning/chapters/${chapterId}/quiz`, { method: "POST", body: { answers } }),
+  onboardingOptions: () => api.get<{ config: OnboardingOptions }>("/learning/onboarding").then((r) => r.config),
   completeOnboarding: (input) => apiRequest<void>("/auth/me/onboarding", { method: "PUT", body: input }),
   nextChapter: () =>
     api.get<{ chapter: NextChapter | null }>("/learning/next-chapter").then((r) => r.chapter),

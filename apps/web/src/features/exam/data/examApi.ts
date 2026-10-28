@@ -1,6 +1,8 @@
 import { api, apiRequest } from "@/core/http/apiClient";
 import type { ChapterQuizQuestion } from "@/features/learning/domain/types";
-import type { PlacementAnswer, PlacementQuestionsResponse, PlacementResult } from "../domain/types";
+
+/** Jenis tes: naik tahap (levelId = level sekarang) atau penempatan saat daftar (levelId = level tujuan). */
+export type ExamKind = "level-up" | "placement";
 
 export interface ReadinessResponse {
   chaptersCompleted: number;
@@ -12,57 +14,51 @@ export interface ReadinessResponse {
   canTakeTest: boolean;
 }
 
-export interface LevelUpStatus {
+export interface ExamStatus {
   canTake: boolean;
   cooldownUntil: string | null;
   consecutiveFails: number;
-  config: { passScore: number; sectionMinScore: number; timeLimitMin: number; questionCount: number };
+  config: { passScore: number; sectionMinScore: number; timeLimitMin: number; questionCount: number; cooldownHours: number };
 }
 
 /** Soal ujian berbentuk sama dengan latihan bab (pilihan ganda, susun, menulis, berbicara, ...). */
-export interface LevelUpQuestion extends ChapterQuizQuestion {
+export interface ExamQuestion extends ChapterQuizQuestion {
   section: string;
 }
 
-export interface LevelUpQuestionsResponse {
+export interface ExamQuestionsResponse {
   attemptId: string;
-  questions: LevelUpQuestion[];
+  questions: ExamQuestion[];
   /** Kanji level ini, untuk mengenali tulisan tangan pada soal menulis. */
   kanji: string[];
   timeLimitMin: number;
 }
 
-export interface SubmitLevelUpBody {
+export interface SubmitExamBody {
   attemptId: string;
   answers: { questionId: string; answer: string; section?: string; skipped?: boolean }[];
   levelId: number;
 }
 
-export interface SubmitLevelUpResponse {
+export interface SubmitExamResponse {
   passed: boolean;
   totalScore: number;
   sectionScores: Record<string, number>;
   resultLevelId: number;
-  nextLevelId?: number;
+  nextLevelId?: number | null;
   cooldownUntil: string | null;
 }
 
 export const examApi = {
-  getPlacementQuestions: (targetLevelId: number): Promise<PlacementQuestionsResponse> =>
-    api.get(`/exam/placement?targetLevelId=${targetLevelId}`),
-
-  submitPlacement: (targetLevelId: number, answers: PlacementAnswer[]): Promise<PlacementResult> =>
-    apiRequest("/exam/placement", { method: "POST", body: { targetLevelId, answers } }),
-
   getReadiness: (levelId: number): Promise<ReadinessResponse> =>
     api.get(`/exam/readiness?levelId=${levelId}`),
 
-  getLevelUpStatus: (levelId: number): Promise<LevelUpStatus> =>
-    api.get(`/exam/level-up/status?levelId=${levelId}`),
+  getStatus: (kind: ExamKind, levelId: number): Promise<ExamStatus> =>
+    api.get(`/exam/${kind}/status?levelId=${levelId}`),
 
-  getLevelUpQuestions: (levelId: number): Promise<LevelUpQuestionsResponse> =>
-    api.get(`/exam/level-up/questions?levelId=${levelId}`),
+  getQuestions: (kind: ExamKind, levelId: number): Promise<ExamQuestionsResponse> =>
+    api.get(`/exam/${kind}/questions?levelId=${levelId}`),
 
-  submitLevelUp: (body: SubmitLevelUpBody): Promise<SubmitLevelUpResponse> =>
-    apiRequest("/exam/level-up/submit", { method: "POST", body }),
+  submit: (kind: ExamKind, body: SubmitExamBody): Promise<SubmitExamResponse> =>
+    apiRequest(`/exam/${kind}/submit`, { method: "POST", body }),
 };

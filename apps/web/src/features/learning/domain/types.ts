@@ -6,6 +6,8 @@ export interface Level {
   name: string;
   isPremium: boolean;
   locked: boolean;
+  /** premium = butuh langganan; level = terbuka setelah lulus tes naik tahap. */
+  lockReason: "premium" | "level" | null;
 }
 
 export interface ChapterSummary {
@@ -83,7 +85,33 @@ export interface QuizResult {
   results: { questionId: string; correct: boolean; skipped: boolean; correctAnswer: string; explanation: string | null }[];
 }
 
-export type LearningGoal = "jlpt" | "kerja" | "hobi" | "wisata";
+/** Titik mulai di layar pendaftaran, diatur admin. */
+export interface OnboardingStart {
+  levelId: number;
+  levelCode: string;
+  levelName: string;
+  label: string;
+  hint: string;
+  requiresTest: boolean;
+}
+
+/** Isi layar pendaftaran (/mulai) yang diatur admin. */
+export interface OnboardingOptions {
+  title: string;
+  goalQuestion: string;
+  goals: { value: string; label: string }[];
+  minutesQuestion: string;
+  minuteOptions: number[];
+  defaultMinutes: number;
+  startQuestion: string;
+  starts: OnboardingStart[];
+}
+
+export interface OnboardingChoice {
+  currentLevelId: number;
+  learningGoal: string;
+  dailyTargetMin: number;
+}
 
 export interface NextChapter {
   id: string;
@@ -105,7 +133,8 @@ export interface LearningRepository {
   chapters(levelId: number): Promise<ChapterSummary[]>;
   getChapter(id: string): Promise<ChapterDetail>;
   submitQuiz(chapterId: string, answers: QuizAnswer[]): Promise<QuizResult>;
-  completeOnboarding(input: { currentLevelId: number; learningGoal: LearningGoal; dailyTargetMin: 5 | 10 | 20 }): Promise<void>;
+  onboardingOptions(): Promise<OnboardingOptions>;
+  completeOnboarding(input: OnboardingChoice): Promise<void>;
   nextChapter(): Promise<NextChapter | null>;
   getProgress(levelId: number): Promise<LevelProgress>;
 }

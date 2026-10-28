@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
+import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { useSpeech } from "@/shared/lib/useSpeech";
 import { EXERCISES, SKILLS, countBySkill } from "@/shared/lib/exercises";
 import { useChapterLesson } from "../application/useChapterLesson";
@@ -32,11 +33,20 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
   // ── Loading ──
   if (lesson.phase === "loading") {
     return (
-      <div className={styles.wrap}>
-        <div style={{ display: "grid", placeItems: "center", minHeight: "50dvh" }}>
-          <Mascot mood="berpikir" size={80} />
+      <SkeletonRegion label="Memuat pelajaran…" className={styles.wrap}>
+        <div className={styles.progressRow}>
+          <Skeleton circle width={32} />
+          <Skeleton height="0.5rem" radius="var(--radius-pill)" style={{ flex: 1 }} />
+          <Skeleton width="2rem" />
         </div>
-      </div>
+        <div className={styles.studyCard}>
+          <Skeleton width="5rem" height="1.25rem" radius="var(--radius-pill)" />
+          <Skeleton width="60%" height="2.5rem" />
+          <Skeleton width="40%" />
+          <SkeletonText lines={2} />
+        </div>
+        <Skeleton height="3rem" radius="var(--radius-pill)" />
+      </SkeletonRegion>
     );
   }
 

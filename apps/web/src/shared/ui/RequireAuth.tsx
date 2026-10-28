@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { Mascot } from "./Mascot";
 import { Button } from "./Button";
+import { PageSkeleton } from "./Skeleton";
 
 /** Penjaga halaman: arahkan ke /masuk jika belum login, ke /mulai jika profil belum lengkap. */
 export function RequireAuth({ children, allowIncompleteProfile = false }: { children: React.ReactNode; allowIncompleteProfile?: boolean }) {
@@ -30,6 +31,9 @@ export function RequireAuth({ children, allowIncompleteProfile = false }: { chil
   }, [status]);
 
   if (status !== "authenticated" || (user?.needsOnboarding && !allowIncompleteProfile)) {
+    if (!showFallback) {
+      return <PageSkeleton label={status === "loading" ? "Memeriksa status sesi…" : "Mengarahkan…"} />;
+    }
     return (
       <div
         style={{
@@ -49,16 +53,14 @@ export function RequireAuth({ children, allowIncompleteProfile = false }: { chil
           {status === "loading" ? "Memeriksa status sesi..." : "Mengarahkan ke halaman masuk..."}
         </p>
 
-        {showFallback && (
-          <div style={{ marginTop: "var(--space-2)", display: "flex", gap: "var(--space-2)" }}>
-            <Button variant="secondary" onClick={() => window.location.reload()}>
-              Muat Ulang
-            </Button>
-            <Button variant="ghost" onClick={() => router.push("/masuk")}>
-              Ke Halaman Masuk
-            </Button>
-          </div>
-        )}
+        <div style={{ marginTop: "var(--space-2)", display: "flex", gap: "var(--space-2)" }}>
+          <Button variant="secondary" onClick={() => window.location.reload()}>
+            Muat Ulang
+          </Button>
+          <Button variant="ghost" onClick={() => router.push("/masuk")}>
+            Ke Halaman Masuk
+          </Button>
+        </div>
       </div>
     );
   }

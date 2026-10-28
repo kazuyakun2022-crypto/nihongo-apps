@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { examApi, type ReadinessResponse, type LevelUpStatus } from "../data/examApi";
+import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
+import { examApi, type ExamStatus, type ReadinessResponse } from "../data/examApi";
 import styles from "./readinessCard.module.css";
 
 interface Props {
@@ -13,20 +14,39 @@ interface Props {
 export function ReadinessCard({ levelId, levelCode }: Props) {
   const router = useRouter();
   const [data, setData] = useState<ReadinessResponse | null>(null);
-  const [status, setStatus] = useState<LevelUpStatus | null>(null);
+  const [status, setStatus] = useState<ExamStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       examApi.getReadiness(levelId),
-      examApi.getLevelUpStatus(levelId),
+      examApi.getStatus("level-up", levelId),
     ])
       .then(([r, s]) => { setData(r); setStatus(s); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [levelId]);
 
-  if (loading || !data) return null;
+  if (loading) {
+    return (
+      <SkeletonRegion label="Memuat kesiapan naik tahap…" className={styles.card}>
+        <div className={styles.header}>
+          <Skeleton width="10rem" />
+          <Skeleton width="8rem" height="1.5rem" radius="var(--radius-pill)" />
+        </div>
+        <div className={styles.stats}>
+          <Skeleton height="0.5rem" radius="var(--radius-pill)" />
+          <div className={styles.statRow}>
+            {[0, 1, 2].map((i) => (
+              <Skeleton key={i} height="3.5rem" radius="var(--radius-md)" style={{ flex: 1 }} />
+            ))}
+          </div>
+        </div>
+        <Skeleton height="3rem" radius="var(--radius-pill)" />
+      </SkeletonRegion>
+    );
+  }
+  if (!data) return null;
 
   const pct = data.chaptersTotal > 0 ? Math.round((data.chaptersCompleted / data.chaptersTotal) * 100) : 0;
   const cooldownLabel = status?.cooldownUntil ? formatCooldown(new Date(status.cooldownUntil)) : null;

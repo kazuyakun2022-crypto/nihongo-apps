@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/shared/ui/Button";
+import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { useSpeech } from "@/shared/lib/useSpeech";
 import {
   HIRAGANA_BASIC,
@@ -461,7 +462,18 @@ function KanjiTable({
   const pageCount = Math.max(1, Math.ceil(total / KANJI_PER_PAGE));
   const pageChars = filtered.slice(page * KANJI_PER_PAGE, (page + 1) * KANJI_PER_PAGE);
 
-  if (!kanji) return <p className={styles.muted}>Memuat kanji {level}…</p>;
+  if (!kanji) {
+    return (
+      <SkeletonRegion label={`Memuat kanji ${level}…`} style={{ display: "grid", gap: "var(--space-3)" }}>
+        <Skeleton width="min(22rem, 80%)" />
+        <div className={styles.kanjiGrid}>
+          {Array.from({ length: KANJI_PER_PAGE }, (_, i) => (
+            <Skeleton key={i} height="auto" radius="var(--radius-md)" style={{ aspectRatio: "1" }} />
+          ))}
+        </div>
+      </SkeletonRegion>
+    );
+  }
 
   return (
     <div style={{ display: "grid", gap: "var(--space-3)" }}>

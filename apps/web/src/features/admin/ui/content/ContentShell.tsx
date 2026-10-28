@@ -27,17 +27,20 @@ export function ContentShell({ title, subtitle, children }: { title: string; sub
     );
   }
 
-  const onExam = pathname.startsWith("/admin/konten/ujian");
+  const tabs = [
+    { href: "/admin/konten", label: "Pelajaran", active: !pathname.startsWith("/admin/konten/ujian") && !pathname.startsWith("/admin/konten/pendaftaran") },
+    { href: "/admin/konten/ujian", label: "Ujian & Tes Penempatan", active: pathname.startsWith("/admin/konten/ujian") },
+    { href: "/admin/konten/pendaftaran", label: "Pendaftaran", active: pathname.startsWith("/admin/konten/pendaftaran") },
+  ];
   return (
     <div className={adminStyles.container}>
       <AdminHeaderNav title={title} subtitle={subtitle} />
       <nav className={adminStyles.tabs} aria-label="Jenis konten">
-        <Link href="/admin/konten" className={`${adminStyles.tabBtn} ${!onExam ? adminStyles.tabBtnActive : ""}`}>
-          Pelajaran
-        </Link>
-        <Link href="/admin/konten/ujian" className={`${adminStyles.tabBtn} ${onExam ? adminStyles.tabBtnActive : ""}`}>
-          Ujian Naik Level
-        </Link>
+        {tabs.map((t) => (
+          <Link key={t.href} href={t.href} className={`${adminStyles.tabBtn} ${t.active ? adminStyles.tabBtnActive : ""}`}>
+            {t.label}
+          </Link>
+        ))}
       </nav>
       {children}
     </div>

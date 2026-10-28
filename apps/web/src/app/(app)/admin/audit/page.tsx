@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { adminApi, type AuditLogItem } from "@/features/admin/data/adminApi";
 import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
+import { SkeletonTableRows } from "@/shared/ui/Skeleton";
 import styles from "@/app/(app)/admin/admin.module.css";
 
 function formatAuditDetail(action: string, details: Record<string, unknown> | null): string {
@@ -24,6 +25,9 @@ function formatAuditDetail(action: string, details: Record<string, unknown> | nu
   if (action === "update_ai_prompt") {
     return `Level ${details.levelId}: maks ${details.maxSentenceWords} kata, furigana ${details.furiganaRule}, speed ${details.speechRate}x`;
   }
+  if (action === "update_onboarding") {
+    return `Pengaturan pendaftaran: ${details.activeStarts} titik mulai aktif (${details.testedStarts} wajib tes), ${details.goals} tujuan belajar`;
+  }
   return JSON.stringify(details);
 }
 
@@ -38,6 +42,7 @@ function getActionBadgeStyle(action: string): React.CSSProperties {
     case "grant_subscription":
       return { background: "#fef3c7", color: "#b45309", border: "1px solid #fde68a" };
     case "update_ai_prompt":
+    case "update_onboarding":
       return { background: "#e0f2fe", color: "#0369a1", border: "1px solid #7dd3fc" };
     default:
       return { background: "#f1f5f9", color: "#475569", border: "1px solid #cbd5e1" };
@@ -122,10 +127,12 @@ export default function AdminAuditPage() {
               </tr>
             </thead>
             <tbody>
-              {auditLogs.length === 0 ? (
+              {loading && auditLogs.length === 0 ? (
+                <SkeletonTableRows rows={8} columns={5} />
+              ) : auditLogs.length === 0 ? (
                 <tr>
                   <td colSpan={5} className={styles.emptyState}>
-                    {loading ? "Memuat log audit..." : "Belum ada catatan aktivitas administratif."}
+                    Belum ada catatan aktivitas administratif.
                   </td>
                 </tr>
               ) : (
