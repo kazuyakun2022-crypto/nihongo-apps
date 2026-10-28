@@ -1,3 +1,5 @@
+import type { ExerciseType } from "@/shared/lib/exercises";
+
 export interface Level {
   id: number;
   code: string;
@@ -11,6 +13,8 @@ export interface ChapterSummary {
   title: string;
   status: "locked" | "open" | "completed";
   bestScore: number | null;
+  explanation: string | null;
+  counts: { vocab: number; kanji: number; grammar: number; quiz: number };
 }
 
 export interface ChapterVocab {
@@ -19,6 +23,7 @@ export interface ChapterVocab {
   reading: string;
   meaningId: string;
   exampleSentence: string | null;
+  exampleTranslation: string | null;
 }
 
 export interface ChapterKanji {
@@ -34,13 +39,23 @@ export interface ChapterGrammar {
   pattern: string;
   explanation: string;
   exampleSentence: string | null;
+  exampleTranslation: string | null;
 }
 
 export interface ChapterQuizQuestion {
   id: string;
-  type: "pilihan_ganda" | "susun_kalimat" | "mendengar";
+  type: ExerciseType;
   question: string;
+  /** Petunjuk saat mengerjakan, mis. arti kata. */
+  hint: string | null;
+  /** Pilihan jawaban, atau kepingan acak untuk soal susun. */
   options: string[];
+  audioUrl: string | null;
+  /** Soal menulis: jumlah kotak huruf dan aksara yang diminta. */
+  slots?: number;
+  script?: "hiragana" | "katakana" | "campuran";
+  /** Soal berbicara: kalimat yang harus diucapkan. */
+  speakText?: string;
 }
 
 export interface ChapterDetail {
@@ -57,6 +72,7 @@ export interface ChapterDetail {
 export interface QuizAnswer {
   questionId: string;
   answer: string;
+  skipped?: boolean;
 }
 
 export interface QuizResult {
@@ -64,7 +80,7 @@ export interface QuizResult {
   passed: boolean;
   xpEarned: number;
   passingScore: number;
-  results: { questionId: string; correct: boolean; correctAnswer: string }[];
+  results: { questionId: string; correct: boolean; skipped: boolean; correctAnswer: string; explanation: string | null }[];
 }
 
 export type LearningGoal = "jlpt" | "kerja" | "hobi" | "wisata";

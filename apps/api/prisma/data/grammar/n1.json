@@ -1,0 +1,310 @@
+[
+  {
+    "pattern": "〜とはいえ",
+    "explanation": "Berarti 'meskipun demikian' atau 'walaupun memang', untuk mengakui suatu fakta lalu menyatakan hal yang tidak sesuai dugaan. Bernuansa tulisan. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "春とはいえ、朝晩はまだ寒い。",
+    "exampleTranslation": "Meskipun sudah musim semi, pagi dan malam masih dingin.",
+    "quiz": { "question": "冗談だった＿＿、彼女を傷つけたことには変わりない。", "options": ["とはいえ", "とあって", "とあれば", "ともなると"], "answer": "とはいえ" }
+  },
+  {
+    "pattern": "〜のみならず",
+    "explanation": "Berarti 'tidak hanya... tetapi juga'. Versi formal dari だけでなく, sering dipakai dalam tulisan atau pidato. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "この問題は日本のみならず、世界全体の課題である。",
+    "exampleTranslation": "Masalah ini bukan hanya persoalan Jepang, tetapi juga persoalan seluruh dunia.",
+    "quiz": { "question": "環境汚染は人間＿＿、多くの動物にも深刻な影響を与えている。", "options": ["にひきかえ", "のみならず", "ならでは", "をおいて"], "answer": "のみならず" }
+  },
+  {
+    "pattern": "〜をもって",
+    "explanation": "Punya dua makna formal: 'dengan' sebagai sarana atau cara, dan 'per' atau 'terhitung' sebagai batas waktu dalam pengumuman resmi. Melekat pada kata benda.",
+    "exampleSentence": "本日をもって、この店は閉店いたします。",
+    "exampleTranslation": "Terhitung hari ini, toko ini akan ditutup.",
+    "quiz": { "question": "以上＿＿、本日の説明会を終了いたします。", "options": ["をおいて", "をよそに", "をもって", "を皮切りに"], "answer": "をもって" }
+  },
+  {
+    "pattern": "〜に至るまで",
+    "explanation": "Berarti 'sampai ke' hal yang paling kecil atau paling jauh, untuk menekankan cakupan yang sangat luas. Sering berpasangan dengan から. Melekat pada kata benda.",
+    "exampleSentence": "彼女の部屋は、家具からカーテンに至るまで全部白い。",
+    "exampleTranslation": "Kamarnya serba putih, mulai dari perabot sampai ke gordennya.",
+    "quiz": { "question": "その店では、日用品から高級家具＿＿、何でもそろう。", "options": ["にあって", "に至るまで", "にひきかえ", "にかこつけて"], "answer": "に至るまで" }
+  },
+  {
+    "pattern": "〜ならでは",
+    "explanation": "Berarti 'khas' atau 'hanya bisa dilakukan oleh' orang, tempat, atau hal tertentu, bernada memuji. Bentuknya kata benda + ならではの + kata benda.",
+    "exampleSentence": "この料理は、海の近くの町ならではの味だ。",
+    "exampleTranslation": "Masakan ini memiliki rasa khas kota yang dekat dengan laut.",
+    "quiz": { "question": "手作りの家具には、職人＿＿の温かみがある。", "options": ["ながら", "ずくめ", "まみれ", "ならでは"], "answer": "ならでは" }
+  },
+  {
+    "pattern": "〜ともなると",
+    "explanation": "Berarti 'kalau sudah menjadi' atau 'kalau sudah sampai pada' tingkat atau posisi tertentu, maka wajar keadaannya berbeda. Melekat pada kata benda atau kata kerja bentuk kamus.",
+    "exampleSentence": "大学生ともなると、自分のことは自分で決めなければならない。",
+    "exampleTranslation": "Kalau sudah menjadi mahasiswa, urusan sendiri harus diputuskan sendiri.",
+    "quiz": { "question": "社長＿＿、休日でも仕事の電話がかかってくる。", "options": ["なりに", "ともなると", "とはいえ", "ながらも"], "answer": "ともなると" }
+  },
+  {
+    "pattern": "〜はおろか",
+    "explanation": "Berarti 'jangankan X, Y pun tidak', untuk menekankan bahwa hal yang lebih mudah pun tidak terjadi. Biasanya diikuti も atau さえ dan kalimat negatif. Melekat pada kata benda.",
+    "exampleSentence": "忙しくて、旅行はおろか、週末に休むこともできない。",
+    "exampleTranslation": "Karena sibuk, jangankan bepergian, beristirahat di akhir pekan pun tidak bisa.",
+    "quiz": { "question": "彼は漢字＿＿、ひらがなもまだ書けない。", "options": ["もさることながら", "ならでは", "はおろか", "ずくめ"], "answer": "はおろか" }
+  },
+  {
+    "pattern": "〜もさることながら",
+    "explanation": "Berarti 'X memang tentu saja, tetapi Y juga', dengan penekanan lebih pada Y. Biasanya dipakai untuk penilaian positif dan bernuansa formal. Melekat pada kata benda.",
+    "exampleSentence": "この店は、料理の味もさることながら、店員のサービスもすばらしい。",
+    "exampleTranslation": "Selain rasa masakannya yang tentu saja enak, pelayanan stafnya juga luar biasa.",
+    "quiz": { "question": "彼の作品は、技術の高さ＿＿、独創的な発想が高く評価されている。", "options": ["はおろか", "をよそに", "にひきかえ", "もさることながら"], "answer": "もさることながら" }
+  },
+  {
+    "pattern": "〜にとどまらず",
+    "explanation": "Berarti 'tidak berhenti pada' atau 'tidak terbatas pada' suatu lingkup, melainkan meluas ke lingkup yang lebih besar. Melekat pada kata benda atau kata kerja bentuk kamus.",
+    "exampleSentence": "被害は一つの町にとどまらず、県全体に広がった。",
+    "exampleTranslation": "Kerusakan tidak hanya terjadi di satu kota, tetapi meluas ke seluruh prefektur.",
+    "quiz": { "question": "彼の人気は国内＿＿、アジア各国に広がっている。", "options": ["にとどまらず", "にひきかえ", "に至っては", "をよそに"], "answer": "にとどまらず" }
+  },
+  {
+    "pattern": "〜といえども",
+    "explanation": "Berarti 'walaupun' atau 'sekalipun', sering bersama たとえ atau いかに. Sangat formal dan kaku. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "子どもといえども、ルールは守らなければならない。",
+    "exampleTranslation": "Sekalipun anak-anak, aturan tetap harus dipatuhi.",
+    "quiz": { "question": "いかに優秀な医者＿＿、すべての病気を治せるわけではない。", "options": ["たるもの", "といえども", "ならでは", "とあれば"], "answer": "といえども" }
+  },
+  {
+    "pattern": "〜ながらも",
+    "explanation": "Berarti 'meskipun' atau 'walaupun', untuk dua keadaan yang bertolak belakang pada subjek yang sama. Melekat pada bentuk ます tanpa ます, kata sifat-i, atau kata benda.",
+    "exampleSentence": "彼は文句を言いながらも、最後まで手伝ってくれた。",
+    "exampleTranslation": "Meskipun menggerutu, dia tetap membantu sampai selesai.",
+    "quiz": { "question": "彼女は体が小さい＿＿、力強いプレーで観客を魅了した。", "options": ["がてら", "かたがた", "なり", "ながらも"], "answer": "ながらも" }
+  },
+  {
+    "pattern": "〜とあって",
+    "explanation": "Berarti 'karena (dalam situasi istimewa)', lalu menjelaskan akibat yang terlihat. Sering dipakai dalam berita. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "連休とあって、観光地はどこも人でいっぱいだ。",
+    "exampleTranslation": "Karena libur panjang, tempat wisata di mana-mana penuh orang.",
+    "quiz": { "question": "人気歌手が来る＿＿、会場の前には朝から長い列ができた。", "options": ["とあれば", "とあって", "といえども", "とはいえ"], "answer": "とあって" }
+  },
+  {
+    "pattern": "〜とあれば",
+    "explanation": "Berarti 'jika memang demi' atau 'kalau itu menyangkut' hal tertentu, maka bersedia melakukan apa saja. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "子どものためとあれば、親はどんな苦労もいとわない。",
+    "exampleTranslation": "Jika demi anak, orang tua rela menanggung kesulitan apa pun.",
+    "quiz": { "question": "あなたの頼み＿＿、断るわけにはいきません。", "options": ["といえども", "ともなく", "ながらに", "とあれば"], "answer": "とあれば" }
+  },
+  {
+    "pattern": "〜を皮切りに",
+    "explanation": "Berarti 'dimulai dengan', yaitu suatu hal menjadi awal dari rangkaian kejadian serupa yang menyusul. Melekat pada kata benda.",
+    "exampleSentence": "東京公演を皮切りに、全国十都市でコンサートが開かれる。",
+    "exampleTranslation": "Dimulai dari pertunjukan di Tokyo, konser akan digelar di sepuluh kota di seluruh negeri.",
+    "quiz": { "question": "彼の発言＿＿、会議では次々と反対意見が出された。", "options": ["を限りに", "をおいて", "を皮切りに", "をよそに"], "answer": "を皮切りに" }
+  },
+  {
+    "pattern": "〜を限りに",
+    "explanation": "Berarti 'mulai saat ini dan seterusnya tidak lagi', menandai akhir dari suatu kebiasaan atau kegiatan. Melekat pada kata benda waktu seperti 今日 atau 今回.",
+    "exampleSentence": "今日を限りに、たばこをやめることにした。",
+    "exampleTranslation": "Mulai hari ini, saya memutuskan untuk berhenti merokok.",
+    "quiz": { "question": "今シーズン＿＿、あの選手は現役を引退する。", "options": ["を皮切りに", "を限りに", "をよそに", "にあって"], "answer": "を限りに" }
+  },
+  {
+    "pattern": "〜をよそに",
+    "explanation": "Berarti 'tanpa memedulikan' kekhawatiran, harapan, atau pendapat orang lain. Melekat pada kata benda.",
+    "exampleSentence": "親の心配をよそに、息子は一人で海外旅行に出かけた。",
+    "exampleTranslation": "Tanpa memedulikan kekhawatiran orang tuanya, sang anak pergi ke luar negeri sendirian.",
+    "quiz": { "question": "周囲の反対＿＿、彼は会社を辞めて起業した。", "options": ["をめぐって", "をおいて", "を限りに", "をよそに"], "answer": "をよそに" }
+  },
+  {
+    "pattern": "〜をものともせず",
+    "explanation": "Berarti 'tanpa gentar menghadapi' kesulitan atau rintangan, bernada memuji keberanian. Melekat pada kata benda.",
+    "exampleSentence": "選手たちは激しい雨をものともせず、最後まで走り続けた。",
+    "exampleTranslation": "Para atlet terus berlari sampai akhir tanpa gentar menghadapi hujan deras.",
+    "quiz": { "question": "彼は大きなけが＿＿、決勝戦に出場した。", "options": ["を皮切りに", "をおいて", "をものともせず", "をもって"], "answer": "をものともせず" }
+  },
+  {
+    "pattern": "〜をおいて(ほかに)ない",
+    "explanation": "Berarti 'tidak ada yang lain selain', untuk menyatakan bahwa hanya satu orang atau hal itulah yang paling tepat. Melekat pada kata benda.",
+    "exampleSentence": "この仕事を任せられるのは、彼をおいてほかにいない。",
+    "exampleTranslation": "Tidak ada orang lain selain dia yang bisa dipercaya untuk pekerjaan ini.",
+    "quiz": { "question": "次のリーダーにふさわしいのは、山田さん＿＿ほかにいない。", "options": ["をおいて", "をもって", "をよそに", "を限りに"], "answer": "をおいて" }
+  },
+  {
+    "pattern": "〜にあって",
+    "explanation": "Berarti 'dalam (situasi atau keadaan khusus)', untuk menyatakan bahwa sesuatu terjadi di tengah kondisi tersebut. Sangat formal dan bernuansa tulisan. Melekat pada kata benda.",
+    "exampleSentence": "不況にあって、この会社は売り上げを伸ばし続けている。",
+    "exampleTranslation": "Di tengah resesi, perusahaan ini terus meningkatkan penjualannya.",
+    "quiz": { "question": "戦時下という厳しい状況＿＿、彼は研究を続けた。", "options": ["に至って", "にもまして", "にあって", "にひきかえ"], "answer": "にあって" }
+  },
+  {
+    "pattern": "〜に至っては",
+    "explanation": "Berarti 'bahkan' atau 'apalagi', untuk menyebut contoh yang paling ekstrem di antara beberapa hal yang sejenis. Melekat pada kata benda.",
+    "exampleSentence": "クラスの多くが宿題を忘れ、田中君に至っては教科書まで忘れてきた。",
+    "exampleTranslation": "Banyak murid lupa mengerjakan PR, bahkan Tanaka sampai lupa membawa buku pelajarannya.",
+    "quiz": { "question": "家族はみんな朝が苦手で、父＿＿昼まで起きてこない。", "options": ["に至るまで", "にあって", "をもって", "に至っては"], "answer": "に至っては" }
+  },
+  {
+    "pattern": "〜にひきかえ",
+    "explanation": "Berarti 'berbeda sekali dengan', untuk membandingkan dua hal yang bertolak belakang, sering disertai penilaian pribadi. Melekat pada kata benda atau bentuk biasa + の.",
+    "exampleSentence": "兄がまじめなのにひきかえ、弟は遊んでばかりいる。",
+    "exampleTranslation": "Berbeda sekali dengan kakaknya yang serius, adiknya hanya bermain-main saja.",
+    "quiz": { "question": "去年の大雪＿＿、今年の冬はほとんど雪が降らない。", "options": ["にひきかえ", "にもまして", "に至っては", "にあって"], "answer": "にひきかえ" }
+  },
+  {
+    "pattern": "〜たるもの",
+    "explanation": "Berarti 'sebagai seorang (yang memiliki kedudukan tertentu)', maka sudah seharusnya bersikap sesuai kedudukan itu. Sangat formal; melekat pada kata benda yang menyatakan peran atau jabatan.",
+    "exampleSentence": "教師たるもの、生徒の手本とならなければならない。",
+    "exampleTranslation": "Sebagai seorang guru, ia harus menjadi teladan bagi murid-muridnya.",
+    "quiz": { "question": "医者＿＿、患者の命を第一に考えるべきだ。", "options": ["ならでは", "なりに", "たるもの", "ずくめ"], "answer": "たるもの" }
+  },
+  {
+    "pattern": "〜ならいざしらず",
+    "explanation": "Berarti 'kalau X sih masih bisa dimaklumi, tetapi...', lalu menyatakan bahwa keadaan sekarang tidak bisa diterima. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "子どもならいざしらず、大人がそんなことで泣くなんて。",
+    "exampleTranslation": "Kalau anak-anak sih masih wajar, tapi orang dewasa menangis karena hal seperti itu?",
+    "quiz": { "question": "初心者＿＿、プロがこんな簡単なミスをするとは信じられない。", "options": ["ならでは", "ならいざしらず", "ともなると", "たるもの"], "answer": "ならいざしらず" }
+  },
+  {
+    "pattern": "〜であれ〜であれ",
+    "explanation": "Berarti 'baik X maupun Y', untuk menyatakan bahwa apa pun pilihannya hasilnya tetap sama. Melekat pada kata benda.",
+    "exampleSentence": "学生であれ社会人であれ、時間を守るのは基本だ。",
+    "exampleTranslation": "Baik pelajar maupun pekerja, tepat waktu adalah hal dasar.",
+    "quiz": { "question": "晴れ＿＿雨であれ、イベントは予定どおり開催する。", "options": ["といい", "なり", "であれ", "とて"], "answer": "であれ" }
+  },
+  {
+    "pattern": "〜といい〜といい",
+    "explanation": "Berarti 'baik dari segi X maupun Y', untuk memberi contoh lalu menyimpulkan penilaian, baik pujian maupun kritik. Melekat pada kata benda.",
+    "exampleSentence": "この旅館は、料理といい部屋といい、文句のつけようがない。",
+    "exampleTranslation": "Penginapan ini, baik masakannya maupun kamarnya, tidak ada celanya.",
+    "quiz": { "question": "このカメラは、デザイン＿＿性能といい、申し分ない。", "options": ["であれ", "なり", "とも", "といい"], "answer": "といい" }
+  },
+  {
+    "pattern": "〜なり",
+    "explanation": "Berarti 'begitu... langsung', untuk tindakan yang segera diikuti tindakan lain yang mengejutkan. Subjek kedua bagian harus sama dan tidak dipakai untuk diri sendiri. Melekat pada kata kerja bentuk kamus.",
+    "exampleSentence": "彼は家に帰るなり、ベッドに倒れ込んだ。",
+    "exampleTranslation": "Begitu sampai di rumah, dia langsung menjatuhkan diri ke tempat tidur.",
+    "quiz": { "question": "娘は電話に出る＿＿、泣き出した。", "options": ["なり", "そばから", "がてら", "ながらに"], "answer": "なり" }
+  },
+  {
+    "pattern": "〜や否や",
+    "explanation": "Berarti 'tepat setelah' atau 'begitu... seketika', menekankan bahwa dua kejadian terjadi hampir bersamaan. Sangat formal dan bernuansa tulisan. Melekat pada kata kerja bentuk kamus.",
+    "exampleSentence": "ベルが鳴るや否や、生徒たちは教室を飛び出した。",
+    "exampleTranslation": "Begitu bel berbunyi, para murid langsung berlari keluar kelas.",
+    "quiz": { "question": "新商品が発売される＿＿、店の前に客が殺到した。", "options": ["そばから", "や否や", "かたがた", "ともなく"], "answer": "や否や" }
+  },
+  {
+    "pattern": "〜てからというもの",
+    "explanation": "Berarti 'sejak... (keadaan berubah total)', untuk perubahan besar yang terus berlanjut setelah suatu kejadian. Melekat pada kata kerja bentuk て.",
+    "exampleSentence": "犬を飼い始めてからというもの、毎朝散歩するようになった。",
+    "exampleTranslation": "Sejak mulai memelihara anjing, saya jadi berjalan-jalan setiap pagi.",
+    "quiz": { "question": "彼女は母親になって＿＿、すっかり性格が穏やかになった。", "options": ["からといって", "からには", "からして", "からというもの"], "answer": "からというもの" }
+  },
+  {
+    "pattern": "〜ところを",
+    "explanation": "Berarti 'di saat (Anda sedang...)', dipakai dalam ungkapan sopan untuk meminta maaf atau berterima kasih karena mengganggu. Melekat pada kata sifat, kata kerja, atau kata benda + の.",
+    "exampleSentence": "お忙しいところを、わざわざお越しいただきありがとうございます。",
+    "exampleTranslation": "Terima kasih telah menyempatkan datang di tengah kesibukan Anda.",
+    "quiz": { "question": "お休みの＿＿、突然お電話してしまい申し訳ありません。", "options": ["ものを", "ところを", "そばから", "かたがた"], "answer": "ところを" }
+  },
+  {
+    "pattern": "〜ものを",
+    "explanation": "Berarti 'padahal kalau saja...', untuk menyesali atau mengeluhkan hal yang seharusnya bisa terjadi tetapi tidak. Biasanya didahului bentuk ば atau たら. Melekat pada bentuk biasa.",
+    "exampleSentence": "一言相談してくれればよかったものを、どうして黙っていたの。",
+    "exampleTranslation": "Padahal cukup bilang sepatah kata saja, kenapa kamu diam saja?",
+    "quiz": { "question": "早く病院に行けば治った＿＿、我慢しすぎて悪化させてしまった。", "options": ["ところを", "そばから", "ものを", "ものか"], "answer": "ものを" }
+  },
+  {
+    "pattern": "〜べく",
+    "explanation": "Berarti 'untuk' atau 'demi', menyatakan tujuan dengan nada formal dan tegas. Melekat pada kata kerja bentuk kamus; する bisa menjadi すべく.",
+    "exampleSentence": "夢をかなえるべく、彼は毎日努力を重ねている。",
+    "exampleTranslation": "Demi mewujudkan mimpinya, dia terus berusaha setiap hari.",
+    "quiz": { "question": "新しい市場を開拓す＿＿、社員を海外に派遣した。", "options": ["べからず", "べく", "まじく", "べき"], "answer": "べく" }
+  },
+  {
+    "pattern": "〜までもない",
+    "explanation": "Berarti 'tidak perlu sampai...', karena hal itu sudah jelas atau terlalu mudah. Melekat pada kata kerja bentuk kamus.",
+    "exampleSentence": "そんな簡単なことは、わざわざ説明するまでもない。",
+    "exampleTranslation": "Hal semudah itu tidak perlu repot-repot dijelaskan.",
+    "quiz": { "question": "彼が優秀なのは、改めて言う＿＿。", "options": ["にかたくない", "に足る", "までもない", "に堪えない"], "answer": "までもない" }
+  },
+  {
+    "pattern": "〜を余儀なくされる",
+    "explanation": "Berarti 'terpaksa' melakukan sesuatu karena keadaan di luar kendali. Sangat formal dan sering dipakai dalam berita. Melekat pada kata benda yang menyatakan tindakan.",
+    "exampleSentence": "大雪のため、多くの学校が休校を余儀なくされた。",
+    "exampleTranslation": "Karena salju lebat, banyak sekolah terpaksa diliburkan.",
+    "quiz": { "question": "資金不足のため、その計画は中止＿＿。", "options": ["を禁じ得なかった", "を余儀なくされた", "にかたくなかった", "に足りなかった"], "answer": "を余儀なくされた" }
+  },
+  {
+    "pattern": "〜を禁じ得ない",
+    "explanation": "Berarti 'tidak dapat menahan' perasaan tertentu seperti marah, sedih, atau heran. Sangat formal. Melekat pada kata benda yang menyatakan emosi.",
+    "exampleSentence": "被害者の話を聞いて、怒りを禁じ得なかった。",
+    "exampleTranslation": "Mendengar cerita korban, saya tidak dapat menahan amarah.",
+    "quiz": { "question": "突然の悲しい知らせに、涙＿＿。", "options": ["を余儀なくされた", "にかたくなかった", "をおいてなかった", "を禁じ得なかった"], "answer": "を禁じ得なかった" }
+  },
+  {
+    "pattern": "〜に足る",
+    "explanation": "Berarti 'layak' atau 'cukup pantas untuk', menyatakan bahwa sesuatu memiliki nilai yang memadai. Melekat pada kata kerja bentuk kamus atau kata benda tindakan.",
+    "exampleSentence": "彼は信頼するに足る人物だ。",
+    "exampleTranslation": "Dia adalah orang yang layak dipercaya.",
+    "quiz": { "question": "この報告書には、彼の主張を裏付ける＿＿証拠が一つもない。", "options": ["に堪えない", "に足る", "に値しない", "にかたくない"], "answer": "に足る" }
+  },
+  {
+    "pattern": "〜に堪えない",
+    "explanation": "Berarti 'tidak tahan untuk' melihat atau mendengar sesuatu karena terlalu buruk. Dengan kata benda perasaan seperti 感謝, maknanya menjadi 'sangat' dalam bahasa formal. Melekat pada kata kerja bentuk kamus atau kata benda.",
+    "exampleSentence": "最近のテレビ番組には、見るに堪えないものが多い。",
+    "exampleTranslation": "Banyak acara televisi belakangan ini yang tidak layak ditonton.",
+    "quiz": { "question": "彼の悪口は、聞く＿＿ほどひどかった。", "options": ["に足る", "にかたくない", "に及ばない", "に堪えない"], "answer": "に堪えない" }
+  },
+  {
+    "pattern": "〜にかたくない",
+    "explanation": "Berarti 'tidak sulit untuk' membayangkan atau memahami sesuatu. Biasanya hanya dipakai dengan kata benda seperti 想像 dan 察する. Bernuansa tulisan.",
+    "exampleSentence": "家族を失った彼の悲しみは、想像にかたくない。",
+    "exampleTranslation": "Kesedihannya setelah kehilangan keluarga tidak sulit untuk dibayangkan.",
+    "quiz": { "question": "一人で子どもを育てる苦労は、想像＿＿。", "options": ["にかたくない", "に及ばない", "までもない", "をおいてない"], "answer": "にかたくない" }
+  },
+  {
+    "pattern": "〜てやまない",
+    "explanation": "Berarti 'terus-menerus dan sungguh-sungguh' merasakan sesuatu, seperti berharap atau mencintai. Sering dipakai dalam pidato atau tulisan resmi. Melekat pada kata kerja bentuk て.",
+    "exampleSentence": "皆様のご健康を心から願ってやみません。",
+    "exampleTranslation": "Saya senantiasa mendoakan kesehatan Anda sekalian dengan sepenuh hati.",
+    "quiz": { "question": "両親は、息子の成功を心から願って＿＿。", "options": ["かなわない", "すまない", "やまない", "おかない"], "answer": "やまない" }
+  },
+  {
+    "pattern": "〜ずにはおかない",
+    "explanation": "Berarti 'pasti akan membuat' atau 'tidak mungkin tidak', yaitu sesuatu secara alami menimbulkan perasaan atau reaksi pada orang lain. Melekat pada bentuk ない tanpa ない; する menjadi せずにはおかない.",
+    "exampleSentence": "彼の演説は、聞く人の心を動かさずにはおかない。",
+    "exampleTranslation": "Pidatonya pasti menggugah hati siapa pun yang mendengarnya.",
+    "quiz": { "question": "この映画の結末は、見る人を感動させ＿＿。", "options": ["ずにはおかない", "ざるを得ない", "ずじまいだ", "ずともよい"], "answer": "ずにはおかない" }
+  },
+  {
+    "pattern": "〜まじき",
+    "explanation": "Berarti 'tidak pantas' atau 'tidak boleh' bagi seseorang dengan kedudukan tertentu. Biasanya dalam bentuk 〜としてあるまじき + kata benda. Sangat formal.",
+    "exampleSentence": "弱い者をいじめるなど、人としてあるまじき行為だ。",
+    "exampleTranslation": "Menindas orang yang lemah adalah perbuatan yang tidak pantas dilakukan manusia.",
+    "quiz": { "question": "患者の秘密を他人に話すのは、医者としてある＿＿行為だ。", "options": ["べく", "まじき", "べからず", "ばかりの"], "answer": "まじき" }
+  },
+  {
+    "pattern": "〜きらいがある",
+    "explanation": "Berarti 'punya kecenderungan' untuk melakukan hal yang kurang baik. Dipakai untuk mengkritik dengan nada formal. Melekat pada kata kerja bentuk kamus atau kata benda + の.",
+    "exampleSentence": "彼は物事を悪いほうに考えるきらいがある。",
+    "exampleTranslation": "Dia punya kecenderungan memikirkan segala sesuatu ke arah yang buruk.",
+    "quiz": { "question": "最近の若者は、何でもインターネットで済ませようとする＿＿。", "options": ["かいがある", "きらいがある", "にかたくない", "までもない"], "answer": "きらいがある" }
+  },
+  {
+    "pattern": "〜いかんでは",
+    "explanation": "Berarti 'tergantung pada', yaitu hasil bisa berubah sesuai keadaan tertentu. Sangat formal. Melekat pada kata benda, kadang dengan の.",
+    "exampleSentence": "検査の結果いかんでは、手術が必要になるかもしれない。",
+    "exampleTranslation": "Tergantung pada hasil pemeriksaan, mungkin saja diperlukan operasi.",
+    "quiz": { "question": "今後の交渉の＿＿、契約が取り消される可能性もある。", "options": ["かたがた", "ずくめで", "ならでは", "いかんでは"], "answer": "いかんでは" }
+  },
+  {
+    "pattern": "〜がてら",
+    "explanation": "Berarti 'sambil' atau 'sekalian', yaitu melakukan satu kegiatan sekaligus memanfaatkannya untuk tujuan lain. Melekat pada kata benda tindakan atau bentuk ます tanpa ます.",
+    "exampleSentence": "散歩がてら、近くのパン屋まで行ってきた。",
+    "exampleTranslation": "Sambil berjalan-jalan, saya mampir ke toko roti terdekat.",
+    "quiz": { "question": "駅まで友達を送り＿＿、本屋に寄ってきた。", "options": ["かたがた", "がてら", "なり", "そばから"], "answer": "がてら" }
+  },
+  {
+    "pattern": "〜ずくめ",
+    "explanation": "Berarti 'serba' atau 'penuh dengan' satu hal saja, misalnya warna atau hal baik. Melekat pada kata benda tertentu seperti 黒, いいこと, 規則.",
+    "exampleSentence": "今年は結婚に昇進に、いいことずくめの一年だった。",
+    "exampleTranslation": "Tahun ini penuh hal baik, mulai dari menikah hingga naik jabatan.",
+    "quiz": { "question": "黒＿＿の服を着た男が、店の前に立っていた。", "options": ["まみれ", "だらけ", "めく", "ずくめ"], "answer": "ずくめ" }
+  }
+]

@@ -7,6 +7,14 @@ const API_URL = process.env.API_URL ?? "http://localhost:4000";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async redirects() {
+    return [
+      { source: "/neko", destination: "/suara", permanent: false },
+      { source: "/neko-ai", destination: "/suara", permanent: false },
+      { source: "/NEKO_AI", destination: "/suara", permanent: false },
+      { source: "/voice", destination: "/suara", permanent: false },
+    ];
+  },
   async rewrites() {
     return [{ source: "/api/:path*", destination: `${API_URL}/api/:path*` }];
   },

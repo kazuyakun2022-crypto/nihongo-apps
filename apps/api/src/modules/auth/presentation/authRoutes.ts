@@ -16,6 +16,7 @@ import type { SendEmailVerification } from "../application/SendEmailVerification
 import type { RequestPasswordReset, ResetPassword } from "../application/PasswordReset";
 import type { GetCurrentUser } from "../application/GetCurrentUser";
 import type { CompleteOnboarding } from "../application/CompleteOnboarding";
+import type { UpdateAvatar } from "../application/UpdateAvatar";
 
 export interface AuthUseCases {
   register: RegisterWithEmail;
@@ -30,6 +31,7 @@ export interface AuthUseCases {
   resetPassword: ResetPassword;
   getCurrentUser: GetCurrentUser;
   completeOnboarding: CompleteOnboarding;
+  updateAvatar: UpdateAvatar;
 }
 
 const REFRESH_COOKIE = "nihongo_rt";
@@ -38,6 +40,7 @@ const registerSchema = z.object({
   displayName: z.string().trim().min(1, "Nama panggilan wajib diisi").max(50),
   email: z.string().email("Format email belum benar"),
   password: z.string().min(8, "Password minimal 8 karakter").max(128),
+  gender: z.enum(["male", "female", "other"]).optional(),
 });
 const loginSchema = z.object({ email: z.string().email(), password: z.string().min(1) });
 const oauthSchema = z.object({ provider: z.enum(["google", "apple"]), idToken: z.string().min(1) });
@@ -47,8 +50,12 @@ const onboardingSchema = z.object({
   currentLevelId: z.number().int().min(1).max(6),
   learningGoal: z.enum(["jlpt", "kerja", "hobi", "wisata"]),
   dailyTargetMin: z.union([z.literal(5), z.literal(10), z.literal(20)]),
+  gender: z.enum(["male", "female", "other"]).optional(),
 });
 const resetSchema = z.object({ token: z.string().min(1), password: z.string().min(8).max(128) });
+const avatarSchema = z.object({
+  avatarUrl: z.string().max(2_500_000).nullable(),
+});
 
 export function authRoutes(uc: AuthUseCases, verifier: AccessTokenVerifier, opts: { secureCookies: boolean }): Router {
   const r = Router();
@@ -129,6 +136,15 @@ export function authRoutes(uc: AuthUseCases, verifier: AccessTokenVerifier, opts
 
   r.put("/me/onboarding", auth, asyncHandler(async (req, res) => {
     res.json({ user: await uc.completeOnboarding.execute(currentUser(req).id, parseBody(onboardingSchema, req.body)) });
+  }));
+
+  r.put("/me/avatar", auth, asyncHandler(async (req, res) => {
+    const body = parseBody(avatarSchema, req.body);
+    res.json({ user: await uc.updateAvatar.execute(currentUser(req).id, body.avatarUrl) });
+  }));
+
+  r.delete("/me/avatar", auth, asyncHandler(async (req, res) => {
+    res.json({ user: await uc.updateAvatar.execute(currentUser(req).id, null) });
   }));
 
   return r;

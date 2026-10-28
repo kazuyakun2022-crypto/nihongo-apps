@@ -33,7 +33,12 @@ export function learningRoutes(uc: { listLevels: ListLevels; listChapters: ListC
 
   r.post("/chapters/:chapterId/quiz", asyncHandler(async (req, res) => {
     const { answers } = parseBody(
-      z.object({ answers: z.array(z.object({ questionId: z.string().uuid(), answer: z.string().min(1) })).min(1).max(100) }),
+      z.object({
+        answers: z
+          .array(z.object({ questionId: z.string().uuid(), answer: z.string().max(500), skipped: z.boolean().optional() }))
+          .min(1)
+          .max(100),
+      }),
       req.body,
     );
     res.json(await uc.submitQuiz.execute(currentUser(req), req.params.chapterId, answers));

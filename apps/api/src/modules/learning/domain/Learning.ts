@@ -1,4 +1,5 @@
 import type { Role } from "../../../shared/domain/types";
+import type { ExerciseType } from "./Exercise";
 
 export interface Level {
   id: number;
@@ -16,6 +17,8 @@ export interface ChapterSummary {
   sortOrder: number;
   status: ChapterStatus;
   bestScore: number | null;
+  explanation: string | null;
+  counts: { vocab: number; kanji: number; grammar: number; quiz: number };
 }
 
 export interface ChapterDetail {
@@ -23,20 +26,39 @@ export interface ChapterDetail {
   levelId: number;
   title: string;
   explanation: string | null;
-  vocabularies: { id: string; word: string; reading: string; meaningId: string; exampleSentence: string | null }[];
+  vocabularies: { id: string; word: string; reading: string; meaningId: string; exampleSentence: string | null; exampleTranslation: string | null }[];
   kanji: { id: string; character: string; onyomi: string | null; kunyomi: string | null; meaningId: string }[];
-  grammarPoints: { id: string; pattern: string; explanation: string; exampleSentence: string | null }[];
-  quizQuestions: { id: string; type: string; question: string; options: unknown }[];
+  grammarPoints: { id: string; pattern: string; explanation: string; exampleSentence: string | null; exampleTranslation: string | null }[];
+  quizQuestions: ChapterExercise[];
+}
+
+/** Soal latihan yang dikirim ke siswa — tanpa kunci jawaban, kecuali kalimat yang memang harus diucapkan. */
+export interface ChapterExercise {
+  id: string;
+  type: ExerciseType;
+  question: string;
+  hint: string | null;
+  /** Pilihan jawaban, atau kepingan acak untuk soal susun; kosong untuk menulis/berbicara. */
+  options: string[];
+  audioUrl: string | null;
+  /** Jumlah kotak huruf pada soal menulis. */
+  slots?: number;
+  /** Aksara yang diminta pada soal menulis. */
+  script?: "hiragana" | "katakana" | "campuran";
+  /** Kalimat yang harus diucapkan pada soal berbicara. */
+  speakText?: string;
 }
 
 export interface QuizAnswer {
   questionId: string;
   answer: string;
+  /** Soal berbicara yang dilewati (mikrofon tidak tersedia) tidak ikut dinilai. */
+  skipped?: boolean;
 }
 
 export interface QuizGradeResult {
   score: number;
-  results: { questionId: string; correct: boolean; correctAnswer: string }[];
+  results: { questionId: string; correct: boolean; skipped: boolean; correctAnswer: string; explanation: string | null }[];
 }
 
 /** Aturan akses level: Belajar hanya untuk pelajar (siswa, premium, guru untuk tinjau kurikulum). Admin dan Super Admin bukan akun pelajar. */
@@ -63,15 +85,6 @@ export interface LevelProgress {
   chaptersCompleted: number;
   chaptersTotal: number;
 }
-
-export const LEVEL_TARGETS: Record<number, { vocab: number; kanji: number }> = {
-  1: { vocab: 0, kanji: 0 },
-  2: { vocab: 800, kanji: 100 },
-  3: { vocab: 700, kanji: 200 },
-  4: { vocab: 2250, kanji: 350 },
-  5: { vocab: 2250, kanji: 350 },
-  6: { vocab: 4000, kanji: 1000 },
-};
 
 export interface LearningRepository {
   listLevels(): Promise<Level[]>;

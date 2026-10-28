@@ -1,4 +1,5 @@
 import { stripRomajiGloss } from "./edgeTts";
+import { shiftPitch } from "./pitchShift";
 
 // Free tier: 3 request/menit dan 10 request/hari PER model, jadi dirotasi; urutan = tercepat lebih dulu.
 // gemini-2.5-flash-preview-tts sengaja tidak dipakai: butuh ~26 detik per jawaban.
@@ -6,6 +7,9 @@ import { stripRomajiGloss } from "./edgeTts";
 const MODELS = ["gemini-3.8-flash-lite-tts", "gemini-3.8-flash-tts", "gemini-3.1-flash-tts-preview"];
 const VOICE = "Leda";
 const SAMPLE_RATE = 24000;
+// Leda dibuat lebih imut: nada naik ±3 semitone (1.2x), tempo sedikit lebih cepat supaya terdengar ceria.
+const PITCH = 1.2;
+const TEMPO = 1.05;
 const MAX_CHARS = 800;
 const PER_MINUTE_COOLDOWN_MS = 60_000;
 const PER_DAY_COOLDOWN_MS = 60 * 60_000;
@@ -31,7 +35,32 @@ function stripC2paTrailer(pcm: Buffer): Buffer {
   return pcm;
 }
 
-function pcmToWav(pcm: Buffer): Buffer {
+/**
+ * Model TTS terbaru mengirim audio/wav utuh: RIFF + fmt + data + chunk "C2PA". Hanya chunk "data"
+ * yang diambil; header dan manifest C2PA yang ikut diputar terdengar seperti statis radio di akhir.
+ * Respons PCM mentah (model lama) diteruskan ke stripC2paTrailer.
+ */
+function extractPcm(audio: Buffer): { pcm: Buffer; sampleRate: number } {
+  if (audio.length < 12 || audio.toString("latin1", 0, 4) !== "RIFF" || audio.toString("latin1", 8, 12) !== "WAVE") {
+    return { pcm: stripC2paTrailer(audio), sampleRate: SAMPLE_RATE };
+  }
+  let sampleRate = SAMPLE_RATE;
+  let offset = 12;
+  while (offset + 8 <= audio.length) {
+    const id = audio.toString("latin1", offset, offset + 4);
+    const size = audio.readUInt32LE(offset + 4);
+    const body = offset + 8;
+    if (id === "fmt " && size >= 16) sampleRate = audio.readUInt32LE(body + 4);
+    if (id === "data") {
+      const end = Math.min(body + size, audio.length);
+      return { pcm: audio.subarray(body, end - ((end - body) % 2)), sampleRate };
+    }
+    offset = body + size + (size % 2);
+  }
+  throw new Error("WAV tanpa chunk data");
+}
+
+function pcmToWav(pcm: Buffer, sampleRate: number): Buffer {
   const header = Buffer.alloc(44);
   header.write("RIFF", 0);
   header.writeUInt32LE(36 + pcm.length, 4);
@@ -39,8 +68,8 @@ function pcmToWav(pcm: Buffer): Buffer {
   header.writeUInt32LE(16, 16);
   header.writeUInt16LE(1, 20);
   header.writeUInt16LE(1, 22);
-  header.writeUInt32LE(SAMPLE_RATE, 24);
-  header.writeUInt32LE(SAMPLE_RATE * 2, 28);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(sampleRate * 2, 28);
   header.writeUInt16LE(2, 32);
   header.writeUInt16LE(16, 34);
   header.write("data", 36);
@@ -60,40 +89,50 @@ export class GeminiTts {
     const cached = this.cache.get(clean);
     if (cached) return cached;
 
+    // Model mana pun yang gagal (kuota, 5xx, timeout) dilewati, supaya voice Leda tetap dipakai
+    // selama masih ada model lain; TTS cadangan (suara berbeda) hanya dipakai kalau semuanya gagal.
+    const errors: string[] = [];
     for (const model of MODELS) {
       if ((this.limitedUntil.get(model) ?? 0) > Date.now()) continue;
 
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`,
-        {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: clean }] }],
-            generationConfig: {
-              responseModalities: ["AUDIO"],
-              speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICE } } },
-            },
-          }),
-          signal: AbortSignal.timeout(20000),
-        },
-      );
-      if (res.status === 429) {
-        // Kuota harian habis: jangan dicoba lagi tiap jawaban, cukup cek ulang tiap jam.
-        const perDay = (await res.text()).includes("PerDay");
-        this.limitedUntil.set(model, Date.now() + (perDay ? PER_DAY_COOLDOWN_MS : PER_MINUTE_COOLDOWN_MS));
-        continue;
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`,
+          {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: clean }] }],
+              generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICE } } },
+              },
+            }),
+            signal: AbortSignal.timeout(20000),
+          },
+        );
+        if (res.status === 429) {
+          // Kuota harian habis: jangan dicoba lagi tiap jawaban, cukup cek ulang tiap jam.
+          const perDay = (await res.text()).includes("PerDay");
+          this.limitedUntil.set(model, Date.now() + (perDay ? PER_DAY_COOLDOWN_MS : PER_MINUTE_COOLDOWN_MS));
+          errors.push(`${model}: kuota ${perDay ? "harian" : "per menit"} habis`);
+          continue;
+        }
+        if (!res.ok) throw new Error(`error ${res.status}: ${(await res.text()).slice(0, 200)}`);
+
+        const data = (await res.json()) as GeminiTtsResponse;
+        const audio = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        if (!audio) throw new Error("tidak mengembalikan audio");
+
+        const { pcm, sampleRate } = extractPcm(Buffer.from(audio, "base64"));
+        const shifted = shiftPitch(pcm, sampleRate, PITCH, TEMPO);
+        const wav = pcmToWav(shifted.pcm, shifted.sampleRate);
+        if (this.cache.size < 200) this.cache.set(clean, wav);
+        return wav;
+      } catch (err) {
+        errors.push(`${model}: ${err instanceof Error ? err.message : err}`);
       }
-      if (!res.ok) throw new Error(`Gemini TTS ${model} error ${res.status}: ${(await res.text()).slice(0, 200)}`);
-
-      const data = (await res.json()) as GeminiTtsResponse;
-      const audio = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-      if (!audio) throw new Error(`Gemini TTS ${model} tidak mengembalikan audio`);
-
-      const wav = pcmToWav(stripC2paTrailer(Buffer.from(audio, "base64")));
-      if (this.cache.size < 200) this.cache.set(clean, wav);
-      return wav;
     }
-    throw new Error("Semua model Gemini TTS sedang kena batas kuota");
+    throw new Error(`Semua model Gemini TTS gagal atau kena batas kuota (${errors.join("; ") || "semua masih cooldown"})`);
   }
 }

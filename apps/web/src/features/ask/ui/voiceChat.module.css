@@ -6,19 +6,57 @@
   align-items: center;
   justify-content: space-between;
   height: 100%;
+  width: 100%;
   overflow: hidden;
   overscroll-behavior: none;
-  padding: var(--space-4) var(--space-4) var(--space-6);
-  background: var(--color-surface);
+  padding: var(--space-3) var(--space-4) var(--space-6);
+  background: radial-gradient(circle at 50% 26%, #fff5f5 0%, #fafafa 55%, #f1f5f9 100%);
   animation: fadeIn var(--motion-base) var(--ease-entrance) both;
 }
 
-/* ── Top bar ── */
+/* ── Floating actions (ketika header atas digabung) ── */
+.floatingTopActions {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+  animation: fadeIn 0.25s ease-out both;
+}
+
+.floatingActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #64748b);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 9999px;
+  padding: 5px 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.floatingActionBtn:hover {
+  color: var(--color-primary, #b31b28);
+  border-color: var(--color-primary, #b31b28);
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(179, 27, 40, 0.12);
+}
+
+/* ── Top bar (mode mandiri) ── */
 .topBar {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 4px;
 }
 
 .topTitle {
@@ -75,80 +113,33 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   position: relative;
+  width: 100%;
 }
 
-/* ── Maskot Area (Tanpa background & tanpa frame lingkaran) ── */
+/* ── Maskot Area: NekoAvatar mengatur semua gerakannya sendiri ── */
 .mascotContainer {
   position: relative;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(180px, 46vw, 240px);
-  height: clamp(180px, 46vw, 240px);
+  width: clamp(230px, 64vw, 340px);
   user-select: none;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  overflow: visible;
-  transition: transform var(--motion-fast);
 }
 
-.mascotImg {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.12));
-  transition: opacity 0.25s ease, transform var(--motion-fast);
-}
-
-/* Idle (menunggu) — mengapung santai tanpa frame/lingkaran */
-.mascotIdle .mascotImg {
-  animation: mascotFloat 3.5s ease-in-out infinite;
-}
-
-/* Listening (mendengar) — waspada mendengarkan dengan lembut */
-.mascotListening .mascotImg {
-  animation: mascotListen 1.4s ease-in-out infinite;
-  filter: drop-shadow(0 12px 28px rgba(239, 68, 68, 0.28));
-}
-
-/* Processing (berfikir) — bergoyang halus khas berpikir */
-.mascotProcessing .mascotImg {
-  animation: mascotThink 1.8s ease-in-out infinite;
-  filter: drop-shadow(0 12px 28px rgba(245, 158, 11, 0.28));
-}
-
-/* Speaking (menjawab) — berbicara & bergerak riang */
-.mascotSpeaking .mascotImg {
-  animation: mascotTalk 0.55s ease-in-out infinite alternate;
-  filter: drop-shadow(0 12px 28px rgba(16, 185, 129, 0.28));
-}
-
-@keyframes mascotFloat {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-8px); }
-}
-
-@keyframes mascotListen {
-  0%, 100% { transform: scale(1.03) translateY(-4px); }
-  50%       { transform: scale(1.06) translateY(-7px); }
-}
-
-@keyframes mascotThink {
-  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
-  50%       { transform: translateY(-6px) rotate(1.5deg); }
-}
-
-@keyframes mascotTalk {
-  0%   { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-10px) scale(1.04); }
+/* Bayangan lembut di bawah Neko: merespon ketinggian melayang secara dinamis */
+.mascotContainer::after {
+  content: "";
+  position: absolute;
+  left: 26%;
+  right: 26%;
+  bottom: 7%;
+  height: 5%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.16), transparent);
+  z-index: -1;
+  transform: scale(calc(1 - var(--neko-float-y, 0) * 0.15));
+  opacity: calc(0.85 + var(--neko-float-y, 0) * 0.2);
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out;
 }
 
 .transcriptMascotImg {
@@ -158,32 +149,96 @@
   pointer-events: none;
 }
 
-/* Status text */
+/* Status text: Styled Pill Badge */
 .statusText {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
   color: var(--color-text-muted);
   text-align: center;
-  min-height: 1.4em;
-  transition: color var(--motion-fast);
+  height: 32px;
+  min-height: 32px;
+  padding: 0 18px;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border, #e2e8f0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: all var(--motion-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
 }
-.statusListening  { color: #ef4444; }
-.statusProcessing { color: #f59e0b; }
-.statusSpeaking   { color: #10b981; }
+
+.statusListening {
+  color: #dc2626;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.statusProcessing {
+  color: #d97706;
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.statusSpeaking {
+  color: #059669;
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+}
+
+/* Slot transkrip tetap agar letak maskot dan tombol mic tidak berpindah */
+.transcriptSlot {
+  min-height: 44px;
+  max-width: 90%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* Transcript sementara */
 .liveTranscript {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  font-style: italic;
+  color: var(--color-text, #1e293b);
+  font-weight: 600;
   text-align: center;
-  max-width: 30ch;
-  min-height: 1.4em;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-surface-raised);
+  max-width: 34ch;
+  margin: 0;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
   border-radius: var(--radius-lg);
-  border: var(--border-width) solid var(--color-border);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   animation: fadeIn var(--motion-fast) both;
+}
+
+/* ── Floating Error Alert (posisi melayang tanpa menggeser layout) ── */
+.floatingAlert {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  right: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  z-index: 30;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  animation: slideDownAlert 0.25s var(--ease-entrance) both;
+}
+
+@keyframes slideDownAlert {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* ── Tombol hold-to-talk ── */
@@ -191,32 +246,58 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
+  gap: 8px;
+  margin-top: auto;
+  flex-shrink: 0;
+  padding-bottom: var(--space-2);
 }
 
 .holdBtn {
-  width: 80px;
-  height: 80px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #b31b28 0%, #dc2626 50%, #f43f5e 100%);
+  box-shadow: 0 8px 26px rgba(179, 27, 40, 0.35), 0 2px 6px rgba(0, 0, 0, 0.1);
   color: #fff;
-  transition: transform 0.12s, box-shadow 0.12s;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, background 0.15s ease;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.holdBtn::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(225, 29, 72, 0.22) 0%, transparent 70%);
+  animation: micPulseGlow 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes micPulseGlow {
+  0%, 100% { transform: scale(0.95); opacity: 0.45; }
+  50%      { transform: scale(1.15); opacity: 0.85; }
+}
+
+.holdBtn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(179, 27, 40, 0.45);
 }
 
 .holdBtn:active,
 .holdBtnActive {
-  transform: scale(0.93);
-  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
-  background: linear-gradient(135deg, #ef4444, #f97316);
+  transform: scale(0.92);
+  box-shadow: 0 2px 10px rgba(179, 27, 40, 0.4), 0 0 0 10px rgba(220, 38, 38, 0.2);
+  background: linear-gradient(135deg, #991b1b 0%, #b31b28 100%);
 }
 
 .holdBtn:disabled {
@@ -229,6 +310,44 @@
   color: var(--color-text-muted);
   text-align: center;
   letter-spacing: 0.01em;
+  margin: 0;
+  min-height: 18px;
+  line-height: 18px;
+}
+
+/* Hint keyboard hanya untuk perangkat dengan mouse/trackpad (laptop/desktop) */
+.keyHint {
+  display: none;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 0;
+  min-height: 20px;
+  line-height: 20px;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.keyHintHidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .keyHint {
+    display: block;
+  }
+}
+
+.kbd {
+  display: inline-block;
+  padding: 0 0.4em;
+  border: 1px solid currentColor;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.9em;
+  line-height: 1.4;
 }
 
 /* ── Panel transkrip (slide up) ── */
@@ -278,12 +397,12 @@
   display: flex;
   gap: var(--space-2);
   align-items: flex-end;
-  animation: messageIn var(--motion-fast) var(--ease-spring) both;
+  animation: rowFadeIn 0.22s ease-out both;
 }
 
-@keyframes messageIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes rowFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .msgRowUser { flex-direction: row-reverse; }
@@ -298,6 +417,23 @@
   font-size: 1rem;
   flex-shrink: 0;
   background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  transform-origin: center bottom;
+  animation: aiAvatarBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes aiAvatarBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) translateY(10px) rotate(-8deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.15) translateY(-2px) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
 }
 
 .msgAvatarUser {
@@ -321,12 +457,46 @@
   background: var(--color-surface-raised);
   border: var(--border-width) solid var(--color-border);
   border-top-left-radius: 4px;
+  transform-origin: bottom left;
+  animation: aiBubblePop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+
+@keyframes aiBubblePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(12px) rotate(-1.5deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.035) translateY(-2px) rotate(0.4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
 }
 
 .msgBubbleUser {
   background: var(--color-primary);
   color: #fff;
   border-top-right-radius: 4px;
+  transform-origin: bottom right;
+  animation: userBubblePop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+
+@keyframes userBubblePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(12px) rotate(1.5deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.035) translateY(-2px) rotate(-0.4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
 }
 
 /* Tidak support */

@@ -1,0 +1,275 @@
+[
+  {
+    "pattern": "〜は〜です",
+    "explanation": "Pola dasar untuk menyatakan bahwa sesuatu adalah sesuatu. Partikel は menandai topik kalimat, lalu kata benda diikuti です sebagai penutup yang sopan.",
+    "exampleSentence": "わたしは学生です。",
+    "exampleTranslation": "Saya adalah pelajar.",
+    "quiz": { "question": "たなかさん＿＿先生です。", "options": ["を", "は", "に", "で"], "answer": "は" }
+  },
+  {
+    "pattern": "〜じゃありません",
+    "explanation": "Bentuk negatif dari です, artinya \"bukan\". Diletakkan langsung setelah kata benda; bentuk yang lebih formal adalah ではありません.",
+    "exampleSentence": "これは日本の本じゃありません。",
+    "exampleTranslation": "Ini bukan buku Jepang.",
+    "quiz": { "question": "いいえ、わたしは先生＿＿。学生です。", "options": ["です", "がありません", "じゃありません", "にありません"], "answer": "じゃありません" }
+  },
+  {
+    "pattern": "〜か",
+    "explanation": "Partikel か di akhir kalimat mengubah kalimat sopan menjadi kalimat tanya. Urutan kata tidak berubah, cukup tambahkan か setelah です atau ます.",
+    "exampleSentence": "あなたは日本人ですか。",
+    "exampleTranslation": "Apakah Anda orang Jepang?",
+    "quiz": { "question": "これはあなたのかさです＿＿。", "options": ["を", "に", "へ", "か"], "answer": "か" }
+  },
+  {
+    "pattern": "〜の〜",
+    "explanation": "Partikel の menghubungkan dua kata benda untuk menunjukkan kepemilikan atau keterangan, mirip \"milik\" atau \"dari\". Kata benda pertama menerangkan kata benda kedua.",
+    "exampleSentence": "これはわたしのかばんです。",
+    "exampleTranslation": "Ini tas saya.",
+    "quiz": { "question": "これは先生＿＿ペンです。", "options": ["を", "の", "へ", "で"], "answer": "の" }
+  },
+  {
+    "pattern": "〜も",
+    "explanation": "Partikel も berarti \"juga\". Digunakan menggantikan は ketika hal yang sama berlaku untuk orang atau benda lain.",
+    "exampleSentence": "わたしも学生です。",
+    "exampleTranslation": "Saya juga pelajar.",
+    "quiz": { "question": "たなかさんは学生です。やまださん＿＿学生です。", "options": ["を", "で", "も", "へ"], "answer": "も" }
+  },
+  {
+    "pattern": "これ・それ・あれ",
+    "explanation": "Kata tunjuk untuk benda: これ untuk benda dekat pembicara, それ untuk benda dekat lawan bicara, dan あれ untuk benda yang jauh dari keduanya. Kata ini berdiri sendiri tanpa diikuti kata benda.",
+    "exampleSentence": "それはなんですか。",
+    "exampleTranslation": "Itu apa?",
+    "quiz": { "question": "＿＿はわたしのかさです。", "options": ["この", "これ", "ここ", "こんな"], "answer": "これ" }
+  },
+  {
+    "pattern": "この・その・あの＋名詞",
+    "explanation": "この, その, dan あの juga berarti \"ini\", \"itu\", dan \"itu (jauh)\", tetapi harus langsung diikuti kata benda. Jaraknya sama dengan これ, それ, dan あれ.",
+    "exampleSentence": "このとけいは高いです。",
+    "exampleTranslation": "Jam ini mahal.",
+    "quiz": { "question": "＿＿かばんはだれのですか。", "options": ["それ", "そこ", "そちら", "その"], "answer": "その" }
+  },
+  {
+    "pattern": "ここ・そこ・あそこ・どこ",
+    "explanation": "Kata tunjuk untuk tempat: ここ (di sini), そこ (di situ), あそこ (di sana), dan どこ (di mana) untuk bertanya. Biasanya dipakai dalam pola 〜は〜です.",
+    "exampleSentence": "トイレはあそこです。",
+    "exampleTranslation": "Toiletnya di sana.",
+    "quiz": { "question": "すみません、えきは＿＿ですか。", "options": ["どこ", "だれ", "なに", "いつ"], "answer": "どこ" }
+  },
+  {
+    "pattern": "〜を〜ます",
+    "explanation": "Partikel を menandai objek, yaitu benda yang dikenai pekerjaan. Letakkan を setelah objek, lalu akhiri dengan kata kerja bentuk ます.",
+    "exampleSentence": "わたしはまいあさパンを食べます。",
+    "exampleTranslation": "Saya makan roti setiap pagi.",
+    "quiz": { "question": "まいあさ、コーヒー＿＿のみます。", "options": ["に", "で", "を", "へ"], "answer": "を" }
+  },
+  {
+    "pattern": "〜ます・〜ません",
+    "explanation": "Bentuk sopan kata kerja untuk kebiasaan atau hal yang akan dilakukan. Untuk bentuk negatif, ganti ます menjadi ません.",
+    "exampleSentence": "わたしはまいにち日本語をべんきょうします。",
+    "exampleTranslation": "Saya belajar bahasa Jepang setiap hari.",
+    "quiz": { "question": "わたしはおさけがきらいです。だから、おさけを＿＿。", "options": ["のみます", "のみました", "のみません", "のみましょう"], "answer": "のみません" }
+  },
+  {
+    "pattern": "〜ました・〜ませんでした",
+    "explanation": "Bentuk lampau sopan dari kata kerja. Ganti ます menjadi ました untuk \"sudah melakukan\", dan ません menjadi ませんでした untuk \"tidak melakukan\" di masa lalu.",
+    "exampleSentence": "きのう、えいがを見ました。",
+    "exampleTranslation": "Kemarin saya menonton film.",
+    "quiz": { "question": "きのう、としょかんで本を＿＿。", "options": ["よみました", "よみます", "よみましょう", "よみたい"], "answer": "よみました" }
+  },
+  {
+    "pattern": "なにも〜ません",
+    "explanation": "Kata tanya ditambah も lalu diikuti kalimat negatif berarti \"tidak ... sama sekali\". Contohnya なにも (tidak apa pun), だれも (tidak seorang pun), dan どこも (tidak ke mana pun).",
+    "exampleSentence": "けさはなにも食べませんでした。",
+    "exampleTranslation": "Tadi pagi saya tidak makan apa pun.",
+    "quiz": { "question": "へやにはだれ＿＿いません。", "options": ["を", "も", "で", "へ"], "answer": "も" }
+  },
+  {
+    "pattern": "〜に（時間）",
+    "explanation": "Partikel に diletakkan setelah keterangan waktu yang spesifik, seperti jam, tanggal, atau hari, untuk menunjukkan kapan sesuatu terjadi. Kata seperti きょう atau まいにち tidak memakai に.",
+    "exampleSentence": "わたしは七時におきます。",
+    "exampleTranslation": "Saya bangun pukul tujuh.",
+    "quiz": { "question": "まいあさ六時＿＿おきます。", "options": ["で", "を", "が", "に"], "answer": "に" }
+  },
+  {
+    "pattern": "〜へ行きます",
+    "explanation": "Partikel へ menunjukkan arah atau tujuan perpindahan. Dipakai bersama kata kerja seperti 行きます (pergi), 来ます (datang), dan かえります (pulang).",
+    "exampleSentence": "あした、デパートへ行きます。",
+    "exampleTranslation": "Besok saya pergi ke toserba.",
+    "quiz": { "question": "らいしゅう、日本＿＿行きます。", "options": ["を", "へ", "で", "の"], "answer": "へ" }
+  },
+  {
+    "pattern": "〜で（場所）",
+    "explanation": "Partikel で setelah kata tempat menunjukkan tempat terjadinya suatu kegiatan, seperti \"di\" dalam bahasa Indonesia untuk kegiatan.",
+    "exampleSentence": "としょかんで本をよみます。",
+    "exampleTranslation": "Saya membaca buku di perpustakaan.",
+    "quiz": { "question": "レストラン＿＿ばんごはんを食べます。", "options": ["を", "に", "へ", "で"], "answer": "で" }
+  },
+  {
+    "pattern": "〜で（手段）",
+    "explanation": "Partikel で juga menunjukkan alat atau cara melakukan sesuatu, seperti kendaraan, alat makan, atau bahasa. Artinya \"dengan\" atau \"naik\".",
+    "exampleSentence": "バスで学校へ行きます。",
+    "exampleTranslation": "Saya pergi ke sekolah naik bus.",
+    "quiz": { "question": "はし＿＿ごはんを食べます。", "options": ["へ", "が", "で", "を"], "answer": "で" }
+  },
+  {
+    "pattern": "〜と（一緒に）",
+    "explanation": "Partikel と setelah orang berarti \"bersama\". Sering ditambah いっしょに agar lebih jelas.",
+    "exampleSentence": "ともだちとこうえんへ行きます。",
+    "exampleTranslation": "Saya pergi ke taman bersama teman.",
+    "quiz": { "question": "日よう日、かぞく＿＿えいがを見ました。", "options": ["を", "と", "へ", "に"], "answer": "と" }
+  },
+  {
+    "pattern": "〜があります・〜がいます",
+    "explanation": "Menyatakan \"ada\". あります dipakai untuk benda mati dan tumbuhan, sedangkan います untuk manusia dan hewan. Tempatnya ditandai dengan partikel に.",
+    "exampleSentence": "つくえの上に本があります。",
+    "exampleTranslation": "Ada buku di atas meja.",
+    "quiz": { "question": "にわにねこが＿＿。", "options": ["あります", "です", "します", "います"], "answer": "います" }
+  },
+  {
+    "pattern": "い形容詞（〜い・〜くないです）",
+    "explanation": "Kata sifat yang berakhiran い. Untuk bentuk negatif, ganti い terakhir menjadi くない lalu tambahkan です. Pengecualian: いい menjadi よくないです.",
+    "exampleSentence": "このりんごはあまりあまくないです。",
+    "exampleTranslation": "Apel ini tidak begitu manis.",
+    "quiz": { "question": "きょうはあまりさむ＿＿です。", "options": ["じゃない", "くない", "いない", "かった"], "answer": "くない" }
+  },
+  {
+    "pattern": "な形容詞＋な＋名詞",
+    "explanation": "Kata sifat jenis な, seperti しずか dan きれい, memerlukan な ketika langsung menerangkan kata benda. Di akhir kalimat cukup diikuti です tanpa な.",
+    "exampleSentence": "ここはしずかなまちです。",
+    "exampleTranslation": "Ini kota yang tenang.",
+    "quiz": { "question": "ここは＿＿こうえんです。", "options": ["きれい", "きれいの", "きれいに", "きれいな"], "answer": "きれいな" }
+  },
+  {
+    "pattern": "〜が好きです",
+    "explanation": "Menyatakan suka terhadap sesuatu. Hal yang disukai ditandai dengan partikel が, bukan を. Pola yang sama dipakai untuk きらい (tidak suka) dan じょうず (pandai).",
+    "exampleSentence": "わたしはねこが好きです。",
+    "exampleTranslation": "Saya suka kucing.",
+    "quiz": { "question": "わたしはりんご＿＿好きです。", "options": ["に", "が", "で", "へ"], "answer": "が" }
+  },
+  {
+    "pattern": "〜から〜まで",
+    "explanation": "から berarti \"dari\" dan まで berarti \"sampai\". Dipakai untuk menunjukkan titik awal dan akhir waktu atau tempat.",
+    "exampleSentence": "ぎんこうは九時から三時までです。",
+    "exampleTranslation": "Bank buka dari pukul sembilan sampai pukul tiga.",
+    "quiz": { "question": "まいにち九時＿＿五時まではたらきます。", "options": ["まで", "に", "から", "を"], "answer": "から" }
+  },
+  {
+    "pattern": "〜や〜など",
+    "explanation": "Partikel や menyebutkan beberapa contoh dari banyak hal, berarti \"dan\" yang tidak lengkap. など di akhir berarti \"dan lain-lain\" dan boleh dihilangkan.",
+    "exampleSentence": "つくえの上に本やノートなどがあります。",
+    "exampleTranslation": "Di atas meja ada buku, buku catatan, dan lain-lain.",
+    "quiz": { "question": "かばんの中にペン＿＿ノートがあります。", "options": ["を", "で", "へ", "や"], "answer": "や" }
+  },
+  {
+    "pattern": "〜ませんか",
+    "explanation": "Cara sopan untuk mengajak seseorang, artinya \"Bagaimana kalau kita ...?\". Bentuknya kata kerja ません ditambah か.",
+    "exampleSentence": "いっしょにえいがを見ませんか。",
+    "exampleTranslation": "Bagaimana kalau kita menonton film bersama?",
+    "quiz": { "question": "あした、いっしょにテニスを＿＿。", "options": ["しませんか", "しませんでした", "しましたか", "しません"], "answer": "しませんか" }
+  },
+  {
+    "pattern": "〜ましょう",
+    "explanation": "Berarti \"Mari kita ...\". Dipakai untuk mengajak atau menerima ajakan. Bentuknya ganti ます menjadi ましょう.",
+    "exampleSentence": "すこし休みましょう。",
+    "exampleTranslation": "Mari kita istirahat sebentar.",
+    "quiz": { "question": "いっしょにひるごはんを食べませんか。ええ、＿＿。", "options": ["食べません", "食べましょう", "食べました", "食べたくないです"], "answer": "食べましょう" }
+  },
+  {
+    "pattern": "〜たいです",
+    "explanation": "Menyatakan keinginan pembicara untuk melakukan sesuatu, artinya \"ingin\". Bentuknya kata kerja bentuk ます tanpa ます ditambah たいです.",
+    "exampleSentence": "日本へ行きたいです。",
+    "exampleTranslation": "Saya ingin pergi ke Jepang.",
+    "quiz": { "question": "のどがかわきました。水がのみ＿＿です。", "options": ["ます", "たく", "ない", "たい"], "answer": "たい" }
+  },
+  {
+    "pattern": "〜がほしいです",
+    "explanation": "Menyatakan keinginan memiliki suatu benda, artinya \"ingin punya\". Benda yang diinginkan ditandai dengan partikel が.",
+    "exampleSentence": "あたらしいくつがほしいです。",
+    "exampleTranslation": "Saya ingin punya sepatu baru.",
+    "quiz": { "question": "わたしはあたらしいかばん＿＿ほしいです。", "options": ["に", "で", "が", "の"], "answer": "が" }
+  },
+  {
+    "pattern": "〜に行きます（目的）",
+    "explanation": "Menyatakan tujuan pergi, artinya \"pergi untuk ...\". Bentuknya kata kerja bentuk ます tanpa ます ditambah に, lalu 行きます atau 来ます.",
+    "exampleSentence": "デパートへかいものに行きます。",
+    "exampleTranslation": "Saya pergi ke toserba untuk berbelanja.",
+    "quiz": { "question": "レストランへごはんを食べ＿＿行きます。", "options": ["に", "を", "で", "が"], "answer": "に" }
+  },
+  {
+    "pattern": "〜から（理由）",
+    "explanation": "から di akhir anak kalimat menyatakan alasan, artinya \"karena\". Alasan disebutkan lebih dulu, lalu hasilnya.",
+    "exampleSentence": "あついですから、まどをあけます。",
+    "exampleTranslation": "Karena panas, saya membuka jendela.",
+    "quiz": { "question": "きょうは雨です＿＿、うちにいます。", "options": ["まで", "より", "から", "の"], "answer": "から" }
+  },
+  {
+    "pattern": "〜が、〜（逆接）",
+    "explanation": "が di antara dua kalimat berarti \"tetapi\". Dipakai untuk menghubungkan dua hal yang berlawanan.",
+    "exampleSentence": "この本はおもしろいですが、高いです。",
+    "exampleTranslation": "Buku ini menarik, tetapi mahal.",
+    "quiz": { "question": "きのうは雨でした＿＿、きょうはいい天気です。", "options": ["を", "から", "の", "が"], "answer": "が" }
+  },
+  {
+    "pattern": "〜てください",
+    "explanation": "Cara sopan untuk meminta seseorang melakukan sesuatu, artinya \"tolong ...\". Bentuknya kata kerja bentuk て ditambah ください.",
+    "exampleSentence": "ここに名前を書いてください。",
+    "exampleTranslation": "Tolong tulis nama di sini.",
+    "quiz": { "question": "すみません、もう一度＿＿ください。", "options": ["いった", "いって", "いう", "いいて"], "answer": "いって" }
+  },
+  {
+    "pattern": "〜ています",
+    "explanation": "Menyatakan kegiatan yang sedang berlangsung, artinya \"sedang\". Bentuknya kata kerja bentuk て ditambah います.",
+    "exampleSentence": "いま、雨がふっています。",
+    "exampleTranslation": "Sekarang sedang hujan.",
+    "quiz": { "question": "いま、おとうとはへやでテレビを見て＿＿。", "options": ["あります", "です", "います", "ある"], "answer": "います" }
+  },
+  {
+    "pattern": "〜てもいいです",
+    "explanation": "Menyatakan izin, artinya \"boleh\". Bentuknya kata kerja bentuk て ditambah もいいです; tambahkan か untuk meminta izin.",
+    "exampleSentence": "ここでしゃしんをとってもいいですか。",
+    "exampleTranslation": "Bolehkah saya memotret di sini?",
+    "quiz": { "question": "このペンをつかって＿＿いいですか。", "options": ["は", "を", "も", "が"], "answer": "も" }
+  },
+  {
+    "pattern": "〜てはいけません",
+    "explanation": "Menyatakan larangan, artinya \"tidak boleh\". Bentuknya kata kerja bentuk て ditambah はいけません.",
+    "exampleSentence": "ここでたばこをすってはいけません。",
+    "exampleTranslation": "Tidak boleh merokok di sini.",
+    "quiz": { "question": "としょかんで大きいこえではなしては＿＿。", "options": ["いいです", "いけません", "ください", "います"], "answer": "いけません" }
+  },
+  {
+    "pattern": "〜ないでください",
+    "explanation": "Permintaan sopan agar seseorang tidak melakukan sesuatu, artinya \"tolong jangan ...\". Bentuknya kata kerja bentuk ない ditambah でください.",
+    "exampleSentence": "ここでしゃしんをとらないでください。",
+    "exampleTranslation": "Tolong jangan memotret di sini.",
+    "quiz": { "question": "じゅぎょうのとき、ねないで＿＿。", "options": ["です", "ます", "ません", "ください"], "answer": "ください" }
+  },
+  {
+    "pattern": "〜より〜のほうが",
+    "explanation": "Pola untuk membandingkan dua hal. Hal yang kalah ditandai より, hal yang lebih unggul ditandai のほうが, lalu diikuti kata sifat.",
+    "exampleSentence": "バスよりでんしゃのほうがはやいです。",
+    "exampleTranslation": "Kereta lebih cepat daripada bus.",
+    "quiz": { "question": "ねこ＿＿いぬのほうが好きです。", "options": ["より", "から", "まで", "ほど"], "answer": "より" }
+  },
+  {
+    "pattern": "〜てから",
+    "explanation": "Menyatakan urutan kegiatan, artinya \"setelah ..., lalu ...\". Bentuknya kata kerja bentuk て ditambah から, lalu kegiatan berikutnya.",
+    "exampleSentence": "あさごはんを食べてから、学校へ行きます。",
+    "exampleTranslation": "Setelah sarapan, saya pergi ke sekolah.",
+    "quiz": { "question": "てをあらって＿＿、ごはんを食べます。", "options": ["まで", "から", "より", "ので"], "answer": "から" }
+  },
+  {
+    "pattern": "〜まえに",
+    "explanation": "Berarti \"sebelum ...\". Kata kerja bentuk kamus ditambah まえに, atau kata benda ditambah のまえに.",
+    "exampleSentence": "ねるまえに、はをみがきます。",
+    "exampleTranslation": "Sebelum tidur, saya menggosok gigi.",
+    "quiz": { "question": "ごはんを食べる＿＿、てをあらいます。", "options": ["あとで", "まで", "まえに", "ながら"], "answer": "まえに" }
+  },
+  {
+    "pattern": "〜たあとで",
+    "explanation": "Berarti \"sesudah ...\". Kata kerja bentuk た ditambah あとで, atau kata benda ditambah のあとで.",
+    "exampleSentence": "じゅぎょうがおわったあとで、ともだちとあそびます。",
+    "exampleTranslation": "Sesudah pelajaran selesai, saya bermain dengan teman.",
+    "quiz": { "question": "しゅくだいをした＿＿、テレビを見ます。", "options": ["まえに", "まで", "ながら", "あとで"], "answer": "あとで" }
+  }
+]

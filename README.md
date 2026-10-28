@@ -115,6 +115,18 @@ apps/web/src/
 3. **Ganti tata letak satu layar:** ubah file di `features/<fitur>/ui/`. Logika di `application/` tidak perlu disentuh.
 4. **Ganti maskot:** ubah `shared/ui/Mascot.tsx` (SVG dengan tiga ekspresi: senang, berpikir, semangat) dan ikon di `public/icons/`.
 
+## Animasi Neko-sensei (layar Suara)
+
+`apps/web/src/shared/ui/neko/NekoAvatar.tsx` menggambar Neko dengan WebGL: bernapas, berkedip, mengikuti kursor, lalu berpindah tanpa putus antara idle, mendengar, berpikir, dan menjawab. Saat menjawab, ekspresinya mengikuti emosi dari AI dan mulutnya bergerak mengikuti volume suara.
+
+- Emosi: `biasa`, `sedih`, `kesal` (cemberut tsundere), dan `marah` (marah besar ala anime). Setelah marah, Neko mereda dulu ke kesal sebelum kembali biasa.
+- Gambar di `apps/web/public/neko/`: `base-*.webp` adalah pose tanpa mulut untuk animasi, `mouth-atlas.webp` berisi semua sprite mulut, `eyes-*.png` adalah mask bentuk mata untuk kedipan, `neko-*.webp` adalah gambar utuh untuk tampilan statis, dan `fx-*.webp` efek uap dan garis kejut.
+- Kelopak mata mengikuti bentuk mata asli tiap pose lewat mask `eyes-*.png` (R = area mata, G = posisi vertikal di dalam mata, B = tinggi mata / 400 px).
+- Titik mulut, rentang mata, telinga, dan urat ada di `shared/ui/neko/nekoRig.ts`. Kalau gambar pose diganti, ukur ulang angka di sana dan buat ulang `base-*.webp`, mask mata, serta atlas mulutnya.
+- AI menulis tanda `[biasa]`, `[sedih]`, `[kesal]`, atau `[marah]` di awal jawaban mode suara (aturannya di `voicePrompt.ts`). Tanda dipisahkan oleh `modules/ask/domain/emotion.ts`, dan `/api/ask` mengembalikan `{ answer, emotion }`.
+- Volume mikrofon dan suara diukur oleh `shared/lib/audioMeter.ts`. Kalau audio tidak bisa dianalisis, gerak bibir memakai irama tiruan.
+- Tanpa WebGL, `NekoAvatar` menampilkan gambar statis sesuai emosi.
+
 ## PWA
 
 - `public/manifest.webmanifest` dan ikon membuat aplikasi bisa dipasang ke layar utama.

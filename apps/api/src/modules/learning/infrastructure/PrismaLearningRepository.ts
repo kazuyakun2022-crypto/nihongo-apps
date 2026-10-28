@@ -1,5 +1,6 @@
 import type { Db } from "../../../shared/infrastructure/prisma";
-import { LEVEL_TARGETS, type ChapterDetail, type ChapterStatus, type ChapterSummary, type Level, type LearningRepository, type LevelProgress, type NextChapterInfo, type QuizAnswer, type QuizGradeResult } from "../domain/Learning";
+import { TILE_TYPES, isAnswerCorrect, scriptOf, type ExerciseType } from "../domain/Exercise";
+import { type ChapterDetail, type ChapterExercise, type ChapterStatus, type ChapterSummary, type Level, type LearningRepository, type LevelProgress, type NextChapterInfo, type QuizAnswer, type QuizGradeResult } from "../domain/Learning";
 
 export class PrismaLearningRepository implements LearningRepository {
   constructor(private readonly db: Db) {}
@@ -16,7 +17,14 @@ export class PrismaLearningRepository implements LearningRepository {
     const chapters = await this.db.chapter.findMany({
       where: { levelId, status: "published" },
       orderBy: { sortOrder: "asc" },
-      select: { id: true, title: true, sortOrder: true, progress: { where: { userId }, select: { status: true, bestScore: true } } },
+      select: {
+        id: true,
+        title: true,
+        sortOrder: true,
+        explanation: true,
+        _count: { select: { vocabularies: true, kanji: true, grammarPoints: true, quizQuestions: true } },
+        progress: { where: { userId }, select: { status: true, bestScore: true } },
+      },
     });
     // Bab pertama selalu terbuka; bab berikutnya terbuka setelah bab sebelumnya selesai.
     let previousCompleted = true;
@@ -24,25 +32,34 @@ export class PrismaLearningRepository implements LearningRepository {
       const p = c.progress[0];
       const status: ChapterStatus = p?.status === "completed" ? "completed" : previousCompleted ? "open" : "locked";
       previousCompleted = status === "completed";
-      return { id: c.id, title: c.title, sortOrder: c.sortOrder, status, bestScore: p?.bestScore ?? null };
+      return {
+        id: c.id,
+        title: c.title,
+        sortOrder: c.sortOrder,
+        status,
+        bestScore: p?.bestScore ?? null,
+        explanation: c.explanation,
+        counts: { vocab: c._count.vocabularies, kanji: c._count.kanji, grammar: c._count.grammarPoints, quiz: c._count.quizQuestions },
+      };
     });
   }
 
-  getChapter(id: string): Promise<ChapterDetail | null> {
-    return this.db.chapter.findFirst({
+  async getChapter(id: string): Promise<ChapterDetail | null> {
+    const chapter = await this.db.chapter.findFirst({
       where: { id, status: "published" },
       select: {
         id: true,
         levelId: true,
         title: true,
         explanation: true,
-        vocabularies: { select: { id: true, word: true, reading: true, meaningId: true, exampleSentence: true } },
+        vocabularies: { select: { id: true, word: true, reading: true, meaningId: true, exampleSentence: true, exampleTranslation: true } },
         kanji: { select: { id: true, character: true, onyomi: true, kunyomi: true, meaningId: true } },
-        grammarPoints: { select: { id: true, pattern: true, explanation: true, exampleSentence: true } },
-        // correctAnswer sengaja tidak dikirim ke klien — dinilai server-side.
-        quizQuestions: { select: { id: true, type: true, question: true, options: true } },
+        grammarPoints: { select: { id: true, pattern: true, explanation: true, exampleSentence: true, exampleTranslation: true } },
+        quizQuestions: { select: { id: true, type: true, question: true, hint: true, options: true, correctAnswer: true, audioUrl: true } },
       },
-    }) as Promise<ChapterDetail | null>;
+    });
+    if (!chapter) return null;
+    return { ...chapter, quizQuestions: chapter.quizQuestions.map(toChapterExercise) };
   }
 
   async getNextChapter(userId: string, levelId: number): Promise<NextChapterInfo | null> {
@@ -70,17 +87,21 @@ export class PrismaLearningRepository implements LearningRepository {
     const ids = answers.map((a) => a.questionId);
     const rows = await this.db.quizQuestion.findMany({
       where: { id: { in: ids }, chapterId },
-      select: { id: true, correctAnswer: true },
+      select: { id: true, type: true, options: true, correctAnswer: true, explanation: true },
     });
-    const correctMap = new Map(rows.map((r) => [r.id, r.correctAnswer]));
+    const byId = new Map(rows.map((r) => [r.id, r]));
     let correct = 0;
+    let graded = 0;
     const results = answers.map((a) => {
-      const ca = correctMap.get(a.questionId) ?? "";
-      const isCorrect = a.answer === ca;
+      const row = byId.get(a.questionId);
+      const ca = row?.correctAnswer ?? "";
+      const skipped = !!a.skipped && row?.type === "berbicara";
+      const isCorrect = !!row && !skipped && isAnswerCorrect({ type: row.type, correctAnswer: ca, options: stringList(row.options) }, a.answer);
+      if (!skipped) graded++;
       if (isCorrect) correct++;
-      return { questionId: a.questionId, correct: isCorrect, correctAnswer: ca };
+      return { questionId: a.questionId, correct: isCorrect, skipped, correctAnswer: ca, explanation: row?.explanation ?? null };
     });
-    const score = answers.length > 0 ? Math.round((correct / answers.length) * 100) : 0;
+    const score = graded > 0 ? Math.round((correct / graded) * 100) : 0;
     return { score, results };
   }
 
@@ -132,14 +153,37 @@ export class PrismaLearningRepository implements LearningRepository {
       this.db.userChapterProgress.count({ where: { userId, status: "completed", chapterId: { in: chapterIds } } }),
     ]);
 
-    const targets = LEVEL_TARGETS[levelId] ?? { vocab: 0, kanji: 0 };
+    // Target = seluruh materi yang diterbitkan di level ini, jadi ikut berubah saat admin menambah/menghapus konten
     return {
       vocabLearned,
-      vocabTarget: targets.vocab,
+      vocabTarget: vocabIds.length,
       kanjiLearned,
-      kanjiTarget: targets.kanji,
+      kanjiTarget: kanjiIds.length,
       chaptersCompleted,
       chaptersTotal: chapterIds.length,
     };
   }
+}
+
+export function stringList(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+}
+
+function shuffled<T>(items: T[]): T[] {
+  const a = [...items];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/** Bentuk soal untuk siswa: kunci jawaban dibuang, kepingan susun diacak (tersimpan dengan urutan benar di depan).
+ * Juga dipakai ujian naik level. */
+export function toChapterExercise(q: { id: string; type: ExerciseType; question: string; hint: string | null; options: unknown; correctAnswer: string; audioUrl: string | null }): ChapterExercise {
+  const base = { id: q.id, type: q.type, question: q.question, hint: q.hint, audioUrl: q.audioUrl };
+  if (q.type === "menulis") return { ...base, options: [], slots: [...q.correctAnswer].length, script: scriptOf(q.correctAnswer) };
+  if (q.type === "berbicara") return { ...base, options: [], speakText: q.correctAnswer };
+  const options = stringList(q.options);
+  return { ...base, options: TILE_TYPES.includes(q.type) ? shuffled(options) : options };
 }

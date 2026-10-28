@@ -12,7 +12,9 @@
     "test": "vitest run",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "content:translate": "tsx prisma/scripts/translateVocab.ts && tsx prisma/scripts/translateKanji.ts",
+    "content:import": "tsx prisma/scripts/importCurriculum.ts"
   },
   "dependencies": {
     "@prisma/client": "5.22.0",

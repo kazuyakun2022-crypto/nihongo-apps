@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express, { Router, type RequestHandler } from "express";
 import { z } from "zod";
 import { asyncHandler } from "../../../shared/http/asyncHandler";
 import { parseBody } from "../../../shared/http/validate";
@@ -13,11 +13,12 @@ export function askRoutes(
   uc: { ask: AskQuestion },
   transcriber: GroqTranscriber | null,
   speaker: GeminiTts | null,
+  optionalAuth: RequestHandler,
 ) {
   const r = Router();
 
-  // POST /api/ask — tidak perlu auth agar guest bisa coba
-  r.post("/", asyncHandler(async (req, res) => {
+  // POST /api/ask — tidak perlu auth agar guest bisa coba; kalau login, nama akun dipakai di mode suara
+  r.post("/", optionalAuth, asyncHandler(async (req, res) => {
     const { question, history, mode } = parseBody(
       z.object({
         question: z.string().trim().min(1, "Pertanyaan tidak boleh kosong.").max(2000),
@@ -27,11 +28,11 @@ export function askRoutes(
       req.body,
     );
 
-    const answer = await uc.ask.execute(question, history, mode);
-    res.json({ answer });
+    const { answer, emotion } = await uc.ask.execute(question, history, mode, req.user?.id);
+    res.json({ answer, emotion });
   }));
 
-  // POST /api/ask/transcribe — body: audio mentah (webm/ogg/mp4), bahasa dideteksi otomatis
+  // POST /api/ask/transcribe — body: audio mentah (webm/ogg/mp4), bahasa dideteksi otomatis (?lang=ja untuk memaksa Jepang)
   r.post(
     "/transcribe",
     express.raw({ type: ["audio/*", "video/*", "application/octet-stream"], limit: "10mb" }),
@@ -44,7 +45,8 @@ export function askRoutes(
         res.json({ text: "" });
         return;
       }
-      const text = await transcriber.transcribe(req.body, req.headers["content-type"] ?? "audio/webm");
+      const language = req.query["lang"] === "ja" ? "ja" : undefined;
+      const text = await transcriber.transcribe(req.body, req.headers["content-type"] ?? "audio/webm", language);
       res.json({ text });
     }),
   );

@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { QuestionHeader } from "@/features/learning/ui/ChapterLesson";
+import { HandwritingExercise } from "@/features/learning/ui/exercises/HandwritingExercise";
+import { SpeakingExercise } from "@/features/learning/ui/exercises/SpeakingExercise";
+import { TileExercise } from "@/features/learning/ui/exercises/TileExercise";
 import { examApi, type LevelUpQuestion, type LevelUpStatus, type SubmitLevelUpResponse } from "../data/examApi";
 import styles from "./levelUpTest.module.css";
 
@@ -15,10 +19,20 @@ const SECTION_LABELS: Record<string, string> = {
   mendengar: "Mendengar",
 };
 
-const OPTION_LABELS = ["A", "B", "C", "D"];
+const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
+
+type ExamAnswer = { answer: string; section: string; skipped?: boolean };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
+}
+
+let questionAudio: HTMLAudioElement | null = null;
+/** Audio soal bagian mendengar: URL file biasa, atau /api/tts?text=… untuk suara buatan. */
+function playAudio(url: string) {
+  questionAudio?.pause();
+  questionAudio = new Audio(url);
+  void questionAudio.play().catch(() => {});
 }
 
 export function LevelUpTest() {
@@ -31,10 +45,11 @@ export function LevelUpTest() {
   const [status, setStatus] = useState<LevelUpStatus | null>(null);
   const [attemptId, setAttemptId] = useState("");
   const [questions, setQuestions] = useState<LevelUpQuestion[]>([]);
+  const [kanji, setKanji] = useState<string[]>([]);
   const [timeLimitSec, setTimeLimitSec] = useState(0);
   const [remaining, setRemaining] = useState(0);
   const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, { answer: string; section: string }>>({});
+  const [answers, setAnswers] = useState<Record<string, ExamAnswer>>({});
   const [chosen, setChosen] = useState<string | null>(null);
   const [result, setResult] = useState<SubmitLevelUpResponse | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -68,6 +83,7 @@ export function LevelUpTest() {
       const res = await examApi.getLevelUpQuestions(levelId);
       setAttemptId(res.attemptId);
       setQuestions(res.questions);
+      setKanji(res.kanji ?? []);
       const secs = res.timeLimitMin * 60;
       setTimeLimitSec(secs);
       setRemaining(secs);
@@ -86,8 +102,8 @@ export function LevelUpTest() {
     setPhase("submitting");
     if (timerRef.current) clearInterval(timerRef.current);
 
-    const finalAnswers = Object.entries(answers).map(([questionId, { answer, section }]) => ({
-      questionId, answer, section,
+    const finalAnswers = Object.entries(answers).map(([questionId, { answer, section, skipped }]) => ({
+      questionId, answer, section, skipped,
     }));
 
     try {
@@ -105,6 +121,16 @@ export function LevelUpTest() {
     setChosen(opt);
     const q = questions[index];
     setAnswers(prev => ({ ...prev, [q.id]: { answer: opt, section: q.section } }));
+  };
+
+  /** Jawaban soal susun/menulis/berbicara masih bisa diubah sampai siswa menekan Lanjut. */
+  const setExerciseAnswer = (q: LevelUpQuestion, answer: string, skipped = false) => {
+    setAnswers(prev => {
+      const next = { ...prev };
+      if (answer || skipped) next[q.id] = { answer, section: q.section, skipped };
+      else delete next[q.id];
+      return next;
+    });
   };
 
   const next = () => {
@@ -158,7 +184,7 @@ export function LevelUpTest() {
           <p className={styles.readyDesc}>Tes ini menentukan apakah kamu siap naik ke level berikutnya.</p>
 
           <ul className={styles.ruleList}>
-            <li><strong>{config.questionCount}</strong> soal pilihan ganda</li>
+            <li><strong>{config.questionCount}</strong> soal (pilihan ganda, susun, menulis, dan berbicara)</li>
             <li><strong>{config.timeLimitMin} menit</strong> waktu pengerjaan</li>
             <li>Nilai lulus total: <strong>{config.passScore}%</strong></li>
             <li>Nilai minimum per bagian: <strong>{config.sectionMinScore}%</strong></li>
@@ -185,6 +211,9 @@ export function LevelUpTest() {
   if ((phase === "testing" || phase === "submitting") && questions.length > 0) {
     const q = questions[index];
     const progress = ((index + 1) / questions.length) * 100;
+    const isChoice = q.type === "pilihan_ganda" || q.type === "mendengar";
+    const current = answers[q.id];
+    const answered = isChoice ? !!chosen : !!current?.answer || !!current?.skipped;
 
     return (
       <div className={styles.wrap}>
@@ -202,10 +231,46 @@ export function LevelUpTest() {
 
         <div className={styles.sectionChip}>{SECTION_LABELS[q.section] ?? q.section}</div>
 
-        <p className={styles.question} lang="ja">{q.question}</p>
+        {isChoice ? <p className={styles.question} lang="ja">{q.question}</p> : <QuestionHeader q={q} />}
+        {q.audioUrl && (
+          <button type="button" className={styles.audioBtn} onClick={() => playAudio(q.audioUrl ?? "")}>
+            <span aria-hidden>🔊</span> Putar audio
+          </button>
+        )}
 
+        <div key={q.id}>
+          {(q.type === "susun_huruf" || q.type === "susun_kalimat") && (
+            <TileExercise
+              tiles={q.options}
+              sentence={q.type === "susun_kalimat"}
+              answer={current?.answer ?? null}
+              onAnswer={(a) => setExerciseAnswer(q, a)}
+              disabled={phase === "submitting"}
+            />
+          )}
+          {q.type === "menulis" && (
+            <HandwritingExercise
+              slots={q.slots ?? 1}
+              script={q.script ?? "campuran"}
+              kanji={kanji}
+              answer={current?.answer ?? null}
+              onAnswer={(a) => setExerciseAnswer(q, a)}
+            />
+          )}
+          {q.type === "berbicara" && (
+            <SpeakingExercise
+              text={q.speakText ?? ""}
+              answer={current?.answer ?? null}
+              onAnswer={(a) => setExerciseAnswer(q, a)}
+              onSkip={() => setExerciseAnswer(q, "", true)}
+              skipped={!!current?.skipped}
+            />
+          )}
+        </div>
+
+        {isChoice && (
         <div className={styles.options}>
-          {(q.options as string[]).map((opt, i) => (
+          {q.options.map((opt, i) => (
             <button
               key={opt}
               className={`${styles.optionBtn} ${chosen === opt ? styles.optionChosen : ""}`}
@@ -217,11 +282,12 @@ export function LevelUpTest() {
             </button>
           ))}
         </div>
+        )}
 
         <div className={styles.navRow}>
           <button
             className={styles.nextBtn}
-            disabled={!chosen || phase === "submitting"}
+            disabled={!answered || phase === "submitting"}
             onClick={next}
           >
             {phase === "submitting" ? "Menilai…" : isLastQ ? "Kumpulkan →" : "Lanjut →"}

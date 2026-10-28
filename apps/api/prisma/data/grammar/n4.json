@@ -1,0 +1,268 @@
+[
+  {
+    "pattern": "〜たことがあります",
+    "explanation": "Menyatakan pengalaman, artinya \"pernah\". Bentuknya kata kerja bentuk た ditambah ことがあります; bentuk negatifnya ことがありません (belum pernah).",
+    "exampleSentence": "わたしは日本へ行ったことがあります。",
+    "exampleTranslation": "Saya pernah pergi ke Jepang.",
+    "quiz": { "question": "わたしはすしを食べた＿＿があります。", "options": ["の", "ところ", "こと", "ほう"], "answer": "こと" }
+  },
+  {
+    "pattern": "〜たり〜たりします",
+    "explanation": "Menyebutkan beberapa contoh kegiatan dari banyak kegiatan, artinya \"melakukan ... dan ... (dan lain-lain)\". Setiap kata kerja diubah ke bentuk た ditambah り, lalu diakhiri します.",
+    "exampleSentence": "日よう日はそうじをしたり、せんたくをしたりします。",
+    "exampleTranslation": "Hari Minggu saya bersih-bersih, mencuci baju, dan sebagainya.",
+    "quiz": { "question": "やすみの日は本をよんだり、えいがを＿＿します。", "options": ["見て", "見たり", "見たら", "見る"], "answer": "見たり" }
+  },
+  {
+    "pattern": "〜ながら",
+    "explanation": "Menyatakan dua kegiatan yang dilakukan bersamaan oleh orang yang sama, artinya \"sambil\". Bentuknya kata kerja bentuk ます tanpa ます ditambah ながら; kegiatan utama ditaruh di akhir.",
+    "exampleSentence": "おんがくをききながら、べんきょうします。",
+    "exampleTranslation": "Saya belajar sambil mendengarkan musik.",
+    "quiz": { "question": "テレビを見＿＿、ごはんを食べます。", "options": ["たり", "ながら", "ない", "ので"], "answer": "ながら" }
+  },
+  {
+    "pattern": "〜くなります・〜になります",
+    "explanation": "Menyatakan perubahan keadaan, artinya \"menjadi\". Kata sifat い diganti くなります, sedangkan kata sifat な dan kata benda ditambah になります.",
+    "exampleSentence": "十月になって、すずしくなりました。",
+    "exampleTranslation": "Memasuki bulan Oktober, udaranya menjadi sejuk.",
+    "quiz": { "question": "日本語がじょうず＿＿なりました。", "options": ["く", "が", "に", "で"], "answer": "に" }
+  },
+  {
+    "pattern": "〜ことができます",
+    "explanation": "Menyatakan kemampuan atau kemungkinan, artinya \"bisa\" atau \"dapat\". Bentuknya kata kerja bentuk kamus ditambah ことができます.",
+    "exampleSentence": "わたしはかんじを書くことができます。",
+    "exampleTranslation": "Saya bisa menulis kanji.",
+    "quiz": { "question": "このへやでは、たばこをすう＿＿ができません。", "options": ["もの", "の", "ところ", "こと"], "answer": "こと" }
+  },
+  {
+    "pattern": "可能形（〜られる・〜える）",
+    "explanation": "Bentuk potensial menyatakan \"bisa\" dengan lebih ringkas. Kata kerja golongan 1 mengganti bunyi akhir u menjadi e lalu ditambah る (のむ menjadi のめる), golongan 2 ditambah られる (食べる menjadi 食べられる), dan する menjadi できる.",
+    "exampleSentence": "わたしはおさけがのめません。",
+    "exampleTranslation": "Saya tidak bisa minum minuman keras.",
+    "quiz": { "question": "わたしはからいものが食べ＿＿。", "options": ["させません", "られません", "されません", "ましょう"], "answer": "られません" }
+  },
+  {
+    "pattern": "〜と思います",
+    "explanation": "Menyatakan pendapat atau dugaan pembicara, artinya \"saya pikir\". Kalimat sebelum と memakai bentuk biasa (bentuk kamus, bentuk た, bentuk ない, atau だ).",
+    "exampleSentence": "あしたは雨がふると思います。",
+    "exampleTranslation": "Saya pikir besok akan hujan.",
+    "quiz": { "question": "田中さんはもうかえった＿＿思います。", "options": ["を", "が", "に", "と"], "answer": "と" }
+  },
+  {
+    "pattern": "〜と言いました",
+    "explanation": "Mengutip perkataan orang lain, artinya \"berkata bahwa\". Kalimat yang dikutip diletakkan sebelum と, lalu diikuti 言いました atau 言っていました.",
+    "exampleSentence": "先生は「しゅくだいを出してください」と言いました。",
+    "exampleTranslation": "Guru berkata, \"Tolong kumpulkan PR.\"",
+    "quiz": { "question": "山田さんは、あした休む＿＿言っていました。", "options": ["を", "と", "に", "で"], "answer": "と" }
+  },
+  {
+    "pattern": "〜つもりです",
+    "explanation": "Menyatakan rencana atau niat yang sudah diputuskan, artinya \"berencana\". Bentuknya kata kerja bentuk kamus atau bentuk ない ditambah つもりです.",
+    "exampleSentence": "なつやすみに国へかえるつもりです。",
+    "exampleTranslation": "Saya berencana pulang ke negara saya saat liburan musim panas.",
+    "quiz": { "question": "らいねん、日本へりゅうがくする＿＿です。", "options": ["ながら", "つもり", "ので", "たら"], "answer": "つもり" }
+  },
+  {
+    "pattern": "〜（よ）うと思います",
+    "explanation": "Menyatakan niat pembicara yang sedang dipikirkan, artinya \"saya berniat\". Memakai bentuk kehendak: golongan 1 bunyi akhir u menjadi ou (行く menjadi 行こう), golongan 2 ditambah よう, する menjadi しよう.",
+    "exampleSentence": "あしたは早くおきようと思います。",
+    "exampleTranslation": "Saya berniat bangun pagi besok.",
+    "quiz": { "question": "なつやすみに、うみへ＿＿と思っています。", "options": ["行って", "行け", "行こう", "行き"], "answer": "行こう" }
+  },
+  {
+    "pattern": "〜てみます",
+    "explanation": "Menyatakan mencoba melakukan sesuatu untuk melihat hasilnya, artinya \"mencoba\". Bentuknya kata kerja bentuk て ditambah みます.",
+    "exampleSentence": "このくつをはいてみてもいいですか。",
+    "exampleTranslation": "Bolehkah saya mencoba memakai sepatu ini?",
+    "quiz": { "question": "おいしそうですね。ちょっと食べて＿＿。", "options": ["あります", "なります", "ません", "みます"], "answer": "みます" }
+  },
+  {
+    "pattern": "〜てしまいます",
+    "explanation": "Menyatakan sesuatu yang sudah selesai tuntas, atau kejadian yang disesali, artinya \"terlanjur\" atau \"sampai habis\". Bentuknya kata kerja bentuk て ditambah しまいます.",
+    "exampleSentence": "さいふをなくしてしまいました。",
+    "exampleTranslation": "Dompet saya hilang (dan saya menyesal).",
+    "quiz": { "question": "でんしゃにかさをわすれて＿＿。", "options": ["しまいました", "おきました", "みました", "ありました"], "answer": "しまいました" }
+  },
+  {
+    "pattern": "〜ておきます",
+    "explanation": "Menyatakan melakukan sesuatu terlebih dahulu sebagai persiapan, artinya \"... dulu\" atau \"... sebelumnya\". Bentuknya kata kerja bentuk て ditambah おきます.",
+    "exampleSentence": "パーティーのまえに、のみものをかっておきます。",
+    "exampleTranslation": "Sebelum pesta, saya membeli minuman terlebih dahulu.",
+    "quiz": { "question": "あしたテストがあるので、きょうよくふくしゅうして＿＿。", "options": ["あります", "なります", "おきます", "いります"], "answer": "おきます" }
+  },
+  {
+    "pattern": "〜てあげます",
+    "explanation": "Menyatakan melakukan sesuatu untuk orang lain, artinya \"melakukan ... untuk (orang lain)\". Subjeknya adalah pemberi jasa, dan penerimanya ditandai に.",
+    "exampleSentence": "わたしはおとうとにしゅくだいをおしえてあげました。",
+    "exampleTranslation": "Saya mengajari adik laki-laki saya PR.",
+    "quiz": { "question": "わたしはともだちにじしょをかして＿＿。", "options": ["くれました", "あげました", "ありました", "なりました"], "answer": "あげました" }
+  },
+  {
+    "pattern": "〜てくれます",
+    "explanation": "Menyatakan orang lain melakukan sesuatu untuk pembicara atau pihak pembicara. Orang yang berbuat baik ditandai が, dan kalimat ini menunjukkan rasa terima kasih.",
+    "exampleSentence": "ともだちがひっこしをてつだってくれました。",
+    "exampleTranslation": "Teman saya membantu saya pindahan.",
+    "quiz": { "question": "母がわたしにケーキをつくって＿＿。", "options": ["あげました", "もらいました", "なりました", "くれました"], "answer": "くれました" }
+  },
+  {
+    "pattern": "〜てもらいます",
+    "explanation": "Menyatakan pembicara menerima bantuan dari orang lain, artinya \"dibantu ... oleh\" atau \"minta tolong\". Subjeknya penerima, dan orang yang membantu ditandai に.",
+    "exampleSentence": "わたしは先生に作文を見てもらいました。",
+    "exampleTranslation": "Karangan saya diperiksa oleh guru.",
+    "quiz": { "question": "わたしはともだち＿＿しゅくだいをてつだってもらいました。", "options": ["が", "に", "を", "で"], "answer": "に" }
+  },
+  {
+    "pattern": "〜なければなりません",
+    "explanation": "Menyatakan kewajiban, artinya \"harus\". Bentuknya kata kerja bentuk ない dengan ない diganti なければ, lalu ditambah なりません.",
+    "exampleSentence": "あしたは早くおきなければなりません。",
+    "exampleTranslation": "Besok saya harus bangun pagi.",
+    "quiz": { "question": "レポートはあしたまでに出さ＿＿なりません。", "options": ["なくても", "なければ", "ないで", "なくて"], "answer": "なければ" }
+  },
+  {
+    "pattern": "〜なくてもいいです",
+    "explanation": "Menyatakan sesuatu tidak perlu dilakukan, artinya \"tidak usah\". Bentuknya kata kerja bentuk ない dengan ない diganti なくても, lalu ditambah いいです.",
+    "exampleSentence": "あしたは来なくてもいいです。",
+    "exampleTranslation": "Besok kamu tidak usah datang.",
+    "quiz": { "question": "時間はたくさんありますから、いそが＿＿いいです。", "options": ["なければ", "ないので", "なかった", "なくても"], "answer": "なくても" }
+  },
+  {
+    "pattern": "〜たほうがいいです",
+    "explanation": "Memberi saran, artinya \"sebaiknya\". Bentuknya kata kerja bentuk た ditambah ほうがいいです; untuk saran agar tidak melakukan, pakai bentuk ない ditambah ほうがいいです.",
+    "exampleSentence": "かぜのときは、早くねたほうがいいです。",
+    "exampleTranslation": "Saat masuk angin, sebaiknya tidur lebih awal.",
+    "quiz": { "question": "ねつがありますね。くすりをのんだ＿＿いいですよ。", "options": ["ほうが", "ことが", "ので", "まで"], "answer": "ほうが" }
+  },
+  {
+    "pattern": "〜とき",
+    "explanation": "Berarti \"ketika\" atau \"saat\". Diletakkan setelah kata kerja bentuk biasa, kata sifat い, kata sifat な ditambah な, atau kata benda ditambah の.",
+    "exampleSentence": "子どものとき、よく川であそびました。",
+    "exampleTranslation": "Ketika kecil, saya sering bermain di sungai.",
+    "quiz": { "question": "ひまな＿＿、なにをしますか。", "options": ["まえ", "とき", "あと", "ながら"], "answer": "とき" }
+  },
+  {
+    "pattern": "〜ので",
+    "explanation": "Menyatakan alasan secara halus dan objektif, artinya \"karena\". Kata kerja dan kata sifat い memakai bentuk biasa, sedangkan kata sifat な dan kata benda memakai なので.",
+    "exampleSentence": "頭がいたいので、早くかえります。",
+    "exampleTranslation": "Karena kepala saya sakit, saya pulang lebih awal.",
+    "quiz": { "question": "あしたはやすみ＿＿、ゆっくりねます。", "options": ["だので", "でので", "のので", "なので"], "answer": "なので" }
+  },
+  {
+    "pattern": "〜のに",
+    "explanation": "Menyatakan hasil yang tidak sesuai harapan, sering dengan rasa kecewa, artinya \"padahal\". Bentuk sambungannya sama dengan ので.",
+    "exampleSentence": "たくさんべんきょうしたのに、テストはだめでした。",
+    "exampleTranslation": "Padahal sudah belajar banyak, ujiannya tetap gagal.",
+    "quiz": { "question": "やくそくした＿＿、かれは来ませんでした。", "options": ["ので", "のに", "から", "ため"], "answer": "のに" }
+  },
+  {
+    "pattern": "〜し、〜し",
+    "explanation": "Menyebutkan beberapa alasan atau hal sekaligus, artinya \"selain ..., juga ...\". Diletakkan setelah bentuk biasa kata kerja atau kata sifat.",
+    "exampleSentence": "この店はやすいし、おいしいし、よく来ます。",
+    "exampleTranslation": "Toko ini murah dan enak, jadi saya sering datang.",
+    "quiz": { "question": "このへやはひろい＿＿、駅にも近いです。", "options": ["と", "や", "し", "の"], "answer": "し" }
+  },
+  {
+    "pattern": "〜たら",
+    "explanation": "Menyatakan pengandaian atau urutan, artinya \"kalau\" atau \"setelah\". Bentuknya bentuk た ditambah ら, dan sering dipakai sebelum permintaan atau ajakan.",
+    "exampleSentence": "雨がふったら、うちにいます。",
+    "exampleTranslation": "Kalau hujan, saya akan di rumah.",
+    "quiz": { "question": "駅につい＿＿、電話してください。", "options": ["たり", "ながら", "ないで", "たら"], "answer": "たら" }
+  },
+  {
+    "pattern": "〜ても",
+    "explanation": "Berarti \"meskipun\" atau \"walaupun\". Kata kerja bentuk て ditambah も, kata sifat い diganti くても, dan kata sifat な atau kata benda ditambah でも.",
+    "exampleSentence": "雨がふっても、しあいはあります。",
+    "exampleTranslation": "Meskipun hujan, pertandingan tetap diadakan.",
+    "quiz": { "question": "どんなにいそがしく＿＿、まいにちうんどうします。", "options": ["ても", "たら", "たり", "て"], "answer": "ても" }
+  },
+  {
+    "pattern": "〜ば",
+    "explanation": "Bentuk syarat, artinya \"jika\". Kata kerja mengganti bunyi akhir u menjadi e lalu ditambah ば (ある menjadi あれば), dan kata sifat い diganti ければ.",
+    "exampleSentence": "時間があれば、てつだいます。",
+    "exampleTranslation": "Jika ada waktu, saya akan membantu.",
+    "quiz": { "question": "お金があれ＿＿、あたらしいパソコンを買いたいです。", "options": ["と", "ば", "て", "た"], "answer": "ば" }
+  },
+  {
+    "pattern": "〜と（条件）",
+    "explanation": "Menyatakan akibat yang pasti atau alami terjadi, artinya \"kalau ..., (pasti) ...\". Kata kerja bentuk kamus ditambah と; tidak dipakai untuk kalimat permintaan atau keinginan.",
+    "exampleSentence": "このボタンをおすと、水が出ます。",
+    "exampleTranslation": "Kalau tombol ini ditekan, air akan keluar.",
+    "quiz": { "question": "春になる＿＿、さくらがさきます。", "options": ["ば", "ても", "と", "たり"], "answer": "と" }
+  },
+  {
+    "pattern": "〜すぎます",
+    "explanation": "Menyatakan sesuatu yang berlebihan, artinya \"terlalu\". Kata kerja bentuk ます tanpa ます ditambah すぎます, kata sifat い tanpa い ditambah すぎます, dan kata sifat な ditambah すぎます.",
+    "exampleSentence": "きのうはごはんを食べすぎました。",
+    "exampleTranslation": "Kemarin saya makan terlalu banyak.",
+    "quiz": { "question": "このかばんは高＿＿て、買えません。", "options": ["そう", "すぎ", "らしく", "たく"], "answer": "すぎ" }
+  },
+  {
+    "pattern": "〜やすい・〜にくい",
+    "explanation": "やすい berarti \"mudah untuk\" dan にくい berarti \"sulit untuk\". Keduanya ditambahkan pada kata kerja bentuk ます tanpa ます.",
+    "exampleSentence": "このペンは書きやすいです。",
+    "exampleTranslation": "Pulpen ini mudah untuk menulis.",
+    "quiz": { "question": "この本は字が小さくて、よみ＿＿です。", "options": ["やすい", "たい", "にくい", "そう"], "answer": "にくい" }
+  },
+  {
+    "pattern": "〜そうです（様子）",
+    "explanation": "Menyatakan kesan dari apa yang terlihat, artinya \"kelihatannya\" atau \"sepertinya akan\". Kata kerja bentuk ます tanpa ます atau kata sifat tanpa い atau な ditambah そうです; いい menjadi よさそう.",
+    "exampleSentence": "このケーキはおいしそうです。",
+    "exampleTranslation": "Kue ini kelihatannya enak.",
+    "quiz": { "question": "そらがくらいですね。雨がふり＿＿です。", "options": ["よう", "らしい", "たい", "そう"], "answer": "そう" }
+  },
+  {
+    "pattern": "〜そうです（伝聞）",
+    "explanation": "Menyampaikan informasi yang didengar dari orang lain, artinya \"katanya\" atau \"kabarnya\". Bentuk biasa ditambah そうです, dan sumbernya sering ditandai によると.",
+    "exampleSentence": "天気よほうによると、あしたは雨がふるそうです。",
+    "exampleTranslation": "Menurut prakiraan cuaca, katanya besok akan hujan.",
+    "quiz": { "question": "ニュースによると、あしたたいふうが来る＿＿です。", "options": ["つもり", "そう", "ながら", "たい"], "answer": "そう" }
+  },
+  {
+    "pattern": "〜ようです",
+    "explanation": "Menyatakan dugaan berdasarkan pengamatan atau keadaan, artinya \"sepertinya\". Bentuk biasa ditambah ようです; kata sifat な ditambah なようです, dan kata benda ditambah のようです.",
+    "exampleSentence": "道がぬれています。雨がふったようです。",
+    "exampleTranslation": "Jalannya basah. Sepertinya tadi hujan.",
+    "quiz": { "question": "あの人はこの学校の先生＿＿です。", "options": ["のそう", "のたい", "のよう", "のながら"], "answer": "のよう" }
+  },
+  {
+    "pattern": "〜かもしれません",
+    "explanation": "Menyatakan kemungkinan yang belum pasti, artinya \"mungkin\". Bentuk biasa ditambah かもしれません; untuk kata sifat な dan kata benda, だ dihilangkan.",
+    "exampleSentence": "あしたは雨がふるかもしれません。",
+    "exampleTranslation": "Besok mungkin akan hujan.",
+    "quiz": { "question": "あの人は山田さん＿＿しれません。", "options": ["でも", "かも", "とも", "にも"], "answer": "かも" }
+  },
+  {
+    "pattern": "〜はずです",
+    "explanation": "Menyatakan keyakinan pembicara berdasarkan alasan yang jelas, artinya \"seharusnya\" atau \"semestinya\". Bentuk biasa ditambah はずです; kata benda ditambah のはずです.",
+    "exampleSentence": "かれはもうすぐ来るはずです。",
+    "exampleTranslation": "Dia seharusnya sebentar lagi datang.",
+    "quiz": { "question": "田中さんは三時に出たので、もう家についている＿＿です。", "options": ["はず", "つもり", "ため", "まま"], "answer": "はず" }
+  },
+  {
+    "pattern": "〜ために",
+    "explanation": "Menyatakan tujuan yang ingin dicapai dengan sengaja, artinya \"untuk\" atau \"demi\". Kata kerja bentuk kamus ditambah ために, atau kata benda ditambah のために.",
+    "exampleSentence": "日本ではたらくために、日本語をべんきょうしています。",
+    "exampleTranslation": "Saya belajar bahasa Jepang untuk bekerja di Jepang.",
+    "quiz": { "question": "家を買う＿＿、お金をためています。", "options": ["ながら", "ために", "たり", "ても"], "answer": "ために" }
+  },
+  {
+    "pattern": "〜ようになります",
+    "explanation": "Menyatakan perubahan kemampuan atau kebiasaan secara bertahap, artinya \"menjadi bisa\" atau \"mulai\". Biasanya bentuk potensial atau bentuk kamus ditambah ようになります.",
+    "exampleSentence": "日本語が話せるようになりました。",
+    "exampleTranslation": "Saya sudah menjadi bisa berbicara bahasa Jepang.",
+    "quiz": { "question": "まいにちれんしゅうして、およげる＿＿なりました。", "options": ["ことに", "ために", "ように", "そうに"], "answer": "ように" }
+  },
+  {
+    "pattern": "受身形（〜られる・〜れる）",
+    "explanation": "Bentuk pasif, artinya \"di-\" atau \"kena\". Golongan 1 mengganti bunyi akhir u menjadi a lalu ditambah れる, golongan 2 ditambah られる, dan する menjadi される. Pelaku perbuatan ditandai に.",
+    "exampleSentence": "わたしは先生にほめられました。",
+    "exampleTranslation": "Saya dipuji oleh guru.",
+    "quiz": { "question": "わたしはどろぼう＿＿さいふをとられました。", "options": ["を", "で", "に", "へ"], "answer": "に" }
+  },
+  {
+    "pattern": "使役形（〜させる・〜せる）",
+    "explanation": "Bentuk kausatif, artinya \"menyuruh\" atau \"membiarkan\" seseorang melakukan sesuatu. Golongan 1 mengganti bunyi akhir u menjadi a lalu ditambah せる, golongan 2 ditambah させる, dan する menjadi させる.",
+    "exampleSentence": "母は弟にへやをそうじさせました。",
+    "exampleTranslation": "Ibu menyuruh adik laki-laki membersihkan kamar.",
+    "quiz": { "question": "母はわたしにやさいを食べ＿＿。", "options": ["しました", "ています", "たいです", "させました"], "answer": "させました" }
+  }
+]

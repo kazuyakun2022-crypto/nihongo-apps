@@ -25,6 +25,7 @@ import { VerifyEmail } from "../modules/auth/application/VerifyEmail";
 import { RequestPasswordReset, ResetPassword } from "../modules/auth/application/PasswordReset";
 import { GetCurrentUser } from "../modules/auth/application/GetCurrentUser";
 import { CompleteOnboarding } from "../modules/auth/application/CompleteOnboarding";
+import { UpdateAvatar } from "../modules/auth/application/UpdateAvatar";
 
 // Learning
 import { PrismaLearningRepository } from "../modules/learning/infrastructure/PrismaLearningRepository";
@@ -106,6 +107,7 @@ export function buildContainer(env: Env, db: Db) {
     resetPassword: new ResetPassword({ users, oneTimeTokens, sessions, tokens, hasher, clock }),
     getCurrentUser: new GetCurrentUser({ users }),
     completeOnboarding: new CompleteOnboarding({ users }),
+    updateAvatar: new UpdateAvatar({ users }),
   };
 
   // ── Learning ──
@@ -136,7 +138,15 @@ export function buildContainer(env: Env, db: Db) {
   const askProvider = env.GROQ_API_KEY
     ? new GroqAskProvider(env.GROQ_API_KEY, backupAskProvider)
     : backupAskProvider;
-  const askUc = { ask: new AskQuestion({ ask: askProvider }) };
+  const askUc = {
+    ask: new AskQuestion({
+      ask: askProvider,
+      userProfile: async (id) => {
+        const user = await users.findById(id);
+        return user && !user.isGuest ? { name: user.displayName, gender: user.gender ?? null } : null;
+      },
+    }),
+  };
   const transcriber = env.GROQ_API_KEY ? new GroqTranscriber(env.GROQ_API_KEY) : null;
   const speaker = env.GEMINI_API_KEY ? new GeminiTts(env.GEMINI_API_KEY) : null;
   const convDeps = { repo: new PrismaConversationRepository(db), ai, clock, freeDailyLimit: env.FREE_DAILY_AI_SESSIONS };

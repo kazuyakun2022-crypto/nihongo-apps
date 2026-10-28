@@ -15,9 +15,12 @@ interface AuthContextValue {
   loginWithOAuth: (input: { provider: "google" | "apple"; idToken: string }) => Promise<AuthResponse>;
   startGuest: AuthRepository["startGuest"];
   logout: (allDevices?: boolean) => Promise<void>;
+  updateAvatar: (avatarUrl: string | null) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+const USER_CACHE_KEY = "nihongo_cached_user";
 
 /** Menyimpan status login untuk seluruh aplikasi. Repository bisa diganti lewat prop (misalnya untuk test). */
 export function AuthProvider({ children, repository = authApi }: { children: React.ReactNode; repository?: AuthRepository }) {
@@ -28,30 +31,54 @@ export function AuthProvider({ children, repository = authApi }: { children: Rea
     tokenStore.set(res.accessToken);
     setUser(res.user);
     setStatus("authenticated");
+    try {
+      localStorage.setItem(USER_CACHE_KEY, JSON.stringify(res.user));
+    } catch {}
     return res;
   }, []);
 
   useEffect(() => {
     let mounted = true;
 
+    // Di client: baca cache agar UI instan tanpa hydration error
+    try {
+      const cached = localStorage.getItem(USER_CACHE_KEY);
+      if (cached) {
+        setUser(JSON.parse(cached) as User);
+        setStatus("authenticated");
+      }
+    } catch {}
+
     // Safety timeout: jangan biarkan status gantung di "loading" jika koneksi terputus/diam lama
     const safetyTimeout = setTimeout(() => {
       if (mounted) {
         setStatus((prev) => (prev === "loading" ? "anonymous" : prev));
       }
-    }, 6000);
+    }, 3500);
 
     repository
       .restore()
       .then((res) => {
         if (mounted) {
           clearTimeout(safetyTimeout);
-          res ? accept(res) : setStatus("anonymous");
+          if (res) {
+            accept(res);
+          } else {
+            try {
+              localStorage.removeItem(USER_CACHE_KEY);
+            } catch {}
+            setUser(null);
+            setStatus("anonymous");
+          }
         }
       })
       .catch(() => {
         if (mounted) {
           clearTimeout(safetyTimeout);
+          try {
+            localStorage.removeItem(USER_CACHE_KEY);
+          } catch {}
+          setUser(null);
           setStatus("anonymous");
         }
       });
@@ -93,6 +120,19 @@ export function AuthProvider({ children, repository = authApi }: { children: Rea
     };
   }, [repository, accept]);
 
+  const updateAvatar = useCallback(
+    async (avatarUrl: string | null) => {
+      if (!repository.updateAvatar) throw new Error("Fitur avatar tidak didukung");
+      const res = await repository.updateAvatar(avatarUrl);
+      setUser(res.user);
+      try {
+        localStorage.setItem(USER_CACHE_KEY, JSON.stringify(res.user));
+      } catch {}
+      return res.user;
+    },
+    [repository],
+  );
+
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
@@ -101,14 +141,18 @@ export function AuthProvider({ children, repository = authApi }: { children: Rea
       login: (input) => repository.login(input).then(accept),
       loginWithOAuth: (input) => (repository.loginWithOAuth ? repository.loginWithOAuth(input) : Promise.reject(new Error("OAuth tidak tersedia"))).then(accept),
       startGuest: () => repository.startGuest().then(accept),
+      updateAvatar,
       async logout(allDevices) {
+        try {
+          localStorage.removeItem(USER_CACHE_KEY);
+        } catch {}
         await repository.logout(allDevices).catch(() => undefined);
         tokenStore.set(null);
         // Hapus data pribadi yang di-cache service worker (dokumen 10.6).
         if ("caches" in window) await caches.delete("nihongo-private").catch(() => undefined);
       },
     }),
-    [status, user, repository, accept],
+    [status, user, repository, accept, updateAvatar],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

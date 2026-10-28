@@ -45,7 +45,7 @@ export interface AiPromptItem {
 }
 
 export const adminApi = {
-  getStats: () => apiRequest<SystemStats>("/api/admin/stats"),
+  getStats: () => apiRequest<SystemStats>("/admin/stats"),
 
   searchUsers: (params: { q?: string; role?: Role; status?: string; page?: number; pageSize?: number }) => {
     const sp = new URLSearchParams();
@@ -54,23 +54,23 @@ export const adminApi = {
     if (params.status) sp.set("status", params.status);
     if (params.page) sp.set("page", String(params.page));
     if (params.pageSize) sp.set("pageSize", String(params.pageSize));
-    return apiRequest<{ items: AdminUserItem[]; total: number }>(`/api/admin/users?${sp.toString()}`);
+    return apiRequest<{ items: AdminUserItem[]; total: number }>(`/admin/users?${sp.toString()}`);
   },
 
   changeRole: (userId: string, role: Role) =>
-    apiRequest<void>(`/api/admin/users/${userId}/role`, {
+    apiRequest<void>(`/admin/users/${userId}/role`, {
       method: "PATCH",
       body: { role },
     }),
 
   suspendUser: (userId: string, reason: string) =>
-    apiRequest<void>(`/api/admin/users/${userId}/suspend`, {
+    apiRequest<void>(`/admin/users/${userId}/suspend`, {
       method: "POST",
       body: { reason },
     }),
 
   unsuspendUser: (userId: string) =>
-    apiRequest<void>(`/api/admin/users/${userId}/unsuspend`, {
+    apiRequest<void>(`/admin/users/${userId}/unsuspend`, {
       method: "POST",
     }),
 
@@ -79,22 +79,22 @@ export const adminApi = {
     if (params.page) sp.set("page", String(params.page));
     if (params.pageSize) sp.set("pageSize", String(params.pageSize));
     if (params.action) sp.set("action", params.action);
-    return apiRequest<{ items: AuditLogItem[]; total: number }>(`/api/admin/audit-logs?${sp.toString()}`);
+    return apiRequest<{ items: AuditLogItem[]; total: number }>(`/admin/audit-logs?${sp.toString()}`);
   },
 
-  getAiPrompts: () => apiRequest<AiPromptItem[]>("/api/admin/ai-prompts"),
+  getAiPrompts: () => apiRequest<AiPromptItem[]>("/admin/ai-prompts"),
 
   updateAiPrompt: (
     levelId: number,
     data: { systemPrompt: string; maxSentenceWords: number; furiganaRule: string; speechRate: number },
   ) =>
-    apiRequest<void>(`/api/admin/ai-prompts/${levelId}`, {
+    apiRequest<void>(`/admin/ai-prompts/${levelId}`, {
       method: "PUT",
       body: data,
     }),
 
   grantSubscription: (userId: string, durationDays: number, reason: string) =>
-    apiRequest<void>("/api/admin/subscriptions/grant", {
+    apiRequest<void>("/admin/subscriptions/grant", {
       method: "POST",
       body: { userId, durationDays, reason },
     }),

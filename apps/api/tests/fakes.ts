@@ -40,6 +40,7 @@ export class FakeUsers implements UserRepository {
       dailyTargetMin: 10,
       streakCount: 0,
       xpTotal: 0,
+      avatarUrl: null,
     };
     this.rows.set(user.id, user);
     return user;

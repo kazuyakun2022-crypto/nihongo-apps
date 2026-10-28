@@ -4,7 +4,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import type { Env } from "../shared/config/env";
 import { errorHandler } from "../shared/http/errorHandler";
-import { requireAuth, requireRole } from "../shared/http/auth";
+import { optionalAuth, requireAuth, requireRole } from "../shared/http/auth";
 import type { Container } from "./container";
 import { authRoutes } from "../modules/auth/presentation/authRoutes";
 import { learningRoutes } from "../modules/learning/presentation/learningRoutes";
@@ -14,6 +14,7 @@ import { adminUserRoutes } from "../modules/users/presentation/adminUserRoutes";
 import { examRoutes } from "../modules/exam/presentation/examRoutes";
 import { examLevelUpRoutes } from "../modules/exam/presentation/examLevelUpRoutes";
 import { askRoutes } from "../modules/ask/presentation/askRoutes";
+import { contentAdminRoutes } from "../modules/content/presentation/contentAdminRoutes";
 import { synthesizeChildVoice } from "../shared/infrastructure/edgeTts";
 
 export function createApp(env: Env, c: Container) {
@@ -73,8 +74,9 @@ export function createApp(env: Env, c: Container) {
   app.use("/api/conversation", auth, conversationRoutes(c.conversation));
   app.use("/api/exam", auth, examRoutes(c.exam));
   app.use("/api/exam", auth, examLevelUpRoutes());
+  app.use("/api/admin/content", auth, requireRole("admin"), contentAdminRoutes());
   app.use("/api/admin", auth, requireRole("admin"), adminUserRoutes(c.adminUsers));
-  app.use("/api/ask", askRoutes(c.askUc, c.transcriber, c.speaker));
+  app.use("/api/ask", askRoutes(c.askUc, c.transcriber, c.speaker, optionalAuth(c.accessTokens)));
 
   app.use((_req, res) => res.status(404).json({ error: { code: "NOT_FOUND", message: "Endpoint tidak ditemukan." } }));
   app.use(errorHandler);

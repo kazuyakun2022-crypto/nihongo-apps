@@ -1,0 +1,310 @@
+[
+  {
+    "pattern": "〜にもかかわらず",
+    "explanation": "Berarti 'meskipun' atau 'walaupun', untuk hasil yang berlawanan dengan dugaan. Nadanya agak formal dan sering dipakai dalam tulisan. Melekat pada kata benda, bentuk biasa kata kerja atau kata sifat.",
+    "exampleSentence": "雨にもかかわらず、多くの人が集まった。",
+    "exampleTranslation": "Meskipun hujan, banyak orang tetap berkumpul.",
+    "quiz": { "question": "努力した＿＿、合格できなかった。", "options": ["からこそ", "にもかかわらず", "おかげで", "ばかりに"], "answer": "にもかかわらず" }
+  },
+  {
+    "pattern": "〜わけではない",
+    "explanation": "Menyangkal sebagian atau meluruskan anggapan: 'bukan berarti...'. Sering dipasangkan dengan からといって. Melekat pada bentuk biasa; kata sifat-na dan kata benda memakai な atau である.",
+    "exampleSentence": "料理が嫌いなわけではないが、毎日作るのは大変だ。",
+    "exampleTranslation": "Bukan berarti saya tidak suka memasak, tetapi memasak setiap hari itu berat.",
+    "quiz": { "question": "日本に住んでいるからといって、日本語が上手だという＿＿。", "options": ["わけがない", "ことだ", "わけではない", "ものだ"], "answer": "わけではない" }
+  },
+  {
+    "pattern": "〜ものだ",
+    "explanation": "Menyatakan hal yang wajar atau sifat umum sesuatu. Jika melekat pada bentuk lampau (た), maknanya mengenang kebiasaan di masa lalu dengan rasa rindu.",
+    "exampleSentence": "子どものころは、よくこの川で泳いだものだ。",
+    "exampleTranslation": "Waktu kecil, saya sering berenang di sungai ini.",
+    "quiz": { "question": "若いころは、毎晩遅くまで友達と語り合った＿＿。", "options": ["ものだ", "ことだ", "わけだ", "はずだ"], "answer": "ものだ" }
+  },
+  {
+    "pattern": "〜に関して",
+    "explanation": "Berarti 'mengenai' atau 'terkait dengan'. Lebih formal daripada について dan sering dipakai dalam pengumuman atau dokumen. Melekat pada kata benda; sebelum kata benda lain menjadi に関する.",
+    "exampleSentence": "新しい規則に関して、何か質問がありますか。",
+    "exampleTranslation": "Apakah ada pertanyaan mengenai peraturan baru ini?",
+    "quiz": { "question": "この件＿＿、後ほど担当者からご連絡いたします。", "options": ["に比べて", "に反して", "に応じて", "に関して"], "answer": "に関して" }
+  },
+  {
+    "pattern": "〜に基づいて",
+    "explanation": "Berarti 'berdasarkan' suatu data, fakta, atau aturan yang menjadi dasar. Melekat pada kata benda; sebelum kata benda lain menjadi に基づく atau に基づいた.",
+    "exampleSentence": "調査の結果に基づいて、新しい計画が立てられた。",
+    "exampleTranslation": "Berdasarkan hasil survei, rencana baru pun disusun.",
+    "quiz": { "question": "この映画は実際に起きた事件＿＿作られている。", "options": ["に沿って", "に基づいて", "をめぐって", "にわたって"], "answer": "に基づいて" }
+  },
+  {
+    "pattern": "〜につれて",
+    "explanation": "Berarti 'seiring dengan', untuk perubahan bertahap yang diikuti perubahan lain. Melekat pada kata kerja bentuk kamus atau kata benda yang mengandung makna perubahan.",
+    "exampleSentence": "年をとるにつれて、時間が早く過ぎるように感じる。",
+    "exampleTranslation": "Seiring bertambahnya usia, waktu terasa berlalu lebih cepat.",
+    "quiz": { "question": "山を登る＿＿、空気が冷たくなってきた。", "options": ["ついでに", "とたん", "につれて", "次第"], "answer": "につれて" }
+  },
+  {
+    "pattern": "〜に伴って",
+    "explanation": "Berarti 'bersamaan dengan' atau 'akibat dari' suatu perubahan, biasanya dalam skala besar seperti masyarakat atau cuaca. Bernuansa formal. Melekat pada kata benda atau kata kerja bentuk kamus + の.",
+    "exampleSentence": "人口の増加に伴って、住宅が不足している。",
+    "exampleTranslation": "Seiring bertambahnya penduduk, perumahan menjadi kurang.",
+    "quiz": { "question": "台風の接近＿＿、多くの便が欠航となった。", "options": ["に限らず", "に反して", "にしては", "に伴って"], "answer": "に伴って" }
+  },
+  {
+    "pattern": "〜に応じて",
+    "explanation": "Berarti 'sesuai dengan' atau 'menyesuaikan dengan' kondisi yang bisa berubah-ubah. Melekat pada kata benda; sebelum kata benda lain menjadi に応じた.",
+    "exampleSentence": "収入に応じて、払う税金の額が変わる。",
+    "exampleTranslation": "Jumlah pajak yang dibayar berubah sesuai dengan penghasilan.",
+    "quiz": { "question": "料金は利用時間＿＿変わります。", "options": ["に応じて", "に反して", "をめぐって", "に先立って"], "answer": "に応じて" }
+  },
+  {
+    "pattern": "〜にわたって",
+    "explanation": "Menunjukkan rentang waktu atau wilayah yang luas: 'selama' atau 'meliputi'. Melekat pada kata benda yang menyatakan jangka waktu, jumlah, atau tempat.",
+    "exampleSentence": "会議は三日間にわたって行われた。",
+    "exampleTranslation": "Rapat itu berlangsung selama tiga hari.",
+    "quiz": { "question": "この地域では、十年＿＿工事が続いている。", "options": ["につれて", "にわたって", "をめぐって", "に先立って"], "answer": "にわたって" }
+  },
+  {
+    "pattern": "〜に沿って",
+    "explanation": "Punya dua makna: 'menyusuri' sesuatu yang memanjang seperti sungai atau jalan, dan 'sesuai dengan' rencana atau pedoman. Melekat pada kata benda.",
+    "exampleSentence": "マニュアルに沿って作業を進めてください。",
+    "exampleTranslation": "Silakan lanjutkan pekerjaan sesuai dengan panduan.",
+    "quiz": { "question": "川＿＿歩いていくと、小さな神社が見えてきます。", "options": ["に対して", "に関して", "に沿って", "によって"], "answer": "に沿って" }
+  },
+  {
+    "pattern": "〜をきっかけに",
+    "explanation": "Berarti 'berawal dari' atau 'dipicu oleh' suatu kejadian yang kemudian membawa perubahan. Melekat pada kata benda atau kata kerja + こと.",
+    "exampleSentence": "日本のアニメを見たことをきっかけに、日本語の勉強を始めた。",
+    "exampleTranslation": "Berawal dari menonton anime Jepang, saya mulai belajar bahasa Jepang.",
+    "quiz": { "question": "入院＿＿、健康に気をつけるようになった。", "options": ["をめぐって", "を問わず", "に沿って", "をきっかけに"], "answer": "をきっかけに" }
+  },
+  {
+    "pattern": "〜をめぐって",
+    "explanation": "Berarti 'seputar' atau 'memperebutkan' suatu hal yang menjadi pusat perdebatan atau konflik. Biasanya diikuti kata kerja seperti berdebat, bertengkar, atau berbeda pendapat. Melekat pada kata benda.",
+    "exampleSentence": "新しい空港の建設をめぐって、住民の意見が分かれている。",
+    "exampleTranslation": "Pendapat warga terbelah seputar pembangunan bandara baru.",
+    "quiz": { "question": "遺産＿＿、兄弟の間で争いが起きた。", "options": ["にわたって", "に基づいて", "をめぐって", "に沿って"], "answer": "をめぐって" }
+  },
+  {
+    "pattern": "〜うえに",
+    "explanation": "Berarti 'selain itu, juga', untuk menambahkan hal yang searah (sama-sama baik atau sama-sama buruk). Melekat pada bentuk biasa; kata sifat-na memakai な dan kata benda memakai の.",
+    "exampleSentence": "この店は値段が安いうえに、味もいい。",
+    "exampleTranslation": "Toko ini harganya murah, rasanya pun enak.",
+    "quiz": { "question": "今日は寒い＿＿、雨まで降ってきた。", "options": ["うえで", "ものの", "わりに", "うえに"], "answer": "うえに" }
+  },
+  {
+    "pattern": "〜うえで",
+    "explanation": "Berarti 'dalam hal' atau 'ketika melakukan' sesuatu, untuk menyebut hal yang penting dalam proses itu. Melekat pada kata kerja bentuk kamus atau kata benda + の.",
+    "exampleSentence": "外国語を学ぶうえで、毎日続けることが最も大切だ。",
+    "exampleTranslation": "Dalam mempelajari bahasa asing, hal terpenting adalah melakukannya setiap hari.",
+    "quiz": { "question": "家を買う＿＿、注意しなければならない点がいくつかある。", "options": ["うえに", "うえで", "あげく", "くせに"], "answer": "うえで" }
+  },
+  {
+    "pattern": "〜ばかりか",
+    "explanation": "Berarti 'bukan hanya... bahkan juga'. Bagian kedua biasanya lebih mengejutkan dan sering memakai も atau まで. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "彼は英語ばかりか、中国語も話せる。",
+    "exampleTranslation": "Dia bukan hanya bisa bahasa Inggris, bahkan bahasa Mandarin juga.",
+    "quiz": { "question": "彼は約束を破った＿＿、謝りもしなかった。", "options": ["ばかりか", "からこそ", "からには", "以上"], "answer": "ばかりか" }
+  },
+  {
+    "pattern": "〜どころか",
+    "explanation": "Berarti 'jangankan...' atau 'bukannya... malah', untuk kenyataan yang jauh dari atau berlawanan dengan dugaan. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "薬を飲んだのに、熱は下がるどころか上がってしまった。",
+    "exampleTranslation": "Padahal sudah minum obat, demamnya bukannya turun malah naik.",
+    "quiz": { "question": "貯金する＿＿、毎月赤字で困っている。", "options": ["ばかりに", "おかげで", "うえで", "どころか"], "answer": "どころか" }
+  },
+  {
+    "pattern": "〜に限らず",
+    "explanation": "Berarti 'tidak terbatas pada', yaitu hal itu juga berlaku untuk yang lain. Melekat pada kata benda.",
+    "exampleSentence": "この公園は子どもに限らず、大人にも人気がある。",
+    "exampleTranslation": "Taman ini populer tidak hanya di kalangan anak-anak, tetapi juga orang dewasa.",
+    "quiz": { "question": "このアニメは日本＿＿、海外でも広く知られている。", "options": ["に限って", "に限らず", "にかかわらず", "に比べて"], "answer": "に限らず" }
+  },
+  {
+    "pattern": "〜はもちろん",
+    "explanation": "Berarti 'tentu saja X, bahkan Y juga'. X adalah hal yang sudah jelas, lalu ditambah Y. Melekat pada kata benda.",
+    "exampleSentence": "彼女はピアノはもちろん、バイオリンも上手に弾ける。",
+    "exampleTranslation": "Dia tentu saja pandai bermain piano, bahkan biola pun mahir.",
+    "quiz": { "question": "この料理は子ども＿＿、大人にも喜ばれる。", "options": ["のくせに", "にしては", "はもちろん", "をきっかけに"], "answer": "はもちろん" }
+  },
+  {
+    "pattern": "〜はともかく",
+    "explanation": "Berarti 'terlepas dari X' atau 'X dikesampingkan dulu', lalu fokus pada hal lain yang dianggap lebih penting. Melekat pada kata benda.",
+    "exampleSentence": "見た目はともかく、味はとてもおいしい。",
+    "exampleTranslation": "Terlepas dari tampilannya, rasanya sangat enak.",
+    "quiz": { "question": "結果＿＿、最後まであきらめなかったことが立派だ。", "options": ["はもちろん", "に限らず", "はともかく", "に加えて"], "answer": "はともかく" }
+  },
+  {
+    "pattern": "〜を問わず",
+    "explanation": "Berarti 'tanpa memandang' atau 'tidak mempersoalkan' perbedaan seperti usia, jenis kelamin, atau pengalaman. Sering dipakai dalam pengumuman. Melekat pada kata benda.",
+    "exampleSentence": "このイベントは年齢を問わず、だれでも参加できる。",
+    "exampleTranslation": "Acara ini bisa diikuti siapa saja tanpa memandang usia.",
+    "quiz": { "question": "経験の有無＿＿、やる気のある方を募集しています。", "options": ["に応じて", "を問わず", "に基づいて", "に沿って"], "answer": "を問わず" }
+  },
+  {
+    "pattern": "〜にかかわらず",
+    "explanation": "Berarti 'tidak bergantung pada' atau 'bagaimanapun', sering dengan pasangan berlawanan seperti mau atau tidak. Melekat pada kata benda atau pasangan bentuk kamus dan bentuk negatif kata kerja.",
+    "exampleSentence": "参加するしないにかかわらず、メールで返事をください。",
+    "exampleTranslation": "Baik ikut maupun tidak, mohon balas melalui email.",
+    "quiz": { "question": "雨が降る降らない＿＿、試合は予定どおり行います。", "options": ["にもかかわらず", "に限って", "にかかわらず", "に反して"], "answer": "にかかわらず" }
+  },
+  {
+    "pattern": "〜からこそ",
+    "explanation": "Berarti 'justru karena', menegaskan bahwa alasan itulah yang paling penting. Melekat pada bentuk biasa dan sering diakhiri のだ.",
+    "exampleSentence": "信頼しているからこそ、厳しいことを言うのだ。",
+    "exampleTranslation": "Justru karena saya percaya padamu, saya berkata keras.",
+    "quiz": { "question": "あなたのことを心配している＿＿、何度も注意するんです。", "options": ["からには", "くせに", "からこそ", "ものの"], "answer": "からこそ" }
+  },
+  {
+    "pattern": "〜からには",
+    "explanation": "Berarti 'karena sudah...', maka harus atau ingin melakukan sesuatu sampai tuntas. Bagian akhirnya berisi tekad, kewajiban, atau dugaan kuat. Melekat pada bentuk biasa.",
+    "exampleSentence": "引き受けたからには、最後まで責任を持ってやります。",
+    "exampleTranslation": "Karena sudah menyanggupi, saya akan mengerjakannya dengan tanggung jawab sampai selesai.",
+    "quiz": { "question": "日本に留学する＿＿、日本語を真剣に勉強するつもりだ。", "options": ["とたん", "わりに", "くせに", "からには"], "answer": "からには" }
+  },
+  {
+    "pattern": "〜以上(は)",
+    "explanation": "Berarti 'karena sudah' atau 'selama memang', sehingga wajar menerima konsekuensinya. Maknanya mirip からには tetapi lebih kaku. Melekat pada bentuk biasa; kata benda memakai である.",
+    "exampleSentence": "約束した以上は、守らなければならない。",
+    "exampleTranslation": "Karena sudah berjanji, janji itu harus ditepati.",
+    "quiz": { "question": "学生である＿＿、勉強が第一だ。", "options": ["一方", "以上", "末", "次第"], "answer": "以上" }
+  },
+  {
+    "pattern": "〜たとたん(に)",
+    "explanation": "Berarti 'begitu... langsung', untuk kejadian tak terduga yang terjadi tepat setelah suatu tindakan. Melekat pada kata kerja bentuk た.",
+    "exampleSentence": "家を出たとたん、雨が降り出した。",
+    "exampleTranslation": "Begitu keluar rumah, hujan langsung turun.",
+    "quiz": { "question": "窓を開けた＿＿、強い風が吹き込んできた。", "options": ["次第", "あげく", "とたん", "以上"], "answer": "とたん" }
+  },
+  {
+    "pattern": "〜次第",
+    "explanation": "Berarti 'segera setelah', biasanya diikuti tindakan yang disengaja di masa depan. Bernuansa formal dan sering dipakai dalam bisnis. Melekat pada bentuk ます tanpa ます.",
+    "exampleSentence": "結果が分かり次第、ご連絡いたします。",
+    "exampleTranslation": "Kami akan segera menghubungi Anda begitu hasilnya diketahui.",
+    "quiz": { "question": "準備ができ＿＿、出発しましょう。", "options": ["次第", "たとたん", "ついでに", "あげく"], "answer": "次第" }
+  },
+  {
+    "pattern": "〜あげく",
+    "explanation": "Berarti 'setelah sekian lama... akhirnya', biasanya untuk hasil yang mengecewakan setelah proses yang melelahkan. Melekat pada kata kerja bentuk た atau kata benda + の.",
+    "exampleSentence": "さんざん迷ったあげく、結局何も買わなかった。",
+    "exampleTranslation": "Setelah lama bimbang, akhirnya saya tidak membeli apa pun.",
+    "quiz": { "question": "二時間も道に迷った＿＿、結局タクシーで帰ることになった。", "options": ["とたん", "ついでに", "うちに", "あげく"], "answer": "あげく" }
+  },
+  {
+    "pattern": "〜末(に)",
+    "explanation": "Berarti 'setelah melalui' usaha atau pertimbangan panjang. Berbeda dengan あげく, hasilnya bisa positif. Bernuansa formal; melekat pada kata kerja bentuk た atau kata benda + の.",
+    "exampleSentence": "何度も話し合った末に、二人は結婚を決めた。",
+    "exampleTranslation": "Setelah berkali-kali berdiskusi, keduanya memutuskan untuk menikah.",
+    "quiz": { "question": "長い研究の＿＿、ついに新しい薬が完成した。", "options": ["あげく", "末に", "最中に", "うちに"], "answer": "末に" }
+  },
+  {
+    "pattern": "〜一方だ",
+    "explanation": "Berarti 'terus-menerus' berubah ke satu arah, biasanya ke arah yang tidak diinginkan. Melekat pada kata kerja bentuk kamus yang menyatakan perubahan.",
+    "exampleSentence": "物価は上がる一方だ。",
+    "exampleTranslation": "Harga barang terus saja naik.",
+    "quiz": { "question": "最近、仕事は忙しくなる＿＿だ。", "options": ["末", "あげく", "一方", "最中"], "answer": "一方" }
+  },
+  {
+    "pattern": "〜つつある",
+    "explanation": "Menunjukkan perubahan yang sedang berlangsung sedikit demi sedikit: 'sedang dalam proses'. Bernuansa formal dan sering muncul di berita. Melekat pada bentuk ます tanpa ます.",
+    "exampleSentence": "地球の気温は少しずつ上がりつつある。",
+    "exampleTranslation": "Suhu bumi perlahan-lahan sedang meningkat.",
+    "quiz": { "question": "この町の人口は年々減り＿＿。", "options": ["一方だ", "つつある", "がちだ", "かねない"], "answer": "つつある" }
+  },
+  {
+    "pattern": "〜つつ(も)",
+    "explanation": "Berarti 'walaupun (sadar)... tetap saja', sering untuk perasaan bersalah atau penyesalan. Bernuansa tulisan. Melekat pada bentuk ます tanpa ます.",
+    "exampleSentence": "体に悪いと知りつつも、夜中にお菓子を食べてしまう。",
+    "exampleTranslation": "Walaupun tahu tidak baik untuk tubuh, saya tetap makan camilan tengah malam.",
+    "quiz": { "question": "早く寝なければと思い＿＿、ついゲームを続けてしまった。", "options": ["次第", "がちで", "かけて", "つつも"], "answer": "つつも" }
+  },
+  {
+    "pattern": "〜ものの",
+    "explanation": "Berarti 'memang... namun', untuk mengakui suatu fakta lalu menyatakan hasil yang tidak sesuai harapan. Agak formal; melekat pada bentuk biasa.",
+    "exampleSentence": "新しい自転車を買ったものの、忙しくてほとんど乗っていない。",
+    "exampleTranslation": "Saya memang membeli sepeda baru, tetapi karena sibuk hampir tidak pernah memakainya.",
+    "quiz": { "question": "免許は取った＿＿、一度も運転したことがない。", "options": ["ものの", "からには", "とたん", "あげく"], "answer": "ものの" }
+  },
+  {
+    "pattern": "〜わりに(は)",
+    "explanation": "Berarti 'dibandingkan dengan' yang biasa diharapkan dari suatu hal, hasilnya berbeda. Melekat pada bentuk biasa; kata sifat-na memakai な dan kata benda memakai の.",
+    "exampleSentence": "この店は値段のわりに、量が多い。",
+    "exampleTranslation": "Dibandingkan harganya, porsi di toko ini banyak.",
+    "quiz": { "question": "祖父は年の＿＿、とても元気だ。", "options": ["うえに", "わりに", "くせに", "ついでに"], "answer": "わりに" }
+  },
+  {
+    "pattern": "〜にしては",
+    "explanation": "Berarti 'untuk ukuran...', ketika kenyataan berbeda dari yang biasanya diharapkan dari fakta tertentu. Melekat pada kata benda atau bentuk biasa kata kerja.",
+    "exampleSentence": "初めて作ったにしては、このケーキはよくできている。",
+    "exampleTranslation": "Untuk ukuran pertama kali membuat, kue ini cukup bagus.",
+    "quiz": { "question": "彼は日本に一年しか住んでいない＿＿、日本語がとても自然だ。", "options": ["にとって", "に対して", "として", "にしては"], "answer": "にしては" }
+  },
+  {
+    "pattern": "〜にすぎない",
+    "explanation": "Berarti 'hanya sekadar' atau 'tidak lebih dari', untuk menekankan bahwa sesuatu itu kecil atau tidak penting. Melekat pada kata benda atau bentuk biasa.",
+    "exampleSentence": "これは私の個人的な意見にすぎない。",
+    "exampleTranslation": "Ini hanyalah pendapat pribadi saya.",
+    "quiz": { "question": "彼の言うことは、ただのうわさ＿＿。", "options": ["に限る", "にすぎない", "に当たる", "に基づく"], "answer": "にすぎない" }
+  },
+  {
+    "pattern": "〜ざるを得ない",
+    "explanation": "Berarti 'terpaksa harus' atau 'mau tidak mau', karena keadaan tidak memberi pilihan lain. Bernuansa formal. Melekat pada bentuk ない tanpa ない; する menjadi せざるを得ない.",
+    "exampleSentence": "台風が来ているので、旅行は中止せざるを得ない。",
+    "exampleTranslation": "Karena topan sedang datang, perjalanan terpaksa dibatalkan.",
+    "quiz": { "question": "上司の命令なので、気が進まなくても行か＿＿。", "options": ["ずにはいられない", "なくて済む", "ざるを得ない", "なくてもいい"], "answer": "ざるを得ない" }
+  },
+  {
+    "pattern": "〜わけにはいかない",
+    "explanation": "Berarti 'tidak bisa begitu saja' melakukan sesuatu karena alasan moral, sosial, atau tanggung jawab, bukan karena tidak mampu. Melekat pada kata kerja bentuk kamus.",
+    "exampleSentence": "明日は大事な試験があるので、遊びに行くわけにはいかない。",
+    "exampleTranslation": "Besok ada ujian penting, jadi saya tidak bisa pergi bermain.",
+    "quiz": { "question": "みんなが待っているので、私だけ先に帰る＿＿。", "options": ["わけがない", "ことはない", "ものだ", "わけにはいかない"], "answer": "わけにはいかない" }
+  },
+  {
+    "pattern": "〜ずにはいられない",
+    "explanation": "Berarti 'tidak bisa menahan diri untuk tidak...', yaitu perasaan atau tindakan muncul dengan sendirinya. Melekat pada bentuk ない tanpa ない; する menjadi せずにはいられない.",
+    "exampleSentence": "その映画を見て、泣かずにはいられなかった。",
+    "exampleTranslation": "Menonton film itu, saya tidak bisa menahan tangis.",
+    "quiz": { "question": "彼の冗談があまりにおもしろくて、笑わ＿＿。", "options": ["ずに済んだ", "ずにはいられなかった", "なくてもよかった", "ないことはなかった"], "answer": "ずにはいられなかった" }
+  },
+  {
+    "pattern": "〜かねない",
+    "explanation": "Berarti 'bisa saja' atau 'berisiko' menimbulkan akibat buruk. Hanya dipakai untuk kemungkinan negatif. Melekat pada bentuk ます tanpa ます.",
+    "exampleSentence": "スマホを見ながら運転すると、事故を起こしかねない。",
+    "exampleTranslation": "Menyetir sambil melihat ponsel bisa saja menyebabkan kecelakaan.",
+    "quiz": { "question": "そんな無理なスケジュールでは、体を壊し＿＿。", "options": ["かねる", "つつある", "がちだ", "かねない"], "answer": "かねない" }
+  },
+  {
+    "pattern": "〜かねる",
+    "explanation": "Berarti 'sulit untuk' atau 'tidak bisa', dipakai untuk menolak dengan sopan, terutama dalam situasi bisnis. Melekat pada bentuk ます tanpa ます.",
+    "exampleSentence": "申し訳ございませんが、そのご要望にはお応えしかねます。",
+    "exampleTranslation": "Mohon maaf, kami tidak dapat memenuhi permintaan tersebut.",
+    "quiz": { "question": "その件については、私一人では判断し＿＿。", "options": ["かねます", "かねません", "がちです", "つつあります"], "answer": "かねます" }
+  },
+  {
+    "pattern": "〜おそれがある",
+    "explanation": "Berarti 'dikhawatirkan' atau 'ada kemungkinan' terjadi hal buruk. Bernuansa formal dan sering dipakai di berita atau peringatan. Melekat pada kata kerja bentuk kamus atau kata benda + の.",
+    "exampleSentence": "明日は大雨のため、川があふれるおそれがある。",
+    "exampleTranslation": "Karena hujan deras besok, dikhawatirkan sungai akan meluap.",
+    "quiz": { "question": "この薬は眠くなる＿＿ので、運転前には飲まないでください。", "options": ["かねない", "ことはない", "おそれがある", "わけではない"], "answer": "おそれがある" }
+  },
+  {
+    "pattern": "〜ないことには",
+    "explanation": "Berarti 'kalau tidak... maka tidak bisa', yaitu syarat yang harus dipenuhi lebih dulu. Bagian akhirnya biasanya kalimat negatif. Melekat pada bentuk ない.",
+    "exampleSentence": "実際に食べてみないことには、おいしいかどうか分からない。",
+    "exampleTranslation": "Kalau tidak mencobanya sendiri, kita tidak akan tahu enak atau tidak.",
+    "quiz": { "question": "本人に聞いてみ＿＿、本当の理由は分からない。", "options": ["ないうちに", "ずにはいられず", "ないことには", "ないばかりか"], "answer": "ないことには" }
+  },
+  {
+    "pattern": "〜ものか",
+    "explanation": "Menyatakan penolakan atau tekad kuat: 'mana mungkin' atau 'tidak akan pernah'. Dipakai dalam percakapan dengan nada emosional. Melekat pada bentuk biasa; bentuk santainya もんか.",
+    "exampleSentence": "あんな店、二度と行くものか。",
+    "exampleTranslation": "Toko seperti itu, saya tidak akan pernah ke sana lagi.",
+    "quiz": { "question": "あんなにひどいことを言われて、許す＿＿。", "options": ["ことか", "わけだ", "はずだ", "ものか"], "answer": "ものか" }
+  },
+  {
+    "pattern": "〜ことか",
+    "explanation": "Berarti 'betapa...', untuk mengungkapkan perasaan yang sangat kuat. Sering dipakai bersama なんと, どんなに, atau 何度. Melekat pada bentuk biasa.",
+    "exampleSentence": "合格の知らせを聞いて、どんなにうれしかったことか。",
+    "exampleTranslation": "Betapa bahagianya saya ketika mendengar kabar kelulusan itu.",
+    "quiz": { "question": "留学中、家族からの手紙に何度励まされた＿＿。", "options": ["ものか", "ことか", "わけか", "ことだ"], "answer": "ことか" }
+  }
+]

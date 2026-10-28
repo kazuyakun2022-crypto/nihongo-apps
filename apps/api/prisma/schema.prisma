@@ -39,6 +39,12 @@ enum OAuthProvider {
   apple
 }
 
+enum Gender {
+  male
+  female
+  other
+}
+
 enum SubscriptionPlan {
   monthly
   yearly
@@ -65,6 +71,9 @@ enum QuizType {
   pilihan_ganda
   susun_kalimat
   mendengar
+  susun_huruf
+  menulis
+  berbicara
 }
 
 enum ChapterProgressStatus {
@@ -131,6 +140,8 @@ model User {
   currentLevelId      Int?          @map("current_level_id") @db.SmallInt
   pendingLevelId      Int?          @map("pending_level_id") @db.SmallInt
   learningGoal        LearningGoal? @map("learning_goal")
+  gender              Gender?       @map("gender")
+  avatarUrl           String?       @map("avatar_url") @db.Text
   dailyTargetMin      Int?          @map("daily_target_min") @db.SmallInt
   xpTotal             Int           @default(0) @map("xp_total")
   streakCount         Int           @default(0) @map("streak_count")
@@ -304,6 +315,8 @@ model Chapter {
   createdById String?       @map("created_by") @db.Uuid
   approvedById String?      @map("approved_by") @db.Uuid
   publishedAt DateTime?     @map("published_at") @db.Timestamptz
+  // Penanda bab hasil impor dataset (mis. "jlpt:n5:makanan_minuman:1"); impor ulang tidak menimpa bab yang sudah ada
+  sourceKey   String?       @unique @map("source_key") @db.VarChar(100)
 
   level         Level                 @relation(fields: [levelId], references: [id])
   createdBy     User?                 @relation("ChapterCreator", fields: [createdById], references: [id])
@@ -351,6 +364,7 @@ model GrammarPoint {
   pattern         String  @db.VarChar(100)
   explanation     String
   exampleSentence String? @map("example_sentence")
+  exampleTranslation String? @map("example_translation")
   chapter         Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   @@map("grammar_points")
@@ -364,6 +378,9 @@ model QuizQuestion {
   options       Json?
   correctAnswer String   @map("correct_answer")
   audioUrl      String?  @map("audio_url")
+  // Petunjuk yang tampil saat mengerjakan (mis. arti kata); explanation baru tampil setelah dinilai
+  hint          String?  @db.VarChar(255)
+  explanation   String?
   chapter       Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   @@map("quiz_questions")
@@ -467,11 +484,14 @@ model ExamQuestion {
   section       ExamSection
   type          String      @default("pilihan_ganda")
   question      String
+  hint          String?     @db.VarChar(255)
   options       Json
   correctAnswer String      @map("correct_answer")
   audioUrl      String?     @map("audio_url")
   difficulty    Int         @default(1) @db.SmallInt
   status        String      @default("published")
+  explanation   String?
+  sourceKey     String?     @unique @map("source_key") @db.VarChar(100)
   level         Level       @relation(fields: [levelId], references: [id])
   answers       ExamAttemptAnswer[]
 

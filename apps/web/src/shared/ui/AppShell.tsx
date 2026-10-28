@@ -11,7 +11,7 @@ const studentNav = [
   { href: "/belajar", label: "Belajar", icon: "M4 5 H11 V20 H4 Z M13 5 H20 V20 H13 Z" },
   { href: "/huruf",   label: "Huruf",   icon: "M4 6 H20 M4 12 H16 M4 18 H12" },
   { href: "/ngobrol", label: "Ngobrol", icon: "M4 5 H20 V16 H10 L6 20 V16 H4 Z" },
-  { href: "/review",  label: "Review",  icon: "M6 4 H18 V20 H6 Z M9 9 H15 M9 13 H15" },
+  { href: "/kamus",   label: "Kamus",   icon: "M4 5 H20 V19 H4 Z M4 15 L9 10 L13 14 L15 12 L20 17 M15 8.5 A0.5 0.5 0 1 0 15 9.5 A0.5 0.5 0 1 0 15 8.5 Z" },
   { href: "/profil",  label: "Profil",  icon: "M12 12 A4 4 0 1 0 12 4 A4 4 0 1 0 12 12 Z M4 20 C5 15 19 15 20 20" },
 ];
 
@@ -25,6 +25,11 @@ const adminNav = [
     href: "/admin/pengguna",
     label: "Pengguna",
     icon: "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z",
+  },
+  {
+    href: "/admin/konten",
+    label: "Konten",
+    icon: "M4 5 H11 V20 H4 Z M13 5 H20 V20 H13 Z",
   },
   {
     href: "/admin/ai",

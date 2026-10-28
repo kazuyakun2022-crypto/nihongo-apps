@@ -1,22 +1,23 @@
 .wrap {
-  max-width: 34rem;
+  max-width: 1040px;
+  width: 100%;
   margin: 0 auto;
-  padding: var(--space-4) var(--space-3) var(--space-8);
+  padding: var(--space-4) var(--space-4) var(--space-8);
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
   animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
 }
 
 .titleSection {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .titleJa {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-primary);
 }
@@ -29,15 +30,45 @@
   line-height: 1.2;
 }
 
+.titleSub {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ── Responsive 2-column desktop grid ── */
+.contentGrid {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (min-width: 880px) {
+  .contentGrid {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--space-6);
+  }
+}
+
+.primaryCol {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.secondaryCol {
+  display: grid;
+  gap: var(--space-4);
+}
+
 /* ── Hero profile card ── */
 .profileCard {
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-5) var(--space-4);
+  padding: var(--space-5);
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-5);
   box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
@@ -48,31 +79,67 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 8%, transparent) 0%, transparent 70%);
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 10%, transparent) 0%, transparent 70%);
   pointer-events: none;
 }
 
+/* ── Avatar Circle (Klik untuk Kelola Foto) ── */
+.avatarWrapper {
+  position: relative;
+  width: 5.5rem;
+  height: 5.5rem;
+  flex-shrink: 0;
+}
+
 .avatar {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), #e65100);
+  background: linear-gradient(135deg, var(--color-primary), #ea580c);
   color: #fff;
   display: grid;
   place-items: center;
-  font-size: var(--font-size-xl);
+  font-size: 2.35rem;
   font-weight: var(--font-weight-heavy);
-  flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(179, 27, 40, 0.25);
-  border: 2px solid var(--color-surface);
+  box-shadow: 0 4px 16px rgba(179, 27, 40, 0.22);
+  border: 3px solid var(--color-surface);
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-spring), box-shadow var(--motion-fast), outline-color var(--motion-fast);
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(179, 27, 40, 0.35);
+  outline-color: var(--color-primary);
+}
+
+.avatar:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatarInitial {
+  user-select: none;
 }
 
 .profileMeta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
   flex: 1;
 }
@@ -85,7 +152,7 @@
 }
 
 .displayName {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
   margin: 0;
@@ -95,7 +162,7 @@
 .roleBadge {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  padding: 0.15rem 0.55rem;
+  padding: 0.18rem 0.6rem;
   border-radius: var(--radius-pill);
   background: var(--color-surface-muted);
   color: var(--color-text-muted);
@@ -146,11 +213,280 @@
   word-break: break-all;
 }
 
+.hiddenFileInput {
+  display: none;
+}
+
+.spinnerMini {
+  width: 13px;
+  height: 13px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Modal Khusus Edit & Hapus Foto Profil ── */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.modalBox {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalZoomIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.modalHeaderTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.modalSubtitle {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.modalCloseBtn {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  transition: all var(--motion-fast);
+}
+
+.modalCloseBtn:hover:not(:disabled) {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.modalBody {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.modalAvatarPreviewWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.modalAvatarCircle {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary), #ea580c);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 24px rgba(179, 27, 40, 0.22);
+  border: 3.5px solid var(--color-surface);
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.modalAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.modalAvatarInitial {
+  font-size: 2.8rem;
+  font-weight: var(--font-weight-heavy);
+  color: #ffffff;
+  user-select: none;
+}
+
+.modalAvatarName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.modalStatus {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.modalStatusLoading {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  color: var(--color-primary);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.modalStatusSuccess {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.25);
+}
+
+.modalStatusError {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+.modalActions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.modalBtnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.modalBtnPrimary:hover:not(:disabled) {
+  background: var(--color-primary-strong);
+  transform: translateY(-1px);
+}
+
+.modalBtnDanger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.modalBtnDanger:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: #dc2626;
+}
+
+.modalBtnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.modalBtnSecondary:hover:not(:disabled) {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 /* ── Stats 3-grid ── */
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .statCard {
@@ -163,26 +499,28 @@
   align-items: center;
   text-align: center;
   gap: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .statIcon {
   font-size: 1.25rem;
   line-height: 1;
   margin-bottom: 2px;
+  color: var(--color-primary);
 }
 
 .statVal {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-heavy);
   color: var(--color-text);
   line-height: 1.1;
 }
 
 .statLabel {
-  font-size: 0.6875rem;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   font-weight: var(--font-weight-bold);
 }
 
@@ -190,8 +528,21 @@
 .infoCard {
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.cardHeaderTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  padding: var(--space-3) var(--space-4);
+  margin: 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+  background: var(--color-surface-muted);
 }
 
 .infoRow {
@@ -286,10 +637,11 @@
 .shortcutsCard {
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  box-shadow: var(--shadow-card);
 }
 
 .shortcutTitle {
@@ -298,7 +650,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
-  margin: 0 0 var(--space-1) 0;
+  margin: 0;
 }
 
 .shortcutLinks {
@@ -328,12 +680,28 @@
   background: var(--color-primary-soft);
 }
 
-/* ── Actions ── */
+/* ── Actions Card (Logout) ── */
+.actionsCard {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+  box-shadow: var(--shadow-card);
+}
+
+.actionsSub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
 .actions {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin-top: var(--space-2);
 }
 
 /* ── Role Privilege Card Panels ── */
@@ -419,12 +787,6 @@
   flex-shrink: 0;
 }
 
-.perkLock {
-  color: #dc2626;
-  font-weight: 800;
-  flex-shrink: 0;
-}
-
 .portalCtaBtn {
   display: inline-flex;
   align-items: center;
@@ -445,4 +807,3 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(179, 27, 40, 0.35);
 }
-

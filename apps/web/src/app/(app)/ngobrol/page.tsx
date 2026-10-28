@@ -7,39 +7,85 @@ import styles from "./ngobrol.module.css";
 
 type Tab = "tanya" | "suara";
 
-export default function Page() {
+export default function NgobrolPage() {
   const [tab, setTab] = useState<Tab>("tanya");
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.tabs} role="tablist" aria-label="Mode ngobrol">
-        <button
-          role="tab"
-          aria-selected={tab === "tanya"}
-          className={`${styles.tab} ${tab === "tanya" ? styles.tabActive : ""}`}
-          onClick={() => setTab("tanya")}
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M4 5h16v11H10l-4 4V5z"/>
-          </svg>
-          Tanya AI
-        </button>
-        <button
-          role="tab"
-          aria-selected={tab === "suara"}
-          className={`${styles.tab} ${tab === "suara" ? styles.tabActive : ""}`}
-          onClick={() => setTab("suara")}
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-            <path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3zm7 9a1 1 0 0 1 1 1 8 8 0 0 1-7 7.93V21h2a1 1 0 0 1 0 2H9a1 1 0 0 1 0-2h2v-2.07A8 8 0 0 1 4 11a1 1 0 0 1 2 0 6 6 0 0 0 12 0 1 1 0 0 1 1-1z"/>
-          </svg>
-          Suara
-        </button>
-      </div>
+      {/* Top Header Terpadu */}
+      <header className={styles.topHeader}>
+        <div className={styles.headerLeft}>
+          <div className={styles.avatarMini}>
+            <img
+              src="/images/neko-idle.png"
+              alt="Neko-sensei"
+              className={styles.avatarImg}
+              draggable={false}
+            />
+            <span className={styles.onlineDot} title="Neko-sensei Siap Membantu" />
+          </div>
+          <div className={styles.senseiMeta}>
+            <div className={styles.titleRow}>
+              <h1 className={styles.senseiName}>Neko-sensei</h1>
+              <span className={styles.senseiBadge}>{tab === "suara" ? "3D Suara" : "AI Tutor"}</span>
+            </div>
+            <p className={styles.senseiStatus}>
+              {tab === "suara" ? "Bicara langsung dengan suara" : "Tanya tata bahasa & kanji"}
+            </p>
+          </div>
+        </div>
 
-      <div className={styles.content}>
-        {tab === "tanya" && <AskScreen />}
-        {tab === "suara" && <VoiceChatScreen />}
+        {/* Capsule Segmented Switcher */}
+        <div className={styles.segmentedControl} role="tablist" aria-label="Mode ngobrol">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "tanya"}
+            className={`${styles.segmentBtn} ${tab === "tanya" ? styles.segmentActive : ""}`}
+            onClick={() => setTab("tanya")}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>Tanya AI</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "suara"}
+            className={`${styles.segmentBtn} ${tab === "suara" ? styles.segmentActive : ""}`}
+            onClick={() => setTab("suara")}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="23" />
+              <line x1="8" y1="23" x2="16" y2="23" />
+            </svg>
+            <span>Suara</span>
+            <span className={styles.liveIndicator} />
+          </button>
+        </div>
+      </header>
+
+      {/* Konten Tab - Kedua tab tetap aktif di memori agar perpindahan mulus tanpa reset WebGL/percakapan */}
+      <div className={styles.contentArea}>
+        <div
+          className={styles.tabPanel}
+          style={{ display: tab === "tanya" ? "flex" : "none" }}
+          role="tabpanel"
+          aria-hidden={tab !== "tanya"}
+        >
+          <AskScreen hideHeader />
+        </div>
+        <div
+          className={styles.tabPanel}
+          style={{ display: tab === "suara" ? "flex" : "none" }}
+          role="tabpanel"
+          aria-hidden={tab !== "suara"}
+        >
+          <VoiceChatScreen hideHeader isActiveTab={tab === "suara"} />
+        </div>
       </div>
     </div>
   );

@@ -16,7 +16,11 @@ const CATEGORIZED_QUESTIONS = [
   "Contoh kalimat memesan makanan di resto",
 ];
 
-export function AskScreen() {
+export interface AskScreenProps {
+  hideHeader?: boolean;
+}
+
+export function AskScreen({ hideHeader = false }: AskScreenProps = {}) {
   const { messages, loading, error, ask, clear } = useAsk();
   const [draft, setDraft] = useState("");
   const listRef = useRef<HTMLUListElement>(null);
@@ -41,30 +45,45 @@ export function AskScreen() {
 
   return (
     <section className={styles.page}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.avatarContainer}>
-          <img
-            src="/images/neko-idle.png"
-            alt="Neko-sensei"
-            className={styles.headerAvatarImg}
-            draggable={false}
-          />
-          <span className={styles.onlineBadge} title="Neko-sensei Siap Membantu" />
-        </div>
-        <div className={styles.headerInfo}>
-          <div className={styles.headerNameRow}>
-            <h1 className={styles.headerName}>Neko-sensei</h1>
-            <span className={styles.headerBadge}>Sensei AI</span>
+      {/* Header (ditampilkan jika bukan bagian dari halaman gabungan) */}
+      {!hideHeader && (
+        <header className={styles.header}>
+          <div className={styles.avatarContainer}>
+            <img
+              src="/images/neko-idle.png"
+              alt="Neko-sensei"
+              className={styles.headerAvatarImg}
+              draggable={false}
+            />
+            <span className={styles.onlineBadge} title="Neko-sensei Siap Membantu" />
           </div>
-          <p className={styles.headerDesc}>Tanya apa saja tentang bahasa & budaya Jepang</p>
-        </div>
-        {messages.length > 0 && (
-          <Button variant="ghost" className={styles.clearBtn} onClick={clear} aria-label="Hapus percakapan">
+          <div className={styles.headerInfo}>
+            <div className={styles.headerNameRow}>
+              <h1 className={styles.headerName}>Neko-sensei</h1>
+              <span className={styles.headerBadge}>Sensei AI</span>
+            </div>
+            <p className={styles.headerDesc}>Tanya apa saja tentang bahasa & budaya Jepang</p>
+          </div>
+          {messages.length > 0 && (
+            <Button variant="ghost" className={styles.clearBtn} onClick={clear} aria-label="Hapus percakapan">
+              Hapus Chat
+            </Button>
+          )}
+        </header>
+      )}
+
+      {/* Inline Toolbar jika header disembunyikan */}
+      {hideHeader && messages.length > 0 && (
+        <div className={styles.inlineHeaderToolbar}>
+          <span className={styles.inlineToolbarCount}>{messages.length} pesan percakapan</span>
+          <button type="button" className={styles.inlineClearBtn} onClick={clear} aria-label="Hapus percakapan">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
             Hapus Chat
-          </Button>
-        )}
-      </header>
+          </button>
+        </div>
+      )}
 
       {/* Daftar pesan */}
       <ul

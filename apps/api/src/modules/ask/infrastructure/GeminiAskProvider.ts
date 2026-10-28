@@ -1,5 +1,5 @@
 import type { AskProvider } from "./MockAskProvider";
-import { voiceSystemPrompt } from "./voicePrompt";
+import { voiceSystemPrompt, type AskUser } from "./voicePrompt";
 
 const SYSTEM_PROMPT_TEXT = `Kamu adalah Neko-sensei, maskot kucing asisten belajar bahasa Jepang dalam aplikasi NihonGo. Kepribadianmu: ramah, ceria, sabar, dan suka memberi semangat.
 
@@ -39,8 +39,9 @@ export class GeminiAskProvider implements AskProvider {
     question: string,
     history: { role: "user" | "assistant"; content: string }[],
     mode: "text" | "voice" = "text",
+    user?: AskUser,
   ): Promise<string> {
-    const systemPrompt = mode === "voice" ? voiceSystemPrompt(question) : SYSTEM_PROMPT_TEXT;
+    const systemPrompt = mode === "voice" ? voiceSystemPrompt(question, user) : SYSTEM_PROMPT_TEXT;
     const maxTokens = mode === "voice" ? 400 : 2048;
 
     const contents: GeminiContent[] = history.map((m) => ({

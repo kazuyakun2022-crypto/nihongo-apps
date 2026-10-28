@@ -4,6 +4,11 @@ import { asyncHandler } from "../../../shared/http/asyncHandler";
 import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
+import { EXERCISE_TYPES, isAnswerCorrect, type ExerciseType } from "../../learning/domain/Exercise";
+import { stringList, toChapterExercise } from "../../learning/infrastructure/PrismaLearningRepository";
+
+const asExerciseType = (type: string): ExerciseType =>
+  (EXERCISE_TYPES as readonly string[]).includes(type) ? (type as ExerciseType) : "pilihan_ganda";
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -150,10 +155,10 @@ export function examLevelUpRoutes() {
     // Try exam_questions bank first
     const examQs = await prisma.examQuestion.findMany({
       where: { levelId, status: "published" },
-      select: { id: true, section: true, question: true, options: true, difficulty: true },
+      select: { id: true, section: true, type: true, question: true, hint: true, options: true, correctAnswer: true, difficulty: true, audioUrl: true },
     });
 
-    type QuestionItem = { id: string; section: string; question: string; options: unknown; difficulty: number };
+    type QuestionItem = (typeof examQs)[number];
     let questions: QuestionItem[] = [];
 
     if (examQs.length >= config.questionCount) {
@@ -167,13 +172,18 @@ export function examLevelUpRoutes() {
       // Fallback: quiz_questions from chapters of this level
       const quizQs = await prisma.quizQuestion.findMany({
         where: { chapter: { levelId }, type: "pilihan_ganda" },
-        select: { id: true, question: true, options: true },
+        select: { id: true, type: true, question: true, hint: true, options: true, correctAnswer: true, audioUrl: true },
         take: config.questionCount * 3,
       });
       questions = shuffle(quizQs)
         .slice(0, config.questionCount)
-        .map(q => ({ id: q.id, section: "kosakata", question: q.question, options: q.options, difficulty: 1 }));
+        .map(q => ({ ...q, section: "kosakata" as const, difficulty: 1 }));
     }
+
+    // Kanji level ini, untuk mengenali tulisan tangan pada soal menulis
+    const kanji = questions.some(q => q.type === "menulis")
+      ? (await prisma.kanji.findMany({ where: { chapter: { levelId } }, select: { character: true } })).map(k => k.character)
+      : [];
 
     // Record attempt start
     const attempt = await prisma.examAttempt.create({
@@ -189,7 +199,12 @@ export function examLevelUpRoutes() {
 
     res.json({
       attemptId: attempt.id,
-      questions: shuffle(questions),
+      questions: shuffle(questions).map(q => ({
+        ...toChapterExercise({ ...q, type: asExerciseType(q.type) }),
+        section: q.section,
+        difficulty: q.difficulty,
+      })),
+      kanji,
       timeLimitMin: config.timeLimitMin,
     });
   }));
@@ -202,8 +217,10 @@ export function examLevelUpRoutes() {
         levelId: z.number().int().min(1).max(6),
         answers: z.array(z.object({
           questionId: z.string(),
-          answer: z.string().min(1),
+          answer: z.string().max(500),
           section: z.string().optional(),
+          /** Soal berbicara yang dilewati (tanpa mikrofon) tidak ikut dinilai. */
+          skipped: z.boolean().optional(),
         })).min(1).max(40),
       }),
       req.body,
@@ -222,19 +239,19 @@ export function examLevelUpRoutes() {
     const qIds = answers.map(a => a.questionId);
     const examQs = await prisma.examQuestion.findMany({
       where: { id: { in: qIds } },
-      select: { id: true, correctAnswer: true, section: true },
+      select: { id: true, type: true, options: true, correctAnswer: true, section: true },
     });
-    const correctMap = new Map<string, { correct: string; section: string }>();
-    for (const q of examQs) correctMap.set(q.id, { correct: q.correctAnswer, section: q.section });
+    const correctMap = new Map<string, { type: ExerciseType; options: unknown; correct: string; section: string }>();
+    for (const q of examQs) correctMap.set(q.id, { type: asExerciseType(q.type), options: q.options, correct: q.correctAnswer, section: q.section });
 
     // Fallback: quiz_questions for IDs not found above
     const missing = qIds.filter(id => !correctMap.has(id));
     if (missing.length) {
       const quizQs = await prisma.quizQuestion.findMany({
         where: { id: { in: missing } },
-        select: { id: true, correctAnswer: true },
+        select: { id: true, type: true, options: true, correctAnswer: true },
       });
-      for (const q of quizQs) correctMap.set(q.id, { correct: q.correctAnswer, section: "kosakata" });
+      for (const q of quizQs) correctMap.set(q.id, { type: q.type, options: q.options, correct: q.correctAnswer, section: "kosakata" });
     }
 
     // Grade
@@ -245,11 +262,15 @@ export function examLevelUpRoutes() {
       mendengar: { correct: 0, total: 0 },
     };
     let totalCorrect = 0;
+    let graded = 0;
 
     const answerRecords = answers.map(a => {
       const info = correctMap.get(a.questionId);
-      const isCorrect = info ? info.correct === a.answer : false;
+      const skipped = !!a.skipped && info?.type === "berbicara";
+      const isCorrect = !!info && !skipped && isAnswerCorrect({ type: info.type, correctAnswer: info.correct, options: stringList(info.options) }, a.answer);
       const section = a.section ?? info?.section ?? "kosakata";
+      if (skipped) return { attemptId, questionId: a.questionId, answer: a.answer, isCorrect };
+      graded++;
       if (sectionCounts[section]) {
         sectionCounts[section].total++;
         if (isCorrect) sectionCounts[section].correct++;
@@ -258,7 +279,7 @@ export function examLevelUpRoutes() {
       return { attemptId, questionId: a.questionId, answer: a.answer, isCorrect };
     });
 
-    const totalScore = Math.round((totalCorrect / Math.max(answers.length, 1)) * 100);
+    const totalScore = Math.round((totalCorrect / Math.max(graded, 1)) * 100);
     const sectionScores = Object.fromEntries(
       Object.entries(sectionCounts).map(([s, { correct, total }]) => [
         s,

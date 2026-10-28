@@ -5,10 +5,18 @@
  * - /api tidak pernah di-cache di sini agar data pribadi dan token aman.
  * Naikkan VERSION setiap mengubah file ini.
  */
-const VERSION = "v1";
+const VERSION = "v4";
 const STATIC_CACHE = `nihongo-static-${VERSION}`;
 const PAGE_CACHE = `nihongo-pages-${VERSION}`;
-const PRECACHE = ["/offline", "/manifest.webmanifest", "/icons/icon-192.png"];
+const PRECACHE = [
+  "/offline",
+  "/manifest.webmanifest",
+  "/icons/icon-192.png",
+  "/neko/base-idle.webp",
+  "/neko/eyes-idle.png",
+  "/neko/mouth-atlas.webp",
+  "/neko/neko-idle.webp",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(STATIC_CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -18,7 +26,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => !k.endsWith(VERSION) && k !== "nihongo-private").map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
@@ -28,22 +36,39 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
 
-  if (url.origin === self.location.origin && url.pathname.startsWith("/api/")) return;
+  // Jangan sentuh API atau chunk internal Next.js agar hot-reload dan update selalu segar
+  if (url.origin === self.location.origin && (url.pathname.startsWith("/api/") || url.pathname.startsWith("/_next/"))) return;
 
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request)
-        .then((res) => {
+      (async () => {
+        try {
+          // Coba jaringan dengan batas waktu cepat (1.8 detik); jika lama, langsung pakai cache agar PWA terbuka instan
+          const networkPromise = fetch(request);
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("NetworkTimeout")), 1800),
+          );
+          const res = await Promise.race([networkPromise, timeoutPromise]);
           const copy = res.clone();
           caches.open(PAGE_CACHE).then((c) => c.put(request, copy));
           return res;
-        })
-        .catch(async () => (await caches.match(request)) || caches.match("/offline")),
+        } catch {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          const offline = await caches.match("/offline");
+          return offline || fetch(request);
+        }
+      })(),
     );
     return;
   }
 
-  const isStatic = url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/") || url.hostname.includes("fonts.g");
+  const isStatic =
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname.startsWith("/icons/") ||
+    url.pathname.startsWith("/neko/") ||
+    url.pathname.startsWith("/images/kamus/") ||
+    url.hostname.includes("fonts.g");
   if (isStatic) {
     event.respondWith(
       caches.match(request).then(

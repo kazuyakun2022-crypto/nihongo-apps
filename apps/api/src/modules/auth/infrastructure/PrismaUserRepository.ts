@@ -11,6 +11,8 @@ const select = {
   role: true,
   status: true,
   currentLevelId: true,
+  gender: true,
+  avatarUrl: true,
   dailyTargetMin: true,
   streakCount: true,
   xpTotal: true,

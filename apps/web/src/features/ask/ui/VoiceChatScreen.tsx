@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
+import { NekoAvatar, stillFor } from "@/shared/ui/neko/NekoAvatar";
+import { useAuth } from "@/features/auth/application/AuthProvider";
+import type { Gender } from "@/features/auth/domain/types";
 import { useVoiceChat, type VoiceState } from "../application/useVoiceChat";
 import { FormattedChatMessage } from "./FormattedChatMessage";
 import styles from "./voiceChat.module.css";
@@ -11,17 +14,41 @@ import styles from "./voiceChat.module.css";
 const STATUS: Record<VoiceState, string> = {
   idle:       "Tahan tombol untuk bicara",
   listening:  "Mendengarkan…",
-  processing: "Neko-sensei berpikir…",
-  speaking:   "Neko-sensei berbicara…",
+  processing: "Miu-chan berpikir…",
+  speaking:   "Miu-chan berbicara…",
 };
 
-/* ── Gambar avatar berubah sesuai state ── */
-const AVATAR_IMG: Record<VoiceState, string> = {
-  idle:       "/images/neko-idle.png",
-  listening:  "/images/neko-listening.png",
-  processing: "/images/neko-thinking.png",
-  speaking:   "/images/neko-speaking.png",
-};
+/** Panggilan kakak sesuai jenis kelamin yang didaftarkan. */
+function siblingCall(gender: Gender | null | undefined): string | null {
+  if (gender === "male") return "お兄ちゃん";
+  if (gender === "female") return "お姉ちゃん";
+  return null;
+}
+
+/* ── Sapaan pembuka, menyesuaikan waktu, nama, dan jenis kelamin akun ── */
+function buildGreeting(name: string | null, gender: Gender | null | undefined): string {
+  const hour = new Date().getHours();
+  const time = hour < 11 ? "pagi" : hour < 15 ? "siang" : hour < 18 ? "sore" : "malam";
+  const salam = hour < 11 ? "おはよう" : hour < 18 ? "こんにちは" : "こんばんは";
+  const call = siblingCall(gender);
+  const variants = name && call
+    ? [
+        `${salam}、${call}！ Seneng deh ${call} mampir lagi. Mau ngobrol apa hari ini?`,
+        `あ、${call}だ！ ${salam}！ Hari ini mau latihan bahasa Jepang atau cerita-cerita dulu?`,
+        `${call}、おかえり！ Aku udah nungguin dari tadi, hehe. Gimana kabarnya ${time} ini?`,
+      ]
+    : name
+    ? [
+        `Selamat ${time}, ${name}! Seneng deh kamu mampir lagi. Mau ngobrol apa hari ini?`,
+        `Eh, ${name} datang! Selamat ${time} ya. Hari ini mau latihan bahasa Jepang atau cerita-cerita dulu?`,
+        `Halo ${name}! Aku udah nungguin kamu dari tadi, hehe. Gimana kabarnya ${time} ini?`,
+      ]
+    : [
+        `Selamat ${time}! Aku Miu-chan. Tahan tombolnya terus ngomong aja, aku dengerin kok.`,
+        `Halo halo! Aku Miu-chan, teman ngobrol bahasa Jepangmu. Mau mulai dari mana nih?`,
+      ];
+  return variants[Math.floor(Math.random() * variants.length)];
+}
 
 /* ── Icon mic ── */
 function MicIcon() {
@@ -32,11 +59,56 @@ function MicIcon() {
   );
 }
 
-export function VoiceChatScreen() {
-  const { state, messages, transcript, error, isSupported, startListening, stopListening, clear } = useVoiceChat();
+export interface VoiceChatScreenProps {
+  hideHeader?: boolean;
+  isActiveTab?: boolean;
+}
+
+export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: VoiceChatScreenProps = {}) {
+  const {
+    state,
+    emotion,
+    getMicLevel,
+    getVoiceLevel,
+    messages,
+    transcript,
+    error,
+    isSupported,
+    startListening,
+    stopListening,
+    greet,
+    stop,
+    clear,
+  } = useVoiceChat();
+  const { status, user } = useAuth();
+  const hasGreeted = useRef(false);
   const [showTranscript, setShowTranscript] = useState(false);
   const transcriptListRef = useRef<HTMLDivElement>(null);
   const isHolding = useRef(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator && process.env.NODE_ENV !== "production") {
+      navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+      if ("caches" in window) {
+        caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
+      }
+    }
+  }, []);
+
+  // Hentikan suara jika tab suara tidak aktif (misal pengguna pindah ke tab Tanya AI)
+  useEffect(() => {
+    if (!isActiveTab) {
+      stop();
+    }
+  }, [isActiveTab, stop]);
+
+  // Sapa hanya saat tab suara aktif, setelah data akun siap, dan belum pernah menyapa
+  useEffect(() => {
+    if (!isActiveTab || hasGreeted.current || status === "loading" || !isSupported) return;
+    hasGreeted.current = true;
+    const name = user && !user.isGuest ? user.displayName.trim() || null : null;
+    void greet(buildGreeting(name, name ? user?.gender : null));
+  }, [isActiveTab, status, user, isSupported, greet]);
 
   useEffect(() => {
     if (transcriptListRef.current) {
@@ -47,16 +119,75 @@ export function VoiceChatScreen() {
   /* Hold-to-talk handlers */
   const handleHoldStart = (e: React.PointerEvent) => {
     if (state !== "idle" && state !== "speaking") return;
-    e.currentTarget.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
     isHolding.current = true;
     void startListening();
   };
 
-  const handleHoldEnd = () => {
+  const handleHoldEnd = (e?: React.PointerEvent) => {
+    if (e) {
+      try {
+        if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+        }
+      } catch {}
+    }
     if (!isHolding.current) return;
     isHolding.current = false;
     stopListening();
   };
+
+  /* Hold-to-talk via Spasi (laptop/desktop). Ref dipakai agar listener tidak perlu dipasang ulang tiap render. */
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const startRef = useRef(startListening);
+  startRef.current = startListening;
+  const stopRef = useRef(stopListening);
+  stopRef.current = stopListening;
+
+  useEffect(() => {
+    const isTypingTarget = (t: EventTarget | null) =>
+      t instanceof HTMLElement &&
+      (t.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName));
+
+    const release = () => {
+      if (!isHolding.current) return;
+      isHolding.current = false;
+      stopRef.current();
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== "Space" || isTypingTarget(e.target)) return;
+      // Cegah scroll halaman & aktivasi tombol yang sedang fokus
+      e.preventDefault();
+      if (e.repeat || isHolding.current) return;
+      const s = stateRef.current;
+      if (s !== "idle" && s !== "speaking") return;
+      isHolding.current = true;
+      void startRef.current();
+    };
+
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.code !== "Space" || isTypingTarget(e.target)) return;
+      e.preventDefault();
+      release();
+    };
+
+    // Jendela kehilangan fokus saat Spasi ditahan → keyup tidak akan datang
+    const onBlur = () => release();
+
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, []);
 
   const isActive = state === "listening";
   const isBusy = state === "processing";
@@ -72,46 +203,66 @@ export function VoiceChatScreen() {
 
   return (
     <section className={styles.page}>
-      {/* Top bar */}
-      <div className={styles.topBar}>
-        <span className={styles.topTitle}>Neko-sensei 🐱</span>
-        <div style={{ display: "flex", gap: "var(--space-2)" }}>
-          {messages.length > 0 && (
-            <button
-              className={styles.transcriptToggle}
-              onClick={() => setShowTranscript(true)}
-              aria-label="Lihat percakapan"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M4 5h16v11H10l-4 4V5z"/>
-              </svg>
-              Lihat teks
-            </button>
-          )}
-          {messages.length > 0 && (
-            <button className={styles.transcriptToggle} onClick={clear} aria-label="Hapus percakapan">
-              Hapus
-            </button>
-          )}
+      {/* Top bar info (ditampilkan jika bukan bagian dari halaman gabungan) */}
+      {!hideHeader && (
+        <div className={styles.topBar}>
+          <span className={styles.topTitle}>Miu-chan 🐱</span>
+          <div style={{ display: "flex", gap: "var(--space-2)" }}>
+            {messages.length > 0 && (
+              <button
+                className={styles.transcriptToggle}
+                onClick={() => setShowTranscript(true)}
+                aria-label="Lihat percakapan"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M4 5h16v11H10l-4 4V5z"/>
+                </svg>
+                Lihat teks
+              </button>
+            )}
+            {messages.length > 0 && (
+              <button className={styles.transcriptToggle} onClick={clear} aria-label="Hapus percakapan">
+                Hapus
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Maskot Neko-sensei (Tanpa frame/lingkaran background, full transparan) */}
+      {/* Floating actions saat header disembunyikan */}
+      {hideHeader && messages.length > 0 && (
+        <div className={styles.floatingTopActions}>
+          <button
+            type="button"
+            className={styles.floatingActionBtn}
+            onClick={() => setShowTranscript(true)}
+            aria-label="Lihat percakapan"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M4 5h16v11H10l-4 4V5z"/>
+            </svg>
+            <span>Teks ({messages.length})</span>
+          </button>
+          <button
+            type="button"
+            className={styles.floatingActionBtn}
+            onClick={clear}
+            aria-label="Hapus percakapan"
+          >
+            Hapus
+          </button>
+        </div>
+      )}
+
+      {/* Maskot Miu-chan: satu animasi tanpa putus untuk semua status dan emosi */}
       <div className={styles.avatarArea}>
-        <div
-          className={[
-            styles.mascotContainer,
-            state === "idle" ? styles.mascotIdle : "",
-            isActive ? styles.mascotListening : "",
-            state === "processing" ? styles.mascotProcessing : "",
-            state === "speaking" ? styles.mascotSpeaking : "",
-          ].filter(Boolean).join(" ")}
-        >
-          <img
-            src={AVATAR_IMG[state]}
-            alt="Neko-sensei"
-            className={styles.mascotImg}
-            draggable={false}
+        <div className={styles.mascotContainer}>
+          <NekoAvatar
+            mode={state}
+            emotion={emotion}
+            micLevel={getMicLevel}
+            voiceLevel={getVoiceLevel}
+            label={STATUS[state]}
           />
         </div>
 
@@ -125,27 +276,36 @@ export function VoiceChatScreen() {
           {STATUS[state]}
         </p>
 
-        {/* Kalimat user yang tertangkap, tampil selagi Neko-sensei berpikir */}
-        {transcript && (
-          <p className={styles.liveTranscript} aria-live="polite">
-            "{transcript}"
-          </p>
-        )}
+        {/* Slot transkrip sementara berukuran tetap agar posisi maskot tidak berpindah */}
+        <div className={styles.transcriptSlot}>
+          {transcript && (
+            <p className={styles.liveTranscript} aria-live="polite">
+              "{transcript}"
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Error */}
-      {error && <Alert>{error}</Alert>}
+      {/* Floating Error Alert (tidak menggeser letak maskot dan tombol mic) */}
+      {error && (
+        <div className={styles.floatingAlert}>
+          <Alert tone="danger">{error}</Alert>
+        </div>
+      )}
 
       {/* Tombol hold-to-talk */}
       <div className={styles.holdArea}>
         <button
           className={`${styles.holdBtn} ${isActive ? styles.holdBtnActive : ""}`}
-          disabled={isBusy}
+          type="button"
           onPointerDown={handleHoldStart}
           onPointerUp={handleHoldEnd}
           onPointerCancel={handleHoldEnd}
           onPointerLeave={handleHoldEnd}
-          aria-label="Tahan untuk bicara"
+          onContextMenu={(e) => e.preventDefault()}
+          style={{ touchAction: "none", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" }}
+          disabled={state === "processing"}
+          aria-pressed={isActive}
         >
           <MicIcon />
         </button>
@@ -157,6 +317,9 @@ export function VoiceChatScreen() {
               : state === "speaking"
                 ? "Tahan untuk menyela"
                 : "Tahan untuk bicara, bahasa Indonesia atau Jepang"}
+        </p>
+        <p className={`${styles.keyHint} ${isActive || isBusy ? styles.keyHintHidden : ""}`}>
+          atau tahan <kbd className={styles.kbd}>Spasi</kbd>
         </p>
       </div>
 
@@ -173,7 +336,7 @@ export function VoiceChatScreen() {
             {messages.map((m) => (
               <div key={m.id} className={`${styles.msgRow} ${m.role === "user" ? styles.msgRowUser : ""}`}>
                 <div className={`${styles.msgAvatar} ${m.role === "user" ? styles.msgAvatarUser : ""}`}>
-                  {m.role === "ai" ? <img src="/images/neko-idle.png" alt="Neko" className={styles.transcriptMascotImg} /> : "Kamu"}
+                  {m.role === "ai" ? <img src={"/neko/" + stillFor(m.emotion ?? "biasa")} alt="Miu-chan" className={styles.transcriptMascotImg} /> : "Kamu"}
                 </div>
                 <div className={`${styles.msgBubble} ${m.role === "ai" ? styles.msgBubbleAi : styles.msgBubbleUser}`}>
                   <FormattedChatMessage content={m.text} isAi={m.role === "ai"} />

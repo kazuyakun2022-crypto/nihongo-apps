@@ -2,13 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest } from "@/core/http/apiClient";
+import { AudioMeter } from "@/shared/lib/audioMeter";
+import { EMOTIONS, type NekoEmotion } from "@/shared/ui/neko/nekoRig";
 
 export type VoiceState = "idle" | "listening" | "processing" | "speaking";
+export type VoiceEmotion = NekoEmotion;
 
 export interface VoiceMessage {
   id: string;
   role: "user" | "ai";
   text: string;
+  emotion?: VoiceEmotion;
 }
 
 type HistoryItem = { role: "user" | "assistant"; content: string };
@@ -35,12 +39,13 @@ async function transcribe(audio: Blob): Promise<string> {
   return data.text?.trim() ?? "";
 }
 
-async function fetchAnswer(question: string, history: HistoryItem[]): Promise<string> {
-  const res = await apiRequest<{ answer: string }>("/ask", {
+async function fetchAnswer(question: string, history: HistoryItem[]): Promise<{ answer: string; emotion: VoiceEmotion }> {
+  const res = await apiRequest<{ answer: string; emotion?: string }>("/ask", {
     method: "POST",
     body: { question, history, mode: "voice" },
   });
-  return res.answer;
+  const emotion = EMOTIONS.find((e) => e === res.emotion) ?? "biasa";
+  return { answer: res.answer, emotion };
 }
 
 // Suara cadangan (MP3, dipakai saat kuota Gemini habis) diputar lebih cepat tanpa menjaga pitch,
@@ -53,7 +58,7 @@ async function fetchVoice(text: string): Promise<{ url: string; isFallback: bool
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ text }),
   });
-  if (!res.ok) throw new Error("Suara Neko-sensei gagal dibuat.");
+  if (!res.ok) throw new Error("Suara Miu-chan gagal dibuat.");
   const blob = await res.blob();
   return { url: URL.createObjectURL(blob), isFallback: blob.type === "audio/mpeg" };
 }
@@ -74,12 +79,16 @@ export function useVoiceChat() {
   const [transcript, setTranscript] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
+  const [emotion, setEmotion] = useState<VoiceEmotion>("biasa");
 
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const stopRequestedRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const historyRef = useRef<HistoryItem[]>([]);
+  const meterRef = useRef<AudioMeter | null>(null);
+  // Naik setiap user mulai bicara/berhenti, supaya sapaan yang telat datang tidak menimpa giliran user
+  const turnRef = useRef(0);
 
   useEffect(() => {
     setIsSupported(isRecordingSupported());
@@ -87,6 +96,8 @@ export function useVoiceChat() {
       audioRef.current?.pause();
       if (recorderRef.current?.state === "recording") recorderRef.current.stop();
       streamRef.current?.getTracks().forEach((t) => t.stop());
+      meterRef.current?.dispose();
+      meterRef.current = null;
     };
   }, []);
 
@@ -95,7 +106,42 @@ export function useVoiceChat() {
       audioRef.current.pause();
       audioRef.current = null;
     }
+    meterRef.current?.detachVoice();
   }, []);
+
+  // Dibaca setiap frame oleh animasi Neko-sensei
+  const getMicLevel = useCallback(() => meterRef.current?.micLevel() ?? 0, []);
+  const getVoiceLevel = useCallback(() => meterRef.current?.voiceLevel() ?? 0, []);
+
+  const playVoice = useCallback(async (audioUrl: string, isFallback: boolean) => {
+    const audio = makeAudio(audioUrl, isFallback);
+    audioRef.current = audio;
+    (meterRef.current ??= new AudioMeter()).attachVoice(audio);
+    audio.onended = () => {
+      URL.revokeObjectURL(audioUrl);
+      if (audioRef.current === audio) setState("idle");
+    };
+    audio.onerror = () => setState("idle");
+    setState("speaking");
+    await audio.play();
+  }, []);
+
+  /** Sapaan pembuka. Teks tetap tampil walau browser memblokir autoplay suara. */
+  const greet = useCallback(async (text: string) => {
+    const turn = turnRef.current;
+    setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text, emotion: "senang" }]);
+    setEmotion("senang");
+    try {
+      const { url, isFallback } = await fetchVoice(text);
+      if (turnRef.current !== turn) {
+        URL.revokeObjectURL(url);
+        return;
+      }
+      await playVoice(url, isFallback);
+    } catch {
+      if (turnRef.current === turn) setState("idle");
+    }
+  }, [playVoice]);
 
   const processQuestion = useCallback(async (question: string) => {
     setState("processing");
@@ -103,38 +149,32 @@ export function useVoiceChat() {
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", text: question }]);
 
     try {
-      const answer = await fetchAnswer(question, historyRef.current);
+      const { answer, emotion: mood } = await fetchAnswer(question, historyRef.current);
       historyRef.current = [
         ...historyRef.current,
         { role: "user" as const, content: question },
-        { role: "assistant" as const, content: answer },
+        // Tanda emosi ikut disimpan supaya AI konsisten memakai formatnya
+        { role: "assistant" as const, content: `[${mood}] ${answer}` },
       ].slice(-10);
-      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text: answer }]);
+      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text: answer, emotion: mood }]);
 
       const { url: audioUrl, isFallback } = await fetchVoice(answer);
-      const audio = makeAudio(audioUrl, isFallback);
-      audioRef.current = audio;
-      audio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-        if (audioRef.current === audio) setState("idle");
-      };
-      audio.onerror = () => setState("idle");
+      setEmotion(mood);
       setTranscript("");
-      setState("speaking");
-      await audio.play();
+      await playVoice(audioUrl, isFallback);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal mendapat jawaban.");
       setTranscript("");
       setState("idle");
     }
-  }, []);
+  }, [playVoice]);
 
   const handleRecording = useCallback(async (audio: Blob) => {
     setState("processing");
     try {
       const text = await transcribe(audio);
       if (!text) {
-        setError("Neko-sensei tidak menangkap suaramu, coba bicara lagi ya.");
+        setError("Miu-chan tidak menangkap suaramu, coba bicara lagi ya.");
         setState("idle");
         return;
       }
@@ -151,7 +191,9 @@ export function useVoiceChat() {
       return;
     }
     setError(null);
+    turnRef.current++;
     stopAudio();
+    (meterRef.current ??= new AudioMeter()).resume();
     stopRequestedRef.current = false;
     setState("listening");
 
@@ -164,6 +206,8 @@ export function useVoiceChat() {
       setState("idle");
       return;
     }
+
+    (meterRef.current ??= new AudioMeter()).attachMic(streamRef.current);
 
     const mimeType = pickMimeType();
     const recorder = new MediaRecorder(streamRef.current, mimeType ? { mimeType } : undefined);
@@ -199,6 +243,7 @@ export function useVoiceChat() {
       recorder.onstop = null;
       recorder.stop();
     }
+    turnRef.current++;
     stopAudio();
     setState("idle");
     setTranscript("");
@@ -208,17 +253,22 @@ export function useVoiceChat() {
     stop();
     setMessages([]);
     setError(null);
+    setEmotion("biasa");
     historyRef.current = [];
   }, [stop]);
 
   return {
     state,
+    emotion,
+    getMicLevel,
+    getVoiceLevel,
     messages,
     transcript,
     error,
     isSupported,
     startListening,
     stopListening,
+    greet,
     stop,
     clear,
   };

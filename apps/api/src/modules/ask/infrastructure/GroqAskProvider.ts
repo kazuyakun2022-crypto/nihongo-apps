@@ -1,5 +1,5 @@
 import type { AskProvider } from "./MockAskProvider";
-import { voiceSystemPrompt } from "./voicePrompt";
+import { voiceSystemPrompt, type AskUser } from "./voicePrompt";
 
 const SYSTEM_PROMPT_TEXT = `Kamu adalah Neko-sensei, maskot kucing asisten belajar bahasa Jepang dalam aplikasi NihonGo. Kepribadianmu: ramah, ceria, sabar, dan suka memberi semangat.
 
@@ -42,9 +42,10 @@ export class GroqAskProvider implements AskProvider {
     question: string,
     history: { role: "user" | "assistant"; content: string }[],
     mode: "text" | "voice" = "text",
+    user?: AskUser,
   ): Promise<string> {
     const voice = mode === "voice";
-    const systemPrompt = voice ? voiceSystemPrompt(question) : SYSTEM_PROMPT_TEXT;
+    const systemPrompt = voice ? voiceSystemPrompt(question, user) : SYSTEM_PROMPT_TEXT;
 
     const messages: GroqMessage[] = [
       { role: "system", content: systemPrompt },
@@ -73,7 +74,7 @@ export class GroqAskProvider implements AskProvider {
     } catch (err) {
       if (this.fallbackProvider) {
         console.warn("[GroqAskProvider] Groq gagal atau kena batas kuota, beralih ke penyedia cadangan:", (err as Error).message);
-        return this.fallbackProvider.answer(question, history, mode);
+        return this.fallbackProvider.answer(question, history, mode, user);
       }
       throw err;
     }

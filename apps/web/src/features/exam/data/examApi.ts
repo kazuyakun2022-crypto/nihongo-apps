@@ -1,4 +1,5 @@
 import { api, apiRequest } from "@/core/http/apiClient";
+import type { ChapterQuizQuestion } from "@/features/learning/domain/types";
 import type { PlacementAnswer, PlacementQuestionsResponse, PlacementResult } from "../domain/types";
 
 export interface ReadinessResponse {
@@ -18,22 +19,22 @@ export interface LevelUpStatus {
   config: { passScore: number; sectionMinScore: number; timeLimitMin: number; questionCount: number };
 }
 
-export interface LevelUpQuestion {
-  id: string;
+/** Soal ujian berbentuk sama dengan latihan bab (pilihan ganda, susun, menulis, berbicara, ...). */
+export interface LevelUpQuestion extends ChapterQuizQuestion {
   section: string;
-  question: string;
-  options: string[];
 }
 
 export interface LevelUpQuestionsResponse {
   attemptId: string;
   questions: LevelUpQuestion[];
+  /** Kanji level ini, untuk mengenali tulisan tangan pada soal menulis. */
+  kanji: string[];
   timeLimitMin: number;
 }
 
 export interface SubmitLevelUpBody {
   attemptId: string;
-  answers: { questionId: string; answer: string; section?: string }[];
+  answers: { questionId: string; answer: string; section?: string; skipped?: boolean }[];
   levelId: number;
 }
 

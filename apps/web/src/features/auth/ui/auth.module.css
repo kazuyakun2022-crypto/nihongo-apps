@@ -404,3 +404,75 @@
     animation: none !important;
   }
 }
+
+/* ── Pilihan jenis kelamin (menentukan panggilan お兄ちゃん / お姉ちゃん) ── */
+.genderField {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.genderLegend {
+  padding: 0;
+  margin-bottom: var(--space-1);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.genderOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.genderOption {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-height: 3.125rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: border-color var(--motion-fast), background var(--motion-fast);
+}
+
+.genderOption input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.genderOption:has(input:focus-visible) {
+  outline: 2px solid var(--color-focus, var(--color-primary));
+  outline-offset: 2px;
+}
+
+.genderOption[data-active="true"] {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.genderCall {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.genderHint,
+.genderError {
+  margin: 0;
+  font-size: var(--font-size-xs);
+}
+
+.genderHint { color: var(--color-text-muted); }
+.genderError { color: var(--color-danger); }

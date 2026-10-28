@@ -29,6 +29,21 @@ export function requireAuth(verifier: AccessTokenVerifier) {
   };
 }
 
+/** Seperti requireAuth, tapi request tanpa token atau dengan token tidak valid tetap diteruskan sebagai tamu. */
+export function optionalAuth(verifier: AccessTokenVerifier) {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    const header = req.header("authorization");
+    if (header?.startsWith("Bearer ")) {
+      try {
+        req.user = verifier.verify(header.slice("Bearer ".length));
+      } catch {
+        // abaikan, lanjut sebagai tamu
+      }
+    }
+    next();
+  };
+}
+
 /** Pengecekan role di setiap endpoint, bukan hanya di tampilan (dokumen 10.6). */
 export function requireRole(...roles: Role[]) {
   return (req: Request, _res: Response, next: NextFunction) => {

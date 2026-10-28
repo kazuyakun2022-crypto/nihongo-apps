@@ -24,6 +24,7 @@ export function useChapterLesson(chapterId: string) {
   const [quizQuestions, setQuizQuestions] = useState<ChapterQuizQuestion[]>([]);
   const [quizIndex, setQuizIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<string, string>>(new Map());
+  const [skipped, setSkipped] = useState<Set<string>>(new Set());
   const [result, setResult] = useState<QuizResult | null>(null);
 
   useEffect(() => {
@@ -66,11 +67,30 @@ export function useChapterLesson(chapterId: string) {
   function startQuiz() {
     setQuizIndex(0);
     setAnswers(new Map());
+    setSkipped(new Set());
     setPhase("quiz");
   }
 
+  /** Jawaban kosong menghapus jawaban (mis. semua kepingan dikembalikan). */
   function selectAnswer(questionId: string, answer: string) {
-    setAnswers((prev) => new Map(prev).set(questionId, answer));
+    setAnswers((prev) => {
+      const next = new Map(prev);
+      if (answer) next.set(questionId, answer);
+      else next.delete(questionId);
+      return next;
+    });
+    setSkipped((prev) => {
+      if (!prev.has(questionId)) return prev;
+      const next = new Set(prev);
+      next.delete(questionId);
+      return next;
+    });
+  }
+
+  /** Hanya untuk soal berbicara saat mikrofon tidak bisa dipakai; soal ini tidak ikut dinilai. */
+  function skipQuestion(questionId: string) {
+    setSkipped((prev) => new Set(prev).add(questionId));
+    setQuizIndex((i) => Math.min(i + 1, quizQuestions.length - 1));
   }
 
   function nextQuiz() {
@@ -85,6 +105,7 @@ export function useChapterLesson(chapterId: string) {
     const payload: QuizAnswer[] = quizQuestions.map((q) => ({
       questionId: q.id,
       answer: answers.get(q.id) ?? "",
+      ...(skipped.has(q.id) ? { skipped: true } : {}),
     }));
     setPhase("submitting");
     try {
@@ -100,6 +121,7 @@ export function useChapterLesson(chapterId: string) {
   function retryQuiz() {
     setQuizIndex(0);
     setAnswers(new Map());
+    setSkipped(new Set());
     setResult(null);
     setPhase("quiz-intro");
   }
@@ -107,7 +129,8 @@ export function useChapterLesson(chapterId: string) {
   const currentStudyCard = studyCards[studyIndex] ?? null;
   const currentQuestion = quizQuestions[quizIndex] ?? null;
   const currentAnswer = currentQuestion ? (answers.get(currentQuestion.id) ?? null) : null;
-  const allAnswered = quizQuestions.length > 0 && quizQuestions.every((q) => answers.has(q.id));
+  const currentSkipped = currentQuestion ? skipped.has(currentQuestion.id) : false;
+  const allAnswered = quizQuestions.length > 0 && quizQuestions.every((q) => answers.has(q.id) || skipped.has(q.id));
   const isLastStudy = studyIndex === studyCards.length - 1;
   const isLastQuiz = quizIndex === quizQuestions.length - 1;
 
@@ -124,6 +147,7 @@ export function useChapterLesson(chapterId: string) {
     answers,
     currentQuestion,
     currentAnswer,
+    currentSkipped,
     allAnswered,
     isLastQuiz,
     result,
@@ -131,6 +155,7 @@ export function useChapterLesson(chapterId: string) {
     prevStudy,
     startQuiz,
     selectAnswer,
+    skipQuestion,
     nextQuiz,
     prevQuiz,
     submitQuiz,

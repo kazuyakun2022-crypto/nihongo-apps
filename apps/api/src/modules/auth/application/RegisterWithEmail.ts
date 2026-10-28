@@ -1,6 +1,6 @@
 import { Errors } from "../../../shared/domain/errors";
 import type { Clock } from "../../../shared/domain/types";
-import { AuthPolicy } from "../domain/User";
+import { AuthPolicy, type Gender } from "../domain/User";
 import type { DeviceInfo, PasswordHasher, UserRepository } from "../domain/ports";
 import type { AuthResult, SessionIssuer } from "./SessionIssuer";
 import type { SendEmailVerification } from "./SendEmailVerification";
@@ -9,6 +9,8 @@ export interface RegisterInput {
   displayName: string;
   email: string;
   password: string;
+  /** Menentukan panggilan Miu-chan di obrolan suara: お兄ちゃん / お姉ちゃん. */
+  gender?: Gender;
   /** Jika diisi, akun Tamu ini diubah menjadi akun Pelajar (dokumen 10.5). */
   guestUserId?: string;
   device: DeviceInfo;
@@ -44,6 +46,7 @@ export class RegisterWithEmail {
             email,
             passwordHash,
             displayName: input.displayName,
+            gender: input.gender ?? null,
             isGuest: false,
             role: "student",
           })
@@ -51,6 +54,7 @@ export class RegisterWithEmail {
             email,
             passwordHash,
             displayName: input.displayName,
+            gender: input.gender ?? null,
             isGuest: false,
             role: "student",
           });

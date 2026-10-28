@@ -1,51 +1,189 @@
 .wrapper {
-  display: grid;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
   height: 100%;
   max-height: 100%;
   width: 100%;
   overflow: hidden;
   overscroll-behavior: none;
+  background: var(--color-bg, #f8fafc);
+  animation: fadeIn 0.25s var(--ease-entrance) both;
 }
 
-/* ── Tab bar ── */
-.tabs {
-  display: flex;
-  border-bottom: var(--border-width) solid var(--color-border);
-  background: var(--color-surface);
-  padding: 0 var(--space-5);
-  gap: var(--space-2);
-  flex-shrink: 0;
-  width: 100%;
-}
-
-.tab {
+/* ── Top Header Terpadu ── */
+.topHeader {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-muted);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: color var(--motion-fast), border-color var(--motion-fast);
-  margin-bottom: -1px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  z-index: 20;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.tab:hover {
-  color: var(--color-text);
+@media (min-width: 900px) {
+  .topHeader {
+    padding: 12px 32px;
+  }
 }
 
-.tabActive {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
-/* ── Konten ── */
-.content {
+.avatarMini {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.12));
+}
+
+.onlineDot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.senseiMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.senseiName {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--color-text, #0f172a);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.senseiBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  letter-spacing: 0.02em;
+}
+
+.senseiStatus {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #64748b);
+  margin: 2px 0 0;
+  white-space: nowrap;
   overflow: hidden;
-  display: grid;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+@media (min-width: 600px) {
+  .senseiStatus {
+    max-width: 320px;
+  }
+}
+
+/* ── Capsule Segmented Switcher ── */
+.segmentedControl {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.segmentBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.segmentBtn:hover:not(.segmentActive) {
+  color: #0f172a;
+}
+
+.segmentActive {
+  background: #ffffff;
+  color: var(--color-primary, #b31b28);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  transform: translateY(-0.5px);
+}
+
+.liveIndicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: livePulse 1.8s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes livePulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.6; }
+  50%      { transform: scale(1.35); opacity: 1; }
+}
+
+/* ── Area Konten ── */
+.contentArea {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tabPanel {
+  flex: 1;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  flex-direction: column;
 }

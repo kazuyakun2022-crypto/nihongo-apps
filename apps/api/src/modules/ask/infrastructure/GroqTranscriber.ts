@@ -31,17 +31,18 @@ export class GroqTranscriber {
    * Deteksi otomatis bahasa Indonesia atau Jepang: audio ditranskripsi dua kali secara paralel
    * dengan bahasa dipaksa id dan ja, lalu dipilih hasil yang paling yakin (avg_logprob tertinggi).
    * Deteksi bawaan Whisper sering salah untuk ucapan pendek beraksen.
+   * Latihan berbicara memaksa "ja" karena siswa memang diminta mengucapkan bahasa Jepang.
    */
-  async transcribe(audio: Buffer, mimeType: string): Promise<string> {
+  async transcribe(audio: Buffer, mimeType: string, language?: "ja"): Promise<string> {
     const baseType = mimeType.split(";")[0].trim().toLowerCase();
     const file = new Blob([new Uint8Array(audio)], { type: baseType });
     const fileName = `audio.${EXTENSIONS[baseType] ?? "webm"}`;
 
     const [id, ja] = await Promise.all([
-      this.request(file, fileName, "id"),
+      language ? null : this.request(file, fileName, "id"),
       this.request(file, fileName, "ja"),
     ]);
-    const best = id.score >= ja.score ? id : ja;
+    const best = id && id.score >= ja.score ? id : ja;
 
     const normalized = best.text.toLowerCase().replace(/[.!?。！？\s]+$/u, "");
     return HALLUCINATIONS.includes(normalized) ? "" : best.text;

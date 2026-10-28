@@ -9,7 +9,7 @@ export class ApiError extends Error {
 }
 
 let accessToken: string | null = null;
-let refreshing: Promise<boolean> | null = null;
+let refreshing: Promise<{ accessToken: string } | null> | null = null;
 const listeners = new Set<(token: string | null) => void>();
 
 export const tokenStore = {
@@ -26,7 +26,12 @@ export const tokenStore = {
   },
 };
 
-async function refreshAccessToken(): Promise<boolean> {
+/**
+ * Menukar refresh token (cookie) dengan access token baru. Server memutar refresh token setiap kali dipakai,
+ * jadi semua pemanggil (pemulihan sesi saat halaman dibuka dan retry setelah 401) harus berbagi satu
+ * permintaan; dua permintaan dengan cookie lama membuat yang kedua ditolak dan user ter-logout.
+ */
+export function refreshSession<T extends { accessToken: string }>(): Promise<T | null> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
   const base = getApiBase();
@@ -38,19 +43,23 @@ async function refreshAccessToken(): Promise<boolean> {
   })
     .then(async (res) => {
       clearTimeout(timeoutId);
-      if (!res.ok) return false;
-      const data = (await res.json()) as { accessToken: string };
+      if (!res.ok) return null;
+      const data = (await res.json()) as T;
       tokenStore.set(data.accessToken);
-      return true;
+      return data;
     })
     .catch(() => {
       clearTimeout(timeoutId);
-      return false;
+      return null;
     })
     .finally(() => {
       refreshing = null;
     });
-  return refreshing;
+  return refreshing as Promise<T | null>;
+}
+
+async function refreshAccessToken(): Promise<boolean> {
+  return (await refreshSession()) !== null;
 }
 
 function getApiBase(): string {
@@ -105,6 +114,8 @@ export async function apiRequest<T>(
 export const api = {
   get: <T>(path: string) => apiRequest<T>(path),
   post: <T>(path: string, body?: unknown) => apiRequest<T>(path, { method: "POST", body: body ?? {} }),
+  put: <T>(path: string, body?: unknown) => apiRequest<T>(path, { method: "PUT", body: body ?? {} }),
   patch: <T>(path: string, body?: unknown) => apiRequest<T>(path, { method: "PATCH", body: body ?? {} }),
+  delete: <T>(path: string, body?: unknown) => apiRequest<T>(path, { method: "DELETE", body }),
   refresh: refreshAccessToken,
 };

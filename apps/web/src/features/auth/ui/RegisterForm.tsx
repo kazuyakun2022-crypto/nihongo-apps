@@ -8,10 +8,16 @@ import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { TextField } from "@/shared/ui/TextField";
 import { useAuth } from "../application/AuthProvider";
+import type { Gender } from "../domain/types";
 import { AuthCard } from "./AuthCard";
 import styles from "./auth.module.css";
 
-type FieldErrors = Partial<Record<"displayName" | "email" | "password", string>>;
+type FieldErrors = Partial<Record<"displayName" | "email" | "password" | "gender", string>>;
+
+const GENDERS: { value: Gender; label: string; call: string }[] = [
+  { value: "male", label: "Laki-laki", call: "お兄ちゃん" },
+  { value: "female", label: "Perempuan", call: "お姉ちゃん" },
+];
 
 export function RegisterForm() {
   const { register, loginWithOAuth, user } = useAuth();
@@ -20,6 +26,7 @@ export function RegisterForm() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [gender, setGender] = useState<Gender | null>(null);
   const googleBtnRef = useRef<HTMLDivElement | null>(null);
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const fromGuest = user?.isGuest;
@@ -85,6 +92,10 @@ export function RegisterForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
+    if (!gender) {
+      setFieldErrors({ gender: "Pilih jenis kelamin dulu." });
+      return;
+    }
     setBusy(true);
     setError(null);
     setFieldErrors({});
@@ -93,6 +104,7 @@ export function RegisterForm() {
         displayName: String(form.get("displayName")),
         email: String(form.get("email")),
         password: String(form.get("password")),
+        gender,
       });
       router.replace(res.user.needsOnboarding ? "/mulai" : "/beranda");
     } catch (err) {
@@ -124,6 +136,33 @@ export function RegisterForm() {
           error={fieldErrors.displayName}
           required
         />
+
+        <fieldset className={styles.genderField} aria-describedby="gender-hint">
+          <legend className={styles.genderLegend}>Jenis Kelamin</legend>
+          <div className={styles.genderOptions}>
+            {GENDERS.map((g) => (
+              <label key={g.value} className={styles.genderOption} data-active={gender === g.value}>
+                <input
+                  type="radio"
+                  name="gender"
+                  value={g.value}
+                  checked={gender === g.value}
+                  onChange={() => {
+                    setGender(g.value);
+                    setFieldErrors((f) => ({ ...f, gender: undefined }));
+                  }}
+                />
+                <span>{g.label}</span>
+                <span className={styles.genderCall} lang="ja">{g.call}</span>
+              </label>
+            ))}
+          </div>
+          {fieldErrors.gender ? (
+            <p id="gender-hint" className={styles.genderError}>{fieldErrors.gender}</p>
+          ) : (
+            <p id="gender-hint" className={styles.genderHint}>Miu-chan akan memanggilmu お兄ちゃん atau お姉ちゃん.</p>
+          )}
+        </fieldset>
 
         <TextField
           label="Email"

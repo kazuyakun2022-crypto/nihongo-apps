@@ -1,18 +1,33 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
 import { useSpeech } from "@/shared/lib/useSpeech";
+import { EXERCISES, SKILLS, countBySkill } from "@/shared/lib/exercises";
 import { useChapterLesson } from "../application/useChapterLesson";
+import type { ChapterQuizQuestion } from "../domain/types";
+import { HandwritingExercise } from "./exercises/HandwritingExercise";
+import { SpeakingExercise } from "./exercises/SpeakingExercise";
+import { TileExercise } from "./exercises/TileExercise";
 import styles from "./chapter.module.css";
 
-const LABELS = ["A", "B", "C", "D", "E"];
+const LABELS = ["A", "B", "C", "D", "E", "F"];
+
+let quizAudio: HTMLAudioElement | null = null;
+/** Audio soal mendengar: URL file biasa, atau /api/tts?text=… untuk suara buatan. */
+function playAudio(url: string) {
+  quizAudio?.pause();
+  quizAudio = new Audio(url);
+  void quizAudio.play().catch(() => {});
+}
 
 export function ChapterLesson({ chapterId }: { chapterId: string }) {
   const lesson = useChapterLesson(chapterId);
   const { speak } = useSpeech();
+  const chapterKanji = useMemo(() => lesson.chapter?.kanji.map((k) => k.character) ?? [], [lesson.chapter]);
 
   // ── Loading ──
   if (lesson.phase === "loading") {
@@ -86,6 +101,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
               {card.data.exampleSentence && (
                 <p className={styles.cardExample} lang="ja">「{card.data.exampleSentence}」</p>
               )}
+              {card.data.exampleTranslation && <p className={styles.cardTranslation}>{card.data.exampleTranslation}</p>}
             </>
           )}
 
@@ -125,8 +141,11 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
               <p className={styles.cardPattern} lang="ja">{card.data.pattern}</p>
               <p className={styles.cardExplanation}>{card.data.explanation}</p>
               {card.data.exampleSentence && (
-                <p className={styles.cardExample} lang="ja">「{card.data.exampleSentence}」</p>
+                <button type="button" className={styles.exampleBtn} onClick={() => speak(card.data.exampleSentence ?? "")} aria-label="Putar contoh kalimat">
+                  <span lang="ja">「{card.data.exampleSentence}」</span> <span aria-hidden>🔊</span>
+                </button>
               )}
+              {card.data.exampleTranslation && <p className={styles.cardTranslation}>{card.data.exampleTranslation}</p>}
             </>
           )}
         </div>
@@ -156,15 +175,22 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
       <div className={styles.wrap}>
         <div className={styles.intro}>
           <Mascot mood="semangat" size={96} />
-          <h1 className={styles.introHeading}>Siap untuk kuis?</h1>
+          <h1 className={styles.introHeading}>Siap berlatih?</h1>
           {lesson.chapter && (
             <p className={styles.introChapter}>{lesson.chapter.title}</p>
           )}
           <p className={styles.muted}>
-            {lesson.quizQuestions.length} soal · Nilai lulus {lesson.result?.passingScore ?? 70}%
+            {lesson.quizQuestions.length} latihan · Nilai lulus {lesson.result?.passingScore ?? 70}%
           </p>
+          <ul className={styles.skillList} aria-label="Keterampilan yang dilatih">
+            {countBySkill(lesson.quizQuestions.map((q) => q.type)).map(({ skill, count }) => (
+              <li key={skill} className={styles.skillChip}>
+                <span aria-hidden>{SKILLS[skill].icon}</span> {SKILLS[skill].label} <strong>{count}</strong>
+              </li>
+            ))}
+          </ul>
         </div>
-        <Button block onClick={lesson.startQuiz}>Mulai Kuis</Button>
+        <Button block onClick={lesson.startQuiz}>Mulai Latihan</Button>
         {lesson.studyCards.length > 0 && (
           <Button block variant="secondary" onClick={() => lesson.prevStudy()}>
             ← Ulang materi
@@ -203,22 +229,56 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           ))}
         </div>
 
-        <div className={styles.quizCard}>
-          <p className={styles.question} lang="ja">{q.question}</p>
-          <div className={styles.options}>
-            {q.options.map((opt, i) => (
-              <button
-                key={opt}
-                className={styles.optionBtn}
-                aria-pressed={lesson.currentAnswer === opt}
-                onClick={() => lesson.selectAnswer(q.id, opt)}
-                disabled={lesson.phase === "submitting"}
-              >
-                <span className={styles.optionLabel}>{LABELS[i]}</span>
-                {opt}
-              </button>
-            ))}
-          </div>
+        <div className={styles.quizCard} key={q.id}>
+          <QuestionHeader q={q} />
+          {q.audioUrl && (
+            <button type="button" className={styles.audioBtn} onClick={() => playAudio(q.audioUrl ?? "")}>
+              <span aria-hidden>🔊</span> Putar audio
+            </button>
+          )}
+          {(q.type === "susun_huruf" || q.type === "susun_kalimat") && (
+            <TileExercise
+              tiles={q.options}
+              sentence={q.type === "susun_kalimat"}
+              answer={lesson.currentAnswer}
+              onAnswer={(a) => lesson.selectAnswer(q.id, a)}
+              disabled={lesson.phase === "submitting"}
+            />
+          )}
+          {q.type === "menulis" && (
+            <HandwritingExercise
+              slots={q.slots ?? 1}
+              script={q.script ?? "campuran"}
+              kanji={chapterKanji}
+              answer={lesson.currentAnswer}
+              onAnswer={(a) => lesson.selectAnswer(q.id, a)}
+            />
+          )}
+          {q.type === "berbicara" && (
+            <SpeakingExercise
+              text={q.speakText ?? ""}
+              answer={lesson.currentAnswer}
+              onAnswer={(a) => lesson.selectAnswer(q.id, a)}
+              onSkip={() => lesson.skipQuestion(q.id)}
+              skipped={lesson.currentSkipped}
+            />
+          )}
+          {(q.type === "pilihan_ganda" || q.type === "mendengar") && (
+            <div className={styles.options}>
+              {q.options.map((opt, i) => (
+                <button
+                  key={opt}
+                  className={styles.optionBtn}
+                  aria-pressed={lesson.currentAnswer === opt}
+                  onClick={() => lesson.selectAnswer(q.id, opt)}
+                  disabled={lesson.phase === "submitting"}
+                >
+                  <span className={styles.optionLabel}>{LABELS[i]}</span>
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className={styles.nav}>
@@ -232,7 +292,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
               {lesson.phase === "submitting" ? "Menilai…" : "Kumpulkan →"}
             </Button>
           ) : (
-            <Button block onClick={lesson.nextQuiz} disabled={!lesson.currentAnswer}>
+            <Button block onClick={lesson.nextQuiz} disabled={!lesson.currentAnswer && !lesson.currentSkipped}>
               Lanjut →
             </Button>
           )}
@@ -262,7 +322,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           </h1>
           <div className={styles.resultScore}>{score}%</div>
           <p className={styles.resultSub}>
-            {results.filter((r) => r.correct).length} dari {results.length} benar · Nilai lulus {passingScore}%
+            {results.filter((r) => r.correct).length} dari {results.filter((r) => !r.skipped).length} benar · Nilai lulus {passingScore}%
           </p>
           <span className={styles.xpBadge}>+{xpEarned} XP</span>
         </div>
@@ -272,15 +332,24 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
             const q = questionMap.get(r.questionId);
             if (!q) return null;
             return (
-              <div key={r.questionId} className={styles.reviewItem} data-correct={r.correct}>
-                <span className={styles.reviewIcon}>{r.correct ? "✓" : "✕"}</span>
+              <div key={r.questionId} className={styles.reviewItem} data-correct={r.correct || r.skipped}>
+                <span className={styles.reviewIcon}>{r.skipped ? "–" : r.correct ? "✓" : "✕"}</span>
                 <div>
-                  <p className={styles.reviewQ} lang="ja">{q.question}</p>
-                  {!r.correct && (
-                    <p className={styles.reviewAnswer}>
-                      Jawabanmu: <em>{answerMap.get(r.questionId) || "—"}</em> · Jawaban benar: <strong>{r.correctAnswer}</strong>
-                    </p>
+                  <p className={styles.reviewSkill}>
+                    {SKILLS[EXERCISES[q.type].skill].icon} {EXERCISES[q.type].label}
+                  </p>
+                  <p className={styles.reviewQ} lang="ja">{q.type === "berbicara" ? q.speakText : q.question}</p>
+                  {r.skipped ? (
+                    <p className={styles.reviewAnswer}>Dilewati, tidak ikut dinilai.</p>
+                  ) : (
+                    !r.correct && (
+                      <p className={styles.reviewAnswer}>
+                        {q.type === "berbicara" ? "Terdengar" : "Jawabanmu"}: <em lang="ja">{answerMap.get(r.questionId) || "—"}</em> · Jawaban benar:{" "}
+                        <strong lang="ja">{r.correctAnswer}</strong>
+                      </p>
+                    )
                   )}
+                  {r.explanation && <p className={styles.reviewExplanation}>{r.explanation}</p>}
                 </div>
               </div>
             );
@@ -292,7 +361,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
             <Button block>{passed ? "Lanjut ke bab berikutnya →" : "Kembali ke daftar bab"}</Button>
           </Link>
           {!passed && (
-            <Button block variant="secondary" onClick={lesson.retryQuiz}>Coba kuis lagi</Button>
+            <Button block variant="secondary" onClick={lesson.retryQuiz}>Coba latihan lagi</Button>
           )}
         </div>
       </div>
@@ -300,4 +369,29 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
   }
 
   return null;
+}
+
+/** Label keterampilan + perintah soal, supaya siswa tahu sedang melatih apa. Dipakai juga ujian naik level. */
+export function QuestionHeader({ q }: { q: ChapterQuizQuestion }) {
+  const meta = EXERCISES[q.type] ?? EXERCISES.pilihan_ganda;
+  const skill = SKILLS[meta.skill];
+  const instruction = q.type === "menulis" && q.script && q.script !== "campuran" ? `Tulis dengan ${q.script}` : meta.instruction;
+  return (
+    <>
+      <span className={styles.skillBadge}>
+        <span aria-hidden>{skill.icon}</span> {skill.label} · {meta.label}
+      </span>
+      <p className={styles.instruction}>{instruction}</p>
+      {q.type === "menulis" ? (
+        <p className={styles.romajiPrompt}>{q.question}</p>
+      ) : q.type === "berbicara" ? (
+        q.question && <p className={styles.muted}>{q.question}</p>
+      ) : (
+        <p className={styles.question} lang="ja">
+          {q.question}
+        </p>
+      )}
+      {q.hint && <p className={styles.hintText}>Arti / petunjuk: {q.hint}</p>}
+    </>
+  );
 }

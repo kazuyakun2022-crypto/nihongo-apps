@@ -1,5 +1,9 @@
+import { siblingCall, type AskUser } from "./voicePrompt";
+
+export type { AskUser };
+
 export interface AskProvider {
-  answer(question: string, history: { role: "user" | "assistant"; content: string }[], mode?: "text" | "voice"): Promise<string>;
+  answer(question: string, history: { role: "user" | "assistant"; content: string }[], mode?: "text" | "voice", user?: AskUser): Promise<string>;
 }
 
 const EXAMPLES: Record<string, string> = {
@@ -14,8 +18,9 @@ const EXAMPLES: Record<string, string> = {
  * Mengembalikan penjelasan berguna tentang bahasa Jepang.
  */
 export class MockAskProvider implements AskProvider {
-  async answer(question: string, _history: { role: string; content: string }[], _mode?: "text" | "voice"): Promise<string> {
+  async answer(question: string, _history: { role: string; content: string }[], mode?: "text" | "voice", user?: AskUser): Promise<string> {
     const q = question.toLowerCase();
+    if (mode === "voice") return mockVoiceAnswer(q, user);
     if (q.includes("hiragana")) return EXAMPLES.hiragana;
     if (q.includes("katakana")) return EXAMPLES.katakana;
     if (q.includes("kanji")) return EXAMPLES.kanji;
@@ -28,4 +33,24 @@ export class MockAskProvider implements AskProvider {
     }
     return `(Mode demo — belum ada API key)\n\nPertanyaanmu: "${question}"\n\nSaya bisa menjawab pertanyaan tentang:\n• Huruf hiragana, katakana, kanji\n• Partikel dan grammar\n• Kosakata sehari-hari\n• Salam dan ungkapan umum\n• Cara baca / pengucapan\n\nCoba tanyakan salah satunya! Untuk jawaban AI sungguhan, isi ANTHROPIC_API_KEY di .env.`;
   }
+}
+
+/** Jawaban suara tiruan dengan tanda emosi, supaya animasi Neko bisa dicoba tanpa API key. */
+function mockVoiceAnswer(q: string, user?: AskUser): string {
+  if (/nama (aku|saya|ku)|namaku siapa/.test(q)) {
+    const call = user ? siblingCall(user.gender) : null;
+    return user
+      ? `[senang] Ya ${user.name} dong${call ? `, ${call}` : ""}! Masa aku lupa sama teman ngobrolku sendiri, hehe.`
+      : "[bingung] Hmm, kamu masih masuk sebagai tamu, jadi aku belum tahu namamu. Kasih tahu dong!";
+  }
+  if (/(jelek|gendut|bodoh)/.test(q)) {
+    return "[marah] Enak aja ngomong begitu! Ini bulu, bukan lemak! Ya udah, kali ini aku maafin deh.";
+  }
+  if (/(mandi|penyedot|anjing|nyebelin)/.test(q)) {
+    return "[kesal] Hmph, terserah deh... tapi aku tetap mau bantu kok.";
+  }
+  if (/(sedih|gagal|capek|kangen|sakit|kecewa|nangis)/.test(q)) {
+    return "[sedih] Yaah, aku ikut sedih dengarnya. Sini cerita pelan-pelan, aku dengerin kok.";
+  }
+  return "[biasa] Hehe, aku dengar kok! Ini mode demo, jadi jawabanku masih tiruan ya.";
 }

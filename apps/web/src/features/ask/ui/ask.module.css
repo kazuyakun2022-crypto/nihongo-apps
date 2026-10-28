@@ -1,6 +1,6 @@
 .page {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+  display: flex;
+  flex-direction: column;
   height: 100%;
   max-height: 100%;
   width: 100%;
@@ -110,6 +110,8 @@
 
 /* ── Area pesan ── */
 .messages {
+  flex: 1 1 0%;
+  min-height: 0;
   list-style: none;
   margin: 0;
   padding: 16px 16px 8px;
@@ -233,12 +235,12 @@
   gap: 10px;
   align-items: flex-end;
   max-width: 90%;
-  animation: messageIn 0.22s var(--ease-spring) both;
+  animation: rowFadeIn 0.25s ease-out both;
 }
 
-@keyframes messageIn {
-  from { opacity: 0; transform: translateY(8px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes rowFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .userRow {
@@ -257,6 +259,26 @@
   flex-shrink: 0;
   margin-bottom: 4px;
   filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
+  transform-origin: center bottom;
+  animation: aiAvatarBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes aiAvatarBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) translateY(12px) rotate(-10deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.15) translateY(-3px) rotate(3deg);
+  }
+  85% {
+    transform: scale(0.95) translateY(1px) rotate(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
 }
 
 .bubbleWrap {
@@ -271,6 +293,12 @@
   align-items: center;
   gap: 6px;
   padding: 0 4px;
+  animation: headerFadeIn 0.3s ease-out both;
+}
+
+@keyframes headerFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .senderLabel {
@@ -309,6 +337,39 @@
   color: #ffffff;
   border-bottom-right-radius: 4px;
   box-shadow: 0 4px 14px rgba(179, 27, 40, 0.25);
+  transform-origin: bottom right;
+  animation: userBubblePop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
+             userBubbleGlow 0.6s ease-out both;
+}
+
+@keyframes userBubblePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(14px) rotate(1.5deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.035) translateY(-3px) rotate(-0.5deg);
+  }
+  85% {
+    transform: scale(0.985) translateY(1px) rotate(0.2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes userBubbleGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(179, 27, 40, 0.4), 0 4px 14px rgba(179, 27, 40, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(179, 27, 40, 0), 0 6px 20px rgba(179, 27, 40, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(179, 27, 40, 0), 0 4px 14px rgba(179, 27, 40, 0.25);
+  }
 }
 
 .userBubble :global(.formattedMessage_boldText__c759) {
@@ -321,6 +382,50 @@
   border-bottom-left-radius: 4px;
   color: var(--color-text, #0f172a);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transform-origin: bottom left;
+  animation: aiBubblePop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
+             aiBubbleGlow 0.6s ease-out both;
+}
+
+.aiBubble > * {
+  animation: contentFadeIn 0.25s ease-out 0.06s both;
+}
+
+@keyframes contentFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes aiBubblePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(16px) rotate(-2deg);
+    filter: brightness(1.05);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.04) translateY(-3px) rotate(0.6deg);
+    filter: brightness(1);
+  }
+  85% {
+    transform: scale(0.985) translateY(1px) rotate(-0.2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes aiBubbleGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(179, 27, 40, 0.2), 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(179, 27, 40, 0), 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(179, 27, 40, 0), 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
 }
 
 /* ── Typing indicator ── */
@@ -329,7 +434,7 @@
   align-items: flex-end;
   gap: 10px;
   align-self: flex-start;
-  animation: messageIn 0.22s var(--ease-spring) both;
+  animation: rowFadeIn 0.25s ease-out both;
 }
 
 .typingBubble {
@@ -342,6 +447,32 @@
   align-items: center;
   gap: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transform-origin: bottom left;
+  animation: typingBubblePop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
+             typingFloat 3s ease-in-out infinite 0.4s;
+}
+
+@keyframes typingBubblePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(12px);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-2px);
+  }
+  85% {
+    transform: scale(0.98) translateY(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes typingFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
 }
 
 .typingText {
@@ -368,14 +499,28 @@
 .dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes dotBounce {
-  0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
-  30%            { transform: translateY(-5px); opacity: 1; }
+  0%, 60%, 100% { transform: translateY(0) scale(0.85); opacity: 0.35; }
+  30%            { transform: translateY(-6px) scale(1.2); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .userRow,
+  .aiRow,
+  .userBubble,
+  .aiBubble,
+  .aiAvatarImg,
+  .typingBubble,
+  .dot {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* ── Composer floating bar ── */
 .composerWrap {
-  padding: 10px 14px;
-  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  flex-shrink: 0;
+  margin-top: auto;
+  padding: 6px 10px;
   background: var(--color-surface, #ffffff);
   border-top: 1px solid var(--color-border, #e2e8f0);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
@@ -389,7 +534,7 @@
 
 @media (min-width: 900px) {
   .composerWrap {
-    padding: 14px 32px 18px;
+    padding: 10px 32px 14px;
   }
   .composerInner {
     max-width: 1120px;
@@ -400,13 +545,23 @@
 
 .composer {
   display: flex;
-  gap: 8px;
-  align-items: flex-end;
+  gap: 6px;
+  align-items: center;
   background: var(--color-surface-subtle, #f8fafc);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 22px;
-  padding: 6px 8px 6px 14px;
+  padding: 3px 4px 3px 12px;
+  min-height: 38px;
   transition: all 0.18s ease;
+  box-sizing: border-box;
+}
+
+@media (min-width: 900px) {
+  .composer {
+    gap: 8px;
+    padding: 5px 6px 5px 14px;
+    min-height: 44px;
+  }
 }
 
 .composer:focus-within {
@@ -421,24 +576,41 @@
   border: none;
   background: transparent;
   color: var(--color-text, #0f172a);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-family: inherit;
   resize: none;
   outline: none;
-  padding: 6px 0;
-  line-height: 1.45;
-  min-height: 22px;
-  max-height: 110px;
+  padding: 3px 0;
+  line-height: 1.35;
+  min-height: 19px;
+  max-height: 80px;
   overflow-y: auto;
+}
+
+@media (min-width: 900px) {
+  .textarea {
+    font-size: 0.92rem;
+    padding: 5px 0;
+    min-height: 22px;
+    max-height: 110px;
+    line-height: 1.45;
+  }
 }
 
 .textarea::placeholder {
   color: var(--color-text-muted, #94a3b8);
+  font-size: 0.84rem;
+}
+
+@media (min-width: 900px) {
+  .textarea::placeholder {
+    font-size: 0.9rem;
+  }
 }
 
 .sendBtn {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: none;
   background: var(--color-primary, #b31b28);
@@ -449,6 +621,25 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.15s ease;
+}
+
+@media (min-width: 900px) {
+  .sendBtn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.sendBtn svg {
+  width: 15px;
+  height: 15px;
+}
+
+@media (min-width: 900px) {
+  .sendBtn svg {
+    width: 17px;
+    height: 17px;
+  }
 }
 
 .sendBtn:hover:not(:disabled) {
@@ -465,9 +656,67 @@
   cursor: default;
 }
 
+/* Sembunyikan petunjuk keyboard (Enter/Shift+Enter) di ponsel/layar sentuh untuk menghemat tinggi layar */
 .hint {
-  font-size: 0.72rem;
-  color: var(--color-text-muted, #94a3b8);
-  text-align: center;
-  margin: 4px 0 0 0;
+  display: none;
 }
+
+@media (min-width: 900px) and (hover: hover) {
+  .hint {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--color-text-muted, #94a3b8);
+    text-align: center;
+    margin: 4px 0 0 0;
+  }
+}
+
+/* ── Inline Toolbar jika header utama disembunyikan ── */
+.inlineHeaderToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 2px;
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  animation: fadeIn 0.2s ease-out both;
+}
+
+@media (min-width: 900px) {
+  .inlineHeaderToolbar {
+    padding: 10px 32px 4px;
+  }
+}
+
+.inlineToolbarCount {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #94a3b8);
+  letter-spacing: 0.02em;
+}
+
+.inlineClearBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #64748b);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.inlineClearBtn:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+  transform: translateY(-1px);
+}
+

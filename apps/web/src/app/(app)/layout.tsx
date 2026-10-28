@@ -5,8 +5,8 @@ import { RequireAuth } from "@/shared/ui/RequireAuth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <RequireAuth>
-      <AppShell>{children}</AppShell>
-    </RequireAuth>
+    <AppShell>
+      <RequireAuth>{children}</RequireAuth>
+    </AppShell>
   );
 }

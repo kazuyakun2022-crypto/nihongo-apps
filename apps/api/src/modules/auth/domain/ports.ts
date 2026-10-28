@@ -1,5 +1,5 @@
 import type { AuthUser, Role } from "../../../shared/domain/types";
-import type { User } from "./User";
+import type { Gender, User } from "./User";
 
 /**
  * Port (interface) yang dibutuhkan use case autentikasi.
@@ -14,6 +14,7 @@ export interface UserRepository {
     displayName: string;
     isGuest: boolean;
     role: Role;
+    gender?: Gender | null;
     emailVerifiedAt?: Date | null;
   }): Promise<User>;
   update(id: string, data: Partial<Omit<User, "id">>): Promise<User>;
@@ -26,6 +27,7 @@ export interface OnboardingProfile {
   currentLevelId: number;
   learningGoal: LearningGoal;
   dailyTargetMin: 5 | 10 | 20;
+  gender?: Gender;
 }
 
 export interface OAuthAccountRepository {

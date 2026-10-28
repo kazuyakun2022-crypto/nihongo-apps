@@ -1,0 +1,296 @@
+[
+  {
+    "pattern": "〜ために",
+    "explanation": "Menyatakan tujuan, artinya 'untuk' atau 'demi'. Dipakai dengan kata kerja yang bisa dikendalikan oleh subjek yang sama. Bentuknya kata kerja bentuk kamus + ために, atau kata benda + のために.",
+    "exampleSentence": "日本の大学に入るために、毎日勉強しています。",
+    "exampleTranslation": "Saya belajar setiap hari untuk masuk universitas di Jepang.",
+    "quiz": { "question": "留学する＿＿、アルバイトでお金をためています。", "options": ["ように", "ために", "ばかりに", "くせに"], "answer": "ために" }
+  },
+  {
+    "pattern": "〜ように（目的）",
+    "explanation": "Menyatakan tujuan 'agar' atau 'supaya' ketika kata kerjanya tidak bisa dikendalikan langsung, misalnya bentuk potensial, kata kerja seperti 見える dan 聞こえる, atau bentuk ない. Bentuknya kata kerja bentuk kamus, potensial, atau ない + ように.",
+    "exampleSentence": "忘れないように、手帳にメモしておきます。",
+    "exampleTranslation": "Supaya tidak lupa, saya mencatatnya di buku agenda.",
+    "quiz": { "question": "後ろの席の人にも聞こえる＿＿、大きな声で話してください。", "options": ["ために", "ばかりに", "ように", "くせに"], "answer": "ように" }
+  },
+  {
+    "pattern": "〜ようにする",
+    "explanation": "Menyatakan usaha untuk melakukan atau membiasakan sesuatu. Bentuk ようにしている dipakai untuk kebiasaan yang sedang dijaga. Bentuknya kata kerja bentuk kamus atau bentuk ない + ようにする.",
+    "exampleSentence": "夜はなるべく早く寝るようにしています。",
+    "exampleTranslation": "Saya berusaha tidur lebih awal pada malam hari.",
+    "quiz": { "question": "健康のために、エレベーターを使わない＿＿しています。", "options": ["ように", "ために", "そうに", "みたいに"], "answer": "ように" }
+  },
+  {
+    "pattern": "〜ようになる",
+    "explanation": "Menyatakan perubahan keadaan atau kemampuan secara bertahap, artinya 'menjadi bisa' atau 'mulai'. Bentuknya kata kerja bentuk kamus, potensial, atau bentuk ない + ようになる.",
+    "exampleSentence": "日本に来てから、納豆が食べられるようになりました。",
+    "exampleTranslation": "Sejak datang ke Jepang, saya jadi bisa makan natto.",
+    "quiz": { "question": "毎日練習したので、漢字が読める＿＿なりました。", "options": ["ことに", "ために", "ばかりに", "ように"], "answer": "ように" }
+  },
+  {
+    "pattern": "〜ことにする",
+    "explanation": "Menyatakan keputusan yang dibuat oleh pembicara sendiri. Bentuk ことにしている berarti kebiasaan yang sudah diputuskan sendiri. Bentuknya kata kerja bentuk kamus atau bentuk ない + ことにする.",
+    "exampleSentence": "来月から毎朝ジョギングすることにしました。",
+    "exampleTranslation": "Saya memutuskan untuk jogging setiap pagi mulai bulan depan.",
+    "quiz": { "question": "よく考えた結果、今の会社を辞める＿＿しました。", "options": ["ことに", "わけに", "ものに", "ために"], "answer": "ことに" }
+  },
+  {
+    "pattern": "〜ことになる",
+    "explanation": "Menyatakan sesuatu yang diputuskan bukan oleh diri sendiri, misalnya oleh perusahaan, aturan, atau keadaan. Bentuknya kata kerja bentuk kamus atau bentuk ない + ことになる.",
+    "exampleSentence": "四月から東京の本社で働くことになりました。",
+    "exampleTranslation": "Sudah diputuskan bahwa mulai April saya akan bekerja di kantor pusat di Tokyo.",
+    "quiz": { "question": "父の仕事の関係で、来年アメリカに引っ越す＿＿なりました。", "options": ["ように", "ことに", "はずに", "ために"], "answer": "ことに" }
+  },
+  {
+    "pattern": "〜そうだ（様態）",
+    "explanation": "Menyatakan kesan dari apa yang terlihat, artinya 'kelihatannya' atau 'sepertinya akan'. Bentuknya batang kata kerja (bentuk ます tanpa ます), kata sifat い tanpa い, atau kata sifat な tanpa な + そうだ. Pengecualian: いい menjadi よさそうだ.",
+    "exampleSentence": "空が暗くなってきました。雨が降りそうです。",
+    "exampleTranslation": "Langit mulai gelap. Sepertinya akan turun hujan.",
+    "quiz": { "question": "このケーキ、とてもおいし＿＿ですね。", "options": ["らしい", "みたい", "そう", "よう"], "answer": "そう" }
+  },
+  {
+    "pattern": "〜そうだ（伝聞）",
+    "explanation": "Menyampaikan informasi yang didengar atau dibaca dari sumber lain, artinya 'katanya' atau 'kabarnya'. Bentuknya bentuk biasa (kamus, た, ない) + そうだ, dan sumbernya sering ditandai dengan 〜によると.",
+    "exampleSentence": "天気予報によると、明日は雪が降るそうです。",
+    "exampleTranslation": "Menurut prakiraan cuaca, katanya besok akan turun salju.",
+    "quiz": { "question": "友だちの話では、駅前に新しいパン屋ができた＿＿です。", "options": ["つもり", "まま", "ほど", "そう"], "answer": "そう" }
+  },
+  {
+    "pattern": "〜ようだ",
+    "explanation": "Menyatakan dugaan pembicara berdasarkan apa yang dilihat, didengar, atau dirasakan sendiri, artinya 'tampaknya'. Bentuknya bentuk biasa + ようだ, kata benda + のようだ, dan kata sifat な + なようだ. Dalam percakapan sering diganti dengan みたいだ.",
+    "exampleSentence": "部屋の電気が消えています。山田さんはもう帰ったようです。",
+    "exampleTranslation": "Lampu ruangannya mati. Tampaknya Yamada sudah pulang.",
+    "quiz": { "question": "道がぬれている。夜の間に雨が降った＿＿だ。", "options": ["よう", "ほう", "つもり", "まま"], "answer": "よう" }
+  },
+  {
+    "pattern": "〜らしい（推量）",
+    "explanation": "Menyatakan dugaan berdasarkan informasi yang didengar atau dilihat, artinya 'kabarnya' atau 'tampaknya', dengan nuansa lebih berjarak daripada ようだ. Bentuknya bentuk biasa + らしい, sedangkan kata benda dan kata sifat な langsung + らしい.",
+    "exampleSentence": "田中さんは来月結婚するらしいです。",
+    "exampleTranslation": "Kabarnya Tanaka akan menikah bulan depan.",
+    "quiz": { "question": "うわさでは、あの二人は付き合っている＿＿よ。", "options": ["つもり", "ばかり", "らしい", "ところ"], "answer": "らしい" }
+  },
+  {
+    "pattern": "〜らしい（典型）",
+    "explanation": "Menyatakan bahwa sesuatu memiliki sifat khas dari kata benda tersebut, artinya 'khas' atau 'layaknya'. Bentuknya kata benda + らしい. Bentuk negatif らしくない berarti 'tidak seperti biasanya'.",
+    "exampleSentence": "今日は暖かくて、春らしい天気ですね。",
+    "exampleTranslation": "Hari ini hangat, cuacanya benar-benar khas musim semi.",
+    "quiz": { "question": "いつも元気な田中さんが静かなんて、田中さん＿＿ないですね。", "options": ["ように", "らしく", "みたいに", "そうに"], "answer": "らしく" }
+  },
+  {
+    "pattern": "〜っぽい",
+    "explanation": "Menyatakan kesan 'agak seperti' atau 'cenderung'. Dengan kata benda berarti terlihat seperti itu (子どもっぽい), dengan batang kata kerja berarti mudah atau sering melakukannya (忘れっぽい). Biasanya dipakai dalam percakapan santai.",
+    "exampleSentence": "兄はもう三十歳なのに、考え方が子どもっぽい。",
+    "exampleTranslation": "Kakak laki-laki saya sudah tiga puluh tahun, tetapi cara berpikirnya kekanak-kanakan.",
+    "quiz": { "question": "私は忘れ＿＿ので、いつもメモを持っています。", "options": ["らしい", "みたい", "ような", "っぽい"], "answer": "っぽい" }
+  },
+  {
+    "pattern": "〜たばかり",
+    "explanation": "Menyatakan bahwa sesuatu baru saja terjadi menurut perasaan pembicara, bisa beberapa menit atau beberapa bulan yang lalu. Bentuknya kata kerja bentuk た + ばかり.",
+    "exampleSentence": "この傘は先週買ったばかりなのに、もう壊れてしまった。",
+    "exampleTranslation": "Payung ini baru dibeli minggu lalu, tetapi sudah rusak.",
+    "quiz": { "question": "先月日本に来た＿＿なので、まだ友達がいません。", "options": ["ほど", "うち", "ばかり", "まま"], "answer": "ばかり" }
+  },
+  {
+    "pattern": "〜てばかりいる",
+    "explanation": "Menyatakan bahwa seseorang terus-menerus atau hanya melakukan satu hal saja, sering dengan nada mengeluh. Bentuknya kata kerja bentuk て + ばかりいる.",
+    "exampleSentence": "弟は勉強しないで、ゲームをしてばかりいます。",
+    "exampleTranslation": "Adik laki-laki saya tidak belajar dan hanya main game terus.",
+    "quiz": { "question": "寝て＿＿いないで、少しは外に出かけたら？", "options": ["ばかり", "だけ", "しか", "ほど"], "answer": "ばかり" }
+  },
+  {
+    "pattern": "〜まま",
+    "explanation": "Menyatakan keadaan yang dibiarkan tetap seperti semula ketika melakukan hal lain, artinya 'dalam keadaan masih'. Bentuknya kata kerja bentuk た atau ない + まま, dan kata benda + のまま.",
+    "exampleSentence": "靴をはいたまま、部屋に入らないでください。",
+    "exampleTranslation": "Jangan masuk ke kamar dengan masih memakai sepatu.",
+    "quiz": { "question": "昨日はエアコンをつけた＿＿寝てしまいました。", "options": ["ばかり", "まま", "ところ", "あいだ"], "answer": "まま" }
+  },
+  {
+    "pattern": "〜ずに",
+    "explanation": "Bentuk tulisan atau formal dari 〜ないで, artinya 'tanpa melakukan'. Bentuknya kata kerja bentuk ない tanpa ない + ずに. Pengecualian: する menjadi せずに.",
+    "exampleSentence": "辞書を使わずに、この本を読みました。",
+    "exampleTranslation": "Saya membaca buku ini tanpa menggunakan kamus.",
+    "quiz": { "question": "時間がなかったので、朝ご飯を食べ＿＿家を出ました。", "options": ["なくて", "ないと", "ては", "ずに"], "answer": "ずに" }
+  },
+  {
+    "pattern": "〜させられる",
+    "explanation": "Bentuk kausatif-pasif yang menyatakan bahwa subjek terpaksa melakukan sesuatu karena disuruh orang lain. Golongan satu memakai bentuk ない + せられる atau される (書かされる), golongan dua + させられる (食べさせられる), する menjadi させられる.",
+    "exampleSentence": "子どものころ、母に毎日ピアノを練習させられました。",
+    "exampleTranslation": "Waktu kecil, saya dipaksa ibu berlatih piano setiap hari.",
+    "quiz": { "question": "いやだと言ったのに、先輩にお酒を飲＿＿。", "options": ["ませた", "まされた", "みたかった", "んでしまった"], "answer": "まされた" }
+  },
+  {
+    "pattern": "〜について",
+    "explanation": "Artinya 'tentang' atau 'mengenai'. Menunjukkan topik yang dibicarakan, dipikirkan, diteliti, atau ditulis. Bentuknya kata benda + について, dan sebelum kata benda menjadi についての.",
+    "exampleSentence": "日本の祭りについて、クラスで発表しました。",
+    "exampleTranslation": "Saya melakukan presentasi di kelas tentang festival di Jepang.",
+    "quiz": { "question": "環境問題＿＿レポートを書かなければなりません。", "options": ["にとって", "によって", "について", "に対して"], "answer": "について" }
+  },
+  {
+    "pattern": "〜にとって",
+    "explanation": "Artinya 'bagi'. Menunjukkan dari sudut pandang siapa suatu penilaian dibuat, dan biasanya diikuti penilaian seperti 大切だ, 難しい, atau うれしい. Bentuknya kata benda + にとって.",
+    "exampleSentence": "留学生にとって、日本の敬語はとても難しいです。",
+    "exampleTranslation": "Bagi mahasiswa asing, bahasa hormat Jepang sangat sulit.",
+    "quiz": { "question": "私＿＿、家族は何よりも大切なものです。", "options": ["について", "にとって", "によって", "に対して"], "answer": "にとって" }
+  },
+  {
+    "pattern": "〜によって",
+    "explanation": "Memiliki beberapa arti: 'tergantung pada' untuk menyatakan perbedaan, 'oleh' dalam kalimat pasif untuk pembuat karya atau penemuan, dan 'dengan cara'. Bentuknya kata benda + によって.",
+    "exampleSentence": "この小説は有名な作家によって書かれました。",
+    "exampleTranslation": "Novel ini ditulis oleh seorang pengarang terkenal.",
+    "quiz": { "question": "国＿＿、食事のマナーが違います。", "options": ["にとって", "について", "として", "によって"], "answer": "によって" }
+  },
+  {
+    "pattern": "〜として",
+    "explanation": "Artinya 'sebagai'. Menunjukkan kedudukan, peran, atau status seseorang atau sesuatu. Bentuknya kata benda + として.",
+    "exampleSentence": "姉は看護師として病院で働いています。",
+    "exampleTranslation": "Kakak perempuan saya bekerja di rumah sakit sebagai perawat.",
+    "quiz": { "question": "私は留学生＿＿、この大学に来ました。", "options": ["として", "に対して", "について", "によって"], "answer": "として" }
+  },
+  {
+    "pattern": "〜に対して",
+    "explanation": "Memiliki dua arti: 'terhadap' untuk menunjukkan sasaran tindakan atau perasaan, dan 'sebaliknya' untuk membandingkan dua hal. Bentuknya kata benda + に対して, dan untuk perbandingan bisa juga bentuk biasa + のに対して.",
+    "exampleSentence": "先生の質問に対して、学生たちは元気に答えました。",
+    "exampleTranslation": "Para murid menjawab pertanyaan guru dengan penuh semangat.",
+    "quiz": { "question": "兄は背が高いの＿＿、弟は低いです。", "options": ["について", "にとって", "に対して", "によって"], "answer": "に対して" }
+  },
+  {
+    "pattern": "〜うちに",
+    "explanation": "Artinya 'selagi' atau 'sebelum keadaan berubah', yaitu melakukan sesuatu selama keadaan tertentu masih berlangsung. Bentuknya kata kerja bentuk kamus, ない, atau ている, kata sifat い, kata sifat な + な, atau kata benda + の, lalu + うちに.",
+    "exampleSentence": "若いうちに、いろいろな国へ行ってみたいです。",
+    "exampleTranslation": "Selagi masih muda, saya ingin mencoba pergi ke berbagai negara.",
+    "quiz": { "question": "料理が温かい＿＿、どうぞ召し上がってください。", "options": ["まえに", "うちに", "までに", "ばかりに"], "answer": "うちに" }
+  },
+  {
+    "pattern": "〜たびに",
+    "explanation": "Artinya 'setiap kali'. Menyatakan bahwa setiap kali suatu hal terjadi, hal lain juga selalu terjadi. Bentuknya kata kerja bentuk kamus + たびに, atau kata benda + のたびに.",
+    "exampleSentence": "祖母の家に行くたびに、おいしい料理を作ってもらいます。",
+    "exampleTranslation": "Setiap kali pergi ke rumah nenek, saya selalu dibuatkan masakan yang enak.",
+    "quiz": { "question": "この歌を聞く＿＿、高校時代を思い出します。", "options": ["たびに", "ばかりに", "までに", "ところに"], "answer": "たびに" }
+  },
+  {
+    "pattern": "〜ついでに",
+    "explanation": "Artinya 'sekalian'. Menyatakan memanfaatkan kesempatan saat melakukan sesuatu untuk melakukan hal lain juga. Bentuknya kata kerja bentuk kamus atau た + ついでに, atau kata benda + のついでに.",
+    "exampleSentence": "散歩のついでに、パンを買ってきました。",
+    "exampleTranslation": "Sekalian jalan-jalan, saya membeli roti.",
+    "quiz": { "question": "今からコンビニへ行く＿＿、この手紙も出してきます。", "options": ["たびに", "ばかりに", "までに", "ついでに"], "answer": "ついでに" }
+  },
+  {
+    "pattern": "〜かわりに",
+    "explanation": "Artinya 'sebagai ganti' atau 'menggantikan', juga bisa berarti 'sebagai imbalan'. Bentuknya kata kerja bentuk biasa + かわりに, atau kata benda + のかわりに.",
+    "exampleSentence": "病気の父のかわりに、私が会議に出ました。",
+    "exampleTranslation": "Saya menghadiri rapat menggantikan ayah yang sedang sakit.",
+    "quiz": { "question": "今日は私が料理を作る＿＿、あなたは皿を洗ってね。", "options": ["かわりに", "ついでに", "たびに", "うちに"], "answer": "かわりに" }
+  },
+  {
+    "pattern": "〜おかげで",
+    "explanation": "Artinya 'berkat'. Menyatakan penyebab dari hasil yang baik, biasanya disertai rasa terima kasih. Bentuknya bentuk biasa + おかげで, atau kata benda + のおかげで.",
+    "exampleSentence": "友だちが手伝ってくれたおかげで、引っ越しが早く終わりました。",
+    "exampleTranslation": "Berkat bantuan teman, pindahan selesai dengan cepat.",
+    "quiz": { "question": "先生が丁寧に教えてくれた＿＿、試験に合格できました。", "options": ["せいで", "くせに", "おかげで", "ばかりに"], "answer": "おかげで" }
+  },
+  {
+    "pattern": "〜せいで",
+    "explanation": "Artinya 'gara-gara'. Menyatakan penyebab dari hasil yang buruk, sering dengan nada menyalahkan. Bentuknya bentuk biasa + せいで, atau kata benda + のせいで.",
+    "exampleSentence": "夜遅くまでテレビを見ていたせいで、朝寝坊してしまった。",
+    "exampleTranslation": "Gara-gara menonton televisi sampai larut malam, saya bangun kesiangan.",
+    "quiz": { "question": "大雪の＿＿、電車が二時間も遅れました。", "options": ["おかげで", "せいで", "くせに", "ついでに"], "answer": "せいで" }
+  },
+  {
+    "pattern": "〜くせに",
+    "explanation": "Artinya 'padahal', dipakai untuk mencela atau menunjukkan rasa kesal terhadap orang lain yang perbuatannya tidak sesuai dengan keadaannya. Hanya dipakai untuk orang, terutama dalam percakapan. Bentuknya bentuk biasa + くせに, kata benda + のくせに, atau kata sifat な + なくせに.",
+    "exampleSentence": "弟は何も知らないくせに、いつも偉そうに話す。",
+    "exampleTranslation": "Adik saya padahal tidak tahu apa-apa, tetapi selalu bicara dengan sok tahu.",
+    "quiz": { "question": "自分は何もしない＿＿、文句ばかり言わないでよ。", "options": ["おかげで", "ために", "ように", "くせに"], "answer": "くせに" }
+  },
+  {
+    "pattern": "〜わりに",
+    "explanation": "Artinya 'untuk ukuran' atau 'dibandingkan dengan', menyatakan hasil yang berbeda dari yang diperkirakan. Bentuknya bentuk biasa + わりに, kata benda + のわりに, atau kata sifat な + なわりに.",
+    "exampleSentence": "このレストランは値段のわりに、量が多いです。",
+    "exampleTranslation": "Untuk harga segitu, porsi di restoran ini banyak.",
+    "quiz": { "question": "あの店は値段が安い＿＿、料理がとてもおいしい。", "options": ["わりに", "くせに", "ついでに", "たびに"], "answer": "わりに" }
+  },
+  {
+    "pattern": "〜にしては",
+    "explanation": "Artinya 'untuk ukuran', menyatakan hasil yang tidak sesuai dengan standar yang biasa diharapkan dari seseorang atau sesuatu. Biasanya melekat pada kata benda atau bentuk biasa kata kerja, bukan kata sifat. Bentuknya kata benda atau bentuk biasa kata kerja + にしては.",
+    "exampleSentence": "日本に三か月しか住んでいないにしては、彼は日本語が上手だ。",
+    "exampleTranslation": "Untuk orang yang baru tinggal tiga bulan di Jepang, bahasa Jepangnya bagus.",
+    "quiz": { "question": "十歳＿＿、ずいぶん背が高いですね。", "options": ["にとって", "にしては", "について", "として"], "answer": "にしては" }
+  },
+  {
+    "pattern": "〜ば〜ほど",
+    "explanation": "Artinya 'semakin ... semakin ...'. Bentuknya kata kerja bentuk ば + kata kerja yang sama bentuk kamus + ほど. Untuk kata sifat い menjadi 〜ければ〜いほど, dan untuk kata sifat な menjadi 〜なら〜なほど.",
+    "exampleSentence": "果物は新しければ新しいほど、おいしいです。",
+    "exampleTranslation": "Buah semakin segar semakin enak.",
+    "quiz": { "question": "日本語は練習すればする＿＿、上手になります。", "options": ["うちに", "まで", "ほど", "ばかり"], "answer": "ほど" }
+  },
+  {
+    "pattern": "〜わけだ",
+    "explanation": "Artinya 'pantas saja' atau 'itulah sebabnya', menyatakan kesimpulan yang wajar dari fakta atau alasan yang baru diketahui. Bentuknya bentuk biasa + わけだ, atau kata sifat な + なわけだ.",
+    "exampleSentence": "エアコンが壊れているのか。暑いわけだ。",
+    "exampleTranslation": "Ternyata AC-nya rusak. Pantas saja panas.",
+    "quiz": { "question": "毎日十時間も練習しているのか。上手な＿＿だ。", "options": ["ばかり", "わけ", "ところ", "つもり"], "answer": "わけ" }
+  },
+  {
+    "pattern": "〜わけではない",
+    "explanation": "Artinya 'bukan berarti', dipakai untuk menyangkal sebagian atau meluruskan anggapan yang mungkin muncul. Bentuknya bentuk biasa + わけではない, atau kata sifat な + なわけではない.",
+    "exampleSentence": "お金があれば、幸せになれるわけではない。",
+    "exampleTranslation": "Punya uang bukan berarti bisa bahagia.",
+    "quiz": { "question": "肉が嫌いな＿＿ではありませんが、あまり食べません。", "options": ["はず", "ところ", "つもり", "わけ"], "answer": "わけ" }
+  },
+  {
+    "pattern": "〜ことはない",
+    "explanation": "Artinya 'tidak perlu', menyatakan bahwa sesuatu tidak perlu dilakukan, sering untuk menenangkan atau menasihati orang lain. Bentuknya kata kerja bentuk kamus + ことはない.",
+    "exampleSentence": "簡単な手術だから、心配することはありませんよ。",
+    "exampleTranslation": "Ini operasi yang sederhana, jadi tidak perlu khawatir.",
+    "quiz": { "question": "電話で聞けばいいから、わざわざ行く＿＿ないよ。", "options": ["ものは", "ことは", "ためは", "ほうは"], "answer": "ことは" }
+  },
+  {
+    "pattern": "〜しかない",
+    "explanation": "Artinya 'tidak ada pilihan lain selain', menyatakan bahwa hanya ada satu cara yang bisa dilakukan. Bentuknya kata kerja bentuk kamus + しかない.",
+    "exampleSentence": "バスがもうないので、歩いて帰るしかありません。",
+    "exampleTranslation": "Bus sudah tidak ada, jadi tidak ada pilihan selain pulang jalan kaki.",
+    "quiz": { "question": "最後の電車に間に合わなかったから、タクシーで帰る＿＿。", "options": ["ことはない", "わけではない", "ようになった", "しかない"], "answer": "しかない" }
+  },
+  {
+    "pattern": "〜に違いない",
+    "explanation": "Artinya 'pasti', menyatakan keyakinan kuat pembicara berdasarkan alasan tertentu. Bentuknya bentuk biasa + に違いない, sedangkan kata benda dan kata sifat な langsung + に違いない.",
+    "exampleSentence": "あの店はいつも人が並んでいる。おいしいに違いない。",
+    "exampleTranslation": "Toko itu selalu ramai antrean. Pasti makanannya enak.",
+    "quiz": { "question": "電気がついているから、田中さんは家にいる＿＿。", "options": ["に違いない", "とは限らない", "わけがない", "ことはない"], "answer": "に違いない" }
+  },
+  {
+    "pattern": "〜とは限らない",
+    "explanation": "Artinya 'belum tentu' atau 'tidak selalu', menyatakan bahwa hal yang umumnya dianggap benar tidak selalu berlaku. Sering dipakai bersama いつも, 必ず, atau だれでも. Bentuknya bentuk biasa + とは限らない.",
+    "exampleSentence": "日本人でも、だれでも敬語が上手だとは限りません。",
+    "exampleTranslation": "Meskipun orang Jepang, belum tentu semua orang pandai berbahasa hormat.",
+    "quiz": { "question": "値段が高い物がいつもいい物だ＿＿。", "options": ["に違いない", "はずだ", "とは限らない", "わけだ"], "answer": "とは限らない" }
+  },
+  {
+    "pattern": "〜ということだ",
+    "explanation": "Artinya 'katanya' atau 'kabarnya', menyampaikan informasi yang didengar dengan nuansa lebih formal daripada そうだ. Bentuknya bentuk biasa + ということだ.",
+    "exampleSentence": "部長の話では、来週の会議は中止だということです。",
+    "exampleTranslation": "Menurut manajer, katanya rapat minggu depan dibatalkan.",
+    "quiz": { "question": "新聞によると、来年から電車の料金が上がる＿＿。", "options": ["ことにする", "ようにする", "ということだ", "つもりだ"], "answer": "ということだ" }
+  },
+  {
+    "pattern": "〜とおりに",
+    "explanation": "Artinya 'sesuai dengan' atau 'persis seperti', menyatakan melakukan sesuatu sama seperti yang dilihat, didengar, atau diajarkan. Bentuknya kata kerja bentuk kamus atau た + とおりに, kata benda + のとおりに, atau kata benda + どおりに.",
+    "exampleSentence": "先生に教わったとおりに、もう一度やってみてください。",
+    "exampleTranslation": "Coba lakukan sekali lagi persis seperti yang diajarkan guru.",
+    "quiz": { "question": "説明書に書いてある＿＿、机を組み立ててください。", "options": ["とおりに", "ために", "ほどに", "ばかりに"], "answer": "とおりに" }
+  },
+  {
+    "pattern": "〜たとたん（に）",
+    "explanation": "Artinya 'begitu ... langsung', menyatakan bahwa sesuatu yang tidak terduga terjadi tepat setelah suatu tindakan. Bagian kedua kalimat tidak dipakai untuk kehendak pembicara sendiri. Bentuknya kata kerja bentuk た + とたん(に).",
+    "exampleSentence": "ベッドに横になったとたん、眠ってしまった。",
+    "exampleTranslation": "Begitu berbaring di tempat tidur, saya langsung tertidur.",
+    "quiz": { "question": "家に着いた＿＿、雨が強く降り出しました。", "options": ["うちに", "ままに", "とたんに", "ばかりに"], "answer": "とたんに" }
+  },
+  {
+    "pattern": "〜てたまらない",
+    "explanation": "Artinya 'sangat' atau 'tak tertahankan', menyatakan perasaan atau rasa di tubuh yang begitu kuat sehingga sulit ditahan. Bentuknya kata sifat い menjadi 〜くてたまらない, kata sifat な menjadi 〜でたまらない, dan keinginan menjadi 〜たくてたまらない.",
+    "exampleSentence": "歯が痛くてたまらないので、歯医者に行きます。",
+    "exampleTranslation": "Gigi saya sakit sekali sampai tak tertahankan, jadi saya pergi ke dokter gigi.",
+    "quiz": { "question": "試験に合格して、うれしく＿＿。", "options": ["てしまった", "てほしい", "ておいた", "てたまらない"], "answer": "てたまらない" }
+  }
+]

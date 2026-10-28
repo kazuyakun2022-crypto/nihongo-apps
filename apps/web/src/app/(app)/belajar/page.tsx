@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/features/auth/application/AuthProvider";
-import { StructuredLearningRoadmap } from "@/features/learning/ui/StructuredLearningRoadmap";
+import { LearningPath } from "@/features/learning/ui/LearningPath";
 import { AdminLearnerNotice } from "@/shared/ui/AdminLearnerNotice";
 
 export default function BelajarPage() {
@@ -12,5 +12,5 @@ export default function BelajarPage() {
     return <AdminLearnerNotice featureName="Kurikulum & Bab Belajar Siswa" />;
   }
 
-  return <StructuredLearningRoadmap />;
+  return <LearningPath />;
 }

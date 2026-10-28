@@ -1,5 +1,7 @@
 import type { Role, UserStatus } from "../../../shared/domain/types";
 
+export type Gender = "male" | "female" | "other";
+
 /** Entitas pengguna untuk keperluan autentikasi. Murni TypeScript, tanpa framework. */
 export interface User {
   id: string;
@@ -10,6 +12,8 @@ export interface User {
   role: Role;
   status: UserStatus;
   currentLevelId: number | null;
+  gender?: Gender | null;
+  avatarUrl?: string | null;
   dailyTargetMin: number | null;
   streakCount: number;
   xpTotal: number;
@@ -47,6 +51,8 @@ export interface PublicUser {
   emailVerified: boolean;
   needsOnboarding: boolean;
   currentLevelId: number | null;
+  gender?: Gender | null;
+  avatarUrl?: string | null;
   dailyTargetMin: number | null;
   streakCount: number;
   xpTotal: number;
@@ -62,6 +68,8 @@ export function toPublicUser(user: User): PublicUser {
     emailVerified: user.emailVerifiedAt !== null,
     needsOnboarding: needsOnboarding(user),
     currentLevelId: user.currentLevelId,
+    gender: user.gender ?? null,
+    avatarUrl: user.avatarUrl ?? null,
     dailyTargetMin: user.dailyTargetMin,
     streakCount: user.streakCount,
     xpTotal: user.xpTotal,
