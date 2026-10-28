@@ -32,5 +32,3 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Folder kosong yang dibuat build Vercel API
-apps/api/public
