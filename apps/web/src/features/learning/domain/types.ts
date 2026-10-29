@@ -111,6 +111,8 @@ export interface OnboardingChoice {
   currentLevelId: number;
   learningGoal: string;
   dailyTargetMin: number;
+  displayName?: string;
+  gender?: "male" | "female" | "other";
 }
 
 export interface NextChapter {
@@ -134,7 +136,7 @@ export interface LearningRepository {
   getChapter(id: string): Promise<ChapterDetail>;
   submitQuiz(chapterId: string, answers: QuizAnswer[]): Promise<QuizResult>;
   onboardingOptions(): Promise<OnboardingOptions>;
-  completeOnboarding(input: OnboardingChoice): Promise<void>;
+  completeOnboarding(input: OnboardingChoice): Promise<{ user: any }>;
   nextChapter(): Promise<NextChapter | null>;
   getProgress(levelId: number): Promise<LevelProgress>;
 }

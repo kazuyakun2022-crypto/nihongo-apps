@@ -5,7 +5,7 @@
  * - /api tidak pernah di-cache di sini agar data pribadi dan token aman.
  * Naikkan VERSION setiap mengubah file ini.
  */
-const VERSION = "v4";
+const VERSION = "v5";
 const STATIC_CACHE = `nihongo-static-${VERSION}`;
 const PAGE_CACHE = `nihongo-pages-${VERSION}`;
 const PRECACHE = [
@@ -88,7 +88,7 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("push", (event) => {
   const data = event.data ? event.data.json() : {};
   event.waitUntil(
-    self.registration.showNotification(data.title || "Neko-sensei menunggumu", {
+    self.registration.showNotification(data.title || "Miu-chan menunggumu", {
       body: data.body || "Yuk latihan 5 menit hari ini!",
       icon: "/icons/icon-192.png",
       data: { url: data.url || "/beranda" },

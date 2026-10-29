@@ -1,27 +1,6 @@
 import type { AskProvider } from "./MockAskProvider";
 import { voiceSystemPrompt, type AskUser } from "./voicePrompt";
-
-const SYSTEM_PROMPT_TEXT = `Kamu adalah Neko-sensei, maskot kucing asisten belajar bahasa Jepang dalam aplikasi NihonGo. Kepribadianmu: ramah, ceria, sabar, dan suka memberi semangat.
-
-TUGAS: Jawab pertanyaan tentang bahasa Jepang dan budaya Jepang SAJA.
-
-TOPIK YANG BOLEH:
-- Huruf: hiragana, katakana, kanji, furigana
-- Grammar: partikel, konjugasi, pola kalimat, keigo (bahasa hormat)
-- Kosakata: kata sehari-hari, ungkapan, idiom
-- Pengucapan: intonasi, pelafalan, aksen Tokyo
-- Budaya Jepang: tata krama, festival, makanan, tradisi
-- Tips belajar bahasa Jepang
-
-ATURAN WAJIB:
-1. Jika pertanyaan TIDAK terkait bahasa/budaya Jepang (misal: matematika, coding, politik), tolak dengan sopan: "Maaf, aku hanya bisa menjawab pertanyaan seputar bahasa Jepang dan budaya Jepang. Ada yang ingin ditanyakan tentang itu?"
-2. Jawab dalam bahasa Indonesia yang jelas dan ramah.
-3. Untuk contoh Jepang, gunakan format: teks Jepang (romaji) — artinya.
-4. WAJIB: Setiap jawaban harus LENGKAP dan TUNTAS. Jangan pernah memotong jawaban di tengah kalimat.
-5. Maksimal 5 poin atau contoh per jawaban agar tetap singkat dan selesai.
-6. JANGAN gunakan emoji apapun dalam jawaban. Tulis teks bersih dan profesional.
-7. JANGAN gunakan format markdown seperti **teks**, *teks*, atau # heading. Tulis dalam teks biasa. Gunakan angka (1. 2. 3.) atau bullet (•) jika perlu daftar.`;
-
+import { textSystemPrompt } from "./textPrompt";
 
 interface GeminiContent {
   role: "user" | "model";
@@ -40,8 +19,9 @@ export class GeminiAskProvider implements AskProvider {
     history: { role: "user" | "assistant"; content: string }[],
     mode: "text" | "voice" = "text",
     user?: AskUser,
+    transcriptAlt?: string,
   ): Promise<string> {
-    const systemPrompt = mode === "voice" ? voiceSystemPrompt(question, user) : SYSTEM_PROMPT_TEXT;
+    const systemPrompt = mode === "voice" ? voiceSystemPrompt(question, user, transcriptAlt) : textSystemPrompt(user);
     const maxTokens = mode === "voice" ? 400 : 2048;
 
     const contents: GeminiContent[] = history.map((m) => ({
@@ -50,7 +30,9 @@ export class GeminiAskProvider implements AskProvider {
     }));
     contents.push({ role: "user", parts: [{ text: question }] });
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
+    // Alias "latest" mengikuti Flash-Lite terbaru (versi bernomor lama dipensiunkan Google dan membalas 404).
+    // Lite dipilih karena menjawab ±1,5 detik; Flash biasa bisa lebih dari 40 detik.
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${this.apiKey}`;
 
     const res = await fetch(url, {
       method: "POST",
@@ -58,8 +40,10 @@ export class GeminiAskProvider implements AskProvider {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: systemPrompt }] },
         contents,
-        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.75 },
+        // Berpikir seminimal mungkin: lebih cepat, dan jatah token output tidak habis untuk berpikir
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.75, thinkingConfig: { thinkingLevel: "minimal" } },
       }),
+      signal: AbortSignal.timeout(20000),
     });
 
     if (!res.ok) throw new Error(`Gemini API error ${res.status}: ${await res.text()}`);

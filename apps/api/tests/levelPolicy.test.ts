@@ -16,7 +16,7 @@ describe("Kebijakan level maskot", () => {
       rules: { levelId: 1, levelCode: "PEMULA", systemPrompt: "Sederhana.", maxSentenceWords: 5, furiganaRule: "full", speechRate: 0.7 },
       mascot: { id: 1, name: "Neko-sensei", personality: "ramah" },
       scenario: null,
-      memories: ["suka anime"],
+      memories: { interests: ["suka anime"], weakTopics: [], facts: [] },
       allowedKanji: new Set(),
     };
     const prompt = buildSystemPrompt(ctx);

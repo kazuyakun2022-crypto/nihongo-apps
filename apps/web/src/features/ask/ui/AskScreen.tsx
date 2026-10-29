@@ -50,16 +50,16 @@ export function AskScreen({ hideHeader = false }: AskScreenProps = {}) {
         <header className={styles.header}>
           <div className={styles.avatarContainer}>
             <img
-              src="/images/neko-idle.png"
-              alt="Neko-sensei"
+              src="/neko/maskot-senang.webp"
+              alt="Miu-chan"
               className={styles.headerAvatarImg}
               draggable={false}
             />
-            <span className={styles.onlineBadge} title="Neko-sensei Siap Membantu" />
+            <span className={styles.onlineBadge} title="Miu-chan Siap Membantu" />
           </div>
           <div className={styles.headerInfo}>
             <div className={styles.headerNameRow}>
-              <h1 className={styles.headerName}>Neko-sensei</h1>
+              <h1 className={styles.headerName}>Miu-chan</h1>
               <span className={styles.headerBadge}>Sensei AI</span>
             </div>
             <p className={styles.headerDesc}>Tanya apa saja tentang bahasa & budaya Jepang</p>
@@ -96,12 +96,12 @@ export function AskScreen({ hideHeader = false }: AskScreenProps = {}) {
         {messages.length === 0 && !loading && (
           <li className={styles.empty}>
             <img
-              src="/images/neko-idle.png"
-              alt="Neko-sensei"
+              src="/neko/maskot-senang.webp"
+              alt="Miu-chan"
               className={styles.emptyIllustrationImg}
               draggable={false}
             />
-            <h2 className={styles.emptyTitle}>Konnichiwa! Aku Neko-sensei</h2>
+            <h2 className={styles.emptyTitle}>Konnichiwa! Aku Miu-chan</h2>
             <p className={styles.emptyDesc}>
               Mau tanya tata bahasa, cara baca kanji, kosakata, atau tips ujian JLPT? Tanyakan langsung di sini!
             </p>
@@ -140,14 +140,14 @@ export function AskScreen({ hideHeader = false }: AskScreenProps = {}) {
           ) : (
             <li key={m.id} className={styles.aiRow}>
               <img
-                src="/images/neko-idle.png"
-                alt="Neko-sensei"
+                src="/neko/maskot-senang.webp"
+                alt="Miu-chan"
                 className={styles.aiAvatarImg}
                 draggable={false}
               />
               <div className={styles.bubbleWrap}>
                 <div className={styles.senderHeader}>
-                  <span className={styles.senderLabel}>Neko-sensei</span>
+                  <span className={styles.senderLabel}>Miu-chan</span>
                   <span className={styles.aiBadge}>AI Tutor</span>
                 </div>
                 <div className={styles.aiBubble}>
@@ -162,13 +162,13 @@ export function AskScreen({ hideHeader = false }: AskScreenProps = {}) {
         {loading && (
           <li className={styles.typingRow} aria-label="Sensei AI sedang menjawab">
             <img
-              src="/images/neko-thinking.png"
-              alt="Neko-sensei berpikir"
+              src="/neko/maskot-berpikir.webp"
+              alt="Miu-chan berpikir"
               className={styles.aiAvatarImg}
               draggable={false}
             />
             <div className={styles.typingBubble}>
-              <span className={styles.typingText}>Neko-sensei sedang menjawab</span>
+              <span className={styles.typingText}>Miu-chan sedang menjawab</span>
               <div className={styles.dotsWrap}>
                 <span className={styles.dot} />
                 <span className={styles.dot} />

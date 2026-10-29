@@ -46,7 +46,7 @@ export function MascotRive({
     <RiveComponent
       style={{ width: size, height: size }}
       className={className}
-      aria-label="Neko-sensei"
+      aria-label="Miu-chan"
     />
   );
 }

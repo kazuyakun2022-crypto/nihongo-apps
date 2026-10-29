@@ -474,7 +474,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
               <div className={styles.stepCompanionTip}>
                 <Mascot mood="semangat" size={44} />
                 <p style={{ margin: 0, fontSize: "var(--font-size-xs)", color: "var(--color-text-muted)", lineHeight: 1.4 }}>
-                  <strong>Neko-sensei:</strong> Dengarkan suaranya dan pilih arti bahasa Indonesia yang paling tepat!
+                  <strong>Miu-chan:</strong> Dengarkan suaranya dan pilih arti bahasa Indonesia yang paling tepat!
                 </p>
               </div>
             </div>

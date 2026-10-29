@@ -1,0 +1,118 @@
+/* Subtitle karaoke Miu-chan. Warna sorotan mengikuti emosi lewat --sub-accent. */
+.subtitle {
+  --sub-accent: var(--color-primary);
+  position: relative;
+  margin: 0;
+  max-width: min(40ch, 100%);
+  max-height: calc(1.6em * 3 + 20px);
+  overflow: hidden;
+  padding: 10px 16px;
+  font-size: var(--font-size-md, 1rem);
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--sub-accent) 25%, var(--color-border));
+  border-radius: var(--radius-lg);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--sub-accent) 14%, transparent);
+  animation: subtitleIn 220ms ease-out both;
+  scroll-behavior: smooth;
+}
+
+.upcoming {
+  color: color-mix(in srgb, var(--color-text-muted) 55%, transparent);
+  transition: color 120ms ease;
+}
+
+.past {
+  color: var(--color-text);
+  transition: color 120ms ease;
+}
+
+.active {
+  display: inline-block;
+  color: var(--sub-accent);
+  font-weight: 800;
+  text-shadow: 0 0 14px color-mix(in srgb, var(--sub-accent) 40%, transparent);
+  animation: wordPop 180ms ease-out both;
+}
+
+/* Warna & gerak kotak per emosi */
+.senang,
+.rese { --sub-accent: var(--color-sakura, #e4789a); }
+.semangat { --sub-accent: #e07a1f; }
+.sedih,
+.nangis { --sub-accent: #4a78b8; }
+.kesal { --sub-accent: #c9572e; }
+.marah { --sub-accent: var(--color-danger); animation: subtitleIn 220ms ease-out both, shake 360ms 120ms ease-in-out; }
+.kaget { --sub-accent: #8b5cf6; animation: subtitleIn 220ms ease-out both, jolt 300ms ease-out; }
+.malu { --sub-accent: #d9577f; }
+.bingung { --sub-accent: #6b7a8f; }
+
+.nangis .active,
+.sedih .active {
+  font-weight: 700;
+}
+
+@keyframes subtitleIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes wordPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.14) translateY(-1px); }
+  100% { transform: scale(1.06); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+}
+
+@keyframes jolt {
+  0% { transform: scale(0.94); }
+  60% { transform: scale(1.04); }
+  100% { transform: none; }
+}
+
+/* Kartu koreksi: kalimat Jepang yang benar setelah Miu-chan meluruskan ucapan user */
+.correction {
+  display: grid;
+  gap: 2px;
+  max-width: min(40ch, 100%);
+  margin: 0;
+  padding: 8px 14px;
+  text-align: center;
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--color-success) 45%, var(--color-border));
+  border-radius: var(--radius-md);
+  animation: subtitleIn 260ms ease-out both;
+}
+
+.correctionLabel {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-success);
+}
+
+.correctionText {
+  font-size: var(--font-size-lg, 1.15rem);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subtitle,
+  .active,
+  .correction,
+  .marah,
+  .kaget {
+    animation: none;
+  }
+}

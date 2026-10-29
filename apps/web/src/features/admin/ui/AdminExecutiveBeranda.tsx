@@ -119,7 +119,7 @@ export function AdminExecutiveBeranda() {
             <div className={styles.actionCardContent}>
               <strong className={styles.actionCardTitle}>Konfigurasi AI</strong>
               <span className={styles.actionCardDesc}>
-                Atur prompt instruksi Neko-sensei per level (N5–N1) dan kecepatan suara.
+                Atur prompt instruksi Miu-chan per level (N5–N1) dan kecepatan suara.
               </span>
             </div>
           </Link>

@@ -11,14 +11,14 @@ interface MicroFeedbackCardProps {
 
 /**
  * Kartu Koreksi Mikro Non-Disruptif sesuai PRD.
- * Menampilkan catatan perbaikan tata bahasa/partikel dari Neko-sensei
+ * Menampilkan catatan perbaikan tata bahasa/partikel dari Miu-chan
  * tanpa mengganggu atau memutus alur percakapan obrolan utama.
  */
 export function MicroFeedbackCard({ correction }: MicroFeedbackCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={styles.microFeedbackCard} role="region" aria-label="Catatan Koreksi Neko-sensei">
+    <div className={styles.microFeedbackCard} role="region" aria-label="Catatan Koreksi Miu-chan">
       <button
         type="button"
         className={styles.feedbackToggleBtn}

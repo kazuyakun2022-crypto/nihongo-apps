@@ -3,7 +3,14 @@ import { siblingCall, type AskUser } from "./voicePrompt";
 export type { AskUser };
 
 export interface AskProvider {
-  answer(question: string, history: { role: "user" | "assistant"; content: string }[], mode?: "text" | "voice", user?: AskUser): Promise<string>;
+  answer(
+    question: string,
+    history: { role: "user" | "assistant"; content: string }[],
+    mode?: "text" | "voice",
+    user?: AskUser,
+    /** Mode suara: transkrip versi bahasa Jepang dari ucapan yang sama, untuk ucapan campuran. */
+    transcriptAlt?: string,
+  ): Promise<string>;
 }
 
 const EXAMPLES: Record<string, string> = {

@@ -8,13 +8,17 @@ import { Alert } from "@/shared/ui/Alert";
 import { PageSkeleton } from "@/shared/ui/Skeleton";
 import { learningApi } from "@/features/learning/data/learningApi";
 import type { OnboardingOptions } from "@/features/learning/domain/types";
+import { useAuth } from "@/features/auth/application/AuthProvider";
 import { PlacementTest } from "@/features/exam/ui/PlacementTest";
 
 function PlacementPage() {
+  const { updateUser } = useAuth();
   const params = useSearchParams();
   const targetLevelId = Number(params.get("target"));
   const goal = params.get("goal") ?? "";
   const min = Number(params.get("min"));
+  const name = params.get("name") ?? undefined;
+  const gender = (params.get("gender") as "male" | "female" | "other") || undefined;
 
   const [options, setOptions] = useState<OnboardingOptions | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +40,25 @@ function PlacementPage() {
     setBusy(true);
     setError(null);
     try {
-      await learningApi.completeOnboarding({ currentLevelId: levelId, learningGoal: goal, dailyTargetMin: min });
+      const res = await learningApi.completeOnboarding({
+        currentLevelId: levelId,
+        learningGoal: goal,
+        dailyTargetMin: min,
+        displayName: name,
+        gender,
+      });
+      if (res?.user) {
+        updateUser(res.user);
+      } else {
+        updateUser({
+          displayName: name,
+          gender: gender ?? null,
+          currentLevelId: levelId,
+          learningGoal: goal,
+          dailyTargetMin: min,
+          needsOnboarding: false,
+        });
+      }
       window.location.assign("/beranda");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Belum bisa menyimpan. Coba lagi.");

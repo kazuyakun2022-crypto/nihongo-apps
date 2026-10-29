@@ -17,16 +17,16 @@ export default function NgobrolPage() {
         <div className={styles.headerLeft}>
           <div className={styles.avatarMini}>
             <img
-              src="/images/neko-idle.png"
-              alt="Neko-sensei"
+              src="/neko/splash/miu-open.webp"
+              alt="Miu-chan"
               className={styles.avatarImg}
               draggable={false}
             />
-            <span className={styles.onlineDot} title="Neko-sensei Siap Membantu" />
+            <span className={styles.onlineDot} title="Miu-chan Siap Membantu" />
           </div>
           <div className={styles.senseiMeta}>
             <div className={styles.titleRow}>
-              <h1 className={styles.senseiName}>Neko-sensei</h1>
+              <h1 className={styles.senseiName}>Miu-chan</h1>
               <span className={styles.senseiBadge}>{tab === "suara" ? "3D Suara" : "AI Tutor"}</span>
             </div>
             <p className={styles.senseiStatus}>

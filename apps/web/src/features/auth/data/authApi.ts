@@ -13,4 +13,5 @@ export const authApi: AuthRepository = {
   verifyEmail: (token) => api.post<void>("/auth/verify-email", { token }),
   updateAvatar: (avatarUrl: string | null) => api.put<{ user: User }>("/auth/me/avatar", { avatarUrl }),
   deleteAvatar: () => api.delete<{ user: User }>("/auth/me/avatar"),
+  updateProfile: (input) => api.put<{ user: User }>("/auth/me/profile", input),
 };

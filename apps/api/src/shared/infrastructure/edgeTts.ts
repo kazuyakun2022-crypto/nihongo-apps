@@ -1,4 +1,5 @@
 import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
+import { voiceTone } from "./voiceTone";
 
 type Lang = "ja" | "id";
 
@@ -52,8 +53,14 @@ function splitByLanguage(text: string): Segment[] {
   return segments.map((s) => ({ ...s, text: s.text.trim() })).filter((s) => LETTER.test(s.text));
 }
 
-async function streamToBuffer(tts: MsEdgeTTS, text: string, pitch: string, rate: string): Promise<Buffer> {
-  const { audioStream } = tts.toStream(text, { pitch, rate });
+interface Prosody {
+  pitch: string;
+  rate: string;
+  volume?: string;
+}
+
+async function streamToBuffer(tts: MsEdgeTTS, text: string, prosody: Prosody): Promise<Buffer> {
+  const { audioStream } = tts.toStream(text, prosody);
   return new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = [];
     const timeout = setTimeout(() => reject(new Error("Edge TTS timeout")), 10000);
@@ -69,30 +76,27 @@ async function streamToBuffer(tts: MsEdgeTTS, text: string, pitch: string, rate:
   });
 }
 
-async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita"): Promise<Buffer> {
+async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita", emotion?: string): Promise<Buffer> {
   const voice =
     segment.lang === "ja"
       ? voiceType === "keita" ? "ja-JP-KeitaNeural" : "ja-JP-NanamiNeural"
       : "id-ID-GadisNeural";
 
-  // Suara Neko-sensei: pitch tinggi & tempo cepat untuk kesan anime imut dan energetik
-  let pitch: string;
-  let rate: string;
-  if (segment.lang === "ja") {
-    pitch = voiceType === "keita" ? "+10%" : "+24%";
-    rate  = voiceType === "keita" ? "+8%"  : "+14%";
-  } else {
-    pitch = "+16%";
-    rate  = "+12%";
-  }
+  // Suara Miu-chan: pitch tinggi & tempo cepat untuk kesan anime imut dan energetik.
+  // Ekspresi chat (emosi diberikan) memakai profil nada per emosi; selain itu nada bawaan per voice.
+  const prosody: Prosody = emotion
+    ? voiceTone(emotion).edge
+    : segment.lang === "ja"
+      ? { pitch: voiceType === "keita" ? "+10%" : "+24%", rate: voiceType === "keita" ? "+8%" : "+14%" }
+      : { pitch: "+16%", rate: "+12%" };
 
   try {
-    return await streamToBuffer(await getTts(voice), segment.text, pitch, rate);
+    return await streamToBuffer(await getTts(voice), segment.text, prosody);
   } catch {
     // Koneksi websocket bisa putus saat idle: buang instance lama lalu coba sekali lagi.
     instances.delete(voice);
     try {
-      return await streamToBuffer(await getTts(voice), segment.text, pitch, rate);
+      return await streamToBuffer(await getTts(voice), segment.text, prosody);
     } catch {
       instances.delete(voice);
       const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${segment.lang}&client=tw-ob&q=${encodeURIComponent(segment.text.slice(0, 200))}`;
@@ -104,15 +108,16 @@ async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita"
 }
 
 /**
- * Suara Neko-sensei: bagian berbahasa Jepang dibacakan voice Jepang (Nanami/Keita),
+ * Suara Miu-chan: bagian berbahasa Jepang dibacakan voice Jepang (Nanami/Keita),
  * bagian lainnya voice Indonesia (Gadis), lalu digabung jadi satu MP3.
  */
 export async function synthesizeChildVoice(
   text: string,
   voiceType: "nanami" | "keita" = "nanami",
+  emotion?: string,
 ): Promise<Buffer> {
   const clean = text.slice(0, MAX_CHARS).trim();
-  const cacheKey = `${voiceType}:${clean}`;
+  const cacheKey = `${voiceType}:${emotion ?? ""}:${clean}`;
   const cached = ttsCache.get(cacheKey);
   if (cached) return cached;
 
@@ -120,7 +125,7 @@ export async function synthesizeChildVoice(
   if (segments.length === 0) throw new Error("Teks tidak bisa dibacakan");
 
   const parts: Buffer[] = [];
-  for (const segment of segments) parts.push(await synthesizeSegment(segment, voiceType));
+  for (const segment of segments) parts.push(await synthesizeSegment(segment, voiceType, emotion));
   const buffer = Buffer.concat(parts);
 
   if (ttsCache.size < 3000) ttsCache.set(cacheKey, buffer);

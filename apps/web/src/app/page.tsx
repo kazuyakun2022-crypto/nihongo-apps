@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import {
   ArrowRightIcon,
@@ -22,6 +22,9 @@ import {
   SparklesIcon,
   StarIcon,
 } from "@/shared/ui/icons";
+import { ChibiMascot } from "@/shared/ui/neko/ChibiMascot";
+import { TransitionLink } from "@/shared/ui/ViewTransitions";
+import fujiBg from "../../public/images/fuji-bg.webp";
 import styles from "./landing.module.css";
 
 // Percakapan sapaan interaktif maskot di Hero
@@ -29,7 +32,7 @@ const MASCOT_PHRASES = [
   {
     ja: "はじめまして！よろしくね！",
     ro: "Hajimemashite! Yoroshiku ne!",
-    id: "Senang berkenalan denganmu! Aku Neko-sensei!",
+    id: "Senang berkenalan denganmu! Aku Miu-chan!",
   },
   {
     ja: "一緒に楽しく日本語をマスターしよう！",
@@ -213,11 +216,11 @@ const JLPT_LEVELS = [
 const FAQS = [
   {
     q: "Apakah pemula yang belum bisa baca huruf Jepang bisa langsung mulai?",
-    a: "Bisa banget! Neko-sensei menyediakan panduan huruf Hiragana dan Katakana dari awal, lengkap dengan cara tulis dan pelafalan audio penutur asli.",
+    a: "Bisa banget! Miu-chan menyediakan panduan huruf Hiragana dan Katakana dari awal, lengkap dengan cara tulis dan pelafalan audio penutur asli.",
   },
   {
-    q: "Bagaimana Neko-sensei menyesuaikan level percakapan?",
-    a: "Sistem mengenali level belajarmu saat ini. Jika kamu berada di level N5, Neko-sensei tidak akan memakai kanji rumit dan otomatis menyertakan furigana agar kamu tetap nyaman memahami dialog.",
+    q: "Bagaimana Miu-chan menyesuaikan level percakapan?",
+    a: "Sistem mengenali level belajarmu saat ini. Jika kamu berada di level N5, Miu-chan tidak akan memakai kanji rumit dan otomatis menyertakan furigana agar kamu tetap nyaman memahami dialog.",
   },
   {
     q: "Apakah aplikasi ini bisa dipasang di ponsel tanpa download dari Play Store / App Store?",
@@ -229,17 +232,44 @@ const FAQS = [
   },
   {
     q: "Berapa biayanya?",
-    a: "Kamu bisa memulai secara gratis tanpa kartu kredit. Terdapat pula opsi Akun Tamu (Guest) agar kamu bisa langsung mencoba materi tanpa perlu mendaftar terlebih dahulu.",
+    a: "Kamu bisa memulai secara gratis tanpa kartu kredit. Cukup daftar dengan email dan password untuk mulai belajar materi dan latihan bersama Miu-chan.",
   },
 ];
 
+/** Foto Fuji di hero: placeholder buram dulu, lalu foto aslinya memudar masuk begitu selesai dimuat. */
+function HeroBackdrop() {
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  // Gambar priority bisa selesai sebelum hidrasi sehingga onLoad terlewat
+  useEffect(() => {
+    if (imgRef.current?.complete) setLoaded(true);
+  }, []);
+
+  return (
+    <div className={styles.heroBannerBg} data-loaded={loaded} aria-hidden="true">
+      <div className={styles.heroBannerPlaceholder} style={{ backgroundImage: `url(${fujiBg.blurDataURL})` }} />
+      <Image
+        ref={imgRef}
+        src={fujiBg}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className={styles.heroBannerImg}
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  );
+}
+
 export default function LandingPage() {
-  const { status, startGuest } = useAuth();
+  const { status } = useAuth();
   const router = useRouter();
 
   // State untuk maskot sapaan
   const [phraseIdx, setPhraseIdx] = useState(0);
-  const [mascotWiggling, setMascotWiggling] = useState(false);
+  const [mascotPokes, setMascotPokes] = useState(0);
 
   // State untuk demo percakapan interaktif
   const [activeScenarioIdx, setActiveScenarioIdx] = useState(0);
@@ -253,17 +283,13 @@ export default function LandingPage() {
   // State untuk FAQ accordion
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
 
-  // Loading state untuk tombol tamu
-  const [guestLoading, setGuestLoading] = useState(false);
-
   useEffect(() => {
     if (status === "authenticated") router.replace("/beranda");
   }, [status, router]);
 
   function handleMascotClick() {
-    setMascotWiggling(true);
+    setMascotPokes((n) => n + 1);
     setPhraseIdx((prev) => (prev + 1) % MASCOT_PHRASES.length);
-    setTimeout(() => setMascotWiggling(false), 500);
   }
 
   function handleSelectScenario(index: number) {
@@ -278,18 +304,6 @@ export default function LandingPage() {
     setTimeout(() => {
       setIsTyping(false);
     }, 800);
-  }
-
-  async function handleStartGuest() {
-    setGuestLoading(true);
-    try {
-      await startGuest();
-      router.replace("/mulai");
-    } catch {
-      router.push("/daftar");
-    } finally {
-      setGuestLoading(false);
-    }
   }
 
   const currentScenario = SCENARIOS[activeScenarioIdx];
@@ -314,7 +328,7 @@ export default function LandingPage() {
             <div className={styles.brandIconWrap}>
               <Image
                 src="/app-icon.png"
-                alt="Neko-sensei"
+                alt="Miu-chan"
                 width={40}
                 height={40}
                 className={styles.brandIconImg}
@@ -323,7 +337,7 @@ export default function LandingPage() {
             </div>
             <div className={styles.brandText}>
               <span className={styles.brandTitle}>Nihongo</span>
-              <span className={styles.brandSubtitle}>日本語 × ネコ先生</span>
+              <span className={styles.brandSubtitle}>日本語 × ミウちゃん</span>
             </div>
           </Link>
 
@@ -353,19 +367,19 @@ export default function LandingPage() {
           </nav>
 
           <div className={styles.navActions}>
-            <Link href="/masuk" className={styles.loginBtn}>
+            <TransitionLink href="/masuk" className={styles.loginBtn}>
               Masuk
-            </Link>
-            <Link href="/daftar" className={styles.ctaBtnSmall}>
+            </TransitionLink>
+            <TransitionLink href="/daftar" className={styles.ctaBtnSmall}>
               Mulai Gratis
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </header>
 
       {/* ──────── Hero Section ──────── */}
       <div className={styles.heroBannerWrap}>
-        <div className={styles.heroBannerBg} aria-hidden="true" />
+        <HeroBackdrop />
         <div className={styles.heroBannerOverlay} aria-hidden="true" />
       <section className={styles.heroSection}>
         <div className={styles.heroContent}>
@@ -375,27 +389,22 @@ export default function LandingPage() {
           </div>
 
           <h1 className={styles.heroTitle}>
-            Kuasai Bahasa Jepang Lewat <span className={styles.heroTitleHighlight}>Praktik Ngobrol Asli</span> Bersama Neko-sensei
+            Kuasai Bahasa Jepang Lewat <span className={styles.heroTitleHighlight}>Praktik Ngobrol Asli</span> Bersama Miu-chan
           </h1>
 
           <p className={styles.heroSubtitle}>
-            Belajar huruf Kana, tata bahasa penting, hingga percakapan luwes persiapan JLPT. Neko-sensei otomatis menyesuaikan kosakata dan kanji dengan level kemampuanmu.
+            Belajar huruf Kana, tata bahasa penting, hingga percakapan luwes persiapan JLPT. Miu-chan otomatis menyesuaikan kosakata dan kanji dengan level kemampuanmu.
           </p>
 
           <div className={styles.heroActions}>
-            <Link href="/daftar" className={styles.btnPrimary}>
+            <TransitionLink href="/daftar" className={styles.btnPrimary}>
               <span>Mulai Belajar Sekarang</span>
               <ArrowRightIcon size={18} />
-            </Link>
+            </TransitionLink>
 
-            <button
-              type="button"
-              onClick={handleStartGuest}
-              className={styles.btnSecondary}
-              disabled={guestLoading}
-            >
-              {guestLoading ? "Menyiapkan sesi..." : "Coba Mode Tamu (Tanpa Akun)"}
-            </button>
+            <TransitionLink href="/masuk" className={styles.btnSecondary}>
+              <span>Sudah Punya Akun? Masuk</span>
+            </TransitionLink>
           </div>
 
           <div className={styles.heroChips}>
@@ -416,7 +425,7 @@ export default function LandingPage() {
           <div
             className={styles.mascotStage}
             onClick={handleMascotClick}
-            title="Klik Neko-sensei untuk mendengar sapaan lainnya!"
+            title="Klik Miu-chan untuk mendengar sapaan lainnya!"
           >
             {/* Interactive Speech Bubble */}
             <div className={styles.interactiveBubble} lang="ja">
@@ -424,18 +433,16 @@ export default function LandingPage() {
               <span className={styles.bubbleRomaji}>{MASCOT_PHRASES[phraseIdx].ro}</span>
               <span className={styles.bubbleTranslation}>{MASCOT_PHRASES[phraseIdx].id}</span>
               <span className={styles.bubbleTapHint}>
-                <PawIcon size={13} /> Sentuh Neko-sensei
+                <PawIcon size={13} /> Sentuh Miu-chan
               </span>
             </div>
 
             <div className={styles.mascotGlowCircle}>
               <div className={styles.mascotAura} />
-              <Image
-                src="/neko-sensei.png"
-                alt="Neko-sensei Maskot Kucing Guru Bahasa Jepang"
-                width={340}
-                height={340}
-                className={`${styles.mascotMainImg} ${mascotWiggling ? styles.wiggling : ""}`}
+              <ChibiMascot
+                alt="Miu-chan Maskot Bahasa Jepang"
+                pokeSignal={mascotPokes}
+                className={styles.mascotMainImg}
                 priority
               />
 
@@ -459,9 +466,9 @@ export default function LandingPage() {
       <section id="simulasi" className={styles.demoSection}>
         <div className={styles.sectionHeader}>
           <span className={styles.sectionTag}>Simulasi Langsung</span>
-          <h2 className={styles.sectionTitle}>Rasakan Serunya Latihan Ngobrol bersama Neko-sensei</h2>
+          <h2 className={styles.sectionTitle}>Rasakan Serunya Latihan Ngobrol bersama Miu-chan</h2>
           <p className={styles.sectionDesc}>
-            Coba klik salah satu pilihan respons di bawah untuk melihat bagaimana Neko-sensei merespons dan memberikan masukan tata bahasa seketika!
+            Coba klik salah satu pilihan respons di bawah untuk melihat bagaimana Miu-chan merespons dan memberikan masukan tata bahasa seketika!
           </p>
         </div>
 
@@ -484,10 +491,10 @@ export default function LandingPage() {
 
           {/* Chat Window */}
           <div className={styles.chatMockup}>
-            {/* Pesan Awal Neko-sensei */}
+            {/* Pesan Awal Miu-chan */}
             <div className={`${styles.chatMessageRow} ${styles.chatMascotRow}`}>
               <div className={styles.chatAvatar}>
-                <Image src="/neko-sensei.png" alt="Neko-sensei" width={44} height={44} />
+                <Image src="/neko/chibi/neko-chibi-face.webp" alt="Miu-chan" width={44} height={44} />
               </div>
               <div className={`${styles.chatBubble} ${styles.chatBubbleMascot}`}>
                 <p
@@ -516,11 +523,11 @@ export default function LandingPage() {
               </div>
             )}
 
-            {/* Indikator Mengetik atau Jawaban Neko-sensei */}
+            {/* Indikator Mengetik atau Jawaban Miu-chan */}
             {isTyping && (
               <div className={`${styles.chatMessageRow} ${styles.chatMascotRow}`}>
                 <div className={styles.chatAvatar}>
-                  <Image src="/neko-sensei.png" alt="Neko-sensei" width={44} height={44} />
+                  <Image src="/neko/chibi/neko-chibi-face.webp" alt="Miu-chan" width={44} height={44} />
                 </div>
                 <div className={styles.typingIndicator}>
                   <span className={styles.typingDot} />
@@ -533,7 +540,7 @@ export default function LandingPage() {
             {!isTyping && userSelectedOption !== null && (
               <div className={`${styles.chatMessageRow} ${styles.chatMascotRow}`}>
                 <div className={styles.chatAvatar}>
-                  <Image src="/neko-sensei.png" alt="Neko-sensei" width={44} height={44} />
+                  <Image src="/neko/chibi/neko-chibi-face.webp" alt="Miu-chan" width={44} height={44} />
                 </div>
                 <div className={`${styles.chatBubble} ${styles.chatBubbleMascot}`}>
                   <p
@@ -611,7 +618,7 @@ export default function LandingPage() {
             </div>
             <h3 className={styles.featureTitle}>AI Maskot Beradaptasi</h3>
             <p className={styles.featureDesc}>
-              Neko-sensei membatasi kosakata dan kanji sesuai level yang kamu pilih. Tidak ada kalimat rumit membingungkan jika kamu pemula.
+              Miu-chan membatasi kosakata dan kanji sesuai level yang kamu pilih. Tidak ada kalimat rumit membingungkan jika kamu pemula.
             </p>
           </div>
 
@@ -692,9 +699,9 @@ export default function LandingPage() {
               </div>
 
               <div style={{ marginTop: "1rem" }}>
-                <Link href="/daftar" className={styles.ctaBtnSmall}>
+                <TransitionLink href="/daftar" className={styles.ctaBtnSmall}>
                   Mulai Belajar Level {activeLevelData.code}
-                </Link>
+                </TransitionLink>
               </div>
             </div>
 
@@ -719,7 +726,7 @@ export default function LandingPage() {
           <span className={styles.sectionTag}>Tanya Jawab</span>
           <h2 className={styles.sectionTitle}>Pertanyaan yang Sering Diajukan</h2>
           <p className={styles.sectionDesc}>
-            Semua yang perlu kamu ketahui sebelum memulai belajar bersama Neko-sensei.
+            Semua yang perlu kamu ketahui sebelum memulai belajar bersama Miu-chan.
           </p>
         </div>
 
@@ -750,32 +757,21 @@ export default function LandingPage() {
       <section className={styles.ctaBannerSection}>
         <div className={styles.ctaCard}>
           <div className={styles.ctaMascotWrap}>
-            <Image
-              src="/neko-sensei.png"
-              alt="Neko-sensei Melambai"
-              width={220}
-              height={220}
-              className={styles.ctaMascotImg}
-            />
+            <ChibiMascot alt="Miu-chan Melambai" className={styles.ctaMascotImg} />
           </div>
 
           <div className={styles.ctaInfo}>
             <h2 className={styles.ctaHeading}>Siap Menguasai Bahasa Jepang dengan Percaya Diri?</h2>
             <p className={styles.ctaSubheading}>
-              Bergabunglah hari ini dan rasakan kemudahan latihan ngobrol setiap hari bersama Neko-sensei.
+              Bergabunglah hari ini dan rasakan kemudahan latihan ngobrol setiap hari bersama Miu-chan.
             </p>
             <div className={styles.ctaButtonRow}>
-              <Link href="/daftar" className={styles.ctaBtnLight}>
+              <TransitionLink href="/daftar" className={styles.ctaBtnLight}>
                 Buat Akun Gratis Sekarang
-              </Link>
-              <button
-                type="button"
-                onClick={handleStartGuest}
-                className={styles.ctaBtnGhost}
-                disabled={guestLoading}
-              >
-                {guestLoading ? "Memuat..." : "Coba Dulu Tanpa Akun"}
-              </button>
+              </TransitionLink>
+              <TransitionLink href="/masuk" className={styles.ctaBtnGhost}>
+                Masuk ke Akun
+              </TransitionLink>
             </div>
           </div>
         </div>
@@ -785,22 +781,22 @@ export default function LandingPage() {
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
           <div className={styles.footerBrand}>
-            <Image src="/app-icon.png" alt="Neko-sensei" width={32} height={32} style={{ borderRadius: "50%" }} />
+            <Image src="/app-icon.png" alt="Miu-chan" width={32} height={32} style={{ borderRadius: "50%" }} />
             <span className={styles.footerBrandText}>
-              © 2026 Nihongo bersama Neko-sensei. Aplikasi E-learning Bahasa Jepang & PWA.
+              © 2026 Nihongo bersama Miu-chan. Aplikasi E-learning Bahasa Jepang & PWA.
             </span>
           </div>
 
           <ul className={styles.footerLinks}>
             <li>
-              <Link href="/masuk" className={styles.footerLink}>
+              <TransitionLink href="/masuk" className={styles.footerLink}>
                 Masuk
-              </Link>
+              </TransitionLink>
             </li>
             <li>
-              <Link href="/daftar" className={styles.footerLink}>
+              <TransitionLink href="/daftar" className={styles.footerLink}>
                 Daftar
-              </Link>
+              </TransitionLink>
             </li>
             <li>
               <Link href="/privasi" className={styles.footerLink}>
@@ -811,16 +807,6 @@ export default function LandingPage() {
               <Link href="/ketentuan" className={styles.footerLink}>
                 Ketentuan
               </Link>
-            </li>
-            <li>
-              <button
-                type="button"
-                onClick={handleStartGuest}
-                className={styles.footerLink}
-                style={{ background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}
-              >
-                Mode Tamu
-              </button>
             </li>
           </ul>
         </div>

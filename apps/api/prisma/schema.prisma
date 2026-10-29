@@ -135,6 +135,7 @@ model User {
   // Kunci tujuan belajar dari pengaturan pendaftaran (lihat AppSetting "onboarding")
   learningGoal        String?       @map("learning_goal") @db.VarChar(50)
   gender              Gender?       @map("gender")
+  genderUpdatedAt     DateTime?     @map("gender_updated_at") @db.Timestamptz
   avatarUrl           String?       @map("avatar_url") @db.Text
   dailyTargetMin      Int?          @map("daily_target_min") @db.SmallInt
   xpTotal             Int           @default(0) @map("xp_total")

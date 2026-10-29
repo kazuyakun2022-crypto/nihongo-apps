@@ -8,6 +8,8 @@ import { useAuth } from "@/features/auth/application/AuthProvider";
 import type { Gender } from "@/features/auth/domain/types";
 import { useVoiceChat, type VoiceState } from "../application/useVoiceChat";
 import { FormattedChatMessage } from "./FormattedChatMessage";
+import { SpeechSubtitle } from "./SpeechSubtitle";
+import subtitleStyles from "./subtitle.module.css";
 import styles from "./voiceChat.module.css";
 
 /* ── Label status ── */
@@ -72,16 +74,21 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
     getVoiceLevel,
     messages,
     transcript,
+    spoken,
+    getSpeechProgress,
     error,
     isSupported,
     startListening,
     stopListening,
+    prefetchGreet,
     greet,
     stop,
     clear,
   } = useVoiceChat();
   const { status, user } = useAuth();
   const hasGreeted = useRef(false);
+  // Sapaan dipilih sekali, supaya audio hasil prefetch cocok dengan teks yang diputar
+  const greetingRef = useRef<string | null>(null);
   const [showTranscript, setShowTranscript] = useState(false);
   const transcriptListRef = useRef<HTMLDivElement>(null);
   const isHolding = useRef(false);
@@ -102,13 +109,20 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
     }
   }, [isActiveTab, stop]);
 
-  // Sapa hanya saat tab suara aktif, setelah data akun siap, dan belum pernah menyapa
+  // Siapkan suara sapaan begitu data akun siap, tanpa menunggu tab Suara dibuka
   useEffect(() => {
-    if (!isActiveTab || hasGreeted.current || status === "loading" || !isSupported) return;
-    hasGreeted.current = true;
+    if (greetingRef.current || status === "loading" || !isSupported) return;
     const name = user && !user.isGuest ? user.displayName.trim() || null : null;
-    void greet(buildGreeting(name, name ? user?.gender : null));
-  }, [isActiveTab, status, user, isSupported, greet]);
+    greetingRef.current = buildGreeting(name, name ? user?.gender : null);
+    prefetchGreet(greetingRef.current);
+  }, [status, user, isSupported, prefetchGreet]);
+
+  // Sapa saat tab suara aktif; audionya biasanya sudah siap dari prefetch
+  useEffect(() => {
+    if (!isActiveTab || hasGreeted.current || !greetingRef.current) return;
+    hasGreeted.current = true;
+    void greet(greetingRef.current);
+  }, [isActiveTab, status, greet]);
 
   useEffect(() => {
     if (transcriptListRef.current) {
@@ -190,6 +204,9 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
   }, []);
 
   const isActive = state === "listening";
+  // Koreksi dari jawaban terakhir Miu-chan, tampil sampai user bicara lagi
+  const lastMessage = messages[messages.length - 1];
+  const latestCorrection = lastMessage?.role === "ai" ? lastMessage.correction : null;
   const isBusy = state === "processing";
 
   if (!isSupported) {
@@ -276,11 +293,19 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
           {STATUS[state]}
         </p>
 
-        {/* Slot transkrip sementara berukuran tetap agar posisi maskot tidak berpindah */}
+        {/* Slot subtitle & transkrip — ukuran tetap agar maskot tidak berpindah */}
         <div className={styles.transcriptSlot}>
-          {transcript && (
+          {state === "speaking" && spoken ? (
+            <SpeechSubtitle key={spoken.id} text={spoken.text} emotion={emotion} getProgress={getSpeechProgress} />
+          ) : transcript ? (
             <p className={styles.liveTranscript} aria-live="polite">
               "{transcript}"
+            </p>
+          ) : null}
+          {latestCorrection && state !== "listening" && (
+            <p className={subtitleStyles.correction}>
+              <span className={subtitleStyles.correctionLabel}>Yang benar</span>
+              <span className={subtitleStyles.correctionText} lang="ja">{latestCorrection}</span>
             </p>
           )}
         </div>
@@ -340,6 +365,12 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
                 </div>
                 <div className={`${styles.msgBubble} ${m.role === "ai" ? styles.msgBubbleAi : styles.msgBubbleUser}`}>
                   <FormattedChatMessage content={m.text} isAi={m.role === "ai"} />
+                  {m.correction && (
+                    <p className={subtitleStyles.correction} style={{ marginTop: "var(--space-2)" }}>
+                      <span className={subtitleStyles.correctionLabel}>Yang benar</span>
+                      <span className={subtitleStyles.correctionText} lang="ja">{m.correction}</span>
+                    </p>
+                  )}
                 </div>
               </div>
             ))}

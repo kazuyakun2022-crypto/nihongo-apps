@@ -1,23 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ApiError } from "@/core/http/apiClient";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { TextField } from "@/shared/ui/TextField";
+import { TransitionLink } from "@/shared/ui/ViewTransitions";
 import { useAuth } from "../application/AuthProvider";
 import type { Gender } from "../domain/types";
 import { AuthCard } from "./AuthCard";
 import styles from "./auth.module.css";
 
-type FieldErrors = Partial<Record<"displayName" | "email" | "password" | "gender", string>>;
-
-const GENDERS: { value: Gender; label: string; call: string }[] = [
-  { value: "male", label: "Laki-laki", call: "お兄ちゃん" },
-  { value: "female", label: "Perempuan", call: "お姉ちゃん" },
-];
+type FieldErrors = Partial<Record<"email" | "password" | "confirmPassword", string>>;
 
 export function RegisterForm() {
   const { register, loginWithOAuth, user } = useAuth();
@@ -26,7 +21,7 @@ export function RegisterForm() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [gender, setGender] = useState<Gender | null>(null);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const googleBtnRef = useRef<HTMLDivElement | null>(null);
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const fromGuest = user?.isGuest;
@@ -51,60 +46,82 @@ export function RegisterForm() {
 
   useEffect(() => {
     if (!googleClientId) return;
-    if (window.google?.accounts?.id) {
+
+    function renderGoogleBtn() {
+      if (!window.google?.accounts?.id || !googleBtnRef.current) return;
       window.google.accounts.id.initialize({
         client_id: googleClientId,
         callback: onGoogleCredential,
       });
-      if (googleBtnRef.current) {
-        window.google.accounts.id.renderButton(googleBtnRef.current, {
-          theme: "outline",
-          size: "large",
-          width: googleBtnRef.current.offsetWidth || 320,
-          text: "signup_with",
-          shape: "rectangular",
-        });
-      }
+
+      const rawWidth = googleBtnRef.current.clientWidth || (typeof window !== "undefined" ? Math.min(window.innerWidth - 64, 320) : 280);
+      const targetWidth = Math.min(Math.max(rawWidth, 220), 340);
+
+      window.google.accounts.id.renderButton(googleBtnRef.current, {
+        theme: "outline",
+        size: "large",
+        width: targetWidth,
+        text: "signup_with",
+        shape: "pill",
+        logo_alignment: "left",
+      });
+    }
+
+    if (window.google?.accounts?.id) {
+      renderGoogleBtn();
       return;
     }
+
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
     script.onload = () => {
-      window.google?.accounts?.id?.initialize({
-        client_id: googleClientId,
-        callback: onGoogleCredential,
-      });
-      if (googleBtnRef.current && window.google?.accounts?.id) {
-        window.google.accounts.id.renderButton(googleBtnRef.current, {
-          theme: "outline",
-          size: "large",
-          width: googleBtnRef.current.offsetWidth || 320,
-          text: "signup_with",
-          shape: "rectangular",
-        });
-      }
+      renderGoogleBtn();
     };
     document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
   }, [googleClientId]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    if (!gender) {
-      setFieldErrors({ gender: "Pilih jenis kelamin dulu." });
+    const email = String(form.get("email") || "").trim();
+    const password = String(form.get("password") || "");
+    const confirmPassword = String(form.get("confirmPassword") || "");
+
+    const errors: FieldErrors = {};
+    if (!email) {
+      errors.email = "Email wajib diisi.";
+    }
+    if (!password) {
+      errors.password = "Password wajib diisi.";
+    } else if (password.length < 8) {
+      errors.password = "Password minimal 8 karakter.";
+    }
+    if (!confirmPassword) {
+      errors.confirmPassword = "Ulangi password di sini.";
+    } else if (password !== confirmPassword) {
+      errors.confirmPassword = "Konfirmasi password tidak cocok dengan password.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
+
     setBusy(true);
     setError(null);
     setFieldErrors({});
     try {
       const res = await register({
-        displayName: String(form.get("displayName")),
-        email: String(form.get("email")),
-        password: String(form.get("password")),
-        gender,
+        email,
+        password,
       });
       router.replace(res.user.needsOnboarding ? "/mulai" : "/beranda");
     } catch (err) {
@@ -121,48 +138,20 @@ export function RegisterForm() {
     <AuthCard
       title={fromGuest ? "Simpan Progres Belajarmu" : "Buat Akun Baru"}
       japaneseTitle={fromGuest ? "データ保存" : "新規登録"}
-      lead={fromGuest ? "Semua XP dan kartu flashcard yang kamu buat akan tetap tersimpan." : "100% Gratis! Progresmu otomatis tersimpan di semua perangkat."}
-      bubbleText={fromGuest ? "これで安心！(Progresmu aman!)" : "いらっしゃい！(Selamat datang!)"}
+      lead={fromGuest ? "Semua XP dan kartu flashcard yang kamu buat akan tetap tersimpan." : "100% Gratis! Cukup email & password, lalu atur profilmu di langkah berikutnya."}
+      bubbleText={
+        busy
+          ? "ちょっと待ってね… (Sebentar ya…)"
+          : error || Object.keys(fieldErrors).length > 0
+            ? "あれれ？ (Ada yang perlu dibenahi)"
+            : fromGuest
+              ? "これで安心！(Progresmu aman!)"
+              : "いらっしゃい！(Selamat datang!)"
+      }
+      mood={busy ? "berpikir" : error || Object.keys(fieldErrors).length > 0 ? "bingung" : "semangat"}
     >
       <form className={styles.form} onSubmit={onSubmit} noValidate>
         {error && <Alert tone="danger">{error}</Alert>}
-
-        <TextField
-          label="Nama Panggilan"
-          name="displayName"
-          autoComplete="nickname"
-          placeholder="Contoh: Budi, Sakura"
-          hint="Neko-sensei akan menyapamu dengan nama ini."
-          error={fieldErrors.displayName}
-          required
-        />
-
-        <fieldset className={styles.genderField} aria-describedby="gender-hint">
-          <legend className={styles.genderLegend}>Jenis Kelamin</legend>
-          <div className={styles.genderOptions}>
-            {GENDERS.map((g) => (
-              <label key={g.value} className={styles.genderOption} data-active={gender === g.value}>
-                <input
-                  type="radio"
-                  name="gender"
-                  value={g.value}
-                  checked={gender === g.value}
-                  onChange={() => {
-                    setGender(g.value);
-                    setFieldErrors((f) => ({ ...f, gender: undefined }));
-                  }}
-                />
-                <span>{g.label}</span>
-                <span className={styles.genderCall} lang="ja">{g.call}</span>
-              </label>
-            ))}
-          </div>
-          {fieldErrors.gender ? (
-            <p id="gender-hint" className={styles.genderError}>{fieldErrors.gender}</p>
-          ) : (
-            <p id="gender-hint" className={styles.genderHint}>Miu-chan akan memanggilmu お兄ちゃん atau お姉ちゃん.</p>
-          )}
-        </fieldset>
 
         <TextField
           label="Email"
@@ -180,7 +169,6 @@ export function RegisterForm() {
           type={showPassword ? "text" : "password"}
           autoComplete="new-password"
           placeholder="Minimal 8 karakter"
-          hint="Gunakan kombinasi huruf dan angka agar aman."
           error={fieldErrors.password}
           required
           rightElement={
@@ -206,22 +194,53 @@ export function RegisterForm() {
           }
         />
 
+        <TextField
+          label="Konfirmasi Password"
+          name="confirmPassword"
+          type={showConfirmPassword ? "text" : "password"}
+          autoComplete="new-password"
+          placeholder="Ulangi password"
+          error={fieldErrors.confirmPassword}
+          required
+          rightElement={
+            <button
+              type="button"
+              className={styles.togglePassBtn}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              aria-label={showConfirmPassword ? "Sembunyikan konfirmasi password" : "Tampilkan konfirmasi password"}
+              title={showConfirmPassword ? "Sembunyikan konfirmasi password" : "Tampilkan konfirmasi password"}
+            >
+              {showConfirmPassword ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          }
+        />
+
         <p className={styles.legal}>
           Dengan mendaftar, kamu menyetujui Syarat Layanan dan Kebijakan Privasi Nihongo.
         </p>
 
-        <Button type="submit" block disabled={busy}>
+        <Button type="submit" block disabled={busy} className={styles.submitBtn}>
           {busy ? "Membuat akun…" : "Daftar Sekarang"}
         </Button>
       </form>
 
       <div className={styles.divider}>
-        <span>atau daftar dengan</span>
+        <span className={styles.dividerText}>atau daftar dengan</span>
       </div>
 
-      <div className={styles.oauthRow}>
+      <div className={styles.googleContainer}>
         {googleClientId ? (
-          <div ref={googleBtnRef} style={{ display: "flex", justifyContent: "center", width: "100%" }} />
+          <div ref={googleBtnRef} className={styles.googleBtnSlot} />
         ) : (
           <button
             type="button"
@@ -241,7 +260,10 @@ export function RegisterForm() {
       </div>
 
       <p className={styles.footer}>
-        Sudah punya akun? <Link href="/masuk">Masuk ke akunmu</Link>
+        Sudah punya akun?{" "}
+        <TransitionLink href="/masuk" className={styles.footerLink}>
+          Masuk ke akunmu
+        </TransitionLink>
       </p>
     </AuthCard>
   );

@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { Button } from "@/shared/ui/Button";
+import { TextField } from "@/shared/ui/TextField";
+import { Alert } from "@/shared/ui/Alert";
+import { ConfirmModal } from "@/shared/ui/ConfirmModal";
+import type { Gender } from "@/features/auth/domain/types";
 import styles from "./profil.module.css";
 
 const roleLabel = {
@@ -56,7 +60,7 @@ function processImageFile(file: File): Promise<string> {
 }
 
 export default function ProfilPage() {
-  const { user, logout, updateAvatar } = useAuth();
+  const { user, logout, updateAvatar, updateProfile } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,22 +68,96 @@ export default function ProfilPage() {
   const [uploading, setUploading] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [editDisplayName, setEditDisplayName] = useState("");
+  const [editGender, setEditGender] = useState<Gender | null>(null);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+
+  const [logoutTarget, setLogoutTarget] = useState<"current" | "all" | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  // Perhitungan jeda (cooldown) perubahan jenis kelamin 2 hari (48 jam)
+  const COOLDOWN_MS = 2 * 24 * 60 * 60 * 1000;
+  const genderUpdatedTime = user?.genderUpdatedAt ? new Date(user.genderUpdatedAt).getTime() : 0;
+  const isGenderLocked = Boolean(
+    genderUpdatedTime && Date.now() - genderUpdatedTime < COOLDOWN_MS
+  );
+  const remainingHours = isGenderLocked
+    ? Math.max(1, Math.ceil((COOLDOWN_MS - (Date.now() - genderUpdatedTime)) / (1000 * 60 * 60)))
+    : 0;
+  const unlockDateStr = isGenderLocked
+    ? new Date(genderUpdatedTime + COOLDOWN_MS).toLocaleString("id-ID", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
+
+  function handleOpenEditProfile() {
+    if (!user) return;
+    setEditDisplayName(user.displayName);
+    setEditGender(user.gender ?? null);
+    setProfileError(null);
+    setIsEditProfileOpen(true);
+  }
+
+  async function handleSaveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user) return;
+    const trimmed = editDisplayName.trim();
+    if (trimmed.length < 2) {
+      setProfileError("Nama panggilan minimal 2 karakter.");
+      return;
+    }
+    setSavingProfile(true);
+    setProfileError(null);
+    try {
+      await updateProfile({
+        displayName: trimmed,
+        gender: isGenderLocked ? undefined : editGender,
+      });
+      setIsEditProfileOpen(false);
+      setFeedback({ type: "success", text: "Data profil berhasil diperbarui!" });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Gagal memperbarui profil";
+      setProfileError(msg);
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
   useEffect(() => {
-    if (!isPhotoModalOpen) return;
+    if (!isPhotoModalOpen && !isEditProfileOpen && !logoutTarget) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !uploading) {
+      if (e.key === "Escape" && !uploading && !savingProfile && !loggingOut) {
         setIsPhotoModalOpen(false);
+        setIsEditProfileOpen(false);
+        setLogoutTarget(null);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPhotoModalOpen, uploading]);
+  }, [isPhotoModalOpen, isEditProfileOpen, logoutTarget, uploading, savingProfile, loggingOut]);
 
   if (!user) return null;
 
-  async function out(all: boolean) {
-    await logout(all);
-    router.replace("/masuk");
+  function handleTriggerLogout(all: boolean) {
+    setLogoutTarget(all ? "all" : "current");
+  }
+
+  async function handleConfirmLogout() {
+    if (!logoutTarget) return;
+    setLoggingOut(true);
+    try {
+      await logout(logoutTarget === "all");
+      router.replace("/masuk");
+    } finally {
+      setLoggingOut(false);
+      setLogoutTarget(null);
+    }
   }
 
   function handleTriggerFileInput() {
@@ -185,6 +263,11 @@ export default function ProfilPage() {
                 </span>
               </div>
               <p className={styles.userEmail}>{user.email ?? "Akun Tamu (Belum ada email)"}</p>
+              <div style={{ marginTop: "6px" }}>
+                <button type="button" className={styles.editProfileBtn} onClick={handleOpenEditProfile}>
+                  ✏️ Edit Profil
+                </button>
+              </div>
             </div>
           </div>
 
@@ -253,7 +336,7 @@ export default function ProfilPage() {
                 <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Moderasi akun siswa, pencarian cepat & penangguhan (suspend)</li>
                 <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pemantauan metrik dan ringkasan aktivitas siswa real-time</li>
                 <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Akses penuh seluruh materi pembelajaran level N5–N1</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Mode pantau konfigurasi prompt AI maskot Neko</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Mode pantau konfigurasi prompt AI maskot Miu-chan</li>
               </ul>
               <Link href="/admin" className={styles.portalCtaBtn} style={{ background: "linear-gradient(135deg, #6366f1, #4f46e5)" }}>
                 Buka Dashboard Administrator →
@@ -328,10 +411,25 @@ export default function ProfilPage() {
         <div className={styles.secondaryCol}>
           {/* Account Details */}
           <div className={styles.infoCard}>
-            <h3 className={styles.cardHeaderTitle}>Informasi Akun</h3>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-2)" }}>
+              <h3 className={styles.cardHeaderTitle} style={{ margin: 0 }}>Informasi Akun</h3>
+              <button type="button" className={styles.editProfileBtn} onClick={handleOpenEditProfile}>
+                ✏️ Edit Data
+              </button>
+            </div>
             <div className={styles.infoRow}>
               <span className={styles.infoLabel}>Nama Panggilan</span>
               <span className={styles.infoValue}>{user.displayName}</span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Jenis Kelamin</span>
+              <span className={styles.infoValue}>
+                {user.gender === "male"
+                  ? "👦 Laki-laki (お兄ちゃん)"
+                  : user.gender === "female"
+                  ? "👧 Perempuan (お姉ちゃん)"
+                  : "Belum diatur"}
+              </span>
             </div>
             <div className={styles.infoRow}>
               <span className={styles.infoLabel}>Alamat Email</span>
@@ -375,7 +473,7 @@ export default function ProfilPage() {
                 🔁 Review Kartu
               </Link>
               <Link href="/ngobrol" className={styles.shortcutBtn}>
-                💬 Tanya Neko-sensei
+                💬 Tanya Miu-chan
               </Link>
               <Link href="/suara" className={styles.shortcutBtn}>
                 🎙️ Ngobrol Suara
@@ -401,11 +499,11 @@ export default function ProfilPage() {
             <h3 className={styles.cardHeaderTitle}>Sesi Masuk</h3>
             <p className={styles.actionsSub}>Keluar dari sesi browser ini atau amankan akun dengan keluar dari semua perangkat.</p>
             <div className={styles.actions}>
-              <Button variant="secondary" onClick={() => out(false)}>
+              <Button variant="secondary" type="button" onClick={() => handleTriggerLogout(false)}>
                 Keluar dari Akun Ini
               </Button>
               {!user.isGuest && (
-                <Button variant="ghost" onClick={() => out(true)}>
+                <Button variant="ghost" type="button" onClick={() => handleTriggerLogout(true)}>
                   Keluar dari Semua Perangkat
                 </Button>
               )}
@@ -554,6 +652,157 @@ export default function ProfilPage() {
           </div>
         </div>
       )}
+
+      {/* ── MODAL KHUSUS EDIT DATA PROFIL ── */}
+      {isEditProfileOpen && (
+        <div
+          className={styles.modalBackdrop}
+          onClick={() => {
+            if (!savingProfile) setIsEditProfileOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-profile-title"
+        >
+          <div className={`${styles.modalBox} ${styles.editModalBox}`} onClick={(e) => e.stopPropagation()}>
+            {/* Header Modal */}
+            <div className={styles.modalHeader}>
+              <div className={styles.modalHeaderTitleGroup}>
+                <h3 id="edit-profile-title" className={styles.modalTitle}>
+                  Edit Data Profil
+                </h3>
+                <p className={styles.modalSubtitle}>Ubah nama panggilan dan jenis kelamin / sapaan akrab</p>
+              </div>
+              <button
+                type="button"
+                className={styles.modalCloseBtn}
+                onClick={() => setIsEditProfileOpen(false)}
+                disabled={savingProfile}
+                aria-label="Tutup modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Form Body */}
+            <form onSubmit={handleSaveProfile} style={{ padding: "var(--space-5)" }}>
+              <div className={styles.editProfileForm}>
+                <TextField
+                  label="Nama Panggilan"
+                  value={editDisplayName}
+                  onChange={(e) => setEditDisplayName(e.target.value)}
+                  maxLength={50}
+                  required
+                  hint="Nama yang dipanggil oleh sensei dan teman belajar."
+                  autoFocus
+                />
+
+                <div style={{ display: "grid", gap: "var(--space-2)" }}>
+                  <label style={{ fontSize: "var(--font-size-sm)", fontWeight: "var(--font-weight-bold)", color: "var(--color-text)" }}>
+                    Jenis Kelamin & Panggilan Akrab
+                  </label>
+
+                  <div className={styles.editGenderGrid}>
+                    <label
+                      className={styles.editGenderCard}
+                      data-active={editGender === "male"}
+                      data-disabled={isGenderLocked}
+                      style={{
+                        borderColor: editGender === "male" ? "var(--color-primary)" : undefined,
+                        cursor: isGenderLocked ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="editGender"
+                        value="male"
+                        checked={editGender === "male"}
+                        disabled={isGenderLocked}
+                        onChange={() => setEditGender("male")}
+                      />
+                      <span style={{ fontSize: "1.75rem", lineHeight: 1 }}>👦</span>
+                      <span className={styles.editGenderCall}>お兄ちゃん (Onii-chan)</span>
+                      <span className={styles.editGenderLabel}>Laki-laki</span>
+                    </label>
+
+                    <label
+                      className={styles.editGenderCard}
+                      data-active={editGender === "female"}
+                      data-disabled={isGenderLocked}
+                      style={{
+                        borderColor: editGender === "female" ? "var(--color-primary)" : undefined,
+                        cursor: isGenderLocked ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="editGender"
+                        value="female"
+                        checked={editGender === "female"}
+                        disabled={isGenderLocked}
+                        onChange={() => setEditGender("female")}
+                      />
+                      <span style={{ fontSize: "1.75rem", lineHeight: 1 }}>👧</span>
+                      <span className={styles.editGenderCall}>お姉ちゃん (Onee-chan)</span>
+                      <span className={styles.editGenderLabel}>Perempuan</span>
+                    </label>
+                  </div>
+
+                  {isGenderLocked ? (
+                    <div className={`${styles.cooldownBox} ${styles.cooldownBoxLocked}`}>
+                      <span style={{ fontSize: "1.2rem" }}>🔒</span>
+                      <div>
+                        <strong>Jenis kelamin dalam masa jeda 2 hari.</strong>
+                        <p style={{ margin: "2px 0 0", opacity: 0.9 }}>
+                          Tersisa sekitar {remainingHours} jam lagi (tersedia kembali pada {unlockDateStr}). Nama panggilan tetap bisa kamu ubah kapan saja.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`${styles.cooldownBox} ${styles.cooldownBoxUnlocked}`}>
+                      <span style={{ fontSize: "1.1rem" }}>⏳</span>
+                      <span>
+                        Setelah disimpan, pilihan jenis kelamin akan memasuki jeda selama <strong>2 hari (48 jam)</strong> sebelum dapat diubah kembali.
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {profileError && <Alert>{profileError}</Alert>}
+
+                <div className={styles.editModalActions}>
+                  <Button variant="ghost" type="button" disabled={savingProfile} onClick={() => setIsEditProfileOpen(false)}>
+                    Batal
+                  </Button>
+                  <Button type="submit" disabled={savingProfile || editDisplayName.trim().length < 2}>
+                    {savingProfile ? "Menyimpan…" : "Simpan Perubahan"}
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL KONFIRMASI KELUAR AKUN ── */}
+      <ConfirmModal
+        isOpen={logoutTarget !== null}
+        onClose={() => {
+          if (!loggingOut) setLogoutTarget(null);
+        }}
+        onConfirm={handleConfirmLogout}
+        title={logoutTarget === "all" ? "Keluar dari Semua Perangkat?" : "Konfirmasi Keluar Akun"}
+        description={
+          logoutTarget === "all"
+            ? "Kamu akan dikeluarkan dari semua browser dan perangkat yang sedang aktif. Kamu harus masuk kembali untuk melanjutkan belajar."
+            : "Apakah kamu yakin ingin keluar dari akun NihonGo di browser ini?"
+        }
+        confirmText="Ya, Keluar"
+        cancelText="Batal"
+        confirmVariant="danger"
+        iconType="logout"
+        busy={loggingOut}
+      />
     </section>
   );
 }

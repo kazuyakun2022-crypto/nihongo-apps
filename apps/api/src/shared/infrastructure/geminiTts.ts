@@ -1,5 +1,6 @@
 import { stripRomajiGloss } from "./edgeTts";
 import { shiftPitch } from "./pitchShift";
+import { applyGain, voiceTone } from "./voiceTone";
 
 // Free tier: 3 request/menit dan 10 request/hari PER model, jadi dirotasi; urutan = tercepat lebih dulu.
 // gemini-2.5-flash-preview-tts sengaja tidak dipakai: butuh ~26 detik per jawaban.
@@ -7,9 +8,6 @@ import { shiftPitch } from "./pitchShift";
 const MODELS = ["gemini-3.8-flash-lite-tts", "gemini-3.8-flash-tts", "gemini-3.1-flash-tts-preview"];
 const VOICE = "Leda";
 const SAMPLE_RATE = 24000;
-// Leda dibuat lebih imut: nada naik ±3 semitone (1.2x), tempo sedikit lebih cepat supaya terdengar ceria.
-const PITCH = 1.2;
-const TEMPO = 1.05;
 const MAX_CHARS = 800;
 const PER_MINUTE_COOLDOWN_MS = 60_000;
 const PER_DAY_COOLDOWN_MS = 60 * 60_000;
@@ -77,16 +75,19 @@ function pcmToWav(pcm: Buffer, sampleRate: number): Buffer {
   return Buffer.concat([header, pcm]);
 }
 
-/** Suara karakter Neko-sensei: satu voice yang sama untuk bahasa Indonesia dan Jepang. */
+/** Suara karakter Miu-chan: satu voice yang sama untuk bahasa Indonesia dan Jepang. */
 export class GeminiTts {
   private readonly cache = new Map<string, Buffer>();
   private readonly limitedUntil = new Map<string, number>();
 
   constructor(private readonly apiKey: string) {}
 
-  async speak(text: string): Promise<Buffer> {
+  /** Leda dibuat lebih imut (nada ±3 semitone lebih tinggi); nada, tempo, dan volume lalu digeser sesuai emosi. */
+  async speak(text: string, emotion?: string): Promise<Buffer> {
     const clean = stripRomajiGloss(text.slice(0, MAX_CHARS).trim());
-    const cached = this.cache.get(clean);
+    const tone = voiceTone(emotion);
+    const cacheKey = `${emotion ?? "biasa"}:${clean}`;
+    const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
     // Model mana pun yang gagal (kuota, 5xx, timeout) dilewati, supaya voice Leda tetap dipakai
@@ -125,9 +126,9 @@ export class GeminiTts {
         if (!audio) throw new Error("tidak mengembalikan audio");
 
         const { pcm, sampleRate } = extractPcm(Buffer.from(audio, "base64"));
-        const shifted = shiftPitch(pcm, sampleRate, PITCH, TEMPO);
+        const shifted = shiftPitch(applyGain(pcm, tone.gain), sampleRate, tone.pitch, tone.tempo);
         const wav = pcmToWav(shifted.pcm, shifted.sampleRate);
-        if (this.cache.size < 200) this.cache.set(clean, wav);
+        if (this.cache.size < 200) this.cache.set(cacheKey, wav);
         return wav;
       } catch (err) {
         errors.push(`${model}: ${err instanceof Error ? err.message : err}`);

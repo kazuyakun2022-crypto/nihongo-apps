@@ -64,6 +64,16 @@ export function useChapterLesson(chapterId: string) {
     setStudyIndex((i) => Math.max(0, i - 1));
   }
 
+  function restartStudy() {
+    setStudyIndex(0);
+    setPhase("study");
+  }
+
+  function backToStudy() {
+    setStudyIndex(Math.max(0, studyCards.length - 1));
+    setPhase("study");
+  }
+
   function startQuiz() {
     setQuizIndex(0);
     setAnswers(new Map());
@@ -153,6 +163,8 @@ export function useChapterLesson(chapterId: string) {
     result,
     nextStudy,
     prevStudy,
+    restartStudy,
+    backToStudy,
     startQuiz,
     selectAnswer,
     skipQuestion,

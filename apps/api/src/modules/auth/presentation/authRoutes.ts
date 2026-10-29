@@ -17,6 +17,7 @@ import type { RequestPasswordReset, ResetPassword } from "../application/Passwor
 import type { GetCurrentUser } from "../application/GetCurrentUser";
 import type { CompleteOnboarding } from "../application/CompleteOnboarding";
 import type { UpdateAvatar } from "../application/UpdateAvatar";
+import type { UpdateProfile } from "../application/UpdateProfile";
 
 export interface AuthUseCases {
   register: RegisterWithEmail;
@@ -32,12 +33,13 @@ export interface AuthUseCases {
   getCurrentUser: GetCurrentUser;
   completeOnboarding: CompleteOnboarding;
   updateAvatar: UpdateAvatar;
+  updateProfile: UpdateProfile;
 }
 
 const REFRESH_COOKIE = "nihongo_rt";
 
 const registerSchema = z.object({
-  displayName: z.string().trim().min(1, "Nama panggilan wajib diisi").max(50),
+  displayName: z.string().trim().max(50).optional(),
   email: z.string().email("Format email belum benar"),
   password: z.string().min(8, "Password minimal 8 karakter").max(128),
   gender: z.enum(["male", "female", "other"]).optional(),
@@ -51,7 +53,12 @@ const onboardingSchema = z.object({
   currentLevelId: z.number().int().min(1),
   learningGoal: z.string().trim().min(1).max(50),
   dailyTargetMin: z.number().int().min(1).max(240),
+  displayName: z.string().trim().min(1, "Nama panggilan wajib diisi").max(50).optional(),
   gender: z.enum(["male", "female", "other"]).optional(),
+});
+const profileSchema = z.object({
+  displayName: z.string().trim().min(2, "Nama panggilan minimal 2 karakter").max(50, "Nama panggilan maksimal 50 karakter"),
+  gender: z.enum(["male", "female", "other"]).nullable().optional(),
 });
 const resetSchema = z.object({ token: z.string().min(1), password: z.string().min(8).max(128) });
 const avatarSchema = z.object({
@@ -90,6 +97,10 @@ export function authRoutes(uc: AuthUseCases, verifier: AccessTokenVerifier, opts
   }));
 
   r.post("/guest", asyncHandler(async (req, res) => {
+    if (process.env.NODE_ENV === "production" || process.env.ENABLE_GUEST_MODE !== "true") {
+      res.status(403).json({ error: { code: "FORBIDDEN", message: "Mode tamu dinonaktifkan." } });
+      return;
+    }
     sendAuth(res, await uc.startGuest.execute(device(req)), 201);
   }));
 
@@ -146,6 +157,11 @@ export function authRoutes(uc: AuthUseCases, verifier: AccessTokenVerifier, opts
 
   r.delete("/me/avatar", auth, asyncHandler(async (req, res) => {
     res.json({ user: await uc.updateAvatar.execute(currentUser(req).id, null) });
+  }));
+
+  r.put("/me/profile", auth, asyncHandler(async (req, res) => {
+    const body = parseBody(profileSchema, req.body);
+    res.json({ user: await uc.updateProfile.execute(currentUser(req).id, body) });
   }));
 
   return r;

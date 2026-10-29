@@ -27,6 +27,19 @@ export interface ScenarioBrief {
   maxTurns: number;
 }
 
+/** Emosi dominan Neko-sensei per balasan (ditulis AI di <correction_data>). */
+export const CONVERSATION_EMOTIONS = ["playful", "encouraging", "thinking", "excited"] as const;
+export type ConversationEmotion = (typeof CONVERSATION_EMOTIONS)[number];
+
+export interface LearnerMemories {
+  /** Hobi/minat (user_memory.type = interest). */
+  interests: string[];
+  /** Kesalahan yang sering muncul (user_memory.type = mistake). */
+  weakTopics: string[];
+  /** Fakta lain tentang pengguna (user_memory.type = fact). */
+  facts: string[];
+}
+
 export interface Correction {
   original: string;
   corrected: string;
@@ -45,7 +58,7 @@ export interface ConversationContext {
   rules: LevelRules;
   mascot: MascotProfile;
   scenario: ScenarioBrief | null;
-  memories: string[];
+  memories: LearnerMemories;
   /** Kanji yang sudah dipelajari sampai level pengguna. Kosong berarti pemula: hindari kanji. */
   allowedKanji: Set<string>;
 }

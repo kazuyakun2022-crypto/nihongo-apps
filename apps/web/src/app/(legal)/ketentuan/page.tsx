@@ -11,7 +11,7 @@ export default function TermsPage() {
       <p className={styles.updated}>Berlaku sejak 28 Oktober 2026</p>
 
       <p>
-        Dengan memakai Nihongo bersama Neko-sensei, kamu menyetujui ketentuan berikut. Pengelolaan datamu dijelaskan di{" "}
+        Dengan memakai Nihongo bersama Miu-chan, kamu menyetujui ketentuan berikut. Pengelolaan datamu dijelaskan di{" "}
         <Link href="/privasi">Kebijakan Privasi</Link>.
       </p>
 
@@ -30,7 +30,7 @@ export default function TermsPage() {
 
       <h2>Konten dan jawaban AI</h2>
       <p>
-        Materi pelajaran disusun untuk membantu belajar dan dapat diperbarui sewaktu-waktu. Jawaban Neko-sensei dibuat
+        Materi pelajaran disusun untuk membantu belajar dan dapat diperbarui sewaktu-waktu. Jawaban Miu-chan dibuat
         oleh AI dan bisa keliru, jadi periksa kembali hal penting dengan sumber lain. Kelulusan tes di aplikasi ini bukan
         sertifikat JLPT resmi.
       </p>

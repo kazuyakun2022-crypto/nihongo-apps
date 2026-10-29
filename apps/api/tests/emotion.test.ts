@@ -44,11 +44,11 @@ describe("AskQuestion emosi", () => {
 
   it("mode suara mengembalikan emosi dan teks bersih", async () => {
     const uc = new AskQuestion({ ask: provider("[sedih] Aku ikut sedih.") });
-    await expect(uc.execute("aku gagal", [], "voice")).resolves.toEqual({ answer: "Aku ikut sedih.", emotion: "sedih" });
+    await expect(uc.execute("aku gagal", [], "voice")).resolves.toEqual({ answer: "Aku ikut sedih.", emotion: "sedih", correction: null });
   });
 
   it("mode teks tidak mengubah jawaban", async () => {
     const uc = new AskQuestion({ ask: provider("(senang) = happy") });
-    await expect(uc.execute("arti senang", [], "text")).resolves.toEqual({ answer: "(senang) = happy", emotion: "biasa" });
+    await expect(uc.execute("arti senang", [], "text")).resolves.toEqual({ answer: "(senang) = happy", emotion: "biasa", correction: null });
   });
 });
