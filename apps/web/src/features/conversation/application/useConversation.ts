@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { ApiError } from "@/core/http/apiClient";
 import { conversationApi } from "../data/conversationApi";
-import type { ChatMessage, ConversationRepository, SessionReport, StartedSession } from "../domain/types";
+import type { ChatMessage, ConversationEmotion, ConversationRepository, SessionReport, StartedSession } from "../domain/types";
 
 type Phase = "idle" | "starting" | "chatting" | "waiting" | "ended";
 
@@ -15,10 +15,11 @@ export function useConversation(repo: ConversationRepository = conversationApi) 
   const [turnsLeft, setTurnsLeft] = useState<number | null>(null);
   const [report, setReport] = useState<SessionReport | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [emotion, setEmotion] = useState<ConversationEmotion>("playful");
   const seq = useRef(0);
   const nextId = () => `m${++seq.current}`;
 
-  const fail = (err: unknown) => setError(err instanceof ApiError ? err.message : "Neko-sensei tidak bisa dihubungi. Periksa koneksimu.");
+  const fail = (err: unknown) => setError(err instanceof ApiError ? err.message : "Miu-chan tidak bisa dihubungi. Periksa koneksimu.");
 
   const start = useCallback(
     async (scenarioId: string | null = null) => {
@@ -29,6 +30,7 @@ export function useConversation(repo: ConversationRepository = conversationApi) 
         const s = await repo.start(scenarioId);
         setSession(s);
         setMessages([{ id: nextId(), sender: "mascot", text: s.message.text }]);
+        setEmotion(s.emotion ?? "playful");
         setTurnsLeft(s.maxTurns);
         setPhase("chatting");
       } catch (err) {
@@ -48,6 +50,7 @@ export function useConversation(repo: ConversationRepository = conversationApi) 
       try {
         const res = await repo.send(session.sessionId, text);
         setMessages((m) => [...m, { id: nextId(), sender: "mascot", text: res.message.text, correction: res.correction }]);
+        setEmotion(res.emotion ?? "playful");
         setTurnsLeft(res.turnsLeft);
         setPhase("chatting");
       } catch (err) {
@@ -68,5 +71,5 @@ export function useConversation(repo: ConversationRepository = conversationApi) 
     }
   }, [repo, session]);
 
-  return { phase, session, messages, turnsLeft, report, error, start, send, end };
+  return { phase, session, messages, turnsLeft, report, error, emotion, start, send, end };
 }

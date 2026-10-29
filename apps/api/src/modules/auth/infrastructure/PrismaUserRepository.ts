@@ -12,6 +12,7 @@ const select = {
   status: true,
   currentLevelId: true,
   gender: true,
+  genderUpdatedAt: true,
   avatarUrl: true,
   dailyTargetMin: true,
   streakCount: true,
@@ -42,6 +43,7 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   updateProfile(id: string, data: OnboardingProfile): Promise<User> {
-    return this.db.user.update({ where: { id }, data, select });
+    const payload = data.gender ? { ...data, genderUpdatedAt: new Date() } : data;
+    return this.db.user.update({ where: { id }, data: payload, select });
   }
 }

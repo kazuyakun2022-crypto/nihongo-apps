@@ -82,7 +82,7 @@ async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita"
       ? voiceType === "keita" ? "ja-JP-KeitaNeural" : "ja-JP-NanamiNeural"
       : "id-ID-GadisNeural";
 
-  // Suara Neko-sensei: pitch tinggi & tempo cepat untuk kesan anime imut dan energetik.
+  // Suara Miu-chan: pitch tinggi & tempo cepat untuk kesan anime imut dan energetik.
   // Ekspresi chat (emosi diberikan) memakai profil nada per emosi; selain itu nada bawaan per voice.
   const prosody: Prosody = emotion
     ? voiceTone(emotion).edge
@@ -108,7 +108,7 @@ async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita"
 }
 
 /**
- * Suara Neko-sensei: bagian berbahasa Jepang dibacakan voice Jepang (Nanami/Keita),
+ * Suara Miu-chan: bagian berbahasa Jepang dibacakan voice Jepang (Nanami/Keita),
  * bagian lainnya voice Indonesia (Gadis), lalu digabung jadi satu MP3.
  */
 export async function synthesizeChildVoice(

@@ -202,7 +202,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
         </div>
         <Button block onClick={lesson.startQuiz}>Mulai Latihan</Button>
         {lesson.studyCards.length > 0 && (
-          <Button block variant="secondary" onClick={() => lesson.prevStudy()}>
+          <Button block variant="secondary" onClick={lesson.backToStudy}>
             ← Ulang materi
           </Button>
         )}
@@ -370,8 +370,13 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           <Link href="/belajar">
             <Button block>{passed ? "Lanjut ke bab berikutnya →" : "Kembali ke daftar bab"}</Button>
           </Link>
-          {!passed && (
-            <Button block variant="secondary" onClick={lesson.retryQuiz}>Coba latihan lagi</Button>
+          <Button block variant="secondary" onClick={lesson.retryQuiz}>
+            {passed ? "Ulangi Latihan Kuis" : "Coba latihan lagi"}
+          </Button>
+          {lesson.studyCards.length > 0 && (
+            <Button block variant="ghost" onClick={lesson.restartStudy}>
+              Pelajari Ulang Materi Bab
+            </Button>
           )}
         </div>
       </div>

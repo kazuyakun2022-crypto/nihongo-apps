@@ -21,6 +21,6 @@ export class MockChatProvider implements AiChatProvider {
     const correction = last.includes("わたしわ")
       ? { original: "わたしわ", corrected: "わたしは", explanation: "Partikel topik ditulis は walau dibaca \"wa\"." }
       : null;
-    return { reply: line, correction };
+    return { reply: line, correction, emotion: correction ? "encouraging" : "playful" };
   }
 }

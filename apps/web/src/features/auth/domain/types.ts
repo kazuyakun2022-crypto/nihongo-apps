@@ -11,10 +11,12 @@ export interface User {
   needsOnboarding: boolean;
   currentLevelId: number | null;
   gender?: Gender | null;
+  genderUpdatedAt?: string | null;
   avatarUrl?: string | null;
   dailyTargetMin: number;
   streakCount: number;
   xpTotal: number;
+  learningGoal?: string | null;
 }
 
 export interface AuthResponse {
@@ -24,7 +26,7 @@ export interface AuthResponse {
 
 /** Kontrak repository auth. Komponen tidak tahu apakah datanya dari API asli atau tiruan. */
 export interface AuthRepository {
-  register(input: { displayName: string; email: string; password: string; gender: Gender }): Promise<AuthResponse>;
+  register(input: { email: string; password: string; displayName?: string; gender?: Gender }): Promise<AuthResponse>;
   login(input: { email: string; password: string }): Promise<AuthResponse>;
   loginWithOAuth?(input: { provider: "google" | "apple"; idToken: string }): Promise<AuthResponse>;
   startGuest(): Promise<AuthResponse>;
@@ -35,4 +37,5 @@ export interface AuthRepository {
   verifyEmail(token: string): Promise<void>;
   updateAvatar?(avatarUrl: string | null): Promise<{ user: User }>;
   deleteAvatar?(): Promise<{ user: User }>;
+  updateProfile?(input: { displayName: string; gender?: Gender | null }): Promise<{ user: User }>;
 }

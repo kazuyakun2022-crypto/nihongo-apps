@@ -18,18 +18,19 @@ export function askRoutes(
 ) {
   const r = Router();
 
-  // POST /api/ask — tidak perlu auth agar guest bisa coba; kalau login, nama akun dipakai di mode suara
+  // POST /api/ask — tidak perlu auth agar guest bisa coba; kalau login, nama, level, dan memori akun ikut dipakai
   r.post("/", optionalAuth, asyncHandler(async (req, res) => {
-    const { question, history, mode } = parseBody(
+    const { question, history, mode, transcriptAlt } = parseBody(
       z.object({
         question: z.string().trim().min(1, "Pertanyaan tidak boleh kosong.").max(2000),
         history: z.array(messageSchema).max(20).default([]),
         mode: z.enum(["text", "voice"]).default("text"),
+        transcriptAlt: z.string().trim().max(500).optional(),
       }),
       req.body,
     );
 
-    const { answer, emotion, correction } = await uc.ask.execute(question, history, mode, req.user?.id);
+    const { answer, emotion, correction } = await uc.ask.execute(question, history, mode, req.user?.id, transcriptAlt);
     res.json({ answer, emotion, correction });
   }));
 
@@ -47,12 +48,12 @@ export function askRoutes(
         return;
       }
       const language = req.query["lang"] === "ja" ? "ja" : undefined;
-      const text = await transcriber.transcribe(req.body, req.headers["content-type"] ?? "audio/webm", language);
-      res.json({ text });
+      const { text, alt } = await transcriber.transcribe(req.body, req.headers["content-type"] ?? "audio/webm", language);
+      res.json({ text, alt });
     }),
   );
 
-  // POST /api/ask/speak — suara karakter Neko-sensei dengan nada sesuai emosi; kalau Gemini gagal/kuota habis, pakai TTS cadangan.
+  // POST /api/ask/speak — suara karakter Miu-chan dengan nada sesuai emosi; kalau Gemini gagal/kuota habis, pakai TTS cadangan.
   r.post("/speak", asyncHandler(async (req, res) => {
     const { text, emotion } = parseBody(
       z.object({ text: z.string().trim().min(1).max(2000), emotion: z.enum(EMOTIONS).optional() }),

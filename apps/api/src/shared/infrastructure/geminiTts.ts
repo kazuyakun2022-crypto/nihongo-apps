@@ -75,7 +75,7 @@ function pcmToWav(pcm: Buffer, sampleRate: number): Buffer {
   return Buffer.concat([header, pcm]);
 }
 
-/** Suara karakter Neko-sensei: satu voice yang sama untuk bahasa Indonesia dan Jepang. */
+/** Suara karakter Miu-chan: satu voice yang sama untuk bahasa Indonesia dan Jepang. */
 export class GeminiTts {
   private readonly cache = new Map<string, Buffer>();
   private readonly limitedUntil = new Map<string, number>();

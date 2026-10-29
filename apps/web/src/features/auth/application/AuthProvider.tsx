@@ -16,6 +16,8 @@ interface AuthContextValue {
   startGuest: AuthRepository["startGuest"];
   logout: (allDevices?: boolean) => Promise<void>;
   updateAvatar: (avatarUrl: string | null) => Promise<User>;
+  updateUser: (updatedUser: Partial<User>) => void;
+  updateProfile: (input: { displayName: string; gender?: import("../domain/types").Gender | null }) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -133,6 +135,30 @@ export function AuthProvider({ children, repository = authApi }: { children: Rea
     [repository],
   );
 
+  const updateUser = useCallback((updated: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...updated };
+      try {
+        localStorage.setItem(USER_CACHE_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }, []);
+
+  const updateProfile = useCallback(
+    async (input: { displayName: string; gender?: import("../domain/types").Gender | null }) => {
+      if (!repository.updateProfile) throw new Error("Fitur edit profil tidak didukung");
+      const res = await repository.updateProfile(input);
+      setUser(res.user);
+      try {
+        localStorage.setItem(USER_CACHE_KEY, JSON.stringify(res.user));
+      } catch {}
+      return res.user;
+    },
+    [repository],
+  );
+
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
@@ -142,6 +168,8 @@ export function AuthProvider({ children, repository = authApi }: { children: Rea
       loginWithOAuth: (input) => (repository.loginWithOAuth ? repository.loginWithOAuth(input) : Promise.reject(new Error("OAuth tidak tersedia"))).then(accept),
       startGuest: () => repository.startGuest().then(accept),
       updateAvatar,
+      updateUser,
+      updateProfile,
       async logout(allDevices) {
         try {
           localStorage.removeItem(USER_CACHE_KEY);
@@ -152,7 +180,7 @@ export function AuthProvider({ children, repository = authApi }: { children: Rea
         if ("caches" in window) await caches.delete("nihongo-private").catch(() => undefined);
       },
     }),
-    [status, user, repository, accept, updateAvatar],
+    [status, user, repository, accept, updateAvatar, updateUser, updateProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

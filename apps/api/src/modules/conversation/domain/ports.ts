@@ -1,4 +1,4 @@
-import type { ChatMessage, ConversationContext, ConversationMode, Correction } from "./Conversation";
+import type { ChatMessage, ConversationContext, ConversationEmotion, ConversationMode, Correction } from "./Conversation";
 
 export interface SessionRow {
   id: string;
@@ -26,6 +26,8 @@ export interface ConversationRepository {
 export interface AiReply {
   reply: string;
   correction: Correction | null;
+  /** Tidak ada bila AI tidak menulis emosi atau nilainya tidak dikenal. */
+  emotion?: ConversationEmotion;
 }
 
 /** Port penyedia AI. Ganti model/penyedia cukup dengan membuat kelas baru yang mengimplementasikan ini. */

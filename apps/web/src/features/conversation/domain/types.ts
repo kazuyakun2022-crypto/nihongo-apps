@@ -1,3 +1,6 @@
+/** Emosi dominan Miu-chan pada balasan terakhir. */
+export type ConversationEmotion = "playful" | "encouraging" | "thinking" | "excited";
+
 export interface Correction {
   original: string;
   corrected: string;
@@ -19,6 +22,7 @@ export interface StartedSession {
   speechRate: number;
   maxTurns: number;
   message: { sender: "mascot"; text: string };
+  emotion?: ConversationEmotion;
 }
 
 export interface SessionReport {
@@ -29,6 +33,9 @@ export interface SessionReport {
 
 export interface ConversationRepository {
   start(scenarioId: string | null): Promise<StartedSession>;
-  send(sessionId: string, text: string): Promise<{ message: { sender: "mascot"; text: string }; correction: Correction | null; turnsLeft: number }>;
+  send(
+    sessionId: string,
+    text: string,
+  ): Promise<{ message: { sender: "mascot"; text: string }; correction: Correction | null; emotion?: ConversationEmotion; turnsLeft: number }>;
   end(sessionId: string): Promise<SessionReport>;
 }

@@ -39,8 +39,20 @@ export class PrismaConversationRepository implements ConversationRepository {
       : null;
     if (scenarioId && !scenario) throw Errors.notFound("Skenario");
 
-    const [memories, kanji] = await Promise.all([
-      this.db.userMemory.findMany({ where: { userId }, orderBy: [{ weight: "desc" }, { updatedAt: "desc" }], take: 5 }),
+    // Per tipe supaya hobi tidak tergeser oleh catatan kesalahan yang bertambah tiap koreksi
+    const memoriesOf = async (type: "interest" | "mistake" | "fact") =>
+      (
+        await this.db.userMemory.findMany({
+          where: { userId, type },
+          orderBy: [{ weight: "desc" }, { updatedAt: "desc" }],
+          take: 5,
+          select: { content: true },
+        })
+      ).map((m) => m.content);
+    const [interests, weakTopics, facts, kanji] = await Promise.all([
+      memoriesOf("interest"),
+      memoriesOf("mistake"),
+      memoriesOf("fact"),
       this.db.kanji.findMany({
         where: { chapter: { status: "published", level: { sortOrder: { lte: level.sortOrder } } } },
         select: { character: true },
@@ -63,7 +75,7 @@ export class PrismaConversationRepository implements ConversationRepository {
       scenario: scenario
         ? { id: scenario.id, title: scenario.title, goal: scenario.goal, mascotRole: scenario.mascotRole, maxTurns: scenario.maxTurns }
         : null,
-      memories: memories.map((m) => m.content),
+      memories: { interests, weakTopics, facts },
       allowedKanji: new Set(kanji.map((k) => k.character)),
     };
   }

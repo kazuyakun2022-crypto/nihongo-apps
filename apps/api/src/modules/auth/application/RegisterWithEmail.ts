@@ -6,10 +6,10 @@ import type { AuthResult, SessionIssuer } from "./SessionIssuer";
 import type { SendEmailVerification } from "./SendEmailVerification";
 
 export interface RegisterInput {
-  displayName: string;
+  displayName?: string;
   email: string;
   password: string;
-  /** Menentukan panggilan Miu-chan di obrolan suara: お兄ちゃん / お姉ちゃん. */
+  /** Menentukan panggilan di obrolan suara: お兄ちゃん / お姉ちゃん. */
   gender?: Gender;
   /** Jika diisi, akun Tamu ini diubah menjadi akun Pelajar (dokumen 10.5). */
   guestUserId?: string;
@@ -39,13 +39,14 @@ export class RegisterWithEmail {
 
     const passwordHash = await this.deps.hasher.hash(input.password);
     const guest = input.guestUserId ? await this.deps.users.findById(input.guestUserId) : null;
+    const displayName = input.displayName?.trim() || email.split("@")[0] || "Pelajar";
 
     const user =
       guest && guest.isGuest
         ? await this.deps.users.update(guest.id, {
             email,
             passwordHash,
-            displayName: input.displayName,
+            displayName,
             gender: input.gender ?? null,
             isGuest: false,
             role: "student",
@@ -53,7 +54,7 @@ export class RegisterWithEmail {
         : await this.deps.users.create({
             email,
             passwordHash,
-            displayName: input.displayName,
+            displayName,
             gender: input.gender ?? null,
             isGuest: false,
             role: "student",

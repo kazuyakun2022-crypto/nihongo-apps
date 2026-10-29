@@ -235,7 +235,7 @@ export default function BerandaPage() {
                 </svg>
               </span>
               <span className={styles.practiceText}>
-                <strong>Ngobrol dengan Neko-sensei</strong>
+                <strong>Ngobrol dengan Miu-chan</strong>
                 <span>{chatLocked ? "Terbuka setelah email terverifikasi." : "Latihan percakapan sesuai levelmu."}</span>
               </span>
             </Link>

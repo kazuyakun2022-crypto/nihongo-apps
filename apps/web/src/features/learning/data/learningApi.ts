@@ -8,7 +8,7 @@ export const learningApi: LearningRepository = {
   submitQuiz: (chapterId, answers: QuizAnswer[]) =>
     apiRequest<QuizResult>(`/learning/chapters/${chapterId}/quiz`, { method: "POST", body: { answers } }),
   onboardingOptions: () => api.get<{ config: OnboardingOptions }>("/learning/onboarding").then((r) => r.config),
-  completeOnboarding: (input) => apiRequest<void>("/auth/me/onboarding", { method: "PUT", body: input }),
+  completeOnboarding: (input) => api.put<{ user: any }>("/auth/me/onboarding", input),
   nextChapter: () =>
     api.get<{ chapter: NextChapter | null }>("/learning/next-chapter").then((r) => r.chapter),
   getProgress: (levelId: number): Promise<LevelProgress> =>

@@ -6,6 +6,7 @@ export function TextField({
   hint,
   error,
   rightElement,
+  className,
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & {
   label: string;
@@ -23,7 +24,7 @@ export function TextField({
       <div className={styles.inputWrap}>
         <input
           id={id}
-          className={`${styles.input} ${rightElement ? styles.hasRightElement : ""}`}
+          className={`${styles.input} ${rightElement ? styles.hasRightElement : ""} ${className || ""}`.trim()}
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
           {...props}

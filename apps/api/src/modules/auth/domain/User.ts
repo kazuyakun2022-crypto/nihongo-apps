@@ -13,6 +13,7 @@ export interface User {
   status: UserStatus;
   currentLevelId: number | null;
   gender?: Gender | null;
+  genderUpdatedAt?: Date | null;
   avatarUrl?: string | null;
   dailyTargetMin: number | null;
   streakCount: number;
@@ -52,6 +53,7 @@ export interface PublicUser {
   needsOnboarding: boolean;
   currentLevelId: number | null;
   gender?: Gender | null;
+  genderUpdatedAt?: Date | null;
   avatarUrl?: string | null;
   dailyTargetMin: number | null;
   streakCount: number;
@@ -69,6 +71,7 @@ export function toPublicUser(user: User): PublicUser {
     needsOnboarding: needsOnboarding(user),
     currentLevelId: user.currentLevelId,
     gender: user.gender ?? null,
+    genderUpdatedAt: user.genderUpdatedAt ?? null,
     avatarUrl: user.avatarUrl ?? null,
     dailyTargetMin: user.dailyTargetMin,
     streakCount: user.streakCount,

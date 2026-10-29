@@ -3,15 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
-import { Mascot } from "@/shared/ui/Mascot";
+import { Mascot, type MascotMood } from "@/shared/ui/Mascot";
 import { ArrowRightIcon } from "@/shared/ui/icons";
 import { useConversation } from "../application/useConversation";
+import type { ConversationEmotion } from "../domain/types";
 import { FuriganaText } from "./FuriganaText";
 import { MicroFeedbackCard } from "./MicroFeedbackCard";
 import styles from "./chat.module.css";
 
+/** Emosi balasan AI dipetakan ke ekspresi maskot yang tersedia. */
+const MOOD: Record<ConversationEmotion, MascotMood> = {
+  playful: "senang",
+  encouraging: "semangat",
+  thinking: "berpikir",
+  excited: "semangat",
+};
+
 export function ChatScreen() {
-  const { phase, session, messages, turnsLeft, report, error, start, send, end } = useConversation();
+  const { phase, session, messages, turnsLeft, report, error, emotion, start, send, end } = useConversation();
   const [draft, setDraft] = useState("");
   const listRef = useRef<HTMLOListElement>(null);
 
@@ -23,11 +32,11 @@ export function ChatScreen() {
     return (
       <section className={styles.intro}>
         <Mascot mood="semangat" size={120} />
-        <h1 className={styles.introTitle}>Ngobrol dengan Neko-sensei</h1>
-        <p className={styles.muted}>Neko-sensei memakai kata-kata sesuai levelmu. Salah itu wajar, nanti dikoreksi dengan lembut.</p>
+        <h1 className={styles.introTitle}>Ngobrol dengan Miu-chan</h1>
+        <p className={styles.muted}>Miu-chan memakai kata-kata sesuai levelmu. Salah itu wajar, nanti dikoreksi dengan lembut.</p>
         {error && <Alert>{error}</Alert>}
         <Button onClick={() => start(null)} disabled={phase === "starting"}>
-          {phase === "starting" ? "Memanggil Neko-sensei…" : "Mulai ngobrol bebas"}
+          {phase === "starting" ? "Memanggil Miu-chan…" : "Mulai ngobrol bebas"}
         </Button>
       </section>
     );
@@ -61,9 +70,9 @@ export function ChatScreen() {
   return (
     <section className={styles.chat}>
       <header className={styles.chatHeader}>
-        <Mascot mood={phase === "waiting" ? "berpikir" : "senang"} size={44} />
+        <Mascot mood={phase === "waiting" ? "berpikir" : MOOD[emotion]} size={44} />
         <div>
-          <strong>{session?.mascot.name}</strong>
+          <strong>{session?.mascot.name?.replace("Neko-sensei", "Miu-chan") || "Miu-chan"}</strong>
           <p className={styles.meta}>
             Level {session?.level}
             {turnsLeft !== null && ` · sisa ${turnsLeft} giliran`}
@@ -91,7 +100,7 @@ export function ChatScreen() {
         ))}
         {phase === "waiting" && (
           <li className={styles.mascotRow}>
-            <p className={`${styles.mascotBubble} ${styles.typing}`} aria-label="Neko-sensei sedang mengetik">
+            <p className={`${styles.mascotBubble} ${styles.typing}`} aria-label="Miu-chan sedang mengetik">
               …
             </p>
           </li>

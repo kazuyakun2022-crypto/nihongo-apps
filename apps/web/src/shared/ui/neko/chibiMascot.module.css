@@ -1,0 +1,39 @@
+.root {
+  position: relative;
+  width: 100%;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.poster {
+  position: absolute;
+  height: auto;
+  pointer-events: none;
+  transition: opacity 420ms ease-out;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform-origin: 50% 96%; /* lompat & squash bertumpu di kaki */
+  transition: opacity 420ms ease-out;
+}
+
+/* Cadangan tanpa WebGL: gambar diam yang melayang pelan */
+.floating .poster {
+  animation: chibiFloat 3.6s ease-in-out infinite alternate;
+}
+
+@keyframes chibiFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(-3%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating .poster {
+    animation: none;
+  }
+}

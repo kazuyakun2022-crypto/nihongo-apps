@@ -26,6 +26,7 @@ import { RequestPasswordReset, ResetPassword } from "../modules/auth/application
 import { GetCurrentUser } from "../modules/auth/application/GetCurrentUser";
 import { CompleteOnboarding } from "../modules/auth/application/CompleteOnboarding";
 import { UpdateAvatar } from "../modules/auth/application/UpdateAvatar";
+import { UpdateProfile } from "../modules/auth/application/UpdateProfile";
 
 // Learning
 import { PrismaLearningRepository } from "../modules/learning/infrastructure/PrismaLearningRepository";
@@ -48,6 +49,7 @@ import { GeminiAskProvider } from "../modules/ask/infrastructure/GeminiAskProvid
 import { GroqAskProvider } from "../modules/ask/infrastructure/GroqAskProvider";
 import { MockAskProvider } from "../modules/ask/infrastructure/MockAskProvider";
 import { GroqTranscriber } from "../modules/ask/infrastructure/GroqTranscriber";
+import { loadLearnerProfile } from "../modules/ask/infrastructure/PrismaLearnerProfile";
 import { GeminiTts } from "../shared/infrastructure/geminiTts";
 import { AskQuestion } from "../modules/ask/application/AskUseCase";
 
@@ -106,6 +108,7 @@ export function buildContainer(env: Env, db: Db) {
     getCurrentUser: new GetCurrentUser({ users }),
     completeOnboarding: new CompleteOnboarding({ users, guard: new PrismaOnboardingGuard(db) }),
     updateAvatar: new UpdateAvatar({ users }),
+    updateProfile: new UpdateProfile({ users }),
   };
 
   // ── Learning ──
@@ -140,10 +143,7 @@ export function buildContainer(env: Env, db: Db) {
   const askUc = {
     ask: new AskQuestion({
       ask: askProvider,
-      userProfile: async (id) => {
-        const user = await users.findById(id);
-        return user && !user.isGuest ? { name: user.displayName, gender: user.gender ?? null } : null;
-      },
+      userProfile: (id) => loadLearnerProfile(db, id),
     }),
   };
   const transcriber = env.GROQ_API_KEY ? new GroqTranscriber(env.GROQ_API_KEY) : null;

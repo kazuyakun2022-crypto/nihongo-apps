@@ -24,7 +24,7 @@ function Verify() {
           <SkeletonText lines={2} />
         </SkeletonRegion>
       )}
-      {state === "ok" && <Alert tone="success">Email terverifikasi. Sekarang kamu bisa ngobrol dengan Neko-sensei!</Alert>}
+      {state === "ok" && <Alert tone="success">Email terverifikasi. Sekarang kamu bisa ngobrol dengan Miu-chan!</Alert>}
       {state === "error" && <Alert>Link tidak valid atau sudah kedaluwarsa. Minta link baru dari halaman Profil.</Alert>}
       <Link href="/beranda">Ke Beranda</Link>
     </AuthCard>

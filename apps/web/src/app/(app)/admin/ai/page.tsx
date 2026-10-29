@@ -75,7 +75,7 @@ export default function AdminAiPage() {
     <div className={styles.container}>
       <AdminHeaderNav
         title="Konfigurasi AI Maskot"
-        subtitle="Sesuaikan prompt instruksi karakter Neko-sensei, batasan kosakata, aturan furigana, dan kecepatan audio TTS per level JLPT (N5–N1)."
+        subtitle="Sesuaikan prompt instruksi karakter Miu-chan, batasan kosakata, aturan furigana, dan kecepatan audio TTS per level JLPT (N5–N1)."
       />
 
       {/* Action Notification */}

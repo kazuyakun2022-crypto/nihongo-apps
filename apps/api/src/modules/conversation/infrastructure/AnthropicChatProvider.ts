@@ -1,4 +1,4 @@
-import type { ChatMessage } from "../domain/Conversation";
+import { CONVERSATION_EMOTIONS, type ChatMessage, type ConversationEmotion } from "../domain/Conversation";
 import type { AiChatProvider, AiReply } from "../domain/ports";
 
 /** Adapter ke Anthropic Messages API. Model diatur lewat AI_MODEL di .env. */
@@ -38,6 +38,11 @@ function mergeSameRole(messages: { role: string; content: string }[]) {
   }, []);
 }
 
+function toEmotion(value: unknown): ConversationEmotion | undefined {
+  const v = typeof value === "string" ? value.trim().toLowerCase() : "";
+  return (CONVERSATION_EMOTIONS as readonly string[]).includes(v) ? (v as ConversationEmotion) : undefined;
+}
+
 /** Mengurai balasan AI: memisahkan teks percakapan dan tag <correction_data> sesuai PRD. */
 export function parseAiReply(text: string): AiReply {
   const correctionMatch = text.match(/<correction_data>([\s\S]*?)<\/correction_data>/i);
@@ -46,11 +51,13 @@ export function parseAiReply(text: string): AiReply {
     const jsonStr = correctionMatch[1].replace(/```json|```/g, "").trim();
     try {
       const parsed = JSON.parse(jsonStr) as {
+        emotion?: string;
         hasCorrection?: boolean;
         userMistake?: string | null;
         correctedSentence?: string | null;
         explanation?: string | null;
       };
+      const emotion = toEmotion(parsed.emotion);
       if (parsed.hasCorrection && parsed.userMistake && parsed.correctedSentence) {
         return {
           reply,
@@ -59,9 +66,10 @@ export function parseAiReply(text: string): AiReply {
             corrected: parsed.correctedSentence,
             explanation: parsed.explanation ?? "",
           },
+          emotion,
         };
       }
-      return { reply, correction: null };
+      return { reply, correction: null, emotion };
     } catch {
       return { reply, correction: null };
     }

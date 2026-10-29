@@ -807,3 +807,127 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(179, 27, 40, 0.35);
 }
+
+/* ── Modal & Tombol Edit Data Profil ── */
+.editProfileBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.editProfileBtn:hover {
+  background: var(--color-surface-muted);
+  border-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.editModalBox {
+  max-width: 440px;
+}
+
+.editProfileForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.editGenderGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.editGenderCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 80px;
+  padding: var(--space-3) var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all var(--motion-fast) var(--ease-out);
+  text-align: center;
+  position: relative;
+}
+
+.editGenderCard:hover:not([data-disabled="true"]) {
+  border-color: var(--color-primary-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 21, 32, 0.08);
+}
+
+.editGenderCard[data-active="true"] {
+  border-color: var(--color-primary);
+  background: rgba(177, 42, 58, 0.06);
+  box-shadow: 0 2px 8px rgba(177, 42, 58, 0.15);
+}
+
+.editGenderCard[data-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
+
+.editGenderCard input {
+  position: absolute;
+  opacity: 0;
+}
+
+.editGenderCall {
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-primary);
+  font-family: var(--font-japanese);
+}
+
+.editGenderLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.cooldownBox {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.cooldownBoxLocked {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #92400e;
+}
+
+.cooldownBoxUnlocked {
+  background: var(--color-surface-muted);
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.editModalActions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}

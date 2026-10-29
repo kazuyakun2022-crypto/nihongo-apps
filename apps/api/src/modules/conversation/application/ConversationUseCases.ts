@@ -56,6 +56,7 @@ export class StartConversation {
       speechRate: ctx.rules.speechRate,
       maxTurns: session.maxTurns,
       message: { sender: "mascot" as const, text: opening.reply },
+      emotion: opening.emotion ?? "playful",
     };
   }
 }
@@ -83,6 +84,7 @@ export class SendMessage {
     return {
       message: { sender: "mascot" as const, text: answer.reply },
       correction: answer.correction,
+      emotion: answer.emotion ?? (answer.correction ? "encouraging" : "playful"),
       turnsLeft: session.maxTurns - session.turnCount - 1,
     };
   }

@@ -30,10 +30,15 @@ async function main() {
   for (const l of levels) await db.level.upsert({ where: { id: l.id }, create: l, update: l });
   for (const p of prompts) await db.aiLevelPrompt.upsert({ where: { levelId: p.levelId }, create: p, update: p });
 
-  if (!(await db.mascot.findFirst())) {
-    await db.mascot.create({
-      data: { name: "Neko-sensei", personality: "kucing ramah dan sabar, suka memuji usaha kecil, sesekali menambahkan 'にゃ' di akhir kalimat" },
-    });
+  const defaultMascot = {
+    name: "Miu-chan",
+    personality: "gadis anime ceria dan ramah yang sabar memandu belajar bahasa Jepang, suka memuji usaha kecil, dan selalu bersemangat",
+  };
+  const existingMascot = await db.mascot.findFirst();
+  if (!existingMascot) {
+    await db.mascot.create({ data: defaultMascot });
+  } else if (existingMascot.name === "Neko-sensei") {
+    await db.mascot.update({ where: { id: existingMascot.id }, data: defaultMascot });
   }
 
   // Akun pengelola. Di produksi email dan password wajib dari env (SEED_*), bukan password contoh yang ada di repo.

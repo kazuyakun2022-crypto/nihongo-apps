@@ -9,7 +9,7 @@ export default function OfflinePage() {
         <Mascot mood="berpikir" size={110} />
         <h1>Kamu sedang offline</h1>
         <p style={{ color: "var(--color-text-muted)", maxWidth: "32ch", margin: 0 }}>
-          Materi dan kartu yang sudah dibuka tetap bisa dipakai. Ngobrol dengan Neko-sensei butuh internet.
+          Materi dan kartu yang sudah dibuka tetap bisa dipakai. Ngobrol dengan Miu-chan butuh internet.
         </p>
       </div>
     </main>

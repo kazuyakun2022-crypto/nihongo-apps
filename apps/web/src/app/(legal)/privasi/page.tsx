@@ -11,7 +11,7 @@ export default function PrivacyPage() {
       <p className={styles.updated}>Berlaku sejak 28 Oktober 2026</p>
 
       <p>
-        Nihongo bersama Neko-sensei ("kami") adalah aplikasi belajar bahasa Jepang. Halaman ini menjelaskan data apa
+        Nihongo bersama Miu-chan ("kami") adalah aplikasi belajar bahasa Jepang. Halaman ini menjelaskan data apa
         yang kami simpan, untuk apa, dan bagaimana kamu bisa menghapusnya.
       </p>
 
@@ -30,7 +30,7 @@ export default function PrivacyPage() {
           streak.
         </li>
         <li>
-          <strong>Percakapan dengan Neko-sensei:</strong> teks percakapan dan rekaman suara yang kamu kirim ke fitur
+          <strong>Percakapan dengan Miu-chan:</strong> teks percakapan dan rekaman suara yang kamu kirim ke fitur
           tanya jawab.
         </li>
         <li>
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>Penyedia AI</strong> (Google Gemini, Groq, Anthropic) yang memproses teks dan rekaman suara
-          percakapan dengan Neko-sensei untuk menghasilkan jawaban dan suara.
+          percakapan dengan Miu-chan untuk menghasilkan jawaban dan suara.
         </li>
         <li>
           <strong>Vercel</strong> (hosting aplikasi) dan <strong>Neon</strong> (database).

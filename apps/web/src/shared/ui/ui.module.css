@@ -66,6 +66,17 @@
   box-shadow: var(--shadow-card);
 }
 
+.danger {
+  background: var(--color-danger);
+  color: #ffffff;
+  box-shadow: 0 3px 0 #991b1b;
+}
+
+.danger:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 3px 0 #991b1b, 0 6px 20px rgba(220, 38, 38, 0.25);
+}
+
 .ghost {
   background: transparent;
   color: var(--color-primary);
@@ -117,7 +128,16 @@
 .input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(177, 42, 58, 0.12);
+  box-shadow: 0 0 0 3px rgba(177, 42, 58, 0.14);
+}
+
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover, 
+.input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+  -webkit-text-fill-color: var(--color-text) !important;
+  caret-color: var(--color-text);
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .input[aria-invalid="true"] {

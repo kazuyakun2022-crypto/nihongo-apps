@@ -36,24 +36,26 @@ function pickMimeType(): string | undefined {
   return MIME_CANDIDATES.find((t) => MediaRecorder.isTypeSupported(t));
 }
 
-async function transcribe(audio: Blob): Promise<string> {
+/** `alt`: versi bahasa Jepang dari ucapan yang sama, membantu AI memahami kalimat campuran. */
+async function transcribe(audio: Blob): Promise<{ text: string; alt: string | null }> {
   const res = await fetch("/api/ask/transcribe", {
     method: "POST",
     headers: { "content-type": audio.type || "audio/webm" },
     body: audio,
   });
-  const data = (await res.json().catch(() => ({}))) as { text?: string; error?: { message?: string } };
+  const data = (await res.json().catch(() => ({}))) as { text?: string; alt?: string | null; error?: { message?: string } };
   if (!res.ok) throw new Error(data.error?.message ?? "Gagal mengenali suara.");
-  return data.text?.trim() ?? "";
+  return { text: data.text?.trim() ?? "", alt: data.alt?.trim() || null };
 }
 
 async function fetchAnswer(
   question: string,
   history: HistoryItem[],
+  transcriptAlt: string | null,
 ): Promise<{ answer: string; emotion: VoiceEmotion; correction: string | null }> {
   const res = await apiRequest<{ answer: string; emotion?: string; correction?: string | null }>("/ask", {
     method: "POST",
-    body: { question, history, mode: "voice" },
+    body: { question, history, mode: "voice", ...(transcriptAlt ? { transcriptAlt } : {}) },
   });
   const emotion = EMOTIONS.find((e) => e === res.emotion) ?? "biasa";
   return { answer: res.answer, emotion, correction: res.correction ?? null };
@@ -122,7 +124,7 @@ export function useVoiceChat() {
     setSpoken(null);
   }, []);
 
-  // Dibaca setiap frame oleh animasi Neko-sensei
+  // Dibaca setiap frame oleh animasi Miu-chan
   const getMicLevel = useCallback(() => meterRef.current?.micLevel() ?? 0, []);
   const getVoiceLevel = useCallback(() => meterRef.current?.voiceLevel() ?? 0, []);
   /** Posisi suara yang sedang diputar (0–1), dibaca subtitle setiap frame; null bila durasi belum diketahui. */
@@ -184,13 +186,13 @@ export function useVoiceChat() {
     }
   }, [playVoice]);
 
-  const processQuestion = useCallback(async (question: string) => {
+  const processQuestion = useCallback(async (question: string, transcriptAlt: string | null = null) => {
     setState("processing");
     setTranscript(question);
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", text: question }]);
 
     try {
-      const { answer, emotion: mood, correction } = await fetchAnswer(question, historyRef.current);
+      const { answer, emotion: mood, correction } = await fetchAnswer(question, historyRef.current, transcriptAlt);
       historyRef.current = [
         ...historyRef.current,
         { role: "user" as const, content: question },
@@ -213,13 +215,13 @@ export function useVoiceChat() {
   const handleRecording = useCallback(async (audio: Blob) => {
     setState("processing");
     try {
-      const text = await transcribe(audio);
+      const { text, alt } = await transcribe(audio);
       if (!text) {
         setError("Miu-chan tidak menangkap suaramu, coba bicara lagi ya.");
         setState("idle");
         return;
       }
-      await processQuestion(text);
+      await processQuestion(text, alt);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal mengenali suara.");
       setState("idle");

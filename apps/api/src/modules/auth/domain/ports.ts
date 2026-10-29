@@ -26,6 +26,7 @@ export interface OnboardingProfile {
   /** Kunci tujuan belajar dari pengaturan pendaftaran. */
   learningGoal: string;
   dailyTargetMin: number;
+  displayName?: string;
   gender?: Gender;
 }
 

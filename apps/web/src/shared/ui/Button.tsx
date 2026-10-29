@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 import styles from "./ui.module.css";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "danger";
 
 export function Button({
   variant = "primary",

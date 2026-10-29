@@ -16,12 +16,19 @@ describe("AskQuestion nama user", () => {
     expect(calls).toEqual([{ name: "Rina", gender: "female" }]);
   });
 
-  it("tamu dan mode teks tidak membawa nama", async () => {
+  it("tamu tidak membawa profil", async () => {
     const { ask, calls } = capture();
     const uc = new AskQuestion({ ask, userProfile: async () => ({ name: "Rina" }) });
     await uc.execute("halo", [], "voice");
-    await uc.execute("halo", [], "text", "u1");
+    await uc.execute("halo", [], "text");
     expect(calls).toEqual([undefined, undefined]);
+  });
+
+  it("mode teks juga membawa profil supaya level dan memori dipakai", async () => {
+    const { ask, calls } = capture();
+    const uc = new AskQuestion({ ask, userProfile: async () => ({ name: "Rina", level: "N4" }) });
+    await uc.execute("arti 食べる apa", [], "text", "u1");
+    expect(calls).toEqual([{ name: "Rina", level: "N4" }]);
   });
 });
 

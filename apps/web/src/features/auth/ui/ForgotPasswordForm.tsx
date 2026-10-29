@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { TextField } from "@/shared/ui/TextField";
+import { TransitionLink } from "@/shared/ui/ViewTransitions";
 import { authApi } from "../data/authApi";
 import { AuthCard } from "./AuthCard";
 import styles from "./auth.module.css";
@@ -55,7 +55,10 @@ export function ForgotPasswordForm() {
       )}
 
       <p className={styles.footer}>
-        Ingat passwordmu? <Link href="/masuk">Kembali ke halaman masuk</Link>
+        Ingat passwordmu?{" "}
+        <TransitionLink href="/masuk" className={styles.footerLink}>
+          Kembali ke halaman masuk
+        </TransitionLink>
       </p>
     </AuthCard>
   );
