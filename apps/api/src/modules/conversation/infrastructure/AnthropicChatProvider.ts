@@ -1,4 +1,4 @@
-import { CONVERSATION_EMOTIONS, type ChatMessage, type ConversationEmotion } from "../domain/Conversation";
+import { CONVERSATION_EMOTIONS, VOICE_SPEEDS, type ChatMessage, type ConversationEmotion, type VoiceSpeed } from "../domain/Conversation";
 import type { AiChatProvider, AiReply } from "../domain/ports";
 
 /** Adapter ke Anthropic Messages API. Model diatur lewat AI_MODEL di .env. */
@@ -43,6 +43,11 @@ function toEmotion(value: unknown): ConversationEmotion | undefined {
   return (CONVERSATION_EMOTIONS as readonly string[]).includes(v) ? (v as ConversationEmotion) : undefined;
 }
 
+function toVoiceSpeed(value: unknown): VoiceSpeed | undefined {
+  const v = typeof value === "string" ? value.trim().toLowerCase() : "";
+  return (VOICE_SPEEDS as readonly string[]).includes(v) ? (v as VoiceSpeed) : undefined;
+}
+
 /** Mengurai balasan AI: memisahkan teks percakapan dan tag <correction_data> sesuai PRD. */
 export function parseAiReply(text: string): AiReply {
   const correctionMatch = text.match(/<correction_data>([\s\S]*?)<\/correction_data>/i);
@@ -52,12 +57,14 @@ export function parseAiReply(text: string): AiReply {
     try {
       const parsed = JSON.parse(jsonStr) as {
         emotion?: string;
+        voiceSpeed?: string;
         hasCorrection?: boolean;
         userMistake?: string | null;
         correctedSentence?: string | null;
         explanation?: string | null;
       };
       const emotion = toEmotion(parsed.emotion);
+      const voiceSpeed = toVoiceSpeed(parsed.voiceSpeed);
       if (parsed.hasCorrection && parsed.userMistake && parsed.correctedSentence) {
         return {
           reply,
@@ -67,9 +74,10 @@ export function parseAiReply(text: string): AiReply {
             explanation: parsed.explanation ?? "",
           },
           emotion,
+          voiceSpeed,
         };
       }
-      return { reply, correction: null, emotion };
+      return { reply, correction: null, emotion, voiceSpeed };
     } catch {
       return { reply, correction: null };
     }

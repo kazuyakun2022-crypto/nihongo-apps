@@ -1,5 +1,6 @@
 import { Errors } from "../../../shared/domain/errors";
 import type { AskProvider, AskUser } from "../infrastructure/MockAskProvider";
+import { planSpeech, speechText, stripPaceTags, type SpeechRun } from "../../../shared/domain/speechPace";
 import { extractCorrection, extractEmotion, type Emotion } from "../domain/emotion";
 
 export interface AskMessage {
@@ -14,6 +15,8 @@ export interface AskAnswer {
   correction: string | null;
   /** Kecepatan bicara Miu-chan untuk level user (diatur admin); null untuk tamu. */
   speechRate: number | null;
+  /** Mode suara: jawaban per bagian beserta tempo bicaranya (pelan/normal/cepat). */
+  speech: SpeechRun[] | null;
 }
 
 interface Deps {
@@ -43,10 +46,18 @@ export class AskQuestion {
     const alt = mode === "voice" ? transcriptAlt?.trim() || undefined : undefined;
     const raw = await this.deps.ask.answer(q, trimmedHistory, mode, user ?? undefined, alt);
     const speechRate = user?.levelGuide?.speechRate ?? null;
-    if (mode !== "voice") return { answer: raw, emotion: "biasa", correction: null, speechRate };
-    // Mode suara: AI menulis tanda emosi di awal jawaban ("[marah]") dan koreksi di akhir ("{{benar: …}}")
+    if (mode !== "voice") return { answer: raw, emotion: "biasa", correction: null, speechRate, speech: null };
+    // Mode suara: AI menulis tanda emosi di awal jawaban ("[marah]"), koreksi di akhir ("{{benar: …}}"),
+    // dan tanda tempo di sekitar bagian yang perlu dibacakan pelan/cepat ("<pelan>…</pelan>")
     const { text: withoutCorrection, correction } = extractCorrection(raw);
     const { text, emotion } = extractEmotion(withoutCorrection);
-    return { answer: text, emotion, correction, speechRate };
+    const speech = planSpeech(text, speechRate ?? 1);
+    return {
+      answer: speechText(speech) || stripPaceTags(text),
+      emotion,
+      correction: correction && stripPaceTags(correction),
+      speechRate,
+      speech,
+    };
   }
 }

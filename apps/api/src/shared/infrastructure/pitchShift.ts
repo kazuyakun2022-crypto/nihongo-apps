@@ -11,18 +11,86 @@ export function shiftPitch(
   tempo = 1,
 ): { pcm: Buffer; sampleRate: number } {
   if (pitch === 1 && tempo === 1) return { pcm, sampleRate };
+  return shiftPitchByPace(pcm, sampleRate, pitch, [{ seconds: 1, tempo }]);
+}
 
+/**
+ * Seperti shiftPitch, tetapi tempo berbeda per bagian ucapan. `parts` berurutan sesuai teks,
+ * dengan perkiraan lama ucapan masing-masing; batas antarbagian digeser ke jeda terdekat.
+ */
+export function shiftPitchByPace(
+  pcm: Buffer,
+  sampleRate: number,
+  pitch: number,
+  parts: { seconds: number; tempo: number }[],
+): { pcm: Buffer; sampleRate: number } {
   const input = new Float32Array(pcm.length >> 1);
   for (let i = 0; i < input.length; i++) input[i] = pcm.readInt16LE(i * 2) / 32768;
 
-  const stretched = timeStretch(input, pitch / tempo, sampleRate);
+  const cuts = parts.length > 1 ? cutPoints(input, sampleRate, parts.map((p) => p.seconds)) : [];
+  const bounds = [0, ...cuts, input.length];
+  const pieces = parts.map((p, i) => timeStretch(input.subarray(bounds[i], bounds[i + 1]), pitch / p.tempo, sampleRate));
+  const total = pieces.reduce((n, p) => n + p.length, 0);
 
-  const out = Buffer.alloc(stretched.length * 2);
-  for (let i = 0; i < stretched.length; i++) {
-    const v = Math.max(-1, Math.min(1, stretched[i]));
-    out.writeInt16LE(Math.round(v * 32767), i * 2);
+  const out = Buffer.alloc(total * 2);
+  let o = 0;
+  for (const piece of pieces) {
+    for (let i = 0; i < piece.length; i++, o++) {
+      const v = Math.max(-1, Math.min(1, piece[i]));
+      out.writeInt16LE(Math.round(v * 32767), o * 2);
+    }
   }
   return { pcm: out, sampleRate: Math.round(sampleRate * pitch) };
+}
+
+function rms(x: Float32Array, start: number, len: number): number {
+  let s = 0;
+  for (let i = start; i < start + len; i++) s += x[i] * x[i];
+  return Math.sqrt(s / len);
+}
+
+/**
+ * Posisi sampel pemisah antarbagian. Ucapan (tanpa hening awal/akhir) dibagi sebanding perkiraan
+ * lamanya, lalu tiap batas digeser ke titik paling hening dalam ±350 ms supaya tidak memotong suku kata.
+ */
+export function cutPoints(x: Float32Array, sampleRate: number, seconds: number[]): number[] {
+  const win = Math.max(1, Math.round(sampleRate * 0.02));
+  const step = Math.max(1, Math.round(sampleRate * 0.005));
+  const reach = Math.round(sampleRate * 0.35);
+  const minGap = Math.round(sampleRate * 0.05);
+
+  let peak = 0;
+  for (let p = 0; p + win <= x.length; p += win) peak = Math.max(peak, rms(x, p, win));
+  const threshold = Math.max(0.003, peak * 0.05);
+  let start = 0;
+  while (start + win < x.length && rms(x, start, win) < threshold) start += step;
+  let end = x.length;
+  while (end - win > start && rms(x, end - win, win) < threshold) end -= step;
+
+  const total = seconds.reduce((a, b) => a + b, 0) || 1;
+  const cuts: number[] = [];
+  let acc = 0;
+  let lo = 0;
+  for (let i = 0; i < seconds.length - 1; i++) {
+    acc += seconds[i];
+    const target = Math.round(start + ((end - start) * acc) / total);
+    const from = Math.max(lo + minGap, target - reach);
+    const to = Math.min(x.length - minGap, target + reach) - win;
+    let best = Math.min(Math.max(target, lo + minGap), x.length - minGap);
+    let bestScore = Infinity;
+    for (let p = from; p <= to; p += step) {
+      // Jeda yang lebih dekat ke perkiraan sedikit diutamakan
+      const score = rms(x, p, win) * (1 + Math.abs(p + win / 2 - target) / reach);
+      if (score < bestScore) {
+        bestScore = score;
+        best = p + (win >> 1);
+      }
+    }
+    best = Math.min(Math.max(best, lo + minGap), x.length);
+    cuts.push(best);
+    lo = best;
+  }
+  return cuts;
 }
 
 /** WSOLA: panjang audio dikali `factor` tanpa mengubah nada. */

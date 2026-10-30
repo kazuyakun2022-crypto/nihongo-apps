@@ -296,7 +296,7 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
         {/* Slot subtitle & transkrip — ukuran tetap agar maskot tidak berpindah */}
         <div className={styles.transcriptSlot}>
           {state === "speaking" && spoken ? (
-            <SpeechSubtitle key={spoken.id} text={spoken.text} emotion={emotion} getProgress={getSpeechProgress} />
+            <SpeechSubtitle key={spoken.id} text={spoken.text} runs={spoken.runs} emotion={emotion} getProgress={getSpeechProgress} />
           ) : transcript ? (
             <p className={styles.liveTranscript} aria-live="polite">
               "{transcript}"

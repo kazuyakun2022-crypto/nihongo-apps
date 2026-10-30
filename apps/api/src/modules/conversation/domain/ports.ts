@@ -1,4 +1,4 @@
-import type { ChatMessage, ConversationContext, ConversationEmotion, ConversationMode, Correction, ScenarioListItem } from "./Conversation";
+import type { ChatMessage, ConversationContext, ConversationEmotion, ConversationMode, Correction, ScenarioListItem, VoiceSpeed } from "./Conversation";
 
 export interface SessionRow {
   id: string;
@@ -30,6 +30,8 @@ export interface AiReply {
   correction: Correction | null;
   /** Tidak ada bila AI tidak menulis emosi atau nilainya tidak dikenal. */
   emotion?: ConversationEmotion;
+  /** Kecepatan bicara yang dipilih AI; default "normal" bila tidak ada. */
+  voiceSpeed?: VoiceSpeed;
 }
 
 /** Port penyedia AI. Ganti model/penyedia cukup dengan membuat kelas baru yang mengimplementasikan ini. */

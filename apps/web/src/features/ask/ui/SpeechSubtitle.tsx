@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { VoiceEmotion } from "../application/useVoiceChat";
+import type { SpeechRun, VoiceEmotion } from "../application/useVoiceChat";
 import styles from "./subtitle.module.css";
 
 interface Token {
@@ -39,28 +39,32 @@ function segment(text: string): { text: string; spoken: boolean }[] {
   return text.split(/(\s+)/).filter(Boolean).map((t) => ({ text: t, spoken: /\S/.test(t) }));
 }
 
-function tokenize(text: string): { tokens: Token[]; totalWeight: number } {
-  const parts = segment(text);
-  const weights = parts.map((p) => weightOf(p.text, p.spoken));
+/** Bagian yang dibacakan pelan memakan waktu lebih lama, jadi bobotnya dibagi tempo bagian itu. */
+function tokenize(text: string, runs?: SpeechRun[]): { tokens: Token[]; totalWeight: number } {
+  const pieces = runs?.length ? runs : [{ text, tempo: 1 }];
+  const parts = pieces.flatMap((r) => segment(r.text).map((p) => ({ ...p, tempo: r.tempo || 1 })));
+  const weights = parts.map((p) => weightOf(p.text, p.spoken) / p.tempo);
   const total = weights.reduce((a, b) => a + b, 0) || 1;
   let acc = 0;
   const tokens = parts.map((p, i) => {
     acc += weights[i];
-    return { ...p, end: acc / total };
+    return { text: p.text, spoken: p.spoken, end: acc / total };
   });
   return { tokens, totalWeight: total };
 }
 
 interface Props {
   text: string;
+  /** Tempo per bagian jawaban; tanpa ini seluruh teks dianggap bertempo sama. */
+  runs?: SpeechRun[];
   emotion: VoiceEmotion;
   /** Posisi audio 0–1, atau null bila durasi belum diketahui. */
   getProgress: () => number | null;
 }
 
 /** Subtitle karaoke: kata yang sedang diucapkan Miu-chan menyala, mengikuti posisi audio setiap frame. */
-export function SpeechSubtitle({ text, emotion, getProgress }: Props) {
-  const { tokens, totalWeight } = useMemo(() => tokenize(text), [text]);
+export function SpeechSubtitle({ text, runs, emotion, getProgress }: Props) {
+  const { tokens, totalWeight } = useMemo(() => tokenize(text, runs), [text, runs]);
   const [active, setActive] = useState(0);
   const boxRef = useRef<HTMLParagraphElement>(null);
 

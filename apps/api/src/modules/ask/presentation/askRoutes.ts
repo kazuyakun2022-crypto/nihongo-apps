@@ -30,8 +30,8 @@ export function askRoutes(
       req.body,
     );
 
-    const { answer, emotion, correction, speechRate } = await uc.ask.execute(question, history, mode, req.user?.id, transcriptAlt);
-    res.json({ answer, emotion, correction, speechRate });
+    const { answer, emotion, correction, speechRate, speech } = await uc.ask.execute(question, history, mode, req.user?.id, transcriptAlt);
+    res.json({ answer, emotion, correction, speechRate, speech });
   }));
 
   // POST /api/ask/transcribe — body: audio mentah (webm/ogg/mp4), bahasa dideteksi otomatis (?lang=ja untuk memaksa Jepang)
@@ -54,6 +54,7 @@ export function askRoutes(
   );
 
   // POST /api/ask/speak — suara karakter Miu-chan dengan nada sesuai emosi; kalau Gemini gagal/kuota habis, pakai TTS cadangan.
+  // `text` boleh bertanda <pelan>/<cepat>; `rate` = kecepatan bicara level user.
   r.post("/speak", asyncHandler(async (req, res) => {
     const { text, emotion, rate } = parseBody(
       z.object({ text: z.string().trim().min(1).max(2000), emotion: z.enum(EMOTIONS).optional(), rate: z.number().min(0.5).max(1.5).default(1) }),

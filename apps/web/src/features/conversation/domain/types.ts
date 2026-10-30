@@ -47,6 +47,6 @@ export interface ConversationRepository {
   send(
     sessionId: string,
     text: string,
-  ): Promise<{ message: { sender: "mascot"; text: string }; correction: Correction | null; emotion?: ConversationEmotion; turnsLeft: number }>;
+  ): Promise<{ message: { sender: "mascot"; text: string }; correction: Correction | null; emotion?: ConversationEmotion; speechRate?: number; turnsLeft: number }>;
   end(sessionId: string): Promise<SessionReport>;
 }

@@ -46,6 +46,18 @@ export interface ScenarioListItem {
 export const CONVERSATION_EMOTIONS = ["playful", "encouraging", "thinking", "excited"] as const;
 export type ConversationEmotion = (typeof CONVERSATION_EMOTIONS)[number];
 
+/** Kecepatan TTS per balasan yang dipilih AI berdasarkan konteks. */
+export const VOICE_SPEEDS = ["lambat", "normal", "cepat"] as const;
+export type VoiceSpeed = (typeof VOICE_SPEEDS)[number];
+
+const VOICE_SPEED_MULTIPLIER: Record<VoiceSpeed, number> = { lambat: 0.82, normal: 1.0, cepat: 1.12 };
+
+/** Hitung speech rate final: base level × multiplier per konteks. */
+export function finalSpeechRate(baseLevelRate: number, speed?: VoiceSpeed): number {
+  const factor = VOICE_SPEED_MULTIPLIER[speed ?? "normal"];
+  return Math.round(baseLevelRate * factor * 100) / 100;
+}
+
 export interface LearnerMemories {
   /** Hobi/minat (user_memory.type = interest). */
   interests: string[];
