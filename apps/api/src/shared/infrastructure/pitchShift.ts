@@ -27,18 +27,30 @@ export function shiftPitchByPace(
   const input = new Float32Array(pcm.length >> 1);
   for (let i = 0; i < input.length; i++) input[i] = pcm.readInt16LE(i * 2) / 32768;
 
-  const cuts = parts.length > 1 ? cutPoints(input, sampleRate, parts.map((p) => p.seconds)) : [];
-  const bounds = [0, ...cuts, input.length];
-  const pieces = parts.map((p, i) => timeStretch(input.subarray(bounds[i], bounds[i + 1]), pitch / p.tempo, sampleRate));
-  const total = pieces.reduce((n, p) => n + p.length, 0);
+  const factors = parts.map((p) => pitch / p.tempo);
+  let stretched: Float32Array;
+  if (factors.every((f) => f === factors[0])) {
+    stretched = timeStretch(input, factors[0], sampleRate);
+  } else {
+    // Satu kali WSOLA dengan tempo yang bergeser halus di sekitar batas bagian, bukan potongan
+    // yang di-stretch terpisah: sambungan potongan terdengar seperti suara patah-patah.
+    const cuts = cutPoints(input, sampleRate, parts.map((p) => p.seconds));
+    const ramp = Math.round(sampleRate * 0.08);
+    stretched = timeStretch(input, (pos) => {
+      let i = 0;
+      while (i < cuts.length && pos >= cuts[i] + ramp) i++;
+      if (i < cuts.length && pos > cuts[i] - ramp) {
+        const t = (pos - (cuts[i] - ramp)) / (2 * ramp);
+        return factors[i] + (factors[i + 1] - factors[i]) * t;
+      }
+      return factors[i];
+    }, sampleRate);
+  }
 
-  const out = Buffer.alloc(total * 2);
-  let o = 0;
-  for (const piece of pieces) {
-    for (let i = 0; i < piece.length; i++, o++) {
-      const v = Math.max(-1, Math.min(1, piece[i]));
-      out.writeInt16LE(Math.round(v * 32767), o * 2);
-    }
+  const out = Buffer.alloc(stretched.length * 2);
+  for (let i = 0; i < stretched.length; i++) {
+    const v = Math.max(-1, Math.min(1, stretched[i]));
+    out.writeInt16LE(Math.round(v * 32767), i * 2);
   }
   return { pcm: out, sampleRate: Math.round(sampleRate * pitch) };
 }
@@ -93,23 +105,30 @@ export function cutPoints(x: Float32Array, sampleRate: number, seconds: number[]
   return cuts;
 }
 
-/** WSOLA: panjang audio dikali `factor` tanpa mengubah nada. */
-export function timeStretch(input: Float32Array, factor: number, sampleRate: number): Float32Array {
+/** WSOLA: panjang audio dikali `factor` tanpa mengubah nada; `factor` boleh berubah menurut posisi sampel input. */
+export function timeStretch(
+  input: Float32Array,
+  factor: number | ((inputPos: number) => number),
+  sampleRate: number,
+): Float32Array {
+  const factorAt = typeof factor === "number" ? () => factor : factor;
   const frame = 2 * Math.round(sampleRate * 0.02); // 40 ms
   const hop = frame / 2;
   const tolerance = Math.round(sampleRate * 0.01); // geser maksimal 10 ms untuk mencari sambungan paling mulus
-  const hopIn = hop / factor;
-  const outLength = Math.round(input.length * factor);
-  const out = new Float32Array(outLength + frame);
+
+  // Posisi awal tiap potongan di input: jaraknya hop / factor setempat
+  const starts: number[] = [];
+  for (let pos = 0; pos < input.length; pos += hop / factorAt(pos)) starts.push(Math.round(pos));
+  const outLength = typeof factor === "number" ? Math.round(input.length * factor) : starts.length * hop;
+  const out = new Float32Array(Math.max(outLength, starts.length * hop) + frame);
 
   // Hann periodik: dengan overlap 50% jumlah jendelanya selalu 1, jadi tidak perlu normalisasi
   const window = new Float32Array(frame);
   for (let i = 0; i < frame; i++) window[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / frame);
 
   let prev = 0;
-  for (let k = 0; k * hop < outLength; k++) {
-    const nominal = Math.round(k * hopIn);
-    if (nominal >= input.length) break;
+  for (let k = 0; k < starts.length && k * hop < outLength; k++) {
+    const nominal = starts[k];
 
     let best = nominal;
     if (k > 0) {

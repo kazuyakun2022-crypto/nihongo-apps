@@ -21,7 +21,7 @@ export interface VoiceMessage {
 export interface SpeechRun {
   text: string;
   tempo: number;
-  mark?: "pelan" | "cepat";
+  mark?: "pelan" | "cepat" | "eja";
 }
 
 /** Kalimat yang sedang dibacakan Miu-chan, untuk subtitle. */

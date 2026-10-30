@@ -114,7 +114,8 @@ export class GeminiTts {
     const tone = voiceTone(emotion);
     const parts = runs.map((r) => ({
       seconds: estimateSpeechSeconds(r.text),
-      tempo: Math.min(1.5, Math.max(0.6, tone.tempo * r.tempo)),
+      // Di bawah 0,8 WSOLA mulai terdengar patah-patah
+      tempo: Math.min(1.3, Math.max(0.8, tone.tempo * r.tempo)),
     }));
     const cacheKey = `${emotion ?? "biasa"}:${rate}:${text}`;
     const cached = this.cache.get(cacheKey);
