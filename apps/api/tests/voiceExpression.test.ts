@@ -33,6 +33,7 @@ describe("AskQuestion mode suara", () => {
       emotion: "biasa",
       correction: "学校に行きます",
       speechRate: null,
+      speech: [{ text: "Tujuan pakai に ya!", tempo: 1 }],
     });
   });
 });

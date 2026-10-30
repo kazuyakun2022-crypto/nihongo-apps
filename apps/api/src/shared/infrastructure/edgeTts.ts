@@ -1,4 +1,5 @@
 import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
+import { planSpeech } from "../domain/speechPace";
 import { voiceTone } from "./voiceTone";
 
 type Lang = "ja" | "id";
@@ -76,14 +77,14 @@ async function streamToBuffer(tts: MsEdgeTTS, text: string, prosody: Prosody): P
   });
 }
 
-/** Kalikan prosody rate SSML ("+14%") dengan kecepatan bicara level (mis. 0.75). */
+/** Kalikan prosody rate SSML ("+14%") dengan tempo bagian kalimat (mis. 0.75). */
 function scaleRate(rate: string, factor: number): string {
   if (factor === 1) return rate;
   const pct = Math.round(((1 + (Number.parseFloat(rate) || 0) / 100) * factor - 1) * 100);
   return `${pct >= 0 ? "+" : ""}${pct}%`;
 }
 
-async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita", emotion?: string, rate = 1): Promise<Buffer> {
+async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita", emotion?: string, tempo = 1): Promise<Buffer> {
   const voice =
     segment.lang === "ja"
       ? voiceType === "keita" ? "ja-JP-KeitaNeural" : "ja-JP-NanamiNeural"
@@ -96,7 +97,7 @@ async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita"
     : segment.lang === "ja"
       ? { pitch: voiceType === "keita" ? "+10%" : "+24%", rate: voiceType === "keita" ? "+8%" : "+14%" }
       : { pitch: "+16%", rate: "+12%" };
-  const prosody: Prosody = { ...base, rate: scaleRate(base.rate, rate) };
+  const prosody: Prosody = { ...base, rate: scaleRate(base.rate, tempo) };
 
   try {
     return await streamToBuffer(await getTts(voice), segment.text, prosody);
@@ -118,12 +119,13 @@ async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita"
 /**
  * Suara Miu-chan: bagian berbahasa Jepang dibacakan voice Jepang (Nanami/Keita),
  * bagian lainnya voice Indonesia (Gadis), lalu digabung jadi satu MP3.
+ * Teks boleh bertanda <pelan>/<cepat>; tiap bagian dibacakan dengan tempo sendiri (lihat planSpeech).
  */
 export async function synthesizeChildVoice(
   text: string,
   voiceType: "nanami" | "keita" = "nanami",
   emotion?: string,
-  /** Kecepatan bicara per level (1 = normal). */
+  /** Kecepatan bicara level user (1 = normal). */
   rate = 1,
 ): Promise<Buffer> {
   const clean = text.slice(0, MAX_CHARS).trim();
@@ -131,11 +133,13 @@ export async function synthesizeChildVoice(
   const cached = ttsCache.get(cacheKey);
   if (cached) return cached;
 
-  const segments = splitByLanguage(stripRomajiGloss(clean));
+  const segments = planSpeech(stripRomajiGloss(clean), rate).flatMap((run) =>
+    splitByLanguage(run.text).map((segment) => ({ segment, tempo: run.tempo })),
+  );
   if (segments.length === 0) throw new Error("Teks tidak bisa dibacakan");
 
   const parts: Buffer[] = [];
-  for (const segment of segments) parts.push(await synthesizeSegment(segment, voiceType, emotion, rate));
+  for (const { segment, tempo } of segments) parts.push(await synthesizeSegment(segment, voiceType, emotion, tempo));
   const buffer = Buffer.concat(parts);
 
   if (ttsCache.size < 3000) ttsCache.set(cacheKey, buffer);

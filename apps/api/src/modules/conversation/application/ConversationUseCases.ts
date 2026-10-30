@@ -1,6 +1,6 @@
 import { Errors } from "../../../shared/domain/errors";
 import type { AuthUser, Clock } from "../../../shared/domain/types";
-import { dailySessionQuota, type ChatMessage } from "../domain/Conversation";
+import { dailySessionQuota, finalSpeechRate, type ChatMessage } from "../domain/Conversation";
 import { buildSystemPrompt, findDisallowedKanji, rewriteInstruction } from "../domain/LevelPolicy";
 import type { AiChatProvider, AiReply, ConversationRepository } from "../domain/ports";
 
@@ -12,16 +12,21 @@ interface Deps {
 }
 
 /** Meminta balasan AI, lalu memastikan kanjinya sesuai level (maksimal 1 kali tulis ulang). */
-async function replyWithinLevel(deps: Deps, userId: string, scenarioId: string | null, history: ChatMessage[]): Promise<AiReply> {
+async function replyWithinLevel(
+  deps: Deps,
+  userId: string,
+  scenarioId: string | null,
+  history: ChatMessage[],
+): Promise<AiReply & { baseSpeechRate: number }> {
   const ctx = await deps.repo.loadContext(userId, scenarioId);
   const system = buildSystemPrompt(ctx);
   const answer = await deps.ai.reply(system, history);
   const hardOnly = ctx.rules.furiganaRule === "hard_only";
   const disallowed = findDisallowedKanji(answer.reply, ctx.allowedKanji, hardOnly);
-  if (disallowed.length === 0) return answer;
+  const base = ctx.rules.speechRate;
+  if (disallowed.length === 0) return { ...answer, baseSpeechRate: base };
   const rewritten = await deps.ai.reply(system, history, rewriteInstruction(disallowed, answer.reply, hardOnly));
-  // Koreksi dari jawaban pertama tetap dipakai bila tulisan ulang tidak menyertakannya
-  return { ...rewritten, correction: rewritten.correction ?? answer.correction };
+  return { ...rewritten, correction: rewritten.correction ?? answer.correction, baseSpeechRate: base };
 }
 
 /** Daftar skenario latihan ngobrol untuk siswa. */
@@ -98,6 +103,7 @@ export class SendMessage {
       message: { sender: "mascot" as const, text: answer.reply },
       correction: answer.correction,
       emotion: answer.emotion ?? (answer.correction ? "encouraging" : "playful"),
+      speechRate: finalSpeechRate(answer.baseSpeechRate, answer.voiceSpeed),
       turnsLeft: session.maxTurns - session.turnCount - 1,
     };
   }

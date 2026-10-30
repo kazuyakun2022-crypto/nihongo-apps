@@ -104,6 +104,12 @@ export function buildSystemPrompt(ctx: ConversationContext): string {
     `- "thinking": menjelaskan tata bahasa yang rumit, nuansa kanji, atau menganalisis pertanyaan.`,
     `- "excited": pengguna berhasil, menguasai frasa sulit, atau membawa kabar seru.`,
     ``,
+    `# DYNAMIC VOICE SPEED`,
+    `Also set "voiceSpeed" to guide how fast the text-to-speech reads your reply:`,
+    `- "lambat": saat memperkenalkan kosakata baru, mengeja atau memecah kata sulit, atau menjelaskan tata bahasa inti. Biarkan pengguna menyerap setiap kata.`,
+    `- "normal": percakapan biasa, pertanyaan pembuka, menjawab topik umum.`,
+    `- "cepat": memuji keberhasilan pengguna, kalimat seruan/exclamation, atau ungkapan kasual yang natural seperti yang diucapkan penutur asli.`,
+    ``,
     scenario
       ? `# SCENARIO\nSkenario: ${scenario.title}\nPeranmu: ${scenario.mascotRole}\nTujuan pengguna: ${scenario.goal}\n` +
         (scenario.targetGrammar.length ? `Pola target: ${scenario.targetGrammar.join("; ")}. Pancing pengguna memakai pola ini; puji bila berhasil.\n` : "") +
@@ -133,6 +139,7 @@ export function buildSystemPrompt(ctx: ConversationContext): string {
     `<correction_data>`,
     `{`,
     `  "emotion": "playful" | "encouraging" | "thinking" | "excited",`,
+    `  "voiceSpeed": "lambat" | "normal" | "cepat",`,
     `  "hasCorrection": boolean,`,
     `  "userMistake": "potongan kalimat pengguna yang salah, or null",`,
     `  "correctedSentence": "string or null",`,

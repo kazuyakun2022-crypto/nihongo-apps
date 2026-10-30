@@ -10,11 +10,12 @@ export interface VoiceTone {
   edge: { pitch: string; rate: string; volume: string };
 }
 
-// Tempo sengaja di bawah/sekitar 1: TTS sudah cukup cepat, dan suara cadangan masih dipercepat browser 1,08×.
+// Tempo di sekitar 1: TTS sudah cukup cepat, dan suara cadangan masih dipercepat browser 1,08×.
+// "biasa" dinaikkan sedikit (+4%) agar percakapan terdengar alami, bukan seperti sedang membaca.
 const TONES: Record<string, VoiceTone> = {
-  biasa:    { pitch: 1.2,  tempo: 0.95, gain: 1,    edge: { pitch: "+24%", rate: "-4%",  volume: "+0%" } },
-  senang:   { pitch: 1.25, tempo: 1,    gain: 1.05, edge: { pitch: "+30%", rate: "+0%",  volume: "+5%" } },
-  semangat: { pitch: 1.28, tempo: 1.04, gain: 1.12, edge: { pitch: "+34%", rate: "+6%",  volume: "+12%" } },
+  biasa:    { pitch: 1.2,  tempo: 0.97, gain: 1,    edge: { pitch: "+24%", rate: "+4%",  volume: "+0%" } },
+  senang:   { pitch: 1.25, tempo: 1.02, gain: 1.05, edge: { pitch: "+30%", rate: "+8%",  volume: "+5%" } },
+  semangat: { pitch: 1.28, tempo: 1.06, gain: 1.12, edge: { pitch: "+34%", rate: "+12%", volume: "+12%" } },
   sedih:    { pitch: 1.12, tempo: 0.82, gain: 0.8,  edge: { pitch: "+12%", rate: "-18%", volume: "-20%" } },
   nangis:   { pitch: 1.16, tempo: 0.8,  gain: 0.75, edge: { pitch: "+18%", rate: "-22%", volume: "-25%" } },
   kesal:    { pitch: 1.16, tempo: 0.98, gain: 1.05, edge: { pitch: "+16%", rate: "-2%",  volume: "+5%" } },

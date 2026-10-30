@@ -1,5 +1,6 @@
+import { planSpeech, speechText } from "../domain/speechPace";
 import { stripRomajiGloss } from "./edgeTts";
-import { shiftPitch } from "./pitchShift";
+import { shiftPitchByPace } from "./pitchShift";
 import { applyGain, voiceTone } from "./voiceTone";
 
 // Free tier: 3 request/menit dan 10 request/hari PER model, jadi dirotasi; urutan = tercepat lebih dulu.
@@ -11,6 +12,25 @@ const SAMPLE_RATE = 24000;
 const MAX_CHARS = 800;
 const PER_MINUTE_COOLDOWN_MS = 60_000;
 const PER_DAY_COOLDOWN_MS = 60 * 60_000;
+
+const KANA = /[぀-ヿｦ-ﾟ]/;
+const KANJI = /[㐀-䶿一-鿿々]/;
+const LATIN = /[\p{L}\d]/u;
+const LONG_PAUSE = /[.!?。！？…]/;
+const SHORT_PAUSE = /[,、;:；：]/;
+
+/** Perkiraan lama ucapan (detik) pada tempo asli TTS: satu kana ≈ satu mora, huruf latin ≈ setengahnya. */
+export function estimateSpeechSeconds(text: string): number {
+  let s = 0;
+  for (const ch of text) {
+    if (KANA.test(ch)) s += 0.13;
+    else if (KANJI.test(ch)) s += 0.22;
+    else if (LATIN.test(ch)) s += 0.07;
+    else if (LONG_PAUSE.test(ch)) s += 0.3;
+    else if (SHORT_PAUSE.test(ch)) s += 0.15;
+  }
+  return s;
+}
 
 interface GeminiTtsResponse {
   candidates?: { content?: { parts?: { inlineData?: { data: string } }[] } }[];
@@ -82,12 +102,21 @@ export class GeminiTts {
 
   constructor(private readonly apiKey: string) {}
 
-  /** Leda dibuat lebih imut (nada ±3 semitone lebih tinggi); nada, tempo, dan volume lalu digeser sesuai emosi. */
-  /** `rate`: kecepatan bicara per level (mis. 0.75 untuk N5), dikalikan ke tempo emosi. */
+  /**
+   * Leda dibuat lebih imut (nada ±3 semitone lebih tinggi); nada, tempo, dan volume lalu digeser sesuai emosi.
+   * Teks boleh bertanda <pelan>/<cepat>; `rate` = kecepatan bicara level (lihat planSpeech).
+   * Cukup satu request per jawaban: tempo per bagian diatur setelah audio jadi, supaya kuota tidak boros.
+   */
   async speak(text: string, emotion?: string, rate = 1): Promise<Buffer> {
-    const clean = stripRomajiGloss(text.slice(0, MAX_CHARS).trim());
+    const runs = planSpeech(stripRomajiGloss(text.slice(0, MAX_CHARS).trim()), rate);
+    const clean = speechText(runs);
+    if (!clean) throw new Error("Teks tidak bisa dibacakan");
     const tone = voiceTone(emotion);
-    const cacheKey = `${emotion ?? "biasa"}:${rate}:${clean}`;
+    const parts = runs.map((r) => ({
+      seconds: estimateSpeechSeconds(r.text),
+      tempo: Math.min(1.5, Math.max(0.6, tone.tempo * r.tempo)),
+    }));
+    const cacheKey = `${emotion ?? "biasa"}:${rate}:${text}`;
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
@@ -127,7 +156,7 @@ export class GeminiTts {
         if (!audio) throw new Error("tidak mengembalikan audio");
 
         const { pcm, sampleRate } = extractPcm(Buffer.from(audio, "base64"));
-        const shifted = shiftPitch(applyGain(pcm, tone.gain), sampleRate, tone.pitch, tone.tempo * rate);
+        const shifted = shiftPitchByPace(applyGain(pcm, tone.gain), sampleRate, tone.pitch, parts);
         const wav = pcmToWav(shifted.pcm, shifted.sampleRate);
         if (this.cache.size < 200) this.cache.set(cacheKey, wav);
         return wav;

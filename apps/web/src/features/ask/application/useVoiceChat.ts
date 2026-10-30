@@ -17,10 +17,24 @@ export interface VoiceMessage {
   correction?: string | null;
 }
 
+/** Bagian jawaban dengan tempo bicaranya; `mark` = tanda tempo yang ditulis AI. */
+export interface SpeechRun {
+  text: string;
+  tempo: number;
+  mark?: "pelan" | "cepat";
+}
+
 /** Kalimat yang sedang dibacakan Miu-chan, untuk subtitle. */
 export interface SpokenLine {
   id: string;
   text: string;
+  /** Tempo per bagian, supaya sorotan subtitle mengikuti bagian yang dibacakan pelan/cepat. */
+  runs?: SpeechRun[];
+}
+
+/** Jawaban beserta tanda tempo <pelan>/<cepat>, untuk dibacakan server dan disimpan di riwayat. */
+function withPaceTags(runs: SpeechRun[]): string {
+  return runs.map((r) => (r.mark ? `<${r.mark}>${r.text}</${r.mark}>` : r.text)).join("").trim();
 }
 
 type HistoryItem = { role: "user" | "assistant"; content: string };
@@ -52,20 +66,23 @@ async function fetchAnswer(
   question: string,
   history: HistoryItem[],
   transcriptAlt: string | null,
-): Promise<{ answer: string; emotion: VoiceEmotion; correction: string | null; speechRate: number | null }> {
-  const res = await apiRequest<{ answer: string; emotion?: string; correction?: string | null; speechRate?: number | null }>("/ask", {
+): Promise<{ answer: string; emotion: VoiceEmotion; correction: string | null; speechRate: number | null; speech: SpeechRun[] | null }> {
+  const res = await apiRequest<{ answer: string; emotion?: string; correction?: string | null; speechRate?: number | null; speech?: SpeechRun[] | null }>("/ask", {
     method: "POST",
     body: { question, history, mode: "voice", ...(transcriptAlt ? { transcriptAlt } : {}) },
   });
   const emotion = EMOTIONS.find((e) => e === res.emotion) ?? "biasa";
-  return { answer: res.answer, emotion, correction: res.correction ?? null, speechRate: res.speechRate ?? null };
+  return { answer: res.answer, emotion, correction: res.correction ?? null, speechRate: res.speechRate ?? null, speech: res.speech?.length ? res.speech : null };
 }
 
 // Suara cadangan (MP3, dipakai saat kuota Gemini habis) diputar lebih cepat tanpa menjaga pitch,
 // sehingga nadanya naik ±1,3 semitone; sisanya dinaikkan lewat pitch di server supaya tempo tidak terlalu cepat.
 const FALLBACK_PLAYBACK_RATE = 1.08;
 
-/** Suara Miu-chan; nada, tempo, dan volume disesuaikan server dengan emosinya, kecepatan mengikuti level user. */
+/**
+ * Suara Miu-chan; nada, tempo, dan volume disesuaikan server dengan emosinya. `rate` = kecepatan level user:
+ * server membacakan bahasa Indonesia normal, Jepang sedikit lebih pelan, dan bagian bertanda <pelan>/<cepat> sesuai tandanya.
+ */
 async function fetchVoice(text: string, emotion: VoiceEmotion, rate = 1): Promise<{ url: string; isFallback: boolean }> {
   const res = await fetch("/api/ask/speak", {
     method: "POST",
@@ -136,7 +153,7 @@ export function useVoiceChat() {
     return audio.ended ? 1 : audio.currentTime / audio.duration;
   }, []);
 
-  const playVoice = useCallback(async (audioUrl: string, isFallback: boolean, text: string) => {
+  const playVoice = useCallback(async (audioUrl: string, isFallback: boolean, text: string, runs?: SpeechRun[]) => {
     const audio = makeAudio(audioUrl, isFallback);
     audioRef.current = audio;
     (meterRef.current ??= new AudioMeter()).attachVoice(audio);
@@ -150,7 +167,7 @@ export function useVoiceChat() {
       finish();
     };
     audio.onerror = finish;
-    setSpoken({ id: crypto.randomUUID(), text });
+    setSpoken({ id: crypto.randomUUID(), text, runs });
     setState("speaking");
     await audio.play();
   }, []);
@@ -194,20 +211,21 @@ export function useVoiceChat() {
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", text: question }]);
 
     try {
-      const { answer, emotion: mood, correction, speechRate } = await fetchAnswer(question, historyRef.current, transcriptAlt);
+      const { answer, emotion: mood, correction, speechRate, speech } = await fetchAnswer(question, historyRef.current, transcriptAlt);
       if (speechRate) rateRef.current = speechRate;
+      const spokenText = speech ? withPaceTags(speech) : answer;
       historyRef.current = [
         ...historyRef.current,
         { role: "user" as const, content: question },
-        // Tanda emosi dan koreksi ikut disimpan supaya AI konsisten memakai formatnya
-        { role: "assistant" as const, content: `[${mood}] ${answer}${correction ? ` {{benar: ${correction}}}` : ""}` },
+        // Tanda emosi, tempo, dan koreksi ikut disimpan supaya AI konsisten memakai formatnya
+        { role: "assistant" as const, content: `[${mood}] ${spokenText}${correction ? ` {{benar: ${correction}}}` : ""}` },
       ].slice(-10);
       setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text: answer, emotion: mood, correction }]);
 
-      const { url: audioUrl, isFallback } = await fetchVoice(answer, mood, rateRef.current);
+      const { url: audioUrl, isFallback } = await fetchVoice(spokenText, mood, rateRef.current);
       setEmotion(mood);
       setTranscript("");
-      await playVoice(audioUrl, isFallback, answer);
+      await playVoice(audioUrl, isFallback, answer, speech ?? undefined);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal mendapat jawaban.");
       setTranscript("");
