@@ -28,6 +28,12 @@ export interface AskUser {
   interests?: string[];
   /** Memori bertipe mistake (kesalahan yang sering muncul). */
   weakTopics?: string[];
+  /** Panduan level dari admin (Konfig AI): prompt, batas kata, aturan furigana, kecepatan bicara. */
+  levelGuide?: { systemPrompt: string; maxSentenceWords: number; furiganaRule: "full" | "hard_only" | "none"; speechRate: number } | null;
+  /** Bab yang sedang dipelajari user beserta pola tata bahasanya. */
+  lesson?: { title: string; grammar: string[] } | null;
+  /** Tujuan belajar dari pendaftaran (mis. "Kerja atau magang di Jepang"). */
+  goal?: string | null;
 }
 
 export type LevelBand = "pemula" | "dasar" | "menengah" | "mahir";
@@ -50,6 +56,40 @@ export function levelBand(code?: string | null): LevelBand {
 export function levelLabel(code?: string | null): string {
   if (!code) return "belum diketahui (anggap pemula N5)";
   return code.toUpperCase() === "PEMULA" ? "Pemula total (di bawah N5)" : `JLPT ${code.toUpperCase()}`;
+}
+
+const FURIGANA_TEXT: Record<"full" | "hard_only" | "none", string> = {
+  full: "Setiap kanji diberi furigana dalam kurung tepat setelahnya, format 漢字(かんじ).",
+  hard_only: "Furigana 漢字(かんじ) hanya untuk kanji yang sulit atau di atas level user.",
+  none: "Tanpa furigana.",
+};
+
+/**
+ * Panduan level dari admin dan bab yang sedang dipelajari. Teks admin dipercaya (bukan input user),
+ * jadi baris barunya dipertahankan; judul bab dan pola tetap disaring karena berasal dari konten.
+ */
+export function levelGuideSection(user: AskUser | undefined, mode: "text" | "voice"): string {
+  const lines: string[] = [];
+  const guide = user?.levelGuide;
+  if (guide) {
+    lines.push(`\n\nPANDUAN LEVEL DARI ADMIN (ikuti selama tidak bertentangan dengan aturan wajib di atas):\n${guide.systemPrompt.slice(0, 2000)}`);
+    // 0 = tanpa batas (N2–N1)
+    if (guide.maxSentenceWords > 0) lines.push(`- Kalimat Jepangmu maksimal ${guide.maxSentenceWords} kata.`);
+    if (mode === "text") lines.push(`- ${FURIGANA_TEXT[guide.furiganaRule]}`);
+  }
+  if (user?.goal) {
+    lines.push(`\n\nTUJUAN BELAJAR USER: ${sanitizeForPrompt(user.goal, 80)}. Pilih contoh dan topik yang mendukung tujuan ini (mis. situasi kerja bila tujuannya kerja).`);
+  }
+  const lesson = user?.lesson;
+  if (lesson) {
+    const grammar = lesson.grammar.map((g) => sanitizeForPrompt(g, 60)).filter(Boolean);
+    lines.push(
+      `\n\nBAB YANG SEDANG DIPELAJARI USER: ${sanitizeForPrompt(lesson.title, 100)}.` +
+        (grammar.length ? ` Pola target: ${grammar.join("; ")}.` : "") +
+        " Kalau nyambung dengan obrolan, ajak user memakai pola ini dan puji kalau dia berhasil.",
+    );
+  }
+  return lines.join("\n");
 }
 
 /** Hobi dan kesalahan yang sering muncul, untuk dipakai sebagai contoh kalimat dan fokus koreksi. */

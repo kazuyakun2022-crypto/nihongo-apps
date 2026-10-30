@@ -76,7 +76,14 @@ async function streamToBuffer(tts: MsEdgeTTS, text: string, prosody: Prosody): P
   });
 }
 
-async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita", emotion?: string): Promise<Buffer> {
+/** Kalikan prosody rate SSML ("+14%") dengan kecepatan bicara level (mis. 0.75). */
+function scaleRate(rate: string, factor: number): string {
+  if (factor === 1) return rate;
+  const pct = Math.round(((1 + (Number.parseFloat(rate) || 0) / 100) * factor - 1) * 100);
+  return `${pct >= 0 ? "+" : ""}${pct}%`;
+}
+
+async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita", emotion?: string, rate = 1): Promise<Buffer> {
   const voice =
     segment.lang === "ja"
       ? voiceType === "keita" ? "ja-JP-KeitaNeural" : "ja-JP-NanamiNeural"
@@ -84,11 +91,12 @@ async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita"
 
   // Suara Miu-chan: pitch tinggi & tempo cepat untuk kesan anime imut dan energetik.
   // Ekspresi chat (emosi diberikan) memakai profil nada per emosi; selain itu nada bawaan per voice.
-  const prosody: Prosody = emotion
+  const base: Prosody = emotion
     ? voiceTone(emotion).edge
     : segment.lang === "ja"
       ? { pitch: voiceType === "keita" ? "+10%" : "+24%", rate: voiceType === "keita" ? "+8%" : "+14%" }
       : { pitch: "+16%", rate: "+12%" };
+  const prosody: Prosody = { ...base, rate: scaleRate(base.rate, rate) };
 
   try {
     return await streamToBuffer(await getTts(voice), segment.text, prosody);
@@ -115,9 +123,11 @@ export async function synthesizeChildVoice(
   text: string,
   voiceType: "nanami" | "keita" = "nanami",
   emotion?: string,
+  /** Kecepatan bicara per level (1 = normal). */
+  rate = 1,
 ): Promise<Buffer> {
   const clean = text.slice(0, MAX_CHARS).trim();
-  const cacheKey = `${voiceType}:${emotion ?? ""}:${clean}`;
+  const cacheKey = `${voiceType}:${emotion ?? ""}:${rate}:${clean}`;
   const cached = ttsCache.get(cacheKey);
   if (cached) return cached;
 
@@ -125,7 +135,7 @@ export async function synthesizeChildVoice(
   if (segments.length === 0) throw new Error("Teks tidak bisa dibacakan");
 
   const parts: Buffer[] = [];
-  for (const segment of segments) parts.push(await synthesizeSegment(segment, voiceType, emotion));
+  for (const segment of segments) parts.push(await synthesizeSegment(segment, voiceType, emotion, rate));
   const buffer = Buffer.concat(parts);
 
   if (ttsCache.size < 3000) ttsCache.set(cacheKey, buffer);

@@ -16,7 +16,18 @@ export interface ChapterSummary {
   status: "locked" | "open" | "completed";
   bestScore: number | null;
   explanation: string | null;
-  counts: { vocab: number; kanji: number; grammar: number; quiz: number };
+  moduleTitle: string | null;
+  counts: { vocab: number; kanji: number; grammar: number; quiz: number; blocks: number };
+}
+
+/** Materi bebas susunan admin yang tampil di awal bab. */
+export interface LessonBlock {
+  id: string;
+  type: "teks" | "gambar" | "dialog" | "tips" | "huruf" | string;
+  title: string | null;
+  body: string | null;
+  imageUrl: string | null;
+  caption: string | null;
 }
 
 export interface ChapterVocab {
@@ -26,6 +37,7 @@ export interface ChapterVocab {
   meaningId: string;
   exampleSentence: string | null;
   exampleTranslation: string | null;
+  imageUrl: string | null;
 }
 
 export interface ChapterKanji {
@@ -42,6 +54,7 @@ export interface ChapterGrammar {
   explanation: string;
   exampleSentence: string | null;
   exampleTranslation: string | null;
+  imageUrl: string | null;
 }
 
 export interface ChapterQuizQuestion {
@@ -53,6 +66,8 @@ export interface ChapterQuizQuestion {
   /** Pilihan jawaban, atau kepingan acak untuk soal susun. */
   options: string[];
   audioUrl: string | null;
+  /** Gambar pendukung soal. */
+  imageUrl?: string | null;
   /** Soal menulis: jumlah kotak huruf dan aksara yang diminta. */
   slots?: number;
   script?: "hiragana" | "katakana" | "campuran";
@@ -65,6 +80,12 @@ export interface ChapterDetail {
   levelId: number;
   title: string;
   explanation: string | null;
+  moduleTitle: string | null;
+  /** Nilai minimal kuis bab ini; null = 70. */
+  passScore: number | null;
+  /** Skenario latihan ngobrol yang terkait bab ini. */
+  scenario: { id: string; title: string } | null;
+  lessonBlocks: LessonBlock[];
   vocabularies: ChapterVocab[];
   kanji: ChapterKanji[];
   grammarPoints: ChapterGrammar[];

@@ -31,7 +31,8 @@ export class PrismaLearningRepository implements LearningRepository {
         title: true,
         sortOrder: true,
         explanation: true,
-        _count: { select: { vocabularies: true, kanji: true, grammarPoints: true, quizQuestions: true } },
+        moduleTitle: true,
+        _count: { select: { vocabularies: true, kanji: true, grammarPoints: true, quizQuestions: true, lessonBlocks: true } },
         progress: { where: { userId }, select: { status: true, bestScore: true } },
       },
     });
@@ -48,7 +49,8 @@ export class PrismaLearningRepository implements LearningRepository {
         status,
         bestScore: p?.bestScore ?? null,
         explanation: c.explanation,
-        counts: { vocab: c._count.vocabularies, kanji: c._count.kanji, grammar: c._count.grammarPoints, quiz: c._count.quizQuestions },
+        moduleTitle: c.moduleTitle,
+        counts: { vocab: c._count.vocabularies, kanji: c._count.kanji, grammar: c._count.grammarPoints, quiz: c._count.quizQuestions, blocks: c._count.lessonBlocks },
       };
     });
   }
@@ -61,14 +63,19 @@ export class PrismaLearningRepository implements LearningRepository {
         levelId: true,
         title: true,
         explanation: true,
-        vocabularies: { select: { id: true, word: true, reading: true, meaningId: true, exampleSentence: true, exampleTranslation: true } },
+        moduleTitle: true,
+        passScore: true,
+        scenarios: { where: { status: "published" }, orderBy: { sortOrder: "asc" }, take: 1, select: { id: true, title: true } },
+        lessonBlocks: { orderBy: { sortOrder: "asc" }, select: { id: true, type: true, title: true, body: true, imageUrl: true, caption: true } },
+        vocabularies: { select: { id: true, word: true, reading: true, meaningId: true, exampleSentence: true, exampleTranslation: true, imageUrl: true } },
         kanji: { select: { id: true, character: true, onyomi: true, kunyomi: true, meaningId: true } },
-        grammarPoints: { select: { id: true, pattern: true, explanation: true, exampleSentence: true, exampleTranslation: true } },
-        quizQuestions: { select: { id: true, type: true, question: true, hint: true, options: true, correctAnswer: true, audioUrl: true } },
+        grammarPoints: { select: { id: true, pattern: true, explanation: true, exampleSentence: true, exampleTranslation: true, imageUrl: true } },
+        quizQuestions: { select: { id: true, type: true, question: true, hint: true, options: true, correctAnswer: true, audioUrl: true, imageUrl: true } },
       },
     });
     if (!chapter) return null;
-    return { ...chapter, quizQuestions: chapter.quizQuestions.map(toChapterExercise) };
+    const { scenarios, ...rest } = chapter;
+    return { ...rest, scenario: scenarios[0] ?? null, quizQuestions: chapter.quizQuestions.map(toChapterExercise) };
   }
 
   async getNextChapter(userId: string, levelId: number): Promise<NextChapterInfo | null> {
@@ -189,8 +196,8 @@ function shuffled<T>(items: T[]): T[] {
 
 /** Bentuk soal untuk siswa: kunci jawaban dibuang, kepingan susun diacak (tersimpan dengan urutan benar di depan).
  * Juga dipakai ujian naik level. */
-export function toChapterExercise(q: { id: string; type: ExerciseType; question: string; hint: string | null; options: unknown; correctAnswer: string; audioUrl: string | null }): ChapterExercise {
-  const base = { id: q.id, type: q.type, question: q.question, hint: q.hint, audioUrl: q.audioUrl };
+export function toChapterExercise(q: { id: string; type: ExerciseType; question: string; hint: string | null; options: unknown; correctAnswer: string; audioUrl: string | null; imageUrl?: string | null }): ChapterExercise {
+  const base = { id: q.id, type: q.type, question: q.question, hint: q.hint, audioUrl: q.audioUrl, imageUrl: q.imageUrl ?? null };
   if (q.type === "menulis") return { ...base, options: [], slots: [...q.correctAnswer].length, script: scriptOf(q.correctAnswer) };
   if (q.type === "berbicara") return { ...base, options: [], speakText: q.correctAnswer };
   const options = stringList(q.options);

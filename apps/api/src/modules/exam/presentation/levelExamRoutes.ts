@@ -7,6 +7,7 @@ import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
 import { EXERCISE_TYPES, isAnswerCorrect, type ExerciseType } from "../../learning/domain/Exercise";
 import { stringList, toChapterExercise } from "../../learning/infrastructure/PrismaLearningRepository";
+import { EXAM_SECTIONS, LATE_GRACE_MS, examTotal, parseSectionRules, pickQuestions, sectionMin } from "../domain/SectionRules";
 
 /**
  * Tes naik tahap (/exam/level-up/*) dan tes penempatan saat daftar (/exam/placement/*).
@@ -20,10 +21,10 @@ const KINDS: { path: string; type: ExamKind }[] = [
   { path: "placement", type: "placement" },
 ];
 
-const SECTIONS = ["kosakata", "tata_bahasa", "membaca", "mendengar"] as const;
+const SECTIONS = EXAM_SECTIONS;
 
 /** Aturan tes penempatan sebelum admin menyimpan aturan sendiri. */
-const DEFAULT_PLACEMENT = { id: undefined, questionCount: 20, timeLimitMin: 20, passScore: 70, sectionMinScore: 0, cooldownHours: 0 };
+const DEFAULT_PLACEMENT = { id: undefined, questionCount: 20, timeLimitMin: 20, passScore: 70, sectionMinScore: 0, cooldownHours: 0, sectionRules: null };
 
 const asExerciseType = (type: string): ExerciseType =>
   (EXERCISE_TYPES as readonly string[]).includes(type) ? (type as ExerciseType) : "pilihan_ganda";
@@ -35,14 +36,6 @@ function shuffle<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
-}
-
-/** Ambil soal merata per bagian; kekurangan di satu bagian ditutup soal dari bagian lain. */
-function pickBySection<T extends { section: string }>(pool: T[], count: number): T[] {
-  const perSection = Math.floor(count / SECTIONS.length);
-  const picked = SECTIONS.flatMap((sec) => shuffle(pool.filter((q) => q.section === sec)).slice(0, perSection));
-  const rest = shuffle(pool.filter((q) => !picked.includes(q)));
-  return [...picked, ...rest].slice(0, count);
 }
 
 function learner(req: Request) {
@@ -160,6 +153,7 @@ export function levelExamRoutes() {
         else break;
       }
 
+      const rules = parseSectionRules(config.sectionRules);
       res.json({
         canTake,
         cooldownUntil,
@@ -168,8 +162,9 @@ export function levelExamRoutes() {
           passScore: config.passScore,
           sectionMinScore: config.sectionMinScore,
           timeLimitMin: config.timeLimitMin,
-          questionCount: config.questionCount,
+          questionCount: examTotal(config.questionCount, rules),
           cooldownHours: config.cooldownHours,
+          sectionRules: rules,
         },
       });
     }));
@@ -182,16 +177,18 @@ export function levelExamRoutes() {
 
       const bank = await prisma.examQuestion.findMany({
         where: { levelId, examType: type, status: "published" },
-        select: { id: true, section: true, type: true, question: true, hint: true, options: true, correctAnswer: true, difficulty: true, audioUrl: true },
+        select: { id: true, section: true, type: true, question: true, hint: true, options: true, correctAnswer: true, difficulty: true, audioUrl: true, imageUrl: true },
       });
 
       type QuestionItem = (typeof bank)[number];
       let questions: QuestionItem[];
+      const rules = parseSectionRules(config.sectionRules);
+      const total = examTotal(config.questionCount, rules);
 
       // Bank penempatan dipakai begitu admin mengisinya; bank naik tahap baru dipakai jika sudah cukup untuk satu ujian
-      const useBank = type === "placement" ? bank.length > 0 : bank.length >= config.questionCount;
+      const useBank = type === "placement" ? bank.length > 0 : bank.length >= total;
       if (useBank) {
-        questions = pickBySection(bank, config.questionCount);
+        questions = pickQuestions(bank, config.questionCount, rules);
       } else {
         // Cadangan: latihan pilihan ganda dari bab. Tes penempatan menguji materi level sebelum level tujuan.
         let sourceLevelId = levelId;
@@ -204,11 +201,11 @@ export function levelExamRoutes() {
         }
         const quizQs = await prisma.quizQuestion.findMany({
           where: { chapter: { levelId: sourceLevelId }, type: "pilihan_ganda" },
-          select: { id: true, type: true, question: true, hint: true, options: true, correctAnswer: true, audioUrl: true },
-          take: config.questionCount * 3,
+          select: { id: true, type: true, question: true, hint: true, options: true, correctAnswer: true, audioUrl: true, imageUrl: true },
+          take: total * 3,
         });
         questions = shuffle(quizQs)
-          .slice(0, config.questionCount)
+          .slice(0, total)
           .map(q => ({ ...q, section: "kosakata" as const, difficulty: 1 }));
       }
       if (questions.length === 0) throw Errors.notFound("Soal tes");
@@ -239,6 +236,7 @@ export function levelExamRoutes() {
         })),
         kanji,
         timeLimitMin: config.timeLimitMin,
+        sectionRules: rules,
       });
     }));
 
@@ -254,7 +252,7 @@ export function levelExamRoutes() {
             section: z.string().optional(),
             /** Soal berbicara yang dilewati (tanpa mikrofon) tidak ikut dinilai. */
             skipped: z.boolean().optional(),
-          })).min(1).max(200),
+          })).max(200),
         }),
         req.body,
       );
@@ -295,7 +293,8 @@ export function levelExamRoutes() {
         const info = correctMap.get(a.questionId);
         const skipped = !!a.skipped && info?.type === "berbicara";
         const isCorrect = !!info && !skipped && isAnswerCorrect({ type: info.type, correctAnswer: info.correct, options: stringList(info.options) }, a.answer);
-        const section = a.section ?? info?.section ?? "kosakata";
+        // Bagian diambil dari bank soal, bukan dari klien
+        const section = info?.section ?? "kosakata";
         if (skipped) return { attemptId, questionId: a.questionId, answer: a.answer, isCorrect };
         graded++;
         if (sectionCounts[section]) {
@@ -313,8 +312,12 @@ export function levelExamRoutes() {
           .filter(([, { total }]) => total > 0)
           .map(([s, { correct, total }]) => [s, Math.round((correct / total) * 100)]),
       );
-      const sectionsPassed = Object.values(sectionScores).every(v => v >= config.sectionMinScore);
-      const passed = totalScore >= config.passScore && sectionsPassed;
+      const rules = parseSectionRules(config.sectionRules);
+      const sectionMinScores = Object.fromEntries(Object.keys(sectionScores).map((sec) => [sec, sectionMin(rules, sec, config.sectionMinScore)]));
+      const sectionsPassed = Object.entries(sectionScores).every(([sec, v]) => v >= sectionMinScores[sec]);
+      // Batas waktu juga dicek di server; lewat dari batas + toleransi dianggap tidak lulus
+      const late = !!attempt.startedAt && Date.now() > attempt.startedAt.getTime() + config.timeLimitMin * 60_000 + LATE_GRACE_MS;
+      const passed = totalScore >= config.passScore && sectionsPassed && !late;
 
       // Naik tahap: cari level berikutnya. Penempatan: hasilnya level tujuan itu sendiri.
       let nextLevel: { id: number; isPremium: boolean } | null = null;
@@ -350,7 +353,7 @@ export function levelExamRoutes() {
         ? new Date(Date.now() + config.cooldownHours * 3_600_000).toISOString()
         : null;
 
-      res.json({ passed, totalScore, sectionScores, resultLevelId, nextLevelId: nextLevel?.id ?? null, cooldownUntil });
+      res.json({ passed, totalScore, sectionScores, sectionMinScores, late, resultLevelId, nextLevelId: nextLevel?.id ?? null, cooldownUntil });
     }));
   }
 

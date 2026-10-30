@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { Mascot, type MascotMood } from "@/shared/ui/Mascot";
 import { ArrowRightIcon } from "@/shared/ui/icons";
 import { useConversation } from "../application/useConversation";
-import type { ConversationEmotion } from "../domain/types";
+import type { ConversationEmotion, ScenarioItem } from "../domain/types";
 import { FuriganaText } from "./FuriganaText";
 import { MicroFeedbackCard } from "./MicroFeedbackCard";
 import styles from "./chat.module.css";
@@ -19,8 +20,10 @@ const MOOD: Record<ConversationEmotion, MascotMood> = {
   excited: "semangat",
 };
 
-export function ChatScreen() {
+/** Layar ngobrol dengan koreksi mikro; dengan `scenario` menjadi latihan skenario (role-play). */
+export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null }) {
   const { phase, session, messages, turnsLeft, report, error, emotion, start, send, end } = useConversation();
+  const scenarioId = scenario?.id ?? null;
   const [draft, setDraft] = useState("");
   const listRef = useRef<HTMLOListElement>(null);
 
@@ -32,12 +35,28 @@ export function ChatScreen() {
     return (
       <section className={styles.intro}>
         <Mascot mood="semangat" size={120} />
-        <h1 className={styles.introTitle}>Ngobrol dengan Miu-chan</h1>
-        <p className={styles.muted}>Miu-chan memakai kata-kata sesuai levelmu. Salah itu wajar, nanti dikoreksi dengan lembut.</p>
+        <h1 className={styles.introTitle}>{scenario ? scenario.title : "Ngobrol dengan Miu-chan"}</h1>
+        <p className={styles.muted}>
+          {scenario ? scenario.goal : "Miu-chan memakai kata-kata sesuai levelmu. Salah itu wajar, nanti dikoreksi dengan lembut."}
+        </p>
+        {scenario && scenario.targetGrammar.length > 0 && (
+          <ul className={styles.grammarChips} aria-label="Pola yang dilatih">
+            {scenario.targetGrammar.map((g) => (
+              <li key={g} lang="ja">
+                <FuriganaText text={g} />
+              </li>
+            ))}
+          </ul>
+        )}
         {error && <Alert>{error}</Alert>}
-        <Button onClick={() => start(null)} disabled={phase === "starting"}>
-          {phase === "starting" ? "Memanggil Miu-chan…" : "Mulai ngobrol bebas"}
+        <Button onClick={() => start(scenarioId)} disabled={phase === "starting"}>
+          {phase === "starting" ? "Memanggil Miu-chan…" : scenario ? "Mulai skenario" : "Mulai ngobrol bebas"}
         </Button>
+        {scenario && (
+          <Link href="/ngobrol?tab=skenario" className={styles.backLink}>
+            ← Pilih skenario lain
+          </Link>
+        )}
       </section>
     );
   }
@@ -62,7 +81,12 @@ export function ChatScreen() {
             ))}
           </ul>
         )}
-        <Button onClick={() => start(null)}>Ngobrol lagi</Button>
+        <Button onClick={() => start(scenarioId)}>{scenario ? "Ulangi skenario" : "Ngobrol lagi"}</Button>
+        {scenario && (
+          <Link href="/ngobrol?tab=skenario" className={styles.backLink}>
+            ← Pilih skenario lain
+          </Link>
+        )}
       </section>
     );
   }
@@ -74,7 +98,7 @@ export function ChatScreen() {
         <div>
           <strong>{session?.mascot.name?.replace("Neko-sensei", "Miu-chan") || "Miu-chan"}</strong>
           <p className={styles.meta}>
-            Level {session?.level}
+            {scenario ? `${scenario.title} · ` : ""}Level {session?.level}
             {turnsLeft !== null && ` · sisa ${turnsLeft} giliran`}
           </p>
         </div>

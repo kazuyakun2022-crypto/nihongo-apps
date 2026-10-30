@@ -18,7 +18,17 @@ export interface ChapterSummary {
   status: ChapterStatus;
   bestScore: number | null;
   explanation: string | null;
-  counts: { vocab: number; kanji: number; grammar: number; quiz: number };
+  moduleTitle: string | null;
+  counts: { vocab: number; kanji: number; grammar: number; quiz: number; blocks: number };
+}
+
+export interface LessonBlock {
+  id: string;
+  type: string;
+  title: string | null;
+  body: string | null;
+  imageUrl: string | null;
+  caption: string | null;
 }
 
 export interface ChapterDetail {
@@ -26,9 +36,15 @@ export interface ChapterDetail {
   levelId: number;
   title: string;
   explanation: string | null;
-  vocabularies: { id: string; word: string; reading: string; meaningId: string; exampleSentence: string | null; exampleTranslation: string | null }[];
+  moduleTitle: string | null;
+  /** Nilai minimal kuis bab ini (null = PASSING_QUIZ_SCORE). */
+  passScore: number | null;
+  /** Skenario latihan ngobrol yang terkait bab ini. */
+  scenario: { id: string; title: string } | null;
+  lessonBlocks: LessonBlock[];
+  vocabularies: { id: string; word: string; reading: string; meaningId: string; exampleSentence: string | null; exampleTranslation: string | null; imageUrl: string | null }[];
   kanji: { id: string; character: string; onyomi: string | null; kunyomi: string | null; meaningId: string }[];
-  grammarPoints: { id: string; pattern: string; explanation: string; exampleSentence: string | null; exampleTranslation: string | null }[];
+  grammarPoints: { id: string; pattern: string; explanation: string; exampleSentence: string | null; exampleTranslation: string | null; imageUrl: string | null }[];
   quizQuestions: ChapterExercise[];
 }
 
@@ -41,6 +57,8 @@ export interface ChapterExercise {
   /** Pilihan jawaban, atau kepingan acak untuk soal susun; kosong untuk menulis/berbicara. */
   options: string[];
   audioUrl: string | null;
+  /** Gambar pendukung soal (mis. "tulis nama benda ini"). */
+  imageUrl: string | null;
   /** Jumlah kotak huruf pada soal menulis. */
   slots?: number;
   /** Aksara yang diminta pada soal menulis. */

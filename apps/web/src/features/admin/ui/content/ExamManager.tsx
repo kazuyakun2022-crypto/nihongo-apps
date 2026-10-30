@@ -32,7 +32,7 @@ const EXAM_TYPES: { value: ExamType; param: string; label: string }[] = [
   { value: "placement", param: "penempatan", label: "Tes penempatan (saat daftar)" },
 ];
 
-const CONFIG_FIELDS: { key: keyof ExamConfig; label: string; hint: string; min: number; max: number }[] = [
+const CONFIG_FIELDS: { key: Exclude<keyof ExamConfig, "sectionRules">; label: string; hint: string; min: number; max: number }[] = [
   { key: "questionCount", label: "Jumlah soal", hint: "Dibagi rata ke 4 bagian.", min: 4, max: 200 },
   { key: "timeLimitMin", label: "Batas waktu (menit)", hint: "", min: 1, max: 300 },
   { key: "passScore", label: "Nilai lulus total (%)", hint: "", min: 1, max: 100 },
@@ -99,7 +99,24 @@ export function ExamManager() {
   const isTopLevel = !isPlacement && !!level && level.id === Math.max(...levels.map((l) => l.id));
   const configFields = isPlacement ? CONFIG_FIELDS.filter((f) => f.key !== "minChapterCompletion") : CONFIG_FIELDS;
   const configDirty = JSON.stringify(config) !== JSON.stringify(savedConfig);
-  const neededPerSection = config ? Math.floor(config.questionCount / SECTIONS.length) : 0;
+  const rules = config?.sectionRules ?? null;
+  const neededFor = (s: ExamSection) => (rules ? rules[s]?.count ?? 0 : config ? Math.floor(config.questionCount / SECTIONS.length) : 0);
+  const rulesTotal = rules ? Object.values(rules).reduce((n, r) => n + (r?.count ?? 0), 0) : 0;
+
+  function toggleRules(on: boolean) {
+    if (!config) return;
+    const even = Math.floor(config.questionCount / SECTIONS.length);
+    setConfig({
+      ...config,
+      sectionRules: on ? Object.fromEntries(SECTIONS.map((s) => [s.value, { count: even, minScore: config.sectionMinScore }])) : null,
+    });
+  }
+
+  function setRule(s: ExamSection, key: "count" | "minScore", value: number) {
+    if (!config?.sectionRules) return;
+    const current = config.sectionRules[s] ?? { count: 0, minScore: config.sectionMinScore };
+    setConfig({ ...config, sectionRules: { ...config.sectionRules, [s]: { ...current, [key]: value } } });
+  }
   const pages = Math.max(1, Math.ceil(total / pageSize));
 
   async function saveConfig() {
@@ -205,9 +222,64 @@ export function ExamManager() {
                       value={config[f.key]}
                       onChange={(e) => setConfig({ ...config, [f.key]: Number(e.target.value) })}
                     />
-                    {f.hint && <span className={styles.hint}>{f.hint}</span>}
+                    {f.hint && (
+                      <span className={styles.hint}>
+                        {rules && (f.key === "questionCount" || f.key === "sectionMinScore") ? "Diganti aturan per bagian di bawah." : f.hint}
+                      </span>
+                    )}
                   </div>
                 ))}
+              </div>
+            )}
+            {config && (
+              <div className={styles.rulesBox}>
+                <label className={styles.rulesToggle}>
+                  <input type="checkbox" checked={!!rules} onChange={(e) => toggleRules(e.target.checked)} />
+                  Atur jumlah soal & nilai minimal per bagian
+                </label>
+                {rules && (
+                  <>
+                    <table className={adminStyles.table}>
+                      <thead>
+                        <tr>
+                          <th>Bagian</th>
+                          <th>Jumlah soal</th>
+                          <th>Nilai minimal (%)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {SECTIONS.map((s) => (
+                          <tr key={s.value}>
+                            <td>{s.label}</td>
+                            <td>
+                              <input
+                                type="number"
+                                className={styles.input}
+                                min={0}
+                                max={100}
+                                aria-label={`Jumlah soal ${s.label}`}
+                                value={rules[s.value]?.count ?? 0}
+                                onChange={(e) => setRule(s.value, "count", Number(e.target.value))}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                className={styles.input}
+                                min={0}
+                                max={100}
+                                aria-label={`Nilai minimal ${s.label}`}
+                                value={rules[s.value]?.minScore ?? 0}
+                                onChange={(e) => setRule(s.value, "minScore", Number(e.target.value))}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <span className={styles.hint}>Total {rulesTotal} soal per ujian. Siswa gagal jika satu bagian di bawah nilai minimalnya.</span>
+                  </>
+                )}
               </div>
             )}
             <div className={styles.toolbar}>
@@ -223,17 +295,20 @@ export function ExamManager() {
             <div className={styles.sectionStats}>
               {SECTIONS.map((s) => {
                 const count = perSection[s.value] ?? 0;
+                const needed = neededFor(s.value);
                 return (
                   <div key={s.value} className={styles.sectionStat}>
                     <span className={styles.muted}>{s.label}</span>
                     <strong>{count}</strong>
-                    {count < neededPerSection && <span className={styles.warn}>Kurang dari {neededPerSection} soal per ujian</span>}
+                    {count < needed && <span className={styles.warn}>Kurang dari {needed} soal per ujian</span>}
                   </div>
                 );
               })}
             </div>
             <p className={styles.muted}>
-              Setiap tes mengambil {neededPerSection} soal acak dari tiap bagian; kekurangan di satu bagian diisi dari bagian lain.
+              {rules
+                ? "Setiap tes mengambil soal acak sesuai jumlah per bagian di atas; kekurangan di satu bagian diisi dari bagian lain."
+                : `Setiap tes mengambil ${neededFor("kosakata")} soal acak dari tiap bagian; kekurangan di satu bagian diisi dari bagian lain.`}
               {isPlacement
                 ? " Selama bank soal penempatan masih kosong, tes memakai soal pilihan ganda dari bab level sebelumnya."
                 : " Selama bank soal belum cukup untuk satu ujian, ujian memakai soal pilihan ganda dari bab level ini."}

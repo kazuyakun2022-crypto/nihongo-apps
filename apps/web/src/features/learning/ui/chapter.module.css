@@ -91,9 +91,19 @@
 }
 
 /* ── Study card ── */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(24px); }
-  to   { opacity: 1; transform: translateX(0); }
+/* Kartu masuk dari arah tombol yang ditekan: maju dari kanan, mundur dari kiri. */
+@keyframes cardInForward {
+  from { opacity: 0; transform: translateX(36px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes cardInBack {
+  from { opacity: 0; transform: translateX(-36px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+/* Isi kartu muncul bertahap supaya mata mengikuti urutan baca. */
+@keyframes itemIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
 }
 
 .studyCard {
@@ -102,12 +112,27 @@
   border-radius: var(--radius-lg);
   padding: var(--space-5) var(--space-4);
   display: grid;
+  align-content: start;
   gap: var(--space-3);
   box-shadow: var(--shadow-card);
   min-height: 12rem;   /* lebih compact di mobile */
-  animation: scaleIn 0.35s var(--ease-spring);
-  transition: transform var(--motion-fast) var(--ease-spring), box-shadow var(--motion-fast);
+  animation: cardInForward var(--motion-slow) var(--ease-out) both;
 }
+
+.studyCard[data-dir="-1"],
+.quizCard[data-dir="-1"] {
+  animation-name: cardInBack;
+}
+
+.studyCard > *,
+.quizCard > * {
+  animation: itemIn var(--motion-slow) var(--ease-out) both;
+}
+.studyCard > :nth-child(2), .quizCard > :nth-child(2) { animation-delay: 60ms; }
+.studyCard > :nth-child(3), .quizCard > :nth-child(3) { animation-delay: 120ms; }
+.studyCard > :nth-child(4), .quizCard > :nth-child(4) { animation-delay: 180ms; }
+.studyCard > :nth-child(5), .quizCard > :nth-child(5) { animation-delay: 240ms; }
+.studyCard > :nth-child(n + 6), .quizCard > :nth-child(n + 6) { animation-delay: 300ms; }
 
 @media (min-width: 480px) {
   .studyCard {
@@ -116,12 +141,8 @@
   }
 }
 
-.studyCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(179, 27, 40, 0.08);
-}
-
 .cardBadge {
+  justify-self: start;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
@@ -237,6 +258,7 @@
   padding: var(--space-4);
   display: grid;
   gap: var(--space-3);
+  animation: cardInForward var(--motion-slow) var(--ease-out) both;
 }
 
 .question {
@@ -278,7 +300,23 @@
   font-weight: var(--font-weight-bold);
   box-shadow: 0 4px 12px rgba(179, 27, 40, 0.25);
   transform: translateY(-1px);
+  animation: selectPop var(--motion-base) var(--ease-spring);
 }
+
+/* Umpan balik singkat saat jawaban dipilih */
+@keyframes selectPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: translateY(-1px); }
+}
+
+/* Pilihan jawaban muncul berurutan A → D */
+.options > .optionBtn { animation: itemIn var(--motion-slow) var(--ease-out) both; }
+.options > .optionBtn:nth-child(2) { animation-delay: 50ms; }
+.options > .optionBtn:nth-child(3) { animation-delay: 100ms; }
+.options > .optionBtn:nth-child(4) { animation-delay: 150ms; }
+.options > .optionBtn:nth-child(n + 5) { animation-delay: 200ms; }
+.options > .optionBtn[aria-pressed="true"] { animation: selectPop var(--motion-base) var(--ease-spring); }
 
 /* Result feedback state (after quiz submitted) */
 .optionBtn[data-state="correct"] { border-color: var(--color-success); background: var(--color-success); color: var(--color-surface); }
@@ -501,3 +539,582 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-text-muted);
 }
+
+/* ── Blok materi susunan admin ── */
+.badgeLesson { background: color-mix(in srgb, var(--color-accent) 22%, transparent); color: #7a5300; }
+.badgeDialog { background: #e3f2fd; color: #0d47a1; }
+.badgeTips { background: #fff3e0; color: #b45309; }
+
+.blockTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1.3;
+}
+
+.blockText {
+  margin: 0;
+  font-size: var(--font-size-md);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.blockFigure {
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.blockImage {
+  width: 100%;
+  max-height: 22rem;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.blockCaption {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.blockHint {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.tipsBox {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: #fff8eb;
+  border-left: 4px solid var(--color-accent);
+}
+
+.dialog {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.dialogLine {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+  max-width: 88%;
+}
+
+.dialogLine[data-side="right"] {
+  justify-self: end;
+  justify-items: end;
+}
+
+.dialogSpeaker {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  padding: 0 var(--space-2);
+}
+
+.dialogBubble {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 0.6rem 0.9rem;
+  border-radius: 16px 16px 16px 4px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color var(--motion-fast), background var(--motion-fast);
+}
+
+.dialogLine[data-side="right"] .dialogBubble {
+  border-radius: 16px 16px 4px 16px;
+  background: color-mix(in srgb, var(--color-primary) 7%, var(--color-surface));
+}
+
+.dialogBubble:hover {
+  border-color: var(--color-primary);
+}
+
+.dialogTranslation {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.cardImage {
+  width: min(11rem, 60%);
+  aspect-ratio: 1;
+  object-fit: contain;
+  justify-self: center;
+  border-radius: var(--radius-md);
+}
+
+.questionImage {
+  width: 100%;
+  max-height: 16rem;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+/* ── Blok huruf (kartu kana + mnemonik) ── */
+.badgeKana { background: #fde7ef; color: #a21650; }
+
+.kanaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr));
+  gap: var(--space-2);
+}
+
+.kanaGrid .blockHint {
+  grid-column: 1 / -1;
+}
+
+.kanaCard {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 2px;
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  font: inherit;
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color var(--motion-fast), transform var(--motion-fast);
+}
+
+.kanaCard:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.kanaChar {
+  font-family: var(--font-japanese);
+  font-size: 2.6rem;
+  line-height: 1.1;
+}
+
+.kanaRomaji {
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-primary);
+}
+
+.kanaStrokes {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.kanaMnemonic {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.scenarioCta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface));
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 1.4rem;
+}
+
+.scenarioCta span:nth-child(2) {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+  font-size: var(--font-size-md);
+}
+
+.scenarioCta small {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.scenarioCta:hover {
+  border-color: var(--color-primary);
+}
+
+/* ══════════ Kerangka pelajaran: ponsel satu kolom, desktop dua kolom ══════════ */
+.shell {
+  width: 100%;
+  max-width: min(34rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-3) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-8));
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.stage {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+/* Panel samping hanya muncul di layar lebar */
+.rail { display: none; }
+.keyHint { display: none; }
+
+.speakBtn {
+  margin-left: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  vertical-align: middle;
+  display: inline-flex;
+  color: var(--color-primary);
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+.speakBtn:hover { transform: scale(1.12); }
+.speakBtn:active { transform: scale(0.94); }
+
+/* ── Pengantar kuis ── */
+.introMascot {
+  display: grid;
+  place-items: center;
+  animation: mascotHop var(--motion-entrance) var(--ease-spring) both;
+}
+.introBody {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+}
+.introActions {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+}
+@keyframes mascotHop {
+  0% { opacity: 0; transform: translateY(18px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(-6px) scale(1.03); }
+  100% { transform: none; }
+}
+
+.reviewHeading {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+}
+
+/* ── Konfeti sekali jalan saat lulus ── */
+.resultHero { position: relative; }
+.confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.confetti span {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--color-primary);
+  opacity: 0;
+  animation: confettiBurst 1.4s var(--ease-out) forwards;
+}
+.confetti span:nth-child(3n) { background: var(--color-accent); }
+.confetti span:nth-child(4n) { background: var(--color-success); width: 6px; height: 10px; }
+.confetti span:nth-child(1)  { --x: -150px; --y: -90px;  --r: 220deg; }
+.confetti span:nth-child(2)  { --x: 140px;  --y: -110px; --r: -200deg; animation-delay: 40ms; }
+.confetti span:nth-child(3)  { --x: -90px;  --y: -140px; --r: 300deg; animation-delay: 80ms; }
+.confetti span:nth-child(4)  { --x: 100px;  --y: -60px;  --r: -260deg; }
+.confetti span:nth-child(5)  { --x: -190px; --y: 10px;   --r: 180deg; animation-delay: 60ms; }
+.confetti span:nth-child(6)  { --x: 180px;  --y: 30px;   --r: -320deg; animation-delay: 100ms; }
+.confetti span:nth-child(7)  { --x: -40px;  --y: -170px; --r: 260deg; }
+.confetti span:nth-child(8)  { --x: 50px;   --y: -160px; --r: -180deg; animation-delay: 120ms; }
+.confetti span:nth-child(9)  { --x: -120px; --y: 80px;   --r: 340deg; animation-delay: 20ms; }
+.confetti span:nth-child(10) { --x: 130px;  --y: 90px;   --r: -240deg; animation-delay: 140ms; }
+.confetti span:nth-child(11) { --x: -230px; --y: -50px;  --r: 200deg; animation-delay: 160ms; }
+.confetti span:nth-child(12) { --x: 220px;  --y: -70px;  --r: -280deg; animation-delay: 30ms; }
+.confetti span:nth-child(13) { --x: -70px;  --y: 120px;  --r: 300deg; animation-delay: 90ms; }
+.confetti span:nth-child(14) { --x: 80px;   --y: 130px;  --r: -220deg; animation-delay: 110ms; }
+.confetti span:nth-child(15) { --x: -10px;  --y: -200px; --r: 360deg; animation-delay: 70ms; }
+.confetti span:nth-child(16) { --x: 10px;   --y: 160px;  --r: -360deg; animation-delay: 130ms; }
+@keyframes confettiBurst {
+  0% { opacity: 1; transform: translate(-50%, 0) rotate(0); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(var(--y) + 60px)) rotate(var(--r)); }
+}
+
+/* ── Tablet: satu kolom yang lebih lega ── */
+@media (min-width: 720px) {
+  .shell { max-width: min(46rem, 100%); padding-top: var(--space-5); }
+  .stage { gap: var(--space-4); }
+  .studyCard { padding: var(--space-7) var(--space-7); min-height: 22rem; gap: var(--space-4); }
+  .quizCard { padding: var(--space-6); gap: var(--space-4); }
+  .cardMain { font-size: 4rem; }
+  .cardKanji { font-size: 5.5rem; }
+  .cardPattern { font-size: var(--font-size-2xl); }
+  .cardMeaning { font-size: var(--font-size-2xl); }
+  .cardImage { width: min(13rem, 50%); }
+  .question { font-size: var(--font-size-xl); }
+  .options { grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); }
+  .intro {
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    text-align: left;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-7);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+  .introBody { justify-items: start; }
+  .introBody .skillList { justify-content: flex-start; }
+  .introActions { grid-template-columns: 1fr 1fr; }
+  .resultHero {
+    padding: var(--space-7) var(--space-5);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+  .resultScore { font-size: 5rem; }
+  .resultActions { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+  .reviewList { grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
+  .keyHint {
+    display: block;
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+}
+
+/* ── Desktop: panel samping + panggung materi ── */
+@media (min-width: 1100px) {
+  .shell {
+    max-width: min(76rem, 100%);
+    display: grid;
+    grid-template-columns: 18rem minmax(0, 1fr);
+    gap: var(--space-7);
+    align-items: start;
+    padding: var(--space-5) var(--space-2) var(--space-8);
+  }
+
+  .stage { max-width: 50rem; width: 100%; justify-self: center; }
+
+  /* Di desktop panel samping sudah memuat tombol keluar dan daftar langkah */
+  .stage > .progressRow .closeBtn,
+  .stage > .dotNav { display: none; }
+
+  /* Kolom fleksibel: daftar langkah menyusut dan bisa digulir, saran Miu-chan tetap terlihat */
+  .rail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: sticky;
+    top: var(--space-5);
+    max-height: calc(100dvh - var(--space-5) * 2);
+    overflow-y: auto;
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    animation: itemIn var(--motion-slow) var(--ease-out) both;
+  }
+
+  .studyCard { min-height: 26rem; padding: var(--space-8); }
+  .cardMain { font-size: 4.5rem; }
+  .cardKanji { font-size: 7rem; }
+}
+
+.railBack {
+  justify-self: start;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+.railBack:hover { color: var(--color-primary); }
+
+.railHead { display: grid; gap: var(--space-1); }
+.railModule {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+.railTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1.3;
+}
+
+/* Tahapan Materi → Latihan → Hasil */
+.stageList {
+  display: flex;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stageItem {
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.stageNum {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--color-surface-muted);
+  font-weight: var(--font-weight-heavy);
+  transition: background var(--motion-base), color var(--motion-base), transform var(--motion-base) var(--ease-spring);
+}
+.stageItem[data-state="current"] { color: var(--color-text); font-weight: var(--font-weight-bold); }
+.stageItem[data-state="current"] .stageNum { background: var(--color-primary); color: var(--color-on-primary); transform: scale(1.1); }
+.stageItem[data-state="done"] .stageNum { background: var(--color-success); color: var(--color-surface); }
+
+/* Daftar langkah materi */
+.stepNav { display: flex; flex-direction: column; gap: var(--space-2); flex: 0 1 auto; min-height: 6rem; }
+.stepNavLabel {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+.stepList {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 34vh;
+  overflow-y: auto;
+}
+.stepBtn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--motion-fast), color var(--motion-fast);
+}
+.stepBtn:hover { background: var(--color-surface-muted); color: var(--color-text); }
+.stepBtn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+.stepBtn[data-state="done"] { color: var(--color-text); }
+.stepBtn[data-state="current"] {
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+.stepKind { font-size: var(--font-size-xs); }
+.stepText {
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Kisi nomor soal */
+.qGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.qBtn {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--motion-fast), border-color var(--motion-fast), transform var(--motion-fast) var(--ease-spring);
+}
+.qBtn:hover:not(:disabled) { border-color: var(--color-primary); transform: translateY(-1px); }
+.qBtn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+.qBtn[data-done] {
+  background: color-mix(in srgb, var(--color-success) 14%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-success) 45%, var(--color-border));
+  color: var(--color-text);
+}
+.qBtn[data-current] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* Saran Miu-chan */
+.railTip {
+  flex: none;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+}
+.railTipText {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 4px 14px 14px 14px;
+  background: var(--color-surface-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  animation: itemIn var(--motion-base) var(--ease-out) both;
+}
+
+/* Pengguna yang memilih kurangi gerakan: tanpa animasi masuk maupun konfeti.
+   Jeda animasi juga dimatikan, kalau tidak elemen tersembunyi selama jeda. */
+@media (prefers-reduced-motion: reduce) {
+  .studyCard, .quizCard,
+  .studyCard > *, .quizCard > *,
+  .options > .optionBtn,
+  .optionBtn[aria-pressed="true"],
+  .rail, .railTipText, .introMascot { animation: none !important; }
+  .confetti { display: none; }
+}
+
+/* Furigana di materi & soal: kanji tidak diregangkan, baris diberi ruang untuk bacaan */
+.stage ruby { ruby-align: center; }
+.stage rt { font-size: 0.5em; letter-spacing: 0; }
+.blockText:has(ruby),
+.cardExplanation:has(ruby),
+.explanationText:has(ruby) { line-height: 2.1; }

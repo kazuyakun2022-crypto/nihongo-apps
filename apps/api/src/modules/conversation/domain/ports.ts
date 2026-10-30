@@ -1,4 +1,4 @@
-import type { ChatMessage, ConversationContext, ConversationEmotion, ConversationMode, Correction } from "./Conversation";
+import type { ChatMessage, ConversationContext, ConversationEmotion, ConversationMode, Correction, ScenarioListItem } from "./Conversation";
 
 export interface SessionRow {
   id: string;
@@ -13,6 +13,8 @@ export interface SessionRow {
 
 export interface ConversationRepository {
   loadContext(userId: string, scenarioId: string | null): Promise<ConversationContext>;
+  /** Skenario terbit sampai level user, urut level lalu urutan. */
+  listScenarios(userId: string): Promise<ScenarioListItem[]>;
   countSessionsSince(userId: string, since: Date): Promise<number>;
   createSession(data: { userId: string; mascotId: number; levelId: number; scenarioId: string | null; mode: ConversationMode }): Promise<SessionRow>;
   findSession(id: string): Promise<SessionRow | null>;

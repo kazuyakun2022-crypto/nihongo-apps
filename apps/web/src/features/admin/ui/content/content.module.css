@@ -495,3 +495,150 @@
   gap: 6px;
   width: 9.5rem;
 }
+
+/* ── Isian gambar (ImageField) ── */
+.imageDrop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--border, #cbd5e1);
+  background: var(--surface-muted, #f8fafc);
+  transition: border-color 150ms, background 150ms;
+}
+
+.imageDrop:focus-visible {
+  outline: 2px solid var(--primary, #6366f1);
+  outline-offset: 2px;
+}
+
+.imageDrop[data-dragging] {
+  border-color: var(--primary, #6366f1);
+  background: color-mix(in srgb, var(--primary, #6366f1) 8%, transparent);
+}
+
+.imageDrop[data-filled] {
+  border-style: solid;
+}
+
+.imagePreview {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--border, #e2e8f0);
+  flex-shrink: 0;
+}
+
+.imagePlaceholder {
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--border, #e2e8f0);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.imageActions {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.imageButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btnSmall {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--surface, #fff);
+  color: var(--text, #0f172a);
+}
+
+.btnSmall:hover:not(:disabled) {
+  border-color: var(--primary, #6366f1);
+  color: var(--primary, #6366f1);
+}
+
+.btnSmall:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnSmallDanger:hover:not(:disabled) {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.hintError {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.itemWithThumb {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.clamp3 {
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Tab jenis kamus boleh turun baris agar tidak melebarkan halaman */
+.wrapTabs {
+  flex-wrap: wrap;
+}
+
+.toolbarWrap {
+  flex-wrap: wrap;
+}
+
+.rulesBox {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--surface-muted, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+.rulesToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.rulesBox .input {
+  max-width: 7rem;
+}

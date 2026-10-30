@@ -1,0 +1,315 @@
+.wrap {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: var(--space-4) 0 var(--space-8);
+  width: 100%;
+}
+
+.intro {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.intro > * {
+  width: 100%;
+}
+
+.intro > img,
+.intro > :first-child {
+  width: auto;
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: 0.08em;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-heavy);
+}
+
+.lead {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.muted {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.rules {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+  text-align: left;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-size: var(--font-size-sm);
+}
+
+.rules li::before {
+  content: "⚡ ";
+}
+
+.backLink,
+.primaryLink {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.primaryLink {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  text-decoration: none;
+  box-shadow: 0 3px 0 var(--color-primary-strong);
+}
+
+/* ── Hitung mundur ── */
+.countdown {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+}
+
+.countNum {
+  font-family: var(--font-japanese);
+  font-size: clamp(4rem, 18vw, 7rem);
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-primary);
+  animation: pop 650ms var(--ease-spring) both;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* ── Soal ── */
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.progressLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  min-width: 3.5rem;
+}
+
+.progressBar {
+  flex: 1;
+  height: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 150ms linear;
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.timer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 6px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--color-success), var(--color-accent), var(--color-danger));
+  transform-origin: left;
+  animation: shrink linear forwards;
+}
+
+@keyframes shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.kind {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+}
+
+.promptKana {
+  margin: 0;
+  font-family: var(--font-japanese);
+  font-size: clamp(5rem, 22vw, 7.5rem);
+  line-height: 1;
+}
+
+.promptWord {
+  margin: var(--space-2) 0;
+  font-family: var(--font-japanese);
+  font-size: clamp(2.2rem, 10vw, 3.2rem);
+  font-weight: var(--font-weight-bold);
+}
+
+.options {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.option {
+  position: relative;
+  min-height: 3.5rem;
+  padding: var(--space-2) var(--space-3) var(--space-2) 2.4rem;
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.option[data-chosen] {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+}
+
+.optionKey {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Hasil ── */
+.scores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.score {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-surface));
+}
+
+.score[data-ok] {
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+}
+
+.scoreNum {
+  font-size: 1.6rem;
+  font-weight: var(--font-weight-heavy);
+}
+
+.missed {
+  display: grid;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.missedTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+.missedList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-2);
+}
+
+.missedItem {
+  display: grid;
+  justify-items: center;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.missedPrompt {
+  font-family: var(--font-japanese);
+  font-size: 1.6rem;
+}
+
+.missedAnswer {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+}
+
+.missedNote {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countNum {
+    animation: none;
+  }
+}

@@ -96,7 +96,8 @@ export function adminRoutes(uc: AdminControllers) {
     const body = parseBody(
       z.object({
         systemPrompt: z.string().min(5),
-        maxSentenceWords: z.number().int().min(1).max(100),
+        // 0 = tanpa batas panjang kalimat
+        maxSentenceWords: z.number().int().min(0).max(100),
         furiganaRule: z.enum(furiganaRules),
         speechRate: z.number().min(0.5).max(2.0),
       }),

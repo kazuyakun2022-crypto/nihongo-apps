@@ -2,6 +2,11 @@ import React from "react";
 
 const FURIGANA_REGEX = /([\u4E00-\u9FFF\u3400-\u4DBF]+)\(([ぁ-んァ-ヶー]+)\)/g;
 
+/** Buang anotasi furigana: "漢字(かんじ)" → "漢字". Dipakai sebelum teks dibacakan TTS atau dijadikan label. */
+export function stripFurigana(text: string): string {
+  return text.replace(new RegExp(FURIGANA_REGEX), "$1");
+}
+
 interface FuriganaTextProps {
   text: string;
   className?: string;

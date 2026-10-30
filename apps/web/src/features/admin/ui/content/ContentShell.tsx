@@ -8,7 +8,7 @@ import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import styles from "./content.module.css";
 
-/** Kerangka halaman konten admin: cek akses, judul, dan tab Pelajaran / Ujian. */
+/** Kerangka halaman konten admin: cek akses, judul, dan tab Pelajaran / Ujian / Kamus / Pendaftaran. */
 export function ContentShell({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -28,8 +28,14 @@ export function ContentShell({ title, subtitle, children }: { title: string; sub
   }
 
   const tabs = [
-    { href: "/admin/konten", label: "Pelajaran", active: !pathname.startsWith("/admin/konten/ujian") && !pathname.startsWith("/admin/konten/pendaftaran") },
+    {
+      href: "/admin/konten",
+      label: "Pelajaran",
+      active: !["/admin/konten/ujian", "/admin/konten/pendaftaran", "/admin/konten/kamus", "/admin/konten/skenario"].some((p) => pathname.startsWith(p)),
+    },
+    { href: "/admin/konten/skenario", label: "Skenario AI", active: pathname.startsWith("/admin/konten/skenario") },
     { href: "/admin/konten/ujian", label: "Ujian & Tes Penempatan", active: pathname.startsWith("/admin/konten/ujian") },
+    { href: "/admin/konten/kamus", label: "Kamus", active: pathname.startsWith("/admin/konten/kamus") },
     { href: "/admin/konten/pendaftaran", label: "Pendaftaran", active: pathname.startsWith("/admin/konten/pendaftaran") },
   ];
   return (

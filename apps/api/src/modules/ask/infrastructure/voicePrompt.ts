@@ -1,6 +1,7 @@
 import {
   japaneseRatio,
   levelBand,
+  levelGuideSection,
   levelLabel,
   memorySection,
   sanitizeForPrompt,
@@ -78,6 +79,7 @@ export function voiceSystemPrompt(question: string, user?: AskUser, transcriptAl
     SYSTEM_PROMPT_VOICE +
     userSection(user) +
     levelSection(user) +
+    levelGuideSection(user, "voice") +
     memorySection(user) +
     transcriptSection(transcriptAlt) +
     replyHint(question, band)

@@ -4,28 +4,34 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { examApi, type ExamStatus, type ReadinessResponse } from "../data/examApi";
+import { masteryGateApi } from "../data/masteryGateApi";
 import styles from "./readinessCard.module.css";
 
 interface Props {
   levelId: number;
   levelCode: string;
+  /** Level tertinggi: tes menjadi Ujian Kelulusan Akhir kurikulum, bukan naik level. */
+  final?: boolean;
 }
 
-export function ReadinessCard({ levelId, levelCode }: Props) {
+export function ReadinessCard({ levelId, levelCode, final = false }: Props) {
   const router = useRouter();
   const [data, setData] = useState<ReadinessResponse | null>(null);
   const [status, setStatus] = useState<ExamStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Level Pemula (Pre-N5) naik lewat Mastery Gate hiragana, bukan tes naik tahap biasa
+  const isPreN5 = levelCode === "PEMULA";
+
   useEffect(() => {
-    Promise.all([
-      examApi.getReadiness(levelId),
-      examApi.getStatus("level-up", levelId),
-    ])
-      .then(([r, s]) => { setData(r); setStatus(s); })
+    const statusFor = isPreN5
+      ? masteryGateApi.status().then((g): Pick<ExamStatus, "canTake" | "cooldownUntil" | "consecutiveFails"> => ({ canTake: g.canTake, cooldownUntil: g.cooldownUntil, consecutiveFails: 0 }))
+      : examApi.getStatus("level-up", levelId);
+    Promise.all([examApi.getReadiness(levelId), statusFor])
+      .then(([r, s]) => { setData(r); setStatus(s as ExamStatus); })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [levelId]);
+  }, [levelId, isPreN5]);
 
   if (loading) {
     return (
@@ -59,8 +65,8 @@ export function ReadinessCard({ levelId, levelCode }: Props) {
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <span className={styles.label}>Kesiapan Naik Tahap</span>
-        <span className={styles.levelBadge}>{levelCode} → Level Berikutnya</span>
+        <span className={styles.label}>{final ? "Kesiapan Ujian Kelulusan" : "Kesiapan Naik Tahap"}</span>
+        <span className={styles.levelBadge}>{final ? `${levelCode} → Lulus Kurikulum` : `${levelCode} → Level Berikutnya`}</span>
       </div>
 
       <div className={styles.stats}>
@@ -103,10 +109,14 @@ export function ReadinessCard({ levelId, levelCode }: Props) {
       <button
         className={styles.testBtn}
         disabled={!canTakeNow}
-        onClick={() => router.push(`/belajar/tes-naik-tahap?levelId=${levelId}`)}
+        onClick={() => router.push(isPreN5 ? "/belajar/gerbang-hiragana" : `/belajar/tes-naik-tahap?levelId=${levelId}${final ? "&final=1" : ""}`)}
       >
         {canTakeNow
-          ? `Ikut Tes Naik Tahap ${levelCode}`
+          ? isPreN5
+            ? "Ikut Mastery Gate Hiragana"
+            : final
+              ? `Ikut Ujian Kelulusan ${levelCode}`
+              : `Ikut Tes Naik Tahap ${levelCode}`
           : cooldownLabel
           ? `Tunggu ${cooldownLabel}`
           : "Selesaikan bab dulu"}

@@ -83,10 +83,11 @@ export class GeminiTts {
   constructor(private readonly apiKey: string) {}
 
   /** Leda dibuat lebih imut (nada ±3 semitone lebih tinggi); nada, tempo, dan volume lalu digeser sesuai emosi. */
-  async speak(text: string, emotion?: string): Promise<Buffer> {
+  /** `rate`: kecepatan bicara per level (mis. 0.75 untuk N5), dikalikan ke tempo emosi. */
+  async speak(text: string, emotion?: string, rate = 1): Promise<Buffer> {
     const clean = stripRomajiGloss(text.slice(0, MAX_CHARS).trim());
     const tone = voiceTone(emotion);
-    const cacheKey = `${emotion ?? "biasa"}:${clean}`;
+    const cacheKey = `${emotion ?? "biasa"}:${rate}:${clean}`;
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
@@ -126,7 +127,7 @@ export class GeminiTts {
         if (!audio) throw new Error("tidak mengembalikan audio");
 
         const { pcm, sampleRate } = extractPcm(Buffer.from(audio, "base64"));
-        const shifted = shiftPitch(applyGain(pcm, tone.gain), sampleRate, tone.pitch, tone.tempo);
+        const shifted = shiftPitch(applyGain(pcm, tone.gain), sampleRate, tone.pitch, tone.tempo * rate);
         const wav = pcmToWav(shifted.pcm, shifted.sampleRate);
         if (this.cache.size < 200) this.cache.set(cacheKey, wav);
         return wav;

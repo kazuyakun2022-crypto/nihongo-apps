@@ -111,6 +111,25 @@ export async function apiRequest<T>(
   }
 }
 
+/** Unggah berkas biner (mis. gambar) apa adanya; content-type mengikuti berkas. */
+export async function apiUpload<T>(path: string, file: Blob, retry = true): Promise<T> {
+  const headers: Record<string, string> = { "content-type": file.type || "application/octet-stream" };
+  if (accessToken) headers.authorization = `Bearer ${accessToken}`;
+  let res: Response;
+  try {
+    res = await fetch(`${getApiBase()}/api${path}`, { method: "POST", headers, credentials: "include", body: file });
+  } catch (err) {
+    throw new ApiError(0, "NETWORK_ERROR", "Koneksi terputus saat mengunggah. Silakan coba lagi.", err);
+  }
+  if (res.status === 401 && retry && (await refreshAccessToken())) return apiUpload<T>(path, file, false);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = (data as { error?: { code: string; message: string } }).error;
+    throw new ApiError(res.status, err?.code ?? "UNKNOWN", err?.message ?? (res.status === 413 ? "Gambar terlalu besar." : "Gagal mengunggah."));
+  }
+  return data as T;
+}
+
 export const api = {
   get: <T>(path: string) => apiRequest<T>(path),
   post: <T>(path: string, body?: unknown) => apiRequest<T>(path, { method: "POST", body: body ?? {} }),

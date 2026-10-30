@@ -3,10 +3,14 @@ import { z } from "zod";
 import { asyncHandler } from "../../../shared/http/asyncHandler";
 import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
-import type { EndConversation, SendMessage, StartConversation } from "../application/ConversationUseCases";
+import type { EndConversation, ListScenarios, SendMessage, StartConversation } from "../application/ConversationUseCases";
 
-export function conversationRoutes(uc: { start: StartConversation; send: SendMessage; end: EndConversation }) {
+export function conversationRoutes(uc: { start: StartConversation; send: SendMessage; end: EndConversation; scenarios: ListScenarios }) {
   const r = Router();
+
+  r.get("/scenarios", asyncHandler(async (req, res) => {
+    res.json({ scenarios: await uc.scenarios.execute(currentUser(req)) });
+  }));
 
   r.post("/sessions", asyncHandler(async (req, res) => {
     const body = parseBody(z.object({ scenarioId: z.string().uuid().nullable().default(null) }), req.body ?? {});

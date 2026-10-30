@@ -25,6 +25,21 @@ export interface ScenarioBrief {
   goal: string;
   mascotRole: string;
   maxTurns: number;
+  /** Kalimat pembuka dari admin; null = dibuat AI. */
+  initialMessage: string | null;
+  /** Pola tata bahasa yang dilatih dalam skenario. */
+  targetGrammar: string[];
+}
+
+/** Skenario yang bisa dipilih siswa di daftar latihan ngobrol. */
+export interface ScenarioListItem {
+  id: string;
+  title: string;
+  goal: string;
+  levelCode: string;
+  chapterId: string | null;
+  chapterTitle: string | null;
+  targetGrammar: string[];
 }
 
 /** Emosi dominan Neko-sensei per balasan (ditulis AI di <correction_data>). */
@@ -61,6 +76,10 @@ export interface ConversationContext {
   memories: LearnerMemories;
   /** Kanji yang sudah dipelajari sampai level pengguna. Kosong berarti pemula: hindari kanji. */
   allowedKanji: Set<string>;
+  /** Tujuan belajar dari pendaftaran (mis. "Kerja atau magang di Jepang"). */
+  learningGoal?: string | null;
+  /** Bab yang sedang dipelajari beserta pola tata bahasanya. */
+  currentChapter?: { title: string; grammar: string[] } | null;
 }
 
 export const DEFAULT_MAX_TURNS = 20;

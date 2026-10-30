@@ -31,6 +31,17 @@ export interface SessionReport {
   summary: string;
 }
 
+/** Skenario latihan ngobrol yang bisa dipilih siswa. */
+export interface ScenarioItem {
+  id: string;
+  title: string;
+  goal: string;
+  levelCode: string;
+  chapterId: string | null;
+  chapterTitle: string | null;
+  targetGrammar: string[];
+}
+
 export interface ConversationRepository {
   start(scenarioId: string | null): Promise<StartedSession>;
   send(

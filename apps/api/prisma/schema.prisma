@@ -295,6 +295,7 @@ model Level {
   levelExams           LevelExam[]
   examQuestions        ExamQuestion[]
   examAttemptsResult   ExamAttempt[]        @relation("ResultLevel")
+  dictionaryEntries    DictionaryEntry[]
   usersPending         User[]               @relation("PendingLevel")
 
   @@map("levels")
@@ -312,6 +313,10 @@ model Chapter {
   publishedAt DateTime?     @map("published_at") @db.Timestamptz
   // Penanda bab hasil impor dataset (mis. "jlpt:n5:makanan_minuman:1"); impor ulang tidak menimpa bab yang sudah ada
   sourceKey   String?       @unique @map("source_key") @db.VarChar(100)
+  // Kelompok topik besar dalam satu level (mis. "Fonetik & Kana"); bab berurutan dengan modul sama tampil sebagai satu grup
+  moduleTitle String?       @map("module_title") @db.VarChar(120)
+  // Nilai minimal kuis untuk menyelesaikan bab; kosong = nilai bawaan (70)
+  passScore   Int?          @map("pass_score") @db.SmallInt
 
   level         Level                 @relation(fields: [levelId], references: [id])
   createdBy     User?                 @relation("ChapterCreator", fields: [createdById], references: [id])
@@ -320,6 +325,8 @@ model Chapter {
   kanji         Kanji[]
   grammarPoints GrammarPoint[]
   quizQuestions QuizQuestion[]
+  lessonBlocks  LessonBlock[]
+  scenarios     Scenario[]
   progress      UserChapterProgress[]
 
   @@index([levelId, sortOrder])
@@ -335,6 +342,7 @@ model Vocabulary {
   exampleSentence    String? @map("example_sentence")
   exampleTranslation String? @map("example_translation")
   audioUrl           String? @map("audio_url")
+  imageUrl           String? @map("image_url")
   chapter            Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   @@map("vocabularies")
@@ -360,9 +368,97 @@ model GrammarPoint {
   explanation     String
   exampleSentence String? @map("example_sentence")
   exampleTranslation String? @map("example_translation")
+  imageUrl        String? @map("image_url")
   chapter         Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   @@map("grammar_points")
+}
+
+/// Materi bebas yang disusun admin di awal bab: penjelasan, gambar, dialog contoh, atau tips.
+model LessonBlock {
+  id        String  @id @default(uuid()) @db.Uuid
+  chapterId String  @map("chapter_id") @db.Uuid
+  // teks | gambar | dialog | tips
+  type      String  @default("teks") @db.VarChar(20)
+  title     String? @db.VarChar(150)
+  // Teks biasa; baris "A: ..." pada blok dialog menjadi gelembung percakapan
+  body      String?
+  imageUrl  String? @map("image_url")
+  caption   String? @db.VarChar(255)
+  sortOrder Int     @default(0) @map("sort_order") @db.SmallInt
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@index([chapterId, sortOrder])
+  @@map("lesson_blocks")
+}
+
+// ───────────── Kamus ─────────────
+
+/// Kategori kamus bergambar dan kamus ungkapan; dikelola admin.
+model DictionaryCategory {
+  id        String  @id @default(uuid()) @db.Uuid
+  // gambar | ungkapan
+  type      String  @db.VarChar(20)
+  key       String  @db.VarChar(40)
+  title     String  @db.VarChar(80)
+  titleJa   String? @map("title_ja") @db.VarChar(40)
+  titleKana String? @map("title_kana") @db.VarChar(60)
+  coverUrl  String? @map("cover_url")
+  // Warna latar kartu kategori, mis. #fff3dc
+  tint      String? @db.VarChar(9)
+  sortOrder Int     @default(0) @map("sort_order") @db.SmallInt
+
+  entries DictionaryEntry[]
+
+  @@unique([type, key])
+  @@map("dictionary_categories")
+}
+
+/// Satu entri kamus. Siswa hanya melihat entri terbit sampai levelnya sendiri.
+model DictionaryEntry {
+  id                 String   @id @default(uuid()) @db.Uuid
+  // gambar | kosakata | kanji | tata_bahasa | ungkapan
+  type               String   @db.VarChar(20)
+  levelId            Int      @map("level_id") @db.SmallInt
+  categoryId         String?  @map("category_id") @db.Uuid
+  // Kata, karakter kanji, pola tata bahasa, atau ungkapan
+  term               String   @db.VarChar(100)
+  reading            String?  @db.VarChar(150)
+  romaji             String?  @db.VarChar(150)
+  meaning            String   @db.VarChar(500)
+  onyomi             String?  @db.VarChar(100)
+  kunyomi            String?  @db.VarChar(100)
+  explanation        String?
+  note               String?  @db.VarChar(500)
+  exampleSentence    String?  @map("example_sentence")
+  exampleTranslation String?  @map("example_translation")
+  imageUrl           String?  @map("image_url")
+  // published | draft
+  status             String   @default("published") @db.VarChar(20)
+  sortOrder          Int      @default(0) @map("sort_order")
+  // Asal entri hasil impor (mis. "bab:vocab:食べる|たべる"); impor ulang melewati yang sudah ada
+  sourceKey          String?  @unique @map("source_key") @db.VarChar(200)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  level    Level               @relation(fields: [levelId], references: [id])
+  category DictionaryCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([type, levelId, status])
+  @@index([categoryId])
+  @@map("dictionary_entries")
+}
+
+/// Gambar yang diunggah admin (sudah dikompres di browser), dilayani lewat GET /api/media/:id.
+model MediaAsset {
+  id          String   @id @default(uuid()) @db.Uuid
+  mimeType    String   @map("mime_type") @db.VarChar(50)
+  data        Bytes
+  sizeBytes   Int      @map("size_bytes")
+  createdById String?  @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("media_assets")
 }
 
 model QuizQuestion {
@@ -373,6 +469,7 @@ model QuizQuestion {
   options       Json?
   correctAnswer String   @map("correct_answer")
   audioUrl      String?  @map("audio_url")
+  imageUrl      String?  @map("image_url")
   // Petunjuk yang tampil saat mengerjakan (mis. arti kata); explanation baru tampil setelah dinilai
   hint          String?  @db.VarChar(255)
   explanation   String?
@@ -391,9 +488,18 @@ model Scenario {
   maxTurns    Int           @default(20) @map("max_turns") @db.SmallInt
   status      ContentStatus @default(draft)
   createdById String?       @map("created_by") @db.Uuid
+  // Kalimat pembuka maskot; kosong = dibuat AI
+  initialMessage String?    @map("initial_message")
+  // Pola tata bahasa yang dilatih, mis. ["〜をください", "〜はいくらですか"]
+  targetGrammar  Json?      @map("target_grammar")
+  // Bab yang skenario ini latih (tombol latihan ngobrol di akhir bab)
+  chapterId      String?    @map("chapter_id") @db.Uuid
+  sortOrder      Int        @default(0) @map("sort_order") @db.SmallInt
+  sourceKey      String?    @unique @map("source_key") @db.VarChar(100)
 
   level         Level                 @relation(fields: [levelId], references: [id])
   createdBy     User?                 @relation(fields: [createdById], references: [id])
+  chapter       Chapter?              @relation(fields: [chapterId], references: [id], onDelete: SetNull)
   conversations ConversationSession[]
 
   @@map("scenarios")
@@ -466,6 +572,8 @@ model LevelExam {
   sectionMinScore      Int      @default(50) @map("section_min_score") @db.SmallInt
   cooldownHours        Int      @default(0) @map("cooldown_hours") @db.SmallInt
   minChapterCompletion Int      @default(0) @map("min_chapter_completion") @db.SmallInt
+  // Aturan per bagian: { kosakata: { count, minScore }, ... }; kosong = dibagi rata & sectionMinScore
+  sectionRules         Json?    @map("section_rules")
   level                Level    @relation(fields: [levelId], references: [id])
   attempts             ExamAttempt[]
 
@@ -484,6 +592,7 @@ model ExamQuestion {
   options       Json
   correctAnswer String      @map("correct_answer")
   audioUrl      String?     @map("audio_url")
+  imageUrl      String?     @map("image_url")
   difficulty    Int         @default(1) @db.SmallInt
   status        String      @default("published")
   explanation   String?

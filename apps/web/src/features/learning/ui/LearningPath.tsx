@@ -18,19 +18,24 @@ interface Unit {
 }
 
 /**
- * Bab berurutan dengan judul dasar sama ("Makanan & Minuman 1", "… 2") digabung jadi satu unit.
- * Bab tunggal yang berdampingan dikumpulkan jadi unit "Materi Pilihan" supaya daftar tidak terlalu panjang.
+ * Bab berurutan dengan modul sama (diatur admin) menjadi satu unit. Tanpa modul, bab berurutan dengan judul dasar
+ * sama ("Makanan & Minuman 1", "… 2") digabung; bab tunggal yang berdampingan dikumpulkan jadi unit "Materi Pilihan".
  */
 function groupIntoUnits(chapters: ChapterSummary[]): Unit[] {
   const base = (t: string) => t.replace(/\s+\d+$/, "").trim();
-  const runs: Unit[] = [];
+  const keyOf = (c: ChapterSummary) => (c.moduleTitle ? `modul:${c.moduleTitle}` : `judul:${base(c.title)}`);
+  const runs: (Unit & { isModule: boolean })[] = [];
   for (const c of chapters) {
     const last = runs[runs.length - 1];
-    if (last && base(last.chapters[0].title) === base(c.title)) last.chapters.push(c);
-    else runs.push({ key: c.id, title: base(c.title), chapters: [c] });
+    if (last && keyOf(last.chapters[0]) === keyOf(c)) last.chapters.push(c);
+    else runs.push({ key: c.id, title: c.moduleTitle ?? base(c.title), chapters: [c], isModule: !!c.moduleTitle });
   }
   const units: Unit[] = [];
   for (const run of runs) {
+    if (run.isModule) {
+      units.push(run);
+      continue;
+    }
     const prev = units[units.length - 1];
     if (run.chapters.length === 1 && prev?.title === "Materi Pilihan") prev.chapters.push(run.chapters[0]);
     else if (run.chapters.length === 1 && runs.length > 1) units.push({ key: run.key, title: "Materi Pilihan", chapters: [...run.chapters] });
@@ -213,13 +218,30 @@ export function LearningPath() {
                 <>
                   <Mascot mood="senang" size={56} />
                   <p className={styles.nextTitle}>Semua bab {level.code} selesai!</p>
-                  <p className={styles.nextMeta}>{isTopLevel ? "Kamu sudah di level tertinggi. Hebat!" : "Saatnya ikut ujian naik level."}</p>
+                  <p className={styles.nextMeta}>{isTopLevel ? "Kamu sudah di level tertinggi. Saatnya ikut Ujian Kelulusan Akhir." : "Saatnya ikut ujian naik level."}</p>
                 </>
               )}
             </div>
           </section>
 
-          {!isTopLevel && <ReadinessCard levelId={level.id} levelCode={level.code} />}
+          <ReadinessCard levelId={level.id} levelCode={level.code} final={isTopLevel} />
+
+          <nav className={styles.extras} aria-label="Latihan tambahan">
+            <Link href="/belajar/tulis-buku" className={styles.extraCard}>
+              <span className={styles.extraIcon} aria-hidden>✍️</span>
+              <span>
+                <strong>Tulis di Buku</strong>
+                <small>Cetak lembar, tulis dengan pensil, foto untuk dikoreksi.</small>
+              </span>
+            </Link>
+            <Link href="/kamus?tab=ungkapan" className={styles.extraCard}>
+              <span className={styles.extraIcon} aria-hidden>📚</span>
+              <span>
+                <strong>Kamus Levelmu</strong>
+                <small>Kosakata, kanji, tata bahasa, ungkapan & sebutan.</small>
+              </span>
+            </Link>
+          </nav>
 
           <section className={styles.units} aria-label="Daftar unit">
             {units.map((unit, ui) => {
