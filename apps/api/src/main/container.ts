@@ -41,7 +41,8 @@ import { GetDueCards, ReviewCard } from "../modules/srs/application/SrsUseCases"
 import { PrismaConversationRepository } from "../modules/conversation/infrastructure/PrismaConversationRepository";
 import { AnthropicChatProvider } from "../modules/conversation/infrastructure/AnthropicChatProvider";
 import { MockChatProvider } from "../modules/conversation/infrastructure/MockChatProvider";
-import { EndConversation, SendMessage, StartConversation } from "../modules/conversation/application/ConversationUseCases";
+import { GroqChatProvider } from "../modules/conversation/infrastructure/GroqChatProvider";
+import { EndConversation, ListScenarios, SendMessage, StartConversation } from "../modules/conversation/application/ConversationUseCases";
 
 // Ask (Tanya Sensei)
 import { AnthropicAskProvider } from "../modules/ask/infrastructure/AnthropicAskProvider";
@@ -127,8 +128,12 @@ export function buildContainer(env: Env, db: Db) {
   const srsRepo = new PrismaSrsRepository(db);
   const srs = { getDue: new GetDueCards({ repo: srsRepo, clock }), review: new ReviewCard({ repo: srsRepo, clock }) };
 
-  // ── AI maskot (ngobrol) ──
-  const ai = env.ANTHROPIC_API_KEY ? new AnthropicChatProvider(env.ANTHROPIC_API_KEY, env.AI_MODEL) : new MockChatProvider();
+  // ── AI maskot (ngobrol & skenario) — prioritas: Anthropic → Groq → Mock ──
+  const ai = env.ANTHROPIC_API_KEY
+    ? new AnthropicChatProvider(env.ANTHROPIC_API_KEY, env.AI_MODEL)
+    : env.GROQ_API_KEY
+      ? new GroqChatProvider(env.GROQ_API_KEY)
+      : new MockChatProvider();
 
   // ── Tanya Sensei (Q&A) — prioritas: Groq → Gemini → Anthropic → Mock ──
   const backupAskProvider = env.GEMINI_API_KEY
@@ -153,6 +158,7 @@ export function buildContainer(env: Env, db: Db) {
     start: new StartConversation(convDeps),
     send: new SendMessage(convDeps),
     end: new EndConversation(convDeps),
+    scenarios: new ListScenarios(convDeps),
   };
 
   // ── Admin & Super Admin ──

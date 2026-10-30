@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
+import { ImageField } from "./ImageField";
 import styles from "./content.module.css";
 
 export type FieldDef =
   | { name: string; label: string; type: "text" | "textarea"; required?: boolean; hint?: string; wide?: boolean; jp?: boolean }
   | { name: string; label: string; type: "number"; min?: number; max?: number; hint?: string }
   | { name: string; label: string; type: "select"; options: { value: string; label: string }[]; hint?: string }
-  | { name: string; label: string; type: "choices"; answerName: string; hint?: string };
+  | { name: string; label: string; type: "choices"; answerName: string; hint?: string }
+  | { name: string; label: string; type: "image"; hint?: string };
 
 export type FormValues = Record<string, unknown>;
 
@@ -123,6 +125,10 @@ export function Field({ def, values, set }: { def: FieldDef; values: FormValues;
         <span className={styles.hint}>{def.hint ?? "Klik bulatan di kiri untuk menandai jawaban yang benar."}</span>
       </fieldset>
     );
+  }
+
+  if (def.type === "image") {
+    return <ImageField id={id} label={def.label} hint={def.hint} value={value as string | null} onChange={(url) => set(def.name, url)} />;
   }
 
   const wide = def.type === "textarea" || (def.type === "text" && def.wide);

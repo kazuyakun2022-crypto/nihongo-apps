@@ -32,6 +32,7 @@ describe("AskQuestion mode suara", () => {
       answer: "Tujuan pakai に ya!",
       emotion: "biasa",
       correction: "学校に行きます",
+      speechRate: null,
     });
   });
 });

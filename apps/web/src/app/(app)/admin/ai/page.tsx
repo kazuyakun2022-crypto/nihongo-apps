@@ -147,15 +147,19 @@ export default function AdminAiPage() {
 
                 <div className={styles.promptControls}>
                   <div className={styles.controlField}>
-                    <label className={styles.fieldLabel}>Maks Kata / Kalimat</label>
+                    <label className={styles.fieldLabel}>Maks Kata / Kalimat (0 = bebas)</label>
                     <input
                       type="number"
                       className={styles.selectInput}
                       value={p.maxSentenceWords}
+                      min={0}
+                      max={100}
+                      title="0 = tanpa batas"
                       disabled={!isSuperAdmin}
                       onChange={(e) => {
                         const updated = [...prompts];
-                        updated[idx].maxSentenceWords = parseInt(e.target.value, 10) || 5;
+                        const n = parseInt(e.target.value, 10);
+                        updated[idx].maxSentenceWords = Number.isNaN(n) ? 0 : Math.min(100, Math.max(0, n));
                         setPrompts(updated);
                       }}
                     />

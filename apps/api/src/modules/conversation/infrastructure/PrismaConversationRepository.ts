@@ -8,8 +8,10 @@ import {
   type ConversationMode,
   type Correction,
   type LevelRules,
+  type ScenarioListItem,
 } from "../domain/Conversation";
 import type { ConversationRepository, SessionRow } from "../domain/ports";
+import { loadOnboardingConfig } from "../../learning/infrastructure/onboardingSettings";
 
 const FALLBACK_RULES: Omit<LevelRules, "levelId" | "levelCode"> = {
   systemPrompt: "Gunakan bentuk sopan です/ます dan kalimat sangat sederhana.",
@@ -21,10 +23,29 @@ const FALLBACK_RULES: Omit<LevelRules, "levelId" | "levelCode"> = {
 export class PrismaConversationRepository implements ConversationRepository {
   constructor(private readonly db: Db) {}
 
+  async listScenarios(userId: string): Promise<ScenarioListItem[]> {
+    const user = await this.db.user.findUnique({ where: { id: userId }, select: { currentLevel: { select: { sortOrder: true } } } });
+    const ceiling = user?.currentLevel?.sortOrder ?? 1;
+    const rows = await this.db.scenario.findMany({
+      where: { status: "published", level: { sortOrder: { lte: ceiling } } },
+      orderBy: [{ level: { sortOrder: "asc" } }, { sortOrder: "asc" }, { title: "asc" }],
+      select: { id: true, title: true, goal: true, targetGrammar: true, chapterId: true, level: { select: { code: true } }, chapter: { select: { title: true } } },
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      title: r.title,
+      goal: r.goal,
+      levelCode: r.level.code,
+      chapterId: r.chapterId,
+      chapterTitle: r.chapter?.title ?? null,
+      targetGrammar: stringList(r.targetGrammar),
+    }));
+  }
+
   async loadContext(userId: string, scenarioId: string | null): Promise<ConversationContext> {
     const user = await this.db.user.findUnique({
       where: { id: userId },
-      select: { displayName: true, role: true, currentLevel: { include: { prompt: true } } },
+      select: { displayName: true, role: true, learningGoal: true, currentLevel: { include: { prompt: true } } },
     });
     if (!user) throw Errors.notFound("Pengguna");
 
@@ -73,10 +94,20 @@ export class PrismaConversationRepository implements ConversationRepository {
       },
       mascot: { id: mascot.id, name: mascot.name, personality: mascot.personality },
       scenario: scenario
-        ? { id: scenario.id, title: scenario.title, goal: scenario.goal, mascotRole: scenario.mascotRole, maxTurns: scenario.maxTurns }
+        ? {
+            id: scenario.id,
+            title: scenario.title,
+            goal: scenario.goal,
+            mascotRole: scenario.mascotRole,
+            maxTurns: scenario.maxTurns,
+            initialMessage: scenario.initialMessage,
+            targetGrammar: stringList(scenario.targetGrammar),
+          }
         : null,
       memories: { interests, weakTopics, facts },
       allowedKanji: new Set(kanji.map((k) => k.character)),
+      learningGoal: await goalLabel(this.db, user.learningGoal),
+      currentChapter: await currentChapter(this.db, userId, level.id),
     };
   }
 
@@ -136,4 +167,25 @@ function toRow(s: {
     maxTurns: s.scenario?.maxTurns ?? DEFAULT_MAX_TURNS,
     endedAt: s.endedAt,
   };
+}
+
+function stringList(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+}
+
+/** Label tujuan belajar dari pengaturan pendaftaran (mis. "kerja" → "Kerja atau magang di Jepang"). */
+export async function goalLabel(db: Db, goal: string | null): Promise<string | null> {
+  if (!goal) return null;
+  const config = await loadOnboardingConfig(db);
+  return config.goals.find((g) => g.value === goal)?.label ?? goal;
+}
+
+/** Bab terbit pertama di level user yang belum selesai, beserta pola tata bahasanya. */
+export async function currentChapter(db: Db, userId: string, levelId: number): Promise<{ title: string; grammar: string[] } | null> {
+  const chapter = await db.chapter.findFirst({
+    where: { levelId, status: "published", progress: { none: { userId, status: "completed" } } },
+    orderBy: { sortOrder: "asc" },
+    select: { title: true, grammarPoints: { select: { pattern: true }, take: 4 } },
+  });
+  return chapter ? { title: chapter.title, grammar: chapter.grammarPoints.map((g) => g.pattern) } : null;
 }

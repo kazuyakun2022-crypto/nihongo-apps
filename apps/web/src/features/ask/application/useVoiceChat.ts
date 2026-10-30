@@ -52,25 +52,25 @@ async function fetchAnswer(
   question: string,
   history: HistoryItem[],
   transcriptAlt: string | null,
-): Promise<{ answer: string; emotion: VoiceEmotion; correction: string | null }> {
-  const res = await apiRequest<{ answer: string; emotion?: string; correction?: string | null }>("/ask", {
+): Promise<{ answer: string; emotion: VoiceEmotion; correction: string | null; speechRate: number | null }> {
+  const res = await apiRequest<{ answer: string; emotion?: string; correction?: string | null; speechRate?: number | null }>("/ask", {
     method: "POST",
     body: { question, history, mode: "voice", ...(transcriptAlt ? { transcriptAlt } : {}) },
   });
   const emotion = EMOTIONS.find((e) => e === res.emotion) ?? "biasa";
-  return { answer: res.answer, emotion, correction: res.correction ?? null };
+  return { answer: res.answer, emotion, correction: res.correction ?? null, speechRate: res.speechRate ?? null };
 }
 
 // Suara cadangan (MP3, dipakai saat kuota Gemini habis) diputar lebih cepat tanpa menjaga pitch,
 // sehingga nadanya naik ±1,3 semitone; sisanya dinaikkan lewat pitch di server supaya tempo tidak terlalu cepat.
 const FALLBACK_PLAYBACK_RATE = 1.08;
 
-/** Suara Miu-chan; nada, tempo, dan volume disesuaikan server dengan emosinya. */
-async function fetchVoice(text: string, emotion: VoiceEmotion): Promise<{ url: string; isFallback: boolean }> {
+/** Suara Miu-chan; nada, tempo, dan volume disesuaikan server dengan emosinya, kecepatan mengikuti level user. */
+async function fetchVoice(text: string, emotion: VoiceEmotion, rate = 1): Promise<{ url: string; isFallback: boolean }> {
   const res = await fetch("/api/ask/speak", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ text, emotion }),
+    body: JSON.stringify({ text, emotion, rate }),
   });
   if (!res.ok) throw new Error("Suara Miu-chan gagal dibuat.");
   const blob = await res.blob();
@@ -99,6 +99,8 @@ export function useVoiceChat() {
   const recorderRef = useRef<MediaRecorder | null>(null);
   const stopRequestedRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  /** Kecepatan bicara level user (Konfig AI), diketahui dari jawaban pertama. */
+  const rateRef = useRef(1);
   const historyRef = useRef<HistoryItem[]>([]);
   const meterRef = useRef<AudioMeter | null>(null);
   // Naik setiap user mulai bicara/berhenti, supaya sapaan yang telat datang tidak menimpa giliran user
@@ -160,7 +162,7 @@ export function useVoiceChat() {
   const prefetchedGreetRef = useRef<{ text: string; voice: Promise<{ url: string; isFallback: boolean }> } | null>(null);
 
   const prefetchGreet = useCallback((text: string) => {
-    const voice = fetchVoice(text, "senang");
+    const voice = fetchVoice(text, "senang", rateRef.current);
     voice.catch(() => {});
     prefetchedGreetRef.current = { text, voice };
   }, []);
@@ -175,7 +177,7 @@ export function useVoiceChat() {
       const prefetched = prefetchedGreetRef.current;
       prefetchedGreetRef.current = null;
       const { url, isFallback } =
-        prefetched?.text === text ? await prefetched.voice : await fetchVoice(text, "senang");
+        prefetched?.text === text ? await prefetched.voice : await fetchVoice(text, "senang", rateRef.current);
       if (turnRef.current !== turn) {
         URL.revokeObjectURL(url);
         return;
@@ -192,7 +194,8 @@ export function useVoiceChat() {
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", text: question }]);
 
     try {
-      const { answer, emotion: mood, correction } = await fetchAnswer(question, historyRef.current, transcriptAlt);
+      const { answer, emotion: mood, correction, speechRate } = await fetchAnswer(question, historyRef.current, transcriptAlt);
+      if (speechRate) rateRef.current = speechRate;
       historyRef.current = [
         ...historyRef.current,
         { role: "user" as const, content: question },
@@ -201,7 +204,7 @@ export function useVoiceChat() {
       ].slice(-10);
       setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text: answer, emotion: mood, correction }]);
 
-      const { url: audioUrl, isFallback } = await fetchVoice(answer, mood);
+      const { url: audioUrl, isFallback } = await fetchVoice(answer, mood, rateRef.current);
       setEmotion(mood);
       setTranscript("");
       await playVoice(audioUrl, isFallback, answer);

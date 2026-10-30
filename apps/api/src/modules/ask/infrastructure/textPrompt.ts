@@ -1,4 +1,4 @@
-import { levelBand, levelLabel, memorySection, sanitizeForPrompt, type AskUser, type LevelBand } from "./learnerContext";
+import { levelBand, levelGuideSection, levelLabel, memorySection, sanitizeForPrompt, type AskUser, type LevelBand } from "./learnerContext";
 
 const READING_RULES: Record<LevelBand, string> = {
   pemula:
@@ -53,5 +53,5 @@ export function textSystemPrompt(user?: AskUser): string {
   return `${SYSTEM_PROMPT_TEXT}
 
 LEVEL USER: ${levelLabel(user?.level)}.${nameLine}
-- ${READING_RULES[levelBand(user?.level)]}${memorySection(user)}`;
+- ${READING_RULES[levelBand(user?.level)]}${levelGuideSection(user, "text")}${memorySection(user)}`;
 }

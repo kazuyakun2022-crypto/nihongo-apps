@@ -5,6 +5,12 @@
  */
 import { PrismaClient, type FuriganaRule } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { N1_AI } from "./scripts/kurikulumN1";
+import { N2_AI } from "./scripts/kurikulumN2";
+import { N3_AI } from "./scripts/kurikulumN3";
+import { N4_AI } from "./scripts/kurikulumN4";
+import { N5_AI } from "./scripts/kurikulumN5";
+import { PRE_N5_AI } from "./scripts/kurikulumPreN5";
 
 const db = new PrismaClient();
 
@@ -18,12 +24,12 @@ const levels = [
 ];
 
 const prompts: { levelId: number; systemPrompt: string; maxSentenceWords: number; furiganaRule: FuriganaRule; speechRate: number }[] = [
-  { levelId: 1, systemPrompt: "Pakai kosakata sangat dasar, kalimat 3–5 kata, bentuk です/ます.", maxSentenceWords: 5, furiganaRule: "full", speechRate: 0.7 },
-  { levelId: 2, systemPrompt: "Pakai kosakata dan pola tata bahasa N5 saja, bentuk sopan です/ます.", maxSentenceWords: 8, furiganaRule: "full", speechRate: 0.8 },
-  { levelId: 3, systemPrompt: "Pakai kosakata N5–N4. Boleh bentuk kasual sederhana jika pengguna memakainya.", maxSentenceWords: 12, furiganaRule: "full", speechRate: 0.9 },
-  { levelId: 4, systemPrompt: "Pakai kosakata sampai N3, campuran sopan dan kasual.", maxSentenceWords: 18, furiganaRule: "hard_only", speechRate: 1.0 },
-  { levelId: 5, systemPrompt: "Bahasa alami tingkat N2, termasuk keigo dasar dan topik abstrak.", maxSentenceWords: 25, furiganaRule: "none", speechRate: 1.0 },
-  { levelId: 6, systemPrompt: "Bahasa alami seperti penutur asli, termasuk keigo dan ungkapan idiomatis.", maxSentenceWords: 40, furiganaRule: "none", speechRate: 1.0 },
+  { levelId: 1, ...PRE_N5_AI },
+  { levelId: 2, ...N5_AI },
+  { levelId: 3, ...N4_AI },
+  { levelId: 4, ...N3_AI },
+  { levelId: 5, ...N2_AI },
+  { levelId: 6, ...N1_AI },
 ];
 
 async function main() {

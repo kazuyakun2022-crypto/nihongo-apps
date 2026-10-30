@@ -13,18 +13,47 @@ import { STATUS_LABEL, useFlash } from "./ContentShell";
 import styles from "./content.module.css";
 
 /** Definisi tiap jenis materi: field form, nilai awal, dan cara menampilkannya di daftar. */
+const BLOCK_TYPES = [
+  { value: "teks", label: "Teks penjelasan" },
+  { value: "gambar", label: "Gambar / ilustrasi" },
+  { value: "dialog", label: "Dialog contoh" },
+  { value: "tips", label: "Tips / catatan penting" },
+  { value: "huruf", label: "Kartu huruf (kana + mnemonik)" },
+];
+const BLOCK_ICON: Record<string, string> = { teks: "📝", gambar: "🖼️", dialog: "💬", tips: "💡", huruf: "あ" };
+
 const KINDS: Record<ItemKind, { tab: string; label: string; fields: FieldDef[]; empty: FormValues; listKey: keyof ChapterDetail }> = {
+  block: {
+    tab: "Materi",
+    label: "blok materi",
+    listKey: "lessonBlocks",
+    empty: { type: "teks", title: "", body: "", imageUrl: null, caption: "" },
+    fields: [
+      { name: "type", label: "Jenis blok", type: "select", options: BLOCK_TYPES },
+      { name: "title", label: "Judul (opsional)", type: "text", wide: true },
+      {
+        name: "body",
+        label: "Isi",
+        type: "textarea",
+        jp: true,
+        hint: "Baris kosong memisahkan paragraf. Dialog: satu ucapan per baris, mis. \"A: おはようございます。\", lalu terjemahannya di baris berikutnya diawali \">\". Kartu huruf: satu huruf per baris, \"あ | a | mnemonik\".",
+      },
+      { name: "imageUrl", label: "Gambar (opsional)", type: "image", hint: "Mis. ilustrasi situasi, tabel huruf, papan tanda, atau bahan bacaan bergambar." },
+      { name: "caption", label: "Keterangan gambar (opsional)", type: "text", wide: true },
+    ],
+  },
   vocab: {
     tab: "Kosakata",
     label: "kosakata",
     listKey: "vocabularies",
-    empty: { word: "", reading: "", meaningId: "", exampleSentence: "", exampleTranslation: "" },
+    empty: { word: "", reading: "", meaningId: "", exampleSentence: "", exampleTranslation: "", imageUrl: null },
     fields: [
       { name: "word", label: "Kata", type: "text", required: true, jp: true },
       { name: "reading", label: "Cara baca (hiragana)", type: "text", required: true, jp: true },
       { name: "meaningId", label: "Arti", type: "text", required: true, wide: true },
       { name: "exampleSentence", label: "Contoh kalimat", type: "text", wide: true, jp: true },
       { name: "exampleTranslation", label: "Terjemahan contoh", type: "text", wide: true },
+      { name: "imageUrl", label: "Gambar (opsional)", type: "image", hint: "Tampil di kartu kosakata dan kamus." },
     ],
   },
   kanji: {
@@ -43,12 +72,13 @@ const KINDS: Record<ItemKind, { tab: string; label: string; fields: FieldDef[]; 
     tab: "Tata Bahasa",
     label: "pola tata bahasa",
     listKey: "grammarPoints",
-    empty: { pattern: "", explanation: "", exampleSentence: "", exampleTranslation: "" },
+    empty: { pattern: "", explanation: "", exampleSentence: "", exampleTranslation: "", imageUrl: null },
     fields: [
       { name: "pattern", label: "Pola", type: "text", required: true, wide: true, jp: true },
       { name: "explanation", label: "Penjelasan", type: "textarea", required: true },
       { name: "exampleSentence", label: "Contoh kalimat", type: "text", wide: true, jp: true },
       { name: "exampleTranslation", label: "Terjemahan contoh", type: "text", wide: true },
+      { name: "imageUrl", label: "Gambar (opsional)", type: "image", hint: "Mis. diagram pola kalimat atau ilustrasi contoh." },
     ],
   },
   // Latihan memakai ExerciseForm karena isiannya berbeda per jenis latihan.
@@ -60,12 +90,39 @@ const KINDS: Record<ItemKind, { tab: string; label: string; fields: FieldDef[]; 
     fields: [],
   },
 };
-const KIND_ORDER: ItemKind[] = ["vocab", "kanji", "grammar", "quiz"];
+const KIND_ORDER: ItemKind[] = ["block", "vocab", "kanji", "grammar", "quiz"];
 
 type AnyItem = { id: string } & Record<string, unknown>;
 
 function ItemSummary({ kind, item }: { kind: ItemKind; item: AnyItem }) {
   const s = (k: string) => (item[k] as string | null) ?? "";
+  const image = typeof item.imageUrl === "string" && item.imageUrl ? item.imageUrl : null;
+  return (
+    <div className={styles.itemWithThumb}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {image && <img src={image} alt="" className={styles.thumb} />}
+      <div style={{ minWidth: 0 }}>
+        <ItemText kind={kind} item={item} s={s} />
+      </div>
+    </div>
+  );
+}
+
+function ItemText({ kind, item, s }: { kind: ItemKind; item: AnyItem; s: (k: string) => string }) {
+  if (kind === "block")
+    return (
+      <>
+        <div className={styles.itemMain}>
+          {BLOCK_ICON[s("type")] ?? "📝"} {s("title") || BLOCK_TYPES.find((t) => t.value === s("type"))?.label}
+        </div>
+        {s("body") && (
+          <div className={`${styles.muted} ${styles.clamp3}`} lang="ja">
+            {s("body")}
+          </div>
+        )}
+        {s("caption") && <div className={styles.muted}>Keterangan: {s("caption")}</div>}
+      </>
+    );
   if (kind === "vocab")
     return (
       <>
@@ -138,8 +195,8 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
   const level = useSearchParams().get("level");
   const flash = useFlash();
   const [chapter, setChapter] = useState<ChapterDetail | null>(null);
-  const [meta, setMeta] = useState({ title: "", explanation: "", status: "draft" as ContentStatus });
-  const [tab, setTab] = useState<ItemKind>("vocab");
+  const [meta, setMeta] = useState({ title: "", explanation: "", moduleTitle: "", passScore: "", status: "draft" as ContentStatus });
+  const [tab, setTab] = useState<ItemKind>("block");
   const [skill, setSkill] = useState<SkillId | "semua">("semua");
   const [editing, setEditing] = useState<{ kind: ItemKind; item?: AnyItem } | null>(null);
   const [savingMeta, setSavingMeta] = useState(false);
@@ -150,7 +207,13 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
         .chapter(chapterId)
         .then(({ chapter }) => {
           setChapter(chapter);
-          setMeta({ title: chapter.title, explanation: chapter.explanation ?? "", status: chapter.status });
+          setMeta({
+            title: chapter.title,
+            explanation: chapter.explanation ?? "",
+            moduleTitle: chapter.moduleTitle ?? "",
+            passScore: chapter.passScore == null ? "" : String(chapter.passScore),
+            status: chapter.status,
+          });
         })
         .catch(flash.fail),
     [chapterId, flash.fail],
@@ -194,12 +257,23 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
     );
   }
 
-  const dirty = meta.title !== chapter.title || meta.explanation !== (chapter.explanation ?? "") || meta.status !== chapter.status;
+  const dirty =
+    meta.title !== chapter.title ||
+    meta.explanation !== (chapter.explanation ?? "") ||
+    meta.moduleTitle !== (chapter.moduleTitle ?? "") ||
+    meta.passScore !== (chapter.passScore == null ? "" : String(chapter.passScore)) ||
+    meta.status !== chapter.status;
 
   async function saveMeta() {
     setSavingMeta(true);
     try {
-      await contentApi.updateChapter(chapterId, { title: meta.title.trim(), explanation: meta.explanation.trim() || null, status: meta.status });
+      await contentApi.updateChapter(chapterId, {
+        title: meta.title.trim(),
+        explanation: meta.explanation.trim() || null,
+        moduleTitle: meta.moduleTitle.trim() || null,
+        passScore: meta.passScore ? Number(meta.passScore) : null,
+        status: meta.status,
+      });
       await load();
       flash.ok("Info bab disimpan.");
     } catch (err) {
@@ -214,6 +288,20 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
     try {
       await contentApi.deleteChapter(chapterId);
       router.push(backHref);
+    } catch (err) {
+      flash.fail(err);
+    }
+  }
+
+  async function moveBlock(index: number, delta: -1 | 1) {
+    if (!chapter) return;
+    const ids = chapter.lessonBlocks.map((b) => b.id);
+    const j = index + delta;
+    if (j < 0 || j >= ids.length) return;
+    [ids[index], ids[j]] = [ids[j], ids[index]];
+    try {
+      await contentApi.reorderBlocks(chapterId, ids);
+      await load();
     } catch (err) {
       flash.fail(err);
     }
@@ -240,7 +328,7 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
     <>
       <div className={styles.breadcrumb}>
         <Link href={backHref}>← Daftar bab {chapter.level.code}</Link>
-        {chapter.sourceKey && <span>· dari dataset impor</span>}
+        {chapter.sourceKey && <span>· {chapter.sourceKey.startsWith("kurikulum:") ? "kurikulum utama" : "dari dataset impor"}</span>}
       </div>
       {flash.node}
 
@@ -257,6 +345,32 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
           <div className={`${styles.field} ${styles.fieldWide}`}>
             <label htmlFor="ch-exp" className={adminStyles.fieldLabel}>Pengantar bab</label>
             <textarea id="ch-exp" className={styles.textarea} value={meta.explanation} onChange={(e) => setMeta({ ...meta, explanation: e.target.value })} />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="ch-module" className={adminStyles.fieldLabel}>Modul (opsional)</label>
+            <input
+              id="ch-module"
+              className={styles.input}
+              value={meta.moduleTitle}
+              maxLength={120}
+              placeholder="Mis. Fonetik & Kana"
+              onChange={(e) => setMeta({ ...meta, moduleTitle: e.target.value })}
+            />
+            <span className={styles.hint}>Bab berurutan dengan modul yang sama dikelompokkan di jalur belajar siswa.</span>
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="ch-pass" className={adminStyles.fieldLabel}>Nilai lulus kuis</label>
+            <input
+              id="ch-pass"
+              type="number"
+              min={1}
+              max={100}
+              className={styles.input}
+              value={meta.passScore}
+              placeholder="70"
+              onChange={(e) => setMeta({ ...meta, passScore: e.target.value })}
+            />
+            <span className={styles.hint}>Kosongkan untuk nilai bawaan 70.</span>
           </div>
           <div className={styles.field}>
             <label htmlFor="ch-status" className={adminStyles.fieldLabel}>Status</label>
@@ -299,7 +413,11 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
             </div>
           ) : (
             <span className={styles.muted}>
-              {tab === "quiz" ? "Siswa harus mendapat nilai minimal 70 untuk menyelesaikan bab." : `Urutan tampil sesuai urutan dibuat.`}
+              {tab === "quiz"
+                ? "Siswa harus mendapat nilai minimal 70 untuk menyelesaikan bab."
+                : tab === "block"
+                  ? "Blok materi tampil paling awal saat siswa membuka bab, sesuai urutan di bawah."
+                  : `Urutan tampil sesuai urutan dibuat.`}
             </span>
           )}
           <button type="button" className={`${styles.btn} ${adminStyles.btnPrimary}`} onClick={() => setEditing({ kind: tab })}>
@@ -316,13 +434,23 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
           <div className={adminStyles.tableWrap}>
             <table className={adminStyles.table}>
               <tbody>
-                {items.map((item) => (
+                {items.map((item, index) => (
                   <tr key={item.id}>
                     <td>
                       <ItemSummary kind={tab} item={item} />
                     </td>
                     <td style={{ width: 1 }}>
                       <div className={adminStyles.actionGroup} style={{ flexWrap: "nowrap" }}>
+                        {tab === "block" && (
+                          <>
+                            <button type="button" className={styles.iconBtn} aria-label="Naikkan" disabled={index === 0} onClick={() => moveBlock(index, -1)}>
+                              ↑
+                            </button>
+                            <button type="button" className={styles.iconBtn} aria-label="Turunkan" disabled={index === items.length - 1} onClick={() => moveBlock(index, 1)}>
+                              ↓
+                            </button>
+                          </>
+                        )}
                         <button type="button" className={`${adminStyles.btnSm} ${adminStyles.btnSecondary}`} onClick={() => setEditing({ kind: tab, item })}>
                           Edit
                         </button>

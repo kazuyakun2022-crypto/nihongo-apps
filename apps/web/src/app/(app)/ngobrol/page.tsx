@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AskScreen } from "@/features/ask/ui/AskScreen";
 import { VoiceChatScreen } from "@/features/ask/ui/VoiceChatScreen";
+import { ScenarioList } from "@/features/conversation/ui/ScenarioList";
 import styles from "./ngobrol.module.css";
 
-type Tab = "tanya" | "suara";
+type Tab = "tanya" | "suara" | "skenario";
 
-export default function NgobrolPage() {
-  const [tab, setTab] = useState<Tab>("tanya");
+function Ngobrol() {
+  const initial = useSearchParams().get("tab");
+  const [tab, setTab] = useState<Tab>(initial === "skenario" || initial === "suara" ? initial : "tanya");
 
   return (
     <div className={styles.wrapper}>
@@ -27,10 +30,10 @@ export default function NgobrolPage() {
           <div className={styles.senseiMeta}>
             <div className={styles.titleRow}>
               <h1 className={styles.senseiName}>Miu-chan</h1>
-              <span className={styles.senseiBadge}>{tab === "suara" ? "3D Suara" : "AI Tutor"}</span>
+              <span className={styles.senseiBadge}>{tab === "suara" ? "3D Suara" : tab === "skenario" ? "Role-play" : "AI Tutor"}</span>
             </div>
             <p className={styles.senseiStatus}>
-              {tab === "suara" ? "Bicara langsung dengan suara" : "Tanya tata bahasa & kanji"}
+              {tab === "suara" ? "Bicara langsung dengan suara" : tab === "skenario" ? "Latihan percakapan sesuai bab" : "Tanya tata bahasa & kanji"}
             </p>
           </div>
         </div>
@@ -65,6 +68,20 @@ export default function NgobrolPage() {
             <span>Suara</span>
             <span className={styles.liveIndicator} />
           </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "skenario"}
+            className={`${styles.segmentBtn} ${tab === "skenario" ? styles.segmentActive : ""}`}
+            onClick={() => setTab("skenario")}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span>Skenario</span>
+          </button>
         </div>
       </header>
 
@@ -86,7 +103,20 @@ export default function NgobrolPage() {
         >
           <VoiceChatScreen hideHeader isActiveTab={tab === "suara"} />
         </div>
+        {tab === "skenario" && (
+          <div className={styles.tabPanel} style={{ display: "flex" }} role="tabpanel">
+            <ScenarioList />
+          </div>
+        )}
       </div>
     </div>
+  );
+}
+
+export default function NgobrolPage() {
+  return (
+    <Suspense>
+      <Ngobrol />
+    </Suspense>
   );
 }

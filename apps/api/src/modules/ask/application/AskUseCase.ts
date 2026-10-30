@@ -12,6 +12,8 @@ export interface AskAnswer {
   emotion: Emotion;
   /** Kalimat yang benar bila user salah mengucapkan bahasa Jepang (hanya mode suara). */
   correction: string | null;
+  /** Kecepatan bicara Miu-chan untuk level user (diatur admin); null untuk tamu. */
+  speechRate: number | null;
 }
 
 interface Deps {
@@ -40,10 +42,11 @@ export class AskQuestion {
     const user = userId && this.deps.userProfile ? await this.deps.userProfile(userId) : null;
     const alt = mode === "voice" ? transcriptAlt?.trim() || undefined : undefined;
     const raw = await this.deps.ask.answer(q, trimmedHistory, mode, user ?? undefined, alt);
-    if (mode !== "voice") return { answer: raw, emotion: "biasa", correction: null };
+    const speechRate = user?.levelGuide?.speechRate ?? null;
+    if (mode !== "voice") return { answer: raw, emotion: "biasa", correction: null, speechRate };
     // Mode suara: AI menulis tanda emosi di awal jawaban ("[marah]") dan koreksi di akhir ("{{benar: …}}")
     const { text: withoutCorrection, correction } = extractCorrection(raw);
     const { text, emotion } = extractEmotion(withoutCorrection);
-    return { answer: text, emotion, correction };
+    return { answer: text, emotion, correction, speechRate };
   }
 }

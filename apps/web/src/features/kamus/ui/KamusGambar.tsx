@@ -1,16 +1,34 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSpeech } from "@/shared/lib/useSpeech";
-import { KAMUS_CATEGORIES, iconSrc, type KamusCategory, type KamusItem } from "../data/kamusGambar";
+import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
+import { kamusApi } from "../data/kamusApi";
 import styles from "./kamus.module.css";
+
+interface KamusItem {
+  ja: string;
+  kana: string;
+  romaji: string;
+  arti: string;
+  /** Alamat gambar (bawaan /images/kamus/… atau unggahan admin). */
+  icon: string;
+}
+
+interface KamusCategory {
+  id: string;
+  title: string;
+  titleJa: string;
+  titleKana: string;
+  cover: string;
+  tint: string;
+  items: KamusItem[];
+}
 
 interface Entry extends KamusItem {
   category: KamusCategory;
 }
-
-const ALL_ENTRIES: Entry[] = KAMUS_CATEGORIES.flatMap((category) => category.items.map((item) => ({ ...item, category })));
 
 // Samakan katakana/hiragana, buang makron, dan ringkas vokal panjang agar "gakkou", "gakko" dan "gakkō" cocok.
 const fold = (s: string) =>
@@ -23,18 +41,46 @@ const fold = (s: string) =>
 
 const matches = (e: Entry, q: string) => [e.ja, e.kana, e.romaji, e.arti].some((field) => fold(field).includes(q));
 
-export function KamusGambar() {
+/** `tabs`: navigasi jenis kamus, ditampilkan di bawah kolom pencarian. */
+export function KamusGambar({ tabs }: { tabs?: ReactNode } = {}) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
-  const category = KAMUS_CATEGORIES.find((c) => c.id === params.get("k")) ?? null;
+  const [categories, setCategories] = useState<KamusCategory[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Isi kamus bergambar dikelola admin
+  useEffect(() => {
+    kamusApi
+      .gambar()
+      .then((res) =>
+        setCategories(
+          res.categories.map((c) => ({
+            id: c.key,
+            title: c.title,
+            titleJa: c.titleJa ?? "",
+            titleKana: c.titleKana ?? c.titleJa ?? "",
+            cover: c.coverUrl ?? c.entries[0]?.imageUrl ?? "",
+            tint: c.tint ?? "#f6f1ee",
+            items: c.entries.map((e) => ({ ja: e.term, kana: e.reading ?? e.term, romaji: e.romaji ?? "", arti: e.meaning, icon: e.imageUrl ?? "" })),
+          })),
+        ),
+      )
+      .catch((err: Error) => setLoadError(err.message));
+  }, []);
+
+  const ALL_ENTRIES: Entry[] = useMemo(
+    () => (categories ?? []).flatMap((category) => category.items.map((item) => ({ ...item, category }))),
+    [categories],
+  );
+  const category = categories?.find((c) => c.id === params.get("k")) ?? null;
 
   const [query, setQuery] = useState("");
   const [hideMeaning, setHideMeaning] = useState(false);
   const [detail, setDetail] = useState<{ list: Entry[]; index: number } | null>(null);
 
   const q = fold(query.trim());
-  const results = useMemo(() => (q ? ALL_ENTRIES.filter((e) => matches(e, q)) : null), [q]);
+  const results = useMemo(() => (q ? ALL_ENTRIES.filter((e) => matches(e, q)) : null), [q, ALL_ENTRIES]);
   const visible: Entry[] = results ?? (category ? ALL_ENTRIES.filter((e) => e.category === category) : []);
 
   const openCategory = (id: string | null) => {
@@ -52,7 +98,9 @@ export function KamusGambar() {
           </p>
           <h1 className={styles.heading}>Kamus Gambar</h1>
           <p className={styles.subheading}>
-            {ALL_ENTRIES.length} kosakata bergambar dalam {KAMUS_CATEGORIES.length} kategori. Ketuk gambar untuk mendengar pelafalannya.
+            {categories
+              ? `${ALL_ENTRIES.length} kosakata bergambar dalam ${categories.length} kategori. Ketuk gambar untuk mendengar pelafalannya.`
+              : "Memuat kosakata bergambar…"}
           </p>
         </div>
         <div className={styles.toolbar}>
@@ -73,6 +121,7 @@ export function KamusGambar() {
             {hideMeaning ? "Tampilkan arti" : "Mode hafalan"}
           </button>
         </div>
+        {tabs}
       </header>
 
       {(category || results) && (
@@ -80,7 +129,7 @@ export function KamusGambar() {
           <button type="button" className={styles.chip} onClick={() => openCategory(null)}>
             Semua
           </button>
-          {KAMUS_CATEGORIES.map((c) => (
+          {(categories ?? []).map((c) => (
             <button
               key={c.id}
               type="button"
@@ -88,7 +137,7 @@ export function KamusGambar() {
               aria-current={!results && c === category ? "true" : undefined}
               onClick={() => openCategory(c.id)}
             >
-              <img src={iconSrc(c.cover)} alt="" width={20} height={20} />
+              <img src={c.cover} alt="" width={20} height={20} />
               {c.title}
             </button>
           ))}
@@ -105,7 +154,7 @@ export function KamusGambar() {
       ) : category ? (
         <section>
           <div className={styles.categoryHead} style={{ "--tint": category.tint } as React.CSSProperties}>
-            <img src={iconSrc(category.cover)} alt="" width={64} height={64} />
+            <img src={category.cover} alt="" width={64} height={64} />
             <div>
               <h2 className={styles.categoryTitle}>{category.title}</h2>
               <p className={styles.categoryJa} lang="ja">
@@ -117,9 +166,17 @@ export function KamusGambar() {
           </div>
           <WordGrid entries={visible} hideMeaning={hideMeaning} onOpen={(i) => setDetail({ list: visible, index: i })} />
         </section>
+      ) : loadError ? (
+        <p className={styles.sectionTitle}>{loadError}</p>
+      ) : !categories ? (
+        <SkeletonRegion label="Memuat kamus…" className={styles.categoryGrid}>
+          {Array.from({ length: 10 }, (_, i) => (
+            <Skeleton key={i} height="10rem" radius="var(--radius-lg)" />
+          ))}
+        </SkeletonRegion>
       ) : (
         <ul className={styles.categoryGrid}>
-          {KAMUS_CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <li key={c.id}>
               <button
                 type="button"
@@ -127,7 +184,7 @@ export function KamusGambar() {
                 style={{ "--tint": c.tint } as React.CSSProperties}
                 onClick={() => openCategory(c.id)}
               >
-                <img src={iconSrc(c.cover)} alt="" width={72} height={72} />
+                <img src={c.cover} alt="" width={72} height={72} />
                 <span className={styles.tileTitle}>{c.title}</span>
                 <span className={styles.tileJa} lang="ja">
                   {c.titleJa}
@@ -165,7 +222,7 @@ function WordGrid({
         <li key={`${e.category.id}-${e.ja}-${e.icon}`}>
           <button type="button" className={styles.wordCard} style={{ "--tint": e.category.tint } as React.CSSProperties} onClick={() => onOpen(i)}>
             <span className={styles.wordImage}>
-              <img src={iconSrc(e.icon)} alt="" width={160} height={160} loading="lazy" decoding="async" />
+              <img src={e.icon} alt="" width={160} height={160} loading="lazy" decoding="async" />
             </span>
             <span className={styles.wordJa} lang="ja">
               {e.ja}
@@ -234,7 +291,7 @@ function WordDetail({
           ×
         </button>
         <span className={styles.dialogCategory}>{entry.category.title}</span>
-        <img key={entry.icon} src={iconSrc(entry.icon)} alt="" width={160} height={160} className={styles.dialogImage} />
+        <img key={entry.icon} src={entry.icon} alt="" width={160} height={160} className={styles.dialogImage} />
         <p id="kamus-detail-word" className={styles.dialogJa} lang="ja">
           {entry.ja}
         </p>

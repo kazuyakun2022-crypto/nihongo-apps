@@ -568,3 +568,43 @@ a.chapterRow:hover {
     transform: none !important;
   }
 }
+
+/* ── Latihan tambahan ── */
+.extras {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.extraCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--motion-fast), transform var(--motion-fast);
+}
+
+.extraCard:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.extraCard span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.extraCard small {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.extraIcon {
+  font-size: 1.6rem;
+}

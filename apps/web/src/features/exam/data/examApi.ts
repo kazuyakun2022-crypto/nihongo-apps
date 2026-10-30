@@ -18,7 +18,15 @@ export interface ExamStatus {
   canTake: boolean;
   cooldownUntil: string | null;
   consecutiveFails: number;
-  config: { passScore: number; sectionMinScore: number; timeLimitMin: number; questionCount: number; cooldownHours: number };
+  config: {
+    passScore: number;
+    sectionMinScore: number;
+    timeLimitMin: number;
+    questionCount: number;
+    cooldownHours: number;
+    /** Jumlah soal & nilai minimal per bagian; null = dibagi rata dengan sectionMinScore. */
+    sectionRules?: Partial<Record<string, { count: number; minScore: number }>> | null;
+  };
 }
 
 /** Soal ujian berbentuk sama dengan latihan bab (pilihan ganda, susun, menulis, berbicara, ...). */
@@ -44,6 +52,10 @@ export interface SubmitExamResponse {
   passed: boolean;
   totalScore: number;
   sectionScores: Record<string, number>;
+  /** Nilai minimal tiap bagian yang dipakai saat menilai. */
+  sectionMinScores?: Record<string, number>;
+  /** Jawaban dikirim melewati batas waktu. */
+  late?: boolean;
   resultLevelId: number;
   nextLevelId?: number | null;
   cooldownUntil: string | null;

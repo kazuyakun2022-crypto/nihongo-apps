@@ -162,3 +162,55 @@ describe("GroqTranscriber ucapan campuran", () => {
     expect((await transcribe()).text).toBe("apa arti tabel");
   });
 });
+
+describe("panduan level & bab aktif di prompt Miu-chan", () => {
+  const user = {
+    name: "Budi",
+    level: "N5",
+    levelGuide: { systemPrompt: "Utamakan bentuk sopan です/ます.", maxSentenceWords: 10, furiganaRule: "full" as const, speechRate: 0.75 },
+    lesson: { title: "Belanja & Keinginan", grammar: ["N が ほしいです", "V-たいです"] },
+  };
+
+  it("mode teks memuat prompt admin, batas kata, aturan furigana, dan pola bab", () => {
+    const prompt = textSystemPrompt(user);
+    expect(prompt).toContain("Utamakan bentuk sopan です/ます.");
+    expect(prompt).toContain("maksimal 10 kata");
+    expect(prompt).toContain("漢字(かんじ)");
+    expect(prompt).toContain("Belanja & Keinginan");
+    expect(prompt).toContain("V-たいです");
+  });
+
+  it("mode suara tidak menyuruh menulis furigana", () => {
+    const prompt = voiceSystemPrompt("halo", user);
+    expect(prompt).toContain("Utamakan bentuk sopan です/ます.");
+    expect(prompt).not.toContain("format 漢字(かんじ)");
+  });
+
+  it("kecepatan bicara level ikut dikembalikan", async () => {
+    const uc = new AskQuestion({ ask: { answer: async () => "Halo" }, userProfile: async () => user });
+    await expect(uc.execute("halo", [], "text", "u1")).resolves.toMatchObject({ speechRate: 0.75 });
+  });
+});
+
+describe("tujuan belajar & bab aktif", () => {
+  it("prompt sesi percakapan memuat tujuan kerja dan bab yang sedang dipelajari", () => {
+    const prompt = buildSystemPrompt({
+      displayName: "Budi",
+      role: "student",
+      rules: { levelId: 3, levelCode: "N4", systemPrompt: "Mode N4.", maxSentenceWords: 15, furiganaRule: "full", speechRate: 0.8 },
+      mascot: { id: 1, name: "Miu-chan", personality: "ramah" },
+      scenario: null,
+      memories: { interests: [], weakTopics: [], facts: [] },
+      allowedKanji: new Set(),
+      learningGoal: "Kerja atau magang di Jepang",
+      currentChapter: { title: "Dunia Kerja SSW", grammar: ["〜ように言われました"] },
+    });
+    expect(prompt).toContain("Kerja atau magang di Jepang");
+    expect(prompt).toContain("Dunia Kerja SSW");
+    expect(prompt).toContain("〜ように言われました");
+  });
+
+  it("prompt Ngobrol memuat tujuan belajar user", () => {
+    expect(textSystemPrompt({ name: "Budi", level: "N4", goal: "Kerja atau magang di Jepang" })).toContain("TUJUAN BELAJAR USER: Kerja atau magang di Jepang");
+  });
+});

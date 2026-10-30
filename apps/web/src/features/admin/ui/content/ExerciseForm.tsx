@@ -6,6 +6,7 @@ import type { QuizInput, QuizItem } from "@/features/admin/data/contentApi";
 import { EXERCISES, EXERCISE_ORDER, SKILLS, SKILL_ORDER, type ExerciseType } from "@/shared/lib/exercises";
 import { hasKana, toRomaji } from "@/shared/lib/kana";
 import { Field } from "./FormModal";
+import { ImageField } from "./ImageField";
 import styles from "./content.module.css";
 
 /** Isian form; diterjemahkan ke bentuk API (options/correctAnswer) oleh toInput. */
@@ -17,6 +18,7 @@ interface Draft {
   hint: string;
   explanation: string;
   audio: string;
+  image: string | null;
   choices: string[];
   correctChoice: string;
   /** Susun: kepingan jawaban; menulis/berbicara: jawaban. */
@@ -49,6 +51,7 @@ function fromItem(item?: Omit<QuizItem, "id">): Draft {
     hint: "",
     explanation: "",
     audio: "",
+    image: null,
     choices: ["", "", "", ""],
     correctChoice: "",
     answer: "",
@@ -57,7 +60,7 @@ function fromItem(item?: Omit<QuizItem, "id">): Draft {
   if (!item) return empty;
   const options = item.options ?? [];
   const audio = item.audioUrl?.startsWith(TTS_PREFIX) ? decodeURIComponent(item.audioUrl.slice(TTS_PREFIX.length)) : item.audioUrl ?? "";
-  const base = { ...empty, type: item.type, question: item.question, questionTouched: true, hint: item.hint ?? "", explanation: item.explanation ?? "", audio };
+  const base = { ...empty, type: item.type, question: item.question, questionTouched: true, hint: item.hint ?? "", explanation: item.explanation ?? "", audio, image: item.imageUrl ?? null };
   if (item.type === "pilihan_ganda" || item.type === "mendengar") return { ...base, choices: options, correctChoice: item.correctAnswer };
   if (item.type === "susun_huruf" || item.type === "susun_kalimat") {
     // Kepingan jawaban disimpan lebih dulu, diikuti pengecoh.
@@ -71,7 +74,7 @@ function fromItem(item?: Omit<QuizItem, "id">): Draft {
 
 function toInput(d: Draft): QuizInput {
   const audioUrl = !d.audio.trim() ? null : /^(https?:\/\/|\/)/.test(d.audio.trim()) ? d.audio.trim() : TTS_PREFIX + encodeURIComponent(d.audio.trim());
-  const common = { type: d.type, question: d.question.trim(), hint: d.hint.trim() || null, explanation: d.explanation.trim() || null, audioUrl };
+  const common = { type: d.type, question: d.question.trim(), hint: d.hint.trim() || null, explanation: d.explanation.trim() || null, audioUrl, imageUrl: d.image };
   switch (d.type) {
     case "pilihan_ganda":
     case "mendengar":
@@ -257,6 +260,20 @@ export function ExerciseForm({
               </span>
             )}
           </div>
+
+          <ImageField
+            id="ex-image"
+            label="Gambar soal (opsional)"
+            value={d.image}
+            onChange={(image) => set({ image })}
+            hint={
+              d.type === "menulis"
+                ? "Mis. gambar kucing → siswa menulis ねこ. Gambar tampil di atas soal."
+                : d.type === "berbicara"
+                  ? "Mis. gambar situasi → siswa mengucapkan kalimat yang sesuai."
+                  : "Tampil di atas pertanyaan, mis. gambar benda, papan tanda, atau potongan bacaan."
+            }
+          />
 
           {isChoice && (
             <Field

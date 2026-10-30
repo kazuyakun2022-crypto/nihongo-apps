@@ -350,8 +350,8 @@ async function main() {
   for (const { jlpt, levelId, perChapter } of JLPT_LEVELS) {
     const { chapters, vocab, grammar } = buildJlptChapters(jlpt, perChapter);
     const created = await saveChapters(levelId, chapters);
-    // N1 tidak punya ujian naik level (sudah level tertinggi)
-    const exam = levelId < 6 ? await saveExamBank(levelId, buildExamBank(jlpt, vocab, grammar)) : 0;
+    // Di N1 (level tertinggi) bank ini dipakai untuk Ujian Kelulusan Akhir
+    const exam = await saveExamBank(levelId, buildExamBank(jlpt, vocab, grammar));
     console.log(`N${jlpt}: ${chapters.length} bab (${created} baru), ${vocab.length} kosakata, ${grammar.length} tata bahasa, ${exam} soal ujian baru`);
   }
 }

@@ -76,7 +76,8 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
       setRemaining(r => {
         if (r <= 1) {
           clearInterval(timerRef.current!);
-          void handleSubmit(true);
+          // Pakai handleSubmit terbaru agar jawaban yang sudah diisi ikut terkirim
+          void submitRef.current(true);
           return 0;
         }
         return r - 1;
@@ -123,6 +124,9 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
       setPhase("error");
     }
   }, [phase, answers, attemptId, kind, levelId]);
+
+  const submitRef = useRef(handleSubmit);
+  submitRef.current = handleSubmit;
 
   const pickAnswer = (opt: string) => {
     if (chosen) return;
@@ -198,7 +202,15 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
             <li><strong>{config.questionCount}</strong> soal (pilihan ganda, susun, menulis, dan berbicara)</li>
             <li><strong>{config.timeLimitMin} menit</strong> waktu pengerjaan</li>
             <li>Nilai lulus total: <strong>{config.passScore}%</strong></li>
-            {config.sectionMinScore > 0 && <li>Nilai minimum per bagian: <strong>{config.sectionMinScore}%</strong></li>}
+            {config.sectionRules ? (
+              Object.entries(config.sectionRules).map(([sec, r]) => (
+                <li key={sec}>
+                  {SECTION_LABELS[sec] ?? sec}: <strong>{r?.count} soal</strong>, nilai minimal {r?.minScore}%
+                </li>
+              ))
+            ) : (
+              config.sectionMinScore > 0 && <li>Nilai minimum per bagian: <strong>{config.sectionMinScore}%</strong></li>
+            )}
             <li>Jawaban tidak dapat diubah setelah lanjut</li>
             {config.cooldownHours > 0 && <li>Jeda {config.cooldownHours} jam setelah tidak lulus</li>}
           </ul>
@@ -329,25 +341,34 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
           <p className={styles.scoreDesc}>
             {passed
               ? copy.passedDesc
-              : "Nilai total belum mencapai batas lulus. Jangan menyerah!"}
+              : result.late
+                ? "Jawaban terkirim melewati batas waktu, jadi belum bisa dinyatakan lulus."
+                : totalScore >= (status?.config.passScore ?? 0)
+                  ? "Nilai total sudah cukup, tapi ada bagian yang di bawah nilai minimal. Latih bagian itu lagi!"
+                  : "Nilai total belum mencapai batas lulus. Jangan menyerah!"}
           </p>
 
           <div className={styles.sectionBars}>
             <h3 className={styles.sectionTitle}>Nilai per Bagian</h3>
-            {Object.entries(sectionScores).map(([sec, score]) => (
-              <div key={sec} className={styles.sectionRow}>
-                <span className={styles.sectionName}>{SECTION_LABELS[sec] ?? sec}</span>
-                <div className={styles.sectionBar}>
-                  <div
-                    className={`${styles.sectionBarFill} ${score >= 60 ? styles.sectionBarPass : styles.sectionBarFail}`}
-                    style={{ width: `${score}%` }}
-                  />
+            {Object.entries(sectionScores).map(([sec, score]) => {
+              const min = result.sectionMinScores?.[sec] ?? status?.config.sectionMinScore ?? 0;
+              return (
+                <div key={sec} className={styles.sectionRow}>
+                  <span className={styles.sectionName}>
+                    {SECTION_LABELS[sec] ?? sec} <small>(min. {min}%)</small>
+                  </span>
+                  <div className={styles.sectionBar}>
+                    <div
+                      className={`${styles.sectionBarFill} ${score >= min ? styles.sectionBarPass : styles.sectionBarFail}`}
+                      style={{ width: `${score}%` }}
+                    />
+                  </div>
+                  <span className={`${styles.sectionScore} ${score >= min ? styles.sectionScorePass : styles.sectionScoreFail}`}>
+                    {score}%
+                  </span>
                 </div>
-                <span className={`${styles.sectionScore} ${score >= 60 ? styles.sectionScorePass : styles.sectionScoreFail}`}>
-                  {score}%
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {!passed && cooldownLabel && (

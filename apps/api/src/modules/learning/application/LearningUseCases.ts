@@ -75,7 +75,8 @@ export class SubmitQuiz {
     if (level) await assertLevelOpen(this.deps.repo, user, level);
     const { score, results } = await this.deps.repo.gradeQuizAnswers(chapterId, answers);
     const now = this.deps.clock.now();
-    const passed = score >= PASSING_QUIZ_SCORE;
+    const passingScore = chapter.passScore ?? PASSING_QUIZ_SCORE;
+    const passed = score >= passingScore;
     await this.deps.repo.saveQuizResult(user.id, chapterId, score, passed, now);
     let xp = 5;
     if (passed) {
@@ -83,7 +84,7 @@ export class SubmitQuiz {
       xp = 20;
     }
     await this.deps.repo.addXp(user.id, xp);
-    return { score, passed, xpEarned: xp, passingScore: PASSING_QUIZ_SCORE, results };
+    return { score, passed, xpEarned: xp, passingScore, results };
   }
 }
 

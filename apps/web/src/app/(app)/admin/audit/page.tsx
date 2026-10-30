@@ -23,7 +23,7 @@ function formatAuditDetail(action: string, details: Record<string, unknown> | nu
     return `+ ${details.durationDays} hari Premium ("${details.reason}")`;
   }
   if (action === "update_ai_prompt") {
-    return `Level ${details.levelId}: maks ${details.maxSentenceWords} kata, furigana ${details.furiganaRule}, speed ${details.speechRate}x`;
+    return `Level ${details.levelId}: ${details.maxSentenceWords ? `maks ${details.maxSentenceWords} kata` : "panjang kalimat bebas"}, furigana ${details.furiganaRule}, speed ${details.speechRate}x`;
   }
   if (action === "update_onboarding") {
     return `Pengaturan pendaftaran: ${details.activeStarts} titik mulai aktif (${details.testedStarts} wajib tes), ${details.goals} tujuan belajar`;

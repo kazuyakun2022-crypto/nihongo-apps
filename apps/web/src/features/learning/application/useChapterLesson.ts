@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { learningApi } from "../data/learningApi";
-import type { ChapterDetail, ChapterKanji, ChapterVocab, ChapterGrammar, ChapterQuizQuestion, QuizAnswer, QuizResult } from "../domain/types";
+import type { ChapterDetail, ChapterKanji, ChapterVocab, ChapterGrammar, ChapterQuizQuestion, LessonBlock, QuizAnswer, QuizResult } from "../domain/types";
 
 export type LessonPhase = "loading" | "error" | "study" | "quiz-intro" | "quiz" | "submitting" | "result";
 
-type StudyCard =
+export type StudyCard =
+  | { kind: "block"; data: LessonBlock }
   | { kind: "vocab"; data: ChapterVocab }
   | { kind: "kanji"; data: ChapterKanji }
   | { kind: "grammar"; data: ChapterGrammar };
@@ -19,6 +20,8 @@ export function useChapterLesson(chapterId: string) {
   // Study state
   const [studyCards, setStudyCards] = useState<StudyCard[]>([]);
   const [studyIndex, setStudyIndex] = useState(0);
+  // Arah perpindahan terakhir (1 maju, -1 mundur) untuk animasi kartu
+  const [direction, setDirection] = useState<1 | -1>(1);
 
   // Quiz state
   const [quizQuestions, setQuizQuestions] = useState<ChapterQuizQuestion[]>([]);
@@ -33,6 +36,7 @@ export function useChapterLesson(chapterId: string) {
       .then((c) => {
         setChapter(c);
         const cards: StudyCard[] = [
+          ...(c.lessonBlocks ?? []).map((b) => ({ kind: "block" as const, data: b })),
           ...c.vocabularies.map((v) => ({ kind: "vocab" as const, data: v })),
           ...c.kanji.map((k) => ({ kind: "kanji" as const, data: k })),
           ...c.grammarPoints.map((g) => ({ kind: "grammar" as const, data: g })),
@@ -53,6 +57,7 @@ export function useChapterLesson(chapterId: string) {
   }, [chapterId]);
 
   function nextStudy() {
+    setDirection(1);
     if (studyIndex < studyCards.length - 1) {
       setStudyIndex((i) => i + 1);
     } else {
@@ -61,7 +66,16 @@ export function useChapterLesson(chapterId: string) {
   }
 
   function prevStudy() {
+    setDirection(-1);
     setStudyIndex((i) => Math.max(0, i - 1));
+  }
+
+  /** Lompat langsung ke kartu materi tertentu (daftar langkah di desktop). */
+  function goToStudy(index: number) {
+    if (index < 0 || index >= studyCards.length) return;
+    setDirection(index < studyIndex ? -1 : 1);
+    setStudyIndex(index);
+    setPhase("study");
   }
 
   function restartStudy() {
@@ -104,12 +118,23 @@ export function useChapterLesson(chapterId: string) {
   }
 
   function nextQuiz() {
+    setDirection(1);
     setQuizIndex((i) => Math.min(i + 1, quizQuestions.length - 1));
   }
 
   function prevQuiz() {
+    setDirection(-1);
     setQuizIndex((i) => Math.max(i - 1, 0));
   }
+
+  /** Lompat ke soal tertentu selama kuis berjalan. */
+  function goToQuiz(index: number) {
+    if (index < 0 || index >= quizQuestions.length) return;
+    setDirection(index < quizIndex ? -1 : 1);
+    setQuizIndex(index);
+  }
+
+  const isDone = (questionId: string) => answers.has(questionId) || skipped.has(questionId);
 
   async function submitQuiz() {
     const payload: QuizAnswer[] = quizQuestions.map((q) => ({
@@ -161,8 +186,12 @@ export function useChapterLesson(chapterId: string) {
     allAnswered,
     isLastQuiz,
     result,
+    direction,
+    isDone,
     nextStudy,
     prevStudy,
+    goToStudy,
+    goToQuiz,
     restartStudy,
     backToStudy,
     startQuiz,

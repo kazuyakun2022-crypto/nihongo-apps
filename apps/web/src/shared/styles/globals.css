@@ -280,3 +280,15 @@ ruby rt {
     transform: translateX(-6%);
   }
 }
+
+/* Halaman dengan lembar cetak (mis. Tulis di Buku): saat dicetak hanya lembar itu yang tampil */
+@media print {
+  body:has([data-print-sheet]) * {
+    visibility: hidden;
+  }
+
+  [data-print-sheet],
+  [data-print-sheet] * {
+    visibility: visible;
+  }
+}

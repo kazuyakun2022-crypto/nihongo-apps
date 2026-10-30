@@ -1,5 +1,9 @@
 import { api } from "@/core/http/apiClient";
-import type { ConversationRepository } from "../domain/types";
+import type { ConversationRepository, ScenarioItem } from "../domain/types";
+
+export const scenarioApi = {
+  list: () => api.get<{ scenarios: ScenarioItem[] }>("/conversation/scenarios").then((r) => r.scenarios),
+};
 
 export const conversationApi: ConversationRepository = {
   start: (scenarioId) => api.post("/conversation/sessions", { scenarioId }),

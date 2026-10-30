@@ -15,12 +15,22 @@ interface Deps {
 async function replyWithinLevel(deps: Deps, userId: string, scenarioId: string | null, history: ChatMessage[]): Promise<AiReply> {
   const ctx = await deps.repo.loadContext(userId, scenarioId);
   const system = buildSystemPrompt(ctx);
-  let answer = await deps.ai.reply(system, history);
-  const disallowed = findDisallowedKanji(answer.reply, ctx.allowedKanji);
-  if (disallowed.length > 0) {
-    answer = await deps.ai.reply(system, history, rewriteInstruction(disallowed));
+  const answer = await deps.ai.reply(system, history);
+  const hardOnly = ctx.rules.furiganaRule === "hard_only";
+  const disallowed = findDisallowedKanji(answer.reply, ctx.allowedKanji, hardOnly);
+  if (disallowed.length === 0) return answer;
+  const rewritten = await deps.ai.reply(system, history, rewriteInstruction(disallowed, answer.reply, hardOnly));
+  // Koreksi dari jawaban pertama tetap dipakai bila tulisan ulang tidak menyertakannya
+  return { ...rewritten, correction: rewritten.correction ?? answer.correction };
+}
+
+/** Daftar skenario latihan ngobrol untuk siswa. */
+export class ListScenarios {
+  constructor(private readonly deps: Pick<Deps, "repo">) {}
+
+  execute(user: AuthUser) {
+    return this.deps.repo.listScenarios(user.id);
   }
-  return answer;
 }
 
 /** Dokumen 8.4 langkah 1–3. */
@@ -45,7 +55,10 @@ export class StartConversation {
       mode: input.scenarioId ? "scenario" : "free",
     });
 
-    const opening = await replyWithinLevel(this.deps, user.id, input.scenarioId, []);
+    // Skenario dengan kalimat pembuka dari admin tidak perlu memanggil AI untuk pesan pertama
+    const opening: AiReply = ctx.scenario?.initialMessage
+      ? { reply: ctx.scenario.initialMessage.replaceAll("{{user_name}}", ctx.displayName), correction: null, emotion: "playful" }
+      : await replyWithinLevel(this.deps, user.id, input.scenarioId, []);
     await this.deps.repo.addMessage(session.id, "mascot", opening.reply);
 
     return {

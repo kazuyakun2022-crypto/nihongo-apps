@@ -30,8 +30,8 @@ export function askRoutes(
       req.body,
     );
 
-    const { answer, emotion, correction } = await uc.ask.execute(question, history, mode, req.user?.id, transcriptAlt);
-    res.json({ answer, emotion, correction });
+    const { answer, emotion, correction, speechRate } = await uc.ask.execute(question, history, mode, req.user?.id, transcriptAlt);
+    res.json({ answer, emotion, correction, speechRate });
   }));
 
   // POST /api/ask/transcribe — body: audio mentah (webm/ogg/mp4), bahasa dideteksi otomatis (?lang=ja untuk memaksa Jepang)
@@ -55,15 +55,15 @@ export function askRoutes(
 
   // POST /api/ask/speak — suara karakter Miu-chan dengan nada sesuai emosi; kalau Gemini gagal/kuota habis, pakai TTS cadangan.
   r.post("/speak", asyncHandler(async (req, res) => {
-    const { text, emotion } = parseBody(
-      z.object({ text: z.string().trim().min(1).max(2000), emotion: z.enum(EMOTIONS).optional() }),
+    const { text, emotion, rate } = parseBody(
+      z.object({ text: z.string().trim().min(1).max(2000), emotion: z.enum(EMOTIONS).optional(), rate: z.number().min(0.5).max(1.5).default(1) }),
       req.body,
     );
     res.setHeader("Cache-Control", "no-store");
 
     if (speaker) {
       try {
-        const wav = await speaker.speak(text, emotion);
+        const wav = await speaker.speak(text, emotion, rate);
         res.setHeader("Content-Type", "audio/wav");
         res.send(wav);
         return;
@@ -71,7 +71,7 @@ export function askRoutes(
         console.warn("[speak] Gemini TTS gagal, pakai cadangan:", err instanceof Error ? err.message : err);
       }
     }
-    const mp3 = await synthesizeChildVoice(text, "nanami", emotion ?? "biasa");
+    const mp3 = await synthesizeChildVoice(text, "nanami", emotion ?? "biasa", rate);
     res.setHeader("Content-Type", "audio/mpeg");
     res.send(mp3);
   }));
