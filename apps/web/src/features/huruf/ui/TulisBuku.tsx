@@ -1,25 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ApiError } from "@/core/http/apiClient";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { HIRAGANA_BASIC, KANJI_N5, KATAKANA_BASIC } from "../data/characters";
 import { HIRAGANA_STROKE_DATA } from "../data/hiraganaStrokes";
+import { periksaTulisan, type CheckResult } from "../data/tulisApi";
+import { SheetScanner, type ScanResult } from "./SheetScanner";
+import { TulisHasil, type CheckedPhoto } from "./TulisHasil";
 import styles from "./tulisBuku.module.css";
 
 /**
  * Latihan menulis di buku fisik: pilih lembar → cetak/salin ke buku → foto → periksa.
- * Pengenalan tulisan dari foto belum tersedia; hasil pemeriksaan saat ini adalah pratinjau tampilan.
+ * Foto diperiksa server (Gemini): kotak yang salah/kurang rapi ditandai di foto, lalu diberi nilai per huruf.
  */
 
 interface Sheet {
   id: string;
   script: "hiragana" | "katakana" | "kanji";
   title: string;
-  chars: { char: string; reading: string }[];
+  chars: { char: string; reading: string; strokes?: number }[];
 }
 
-/** Kotak latihan per huruf: 1 contoh + 5 kotak kosong (2 kotak pertama bergaris bantu tipis). */
-const PRACTICE_BOXES = 5;
+/** Lembar cetak A4 lebih lebar: 1 contoh + 9 kotak (3 untuk menebalkan), lalu satu baris "sekali lagi". */
+const PRINT_BOXES = 9;
+const PRINT_TRACE = 3;
+
+/** Peribahasa penyemangat di kaki lembar cetak; dipilih dari id lembar supaya tiap lembar berbeda. */
+const PROVERBS = [
+  { ja: "継続は力なり", id: "Berlatih sedikit setiap hari lama-lama jadi kekuatan." },
+  { ja: "千里の道も一歩から", id: "Perjalanan seribu mil dimulai dari satu langkah." },
+  { ja: "七転び八起き", id: "Jatuh tujuh kali, bangkit delapan kali." },
+  { ja: "塵も積もれば山となる", id: "Sedikit demi sedikit, lama-lama menjadi bukit." },
+  { ja: "習うより慣れろ", id: "Makin sering ditulis, makin lancar tanganmu." },
+];
+
+/** 5 kanji per lembar: tata letaknya sama dengan lembar kana sehingga muat satu halaman bersama penanda sudut. */
+const KANJI_PER_SHEET = 5;
+
+const SCRIPT_JA: Record<Sheet["script"], string> = { hiragana: "ひらがな", katakana: "カタカナ", kanji: "かんじ" };
 
 const ROW_NAMES: Record<string, string> = { "∅": "a", K: "ka", S: "sa", T: "ta", N: "na", H: "ha", M: "ma", Y: "ya", R: "ra", W: "wa", "N'": "n" };
 
@@ -27,7 +47,7 @@ function buildSheets(): Sheet[] {
   const hiraganaRows = new Map<string, Sheet["chars"]>();
   for (const h of HIRAGANA_BASIC) {
     const key = h.row === "N'" ? "W" : h.row; // ん digabung ke baris wa
-    hiraganaRows.set(key, [...(hiraganaRows.get(key) ?? []), { char: h.char, reading: h.romaji }]);
+    hiraganaRows.set(key, [...(hiraganaRows.get(key) ?? []), { char: h.char, reading: h.romaji, strokes: HIRAGANA_STROKE_DATA[h.char]?.strokeCount }]);
   }
   const rowOf = new Map(HIRAGANA_BASIC.map((h) => [h.char, h.row === "N'" ? "W" : h.row]));
   const katakanaRows = new Map<string, Sheet["chars"]>();
@@ -38,13 +58,14 @@ function buildSheets(): Sheet[] {
   const sheets: Sheet[] = [];
   for (const [row, chars] of hiraganaRows) sheets.push({ id: `h-${row}`, script: "hiragana", title: `Baris ${ROW_NAMES[row] ?? row}`, chars });
   for (const [row, chars] of katakanaRows) sheets.push({ id: `k-${row}`, script: "katakana", title: `Baris ${ROW_NAMES[row] ?? row}`, chars });
-  for (let i = 0; i < KANJI_N5.length; i += 6) {
-    const group = KANJI_N5.slice(i, i + 6);
+  for (let i = 0; i < KANJI_N5.length; i += KANJI_PER_SHEET) {
+    const group = KANJI_N5.slice(i, i + KANJI_PER_SHEET);
     sheets.push({
-      id: `j-${i / 6 + 1}`,
+      id: `j-${i / KANJI_PER_SHEET + 1}`,
       script: "kanji",
-      title: `Kanji N5 · Set ${i / 6 + 1}`,
-      chars: group.map((k) => ({ char: k.character, reading: k.meaningId ?? k.kunyomi })),
+      title: `Set ${i / KANJI_PER_SHEET + 1}`,
+      // Arti pertama saja ("matahari, hari" → "matahari") supaya muat di kotak contoh
+      chars: group.map((k) => ({ char: k.character, reading: (k.meaningId ?? k.kunyomi).split(",")[0].trim(), strokes: k.strokeCount })),
     });
   }
   return sheets;
@@ -54,75 +75,200 @@ const SCRIPT_LABEL: Record<Sheet["script"], string> = { hiragana: "Hiragana", ka
 
 type Step = "pilih" | "pindai" | "periksa" | "hasil";
 
-interface CellResult {
-  char: string;
-  reading: string;
-  /** Potongan foto baris tulisan siswa. */
-  crop: string | null;
-  status: "benar" | "perbaiki";
-  detected: string;
-  note: string;
+/** Nilai terakhir tiap lembar, disimpan di perangkat ini (penyemangat, bukan data penting). */
+const PROGRESS_KEY = "tulis-buku-progress";
+type Progress = Record<string, { score: number; grade: string; at: number }>;
+
+function readProgress(): Progress {
+  try {
+    return JSON.parse(localStorage.getItem(PROGRESS_KEY) ?? "{}") as Progress;
+  } catch {
+    return {};
+  }
 }
 
-/** Huruf yang sering tertukar, untuk contoh koreksi pada pratinjau. */
-const LOOKALIKE: Record<string, string> = {
-  あ: "お", お: "あ", い: "り", り: "い", さ: "ち", ち: "さ", ぬ: "め", め: "ぬ", ね: "れ", れ: "わ", わ: "ね", は: "ほ", ほ: "は", る: "ろ", ろ: "る",
-  シ: "ツ", ツ: "シ", ソ: "ン", ン: "ソ", ク: "ケ", ケ: "ク", ア: "マ", マ: "ア", ウ: "ワ", ワ: "ウ", 人: "入", 入: "人", 土: "士", 日: "目", 目: "日",
-};
-
-function correctionNote(char: string, script: Sheet["script"]): string {
-  const tips = HIRAGANA_STROKE_DATA[char]?.strokeTips;
-  if (tips?.length) return tips[tips.length - 1].replace(/^\d+\.\s*/, "Perhatikan goresan terakhir: ");
-  if (script === "katakana") return "Katakana tersusun dari garis lurus dan tegas; perhatikan arah dan sudut goresan.";
-  return "Periksa jumlah dan urutan goresan; jaga proporsi tiap bagian di dalam kotak.";
+function saveProgress(id: string, score: number, grade: string): Progress {
+  const next = { ...readProgress(), [id]: { score, grade, at: Date.now() } };
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(next));
+  } catch {
+    // Penyimpanan diblokir (mode privat): tidak masalah
+  }
+  return next;
 }
 
-/** Potong foto lembar menjadi strip per baris huruf (lembar dicetak dengan tata letak tetap). */
-async function cropRows(photo: string, rows: number): Promise<string[]> {
-  const img = new Image();
-  img.src = photo;
-  await img.decode();
-  const canvas = document.createElement("canvas");
-  const rowH = img.height / rows;
-  canvas.width = 480;
-  canvas.height = Math.round((480 * rowH) / img.width);
-  const ctx = canvas.getContext("2d")!;
-  return Array.from({ length: rows }, (_, r) => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, r * rowH, img.width, rowH, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/jpeg", 0.8);
-  });
-}
-
-function Worksheet({ sheet, printable = false }: { sheet: Sheet; printable?: boolean }) {
+/** Pratinjau lembar di layar, susunannya sama dengan lembar cetak. */
+function MiniSheet({ sheet }: { sheet: Sheet }) {
   return (
-    <div className={printable ? styles.printSheet : styles.sheet} lang="ja" data-print-sheet={printable || undefined}>
-      {printable && (
-        <div className={styles.printHeader}>
-          <strong>
-            {SCRIPT_LABEL[sheet.script]} · {sheet.title}
-          </strong>
-          <span>Nama: ____________________ Tanggal: __________</span>
-        </div>
-      )}
-      <div className={styles.sheetGrid}>
-        {sheet.chars.map((c) => (
-          <div key={c.char} className={styles.sheetRow}>
-            <div className={`${styles.box} ${styles.boxModel}`}>
-              <span>{c.char}</span>
+    <div className={styles.mini} lang="ja" aria-label={`Pratinjau lembar ${sheet.title}`}>
+      {sheet.chars.map((c) => (
+        <div key={c.char} className={styles.miniChar}>
+          <div className={styles.miniRow}>
+            <span className={styles.miniModel}>
+              {c.char}
               <small>{c.reading}</small>
-            </div>
-            {Array.from({ length: PRACTICE_BOXES }, (_, i) => (
-              <div key={i} className={styles.box}>
-                {i < 2 && <span className={styles.trace}>{c.char}</span>}
-              </div>
+            </span>
+            {Array.from({ length: PRINT_BOXES }, (_, i) => (
+              <span key={i} className={styles.miniBox} data-trace={i < PRINT_TRACE || undefined}>
+                {i < PRINT_TRACE ? c.char : ""}
+              </span>
             ))}
           </div>
-        ))}
-      </div>
-      {printable && <p className={styles.printFoot}>Nihongo bersama Miu-chan · Tulis di dalam kotak, lalu foto seluruh lembar dari atas dengan cahaya terang.</p>}
+          <div className={styles.miniRow}>
+            <span className={styles.miniAgain}>
+              もう
+              <br />
+              一回
+            </span>
+            {Array.from({ length: PRINT_BOXES }, (_, i) => (
+              <span key={i} className={styles.miniBox} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
+}
+
+function Stepper({ index }: { index: number }) {
+  const labels = ["Pilih lembar", "Foto tulisan", "Koreksi"];
+  return (
+    <ol className={styles.stepper} aria-label="Langkah">
+      {labels.map((label, i) => (
+        <li key={label} data-state={i < index ? "done" : i === index ? "active" : "todo"} aria-current={i === index ? "step" : undefined}>
+          <span className={styles.stepBar} />
+          <span className={styles.stepLabel}>
+            <b>{i < index ? "✓" : i + 1}</b> {label}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** Tahap pemeriksaan (perkiraan waktu; pemeriksaan sungguhan berjalan di server). */
+const CHECK_STAGES = [
+  "Kotak-kotak ditemukan",
+  "Tahap 1: tiga penilai membaca semua kotak",
+  "Tahap 2: memeriksa ulang kotak yang dicurigai",
+  "Menyusun nilai dan catatan",
+];
+
+/** Lembar A4 untuk dicetak: dekoratif tapi tetap jelas di printer hitam-putih. */
+function PrintWorksheet({ sheet }: { sheet: Sheet }) {
+  const seed = [...sheet.id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
+  const proverb = PROVERBS[seed % PROVERBS.length];
+  const subtitle = sheet.script === "kanji" ? `N5 · ${sheet.title}` : `${sheet.chars[0].char}行`;
+  return (
+    <div className={styles.printSheet} data-print-sheet data-dense={sheet.chars.length > 5 || undefined}>
+      <header className={styles.pHead}>
+        <div className={styles.pHeadText}>
+          <p className={styles.pEyebrow}>
+            <span lang="ja">れんしゅうちょう</span> · Lembar Latihan Menulis
+          </p>
+          <h1 className={styles.pTitle}>
+            {SCRIPT_LABEL[sheet.script]} · {sheet.title}
+          </h1>
+          <p className={styles.pSubtitle} lang="ja">
+            {SCRIPT_JA[sheet.script]}　{subtitle}
+          </p>
+          <div className={styles.pFields}>
+            <span>
+              Nama <i />
+            </span>
+            <span>
+              Tanggal <i />
+            </span>
+          </div>
+        </div>
+        <div className={styles.pMascot}>
+          <p className={styles.pBubble}>
+            <span lang="ja">がんばってね！</span>
+            Kamu pasti bisa!
+          </p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/neko/chibi/neko-chibi.webp" alt="" />
+        </div>
+      </header>
+
+      <ol className={styles.pSteps}>
+        <li>
+          <b>1</b> Lihat contoh &amp; urutan goresan
+        </li>
+        <li>
+          <b>2</b> Tebalkan huruf abu-abu
+        </li>
+        <li>
+          <b>3</b> Tulis sendiri di kotak kosong
+        </li>
+        <li>
+          <b>☆</b> Warnai bintang kalau rapi
+        </li>
+      </ol>
+
+      {/* Penanda hitam di keempat sudut: server memakainya untuk meluruskan foto dan menghitung letak tiap kotak.
+          Posisinya harus sama dengan PRINT_LAYOUT di apps/api/src/modules/tulis/sheetLayout.ts. */}
+      <div className={styles.pGrid}>
+        <i className={styles.pMarker} data-pos="tl" aria-hidden="true" />
+        <i className={styles.pMarker} data-pos="tr" aria-hidden="true" />
+        <i className={styles.pMarker} data-pos="bl" aria-hidden="true" />
+        <i className={styles.pMarker} data-pos="br" aria-hidden="true" />
+      <div className={styles.pRows} lang="ja">
+        {sheet.chars.map((c) => (
+          <section key={c.char} className={styles.pChar}>
+            <div className={styles.pRow}>
+              <div className={`${styles.box} ${styles.boxModel}`}>
+                <span>{c.char}</span>
+                <small>{c.reading}</small>
+              </div>
+              {Array.from({ length: PRINT_BOXES }, (_, i) => (
+                <div key={i} className={styles.box}>
+                  {i < PRINT_TRACE && <span className={styles.trace}>{c.char}</span>}
+                </div>
+              ))}
+              <div className={styles.pRate}>
+                <span aria-hidden="true">☆☆☆</span>
+                {c.strokes ? <small>{c.strokes} goresan</small> : null}
+              </div>
+            </div>
+            <div className={styles.pRow}>
+              <div className={styles.pAgain}>
+                もう<br />一回
+              </div>
+              {Array.from({ length: PRINT_BOXES }, (_, i) => (
+                <div key={i} className={styles.box} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+      </div>
+
+      <footer className={styles.pFoot}>
+        <div className={styles.pProverb}>
+          <span lang="ja">{proverb.ja}</span>
+          <small>{proverb.id}</small>
+        </div>
+        <ul className={styles.pChecklist}>
+          <li>Semua kotak sudah terisi</li>
+          <li>Tulisan di dalam kotak</li>
+          <li>Sudah difoto di aplikasi</li>
+        </ul>
+        <div className={styles.pStamp}>
+          <span lang="ja">よくできました</span>
+          <small>Stempel / paraf</small>
+        </div>
+      </footer>
+      <p className={styles.pBrand}>Nihongo bersama Miu-chan · Foto lembar ini dari atas dengan cahaya terang supaya bisa diperiksa.</p>
+    </div>
+  );
+}
+
+/** Lembar cetak dipasang langsung di <body> supaya saat dicetak tidak terpotong oleh tata letak aplikasi yang bergulir. */
+function PrintSheet({ sheet }: { sheet: Sheet }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted ? createPortal(<PrintWorksheet sheet={sheet} />, document.body) : null;
 }
 
 export function TulisBuku() {
@@ -130,290 +276,269 @@ export function TulisBuku() {
   const [script, setScript] = useState<Sheet["script"]>("hiragana");
   const [sheet, setSheet] = useState<Sheet>(() => sheets[0]);
   const [step, setStep] = useState<Step>("pilih");
-  const [photo, setPhoto] = useState<string | null>(null);
-  const [camera, setCamera] = useState<"off" | "starting" | "on" | "unavailable">("off");
-  const [results, setResults] = useState<CellResult[] | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [scan, setScan] = useState<ScanResult | null>(null);
+  const [result, setResult] = useState<CheckResult | null>(null);
+  const [checked, setChecked] = useState<CheckedPhoto | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [stage, setStage] = useState(1);
+  const [progress, setProgress] = useState<Progress>({});
 
-  const stopCamera = useCallback(() => {
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    setCamera((c) => (c === "unavailable" ? c : "off"));
-  }, []);
+  useEffect(() => setProgress(readProgress()), []);
 
-  useEffect(() => stopCamera, [stopCamera]);
-
-  async function startCamera() {
-    setCamera("starting");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 } }, audio: false });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-      setCamera("on");
-    } catch {
-      setCamera("unavailable");
+  async function check(current: ScanResult | null = scan) {
+    if (!current) return;
+    // Pemindai bisa mengenali bahwa yang difoto lembar lain, dan pengguna memilih memeriksanya sebagai lembar itu
+    const target = sheets.find((s) => s.id === current.sheetId) ?? sheet;
+    if (target.id !== sheet.id) {
+      setSheet(target);
+      setScript(target.script);
     }
-  }
-
-  /** Ambil area di dalam bingkai panduan saja. */
-  function capture() {
-    const video = videoRef.current;
-    if (!video || !video.videoWidth) return;
-    const frameW = video.videoWidth * 0.82;
-    const frameH = Math.min(video.videoHeight * 0.9, frameW * 1.3);
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(frameW);
-    canvas.height = Math.round(frameH);
-    canvas.getContext("2d")!.drawImage(video, (video.videoWidth - frameW) / 2, (video.videoHeight - frameH) / 2, frameW, frameH, 0, 0, frameW, frameH);
-    setPhoto(canvas.toDataURL("image/jpeg", 0.85));
-    stopCamera();
-  }
-
-  function onFile(file: File | undefined) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPhoto(String(reader.result));
-      stopCamera();
-    };
-    reader.readAsDataURL(file);
-  }
-
-  async function check() {
-    if (!photo) return;
+    setScan(current);
     setStep("periksa");
-    const [crops] = await Promise.all([cropRows(photo, sheet.chars.length).catch(() => []), new Promise((r) => setTimeout(r, 2200))]);
-    // Pratinjau: sebagian huruf ditandai perlu diperbaiki agar tampilan koreksi terlihat
-    setResults(
-      sheet.chars.map((c, i) => {
-        const wrong = (i * 7 + sheet.chars.length) % 5 === 2;
-        return {
-          char: c.char,
-          reading: c.reading,
-          crop: crops[i] ?? null,
-          status: wrong ? "perbaiki" : "benar",
-          detected: wrong ? LOOKALIKE[c.char] ?? "?" : c.char,
-          note: wrong ? correctionNote(c.char, sheet.script) : "Bentuk dan proporsi sudah baik.",
-        };
-      }),
-    );
+    setError(null);
+    setResult(null);
+    setChecked(current.photo);
+    try {
+      const body = {
+        image: current.photo.src,
+        corners: current.corners,
+        script: target.script,
+        chars: target.chars.map(({ char, reading, strokes }) => ({ char, reading, strokes, tips: HIRAGANA_STROKE_DATA[char]?.strokeTips })),
+      };
+      let res: CheckResult;
+      try {
+        res = await periksaTulisan(body);
+      } catch (err) {
+        // Layanan AI gratis kadang sibuk sesaat: coba sekali lagi otomatis sebelum menyerah
+        if (!(err instanceof ApiError) || err.code !== "CHECK_FAILED") throw err;
+        res = await periksaTulisan(body);
+      }
+      setResult(res);
+      if (res.photoOk) setProgress(saveProgress(target.id, res.score, res.grade));
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : "Pemeriksaan gagal. Coba lagi sebentar lagi.");
+    }
     setStep("hasil");
   }
 
+  useEffect(() => {
+    if (step !== "periksa") return;
+    setStage(1);
+    const timers = [setTimeout(() => setStage(2), 14000), setTimeout(() => setStage(3), 28000)];
+    return () => timers.forEach(clearTimeout);
+  }, [step]);
+
   function restart(toStep: Step) {
-    setPhoto(null);
-    setResults(null);
+    setScan(null);
+    setResult(null);
+    setChecked(null);
+    setError(null);
     setStep(toStep);
   }
 
-  const steps: { key: Step; label: string }[] = [
-    { key: "pilih", label: "Pilih lembar" },
-    { key: "pindai", label: "Foto tulisan" },
-    { key: "hasil", label: "Koreksi" },
-  ];
-  const stepIndex = step === "periksa" ? 2 : steps.findIndex((s) => s.key === step);
-  const correct = results?.filter((r) => r.status === "benar").length ?? 0;
+  const stepIndex = step === "pilih" ? 0 : step === "pindai" ? 1 : 2;
+  const scannerSheets = useMemo(() => sheets.map((s) => ({ id: s.id, label: `${SCRIPT_LABEL[s.script]} · ${s.title}`, chars: s.chars })), [sheets]);
+  const last = progress[sheet.id];
+  const charsOf = (s: Sheet) => s.chars.map((c) => c.char).join("");
 
   return (
     <div className={styles.wrap}>
       <header className={styles.hero}>
-        <p className={styles.eyebrow} lang="ja">
-          てがき・ノート
-        </p>
-        <h1 className={styles.heading}>Tulis di Buku</h1>
-        <p className={styles.lead}>Latihan menulis dengan pensil di buku atau lembar cetak, lalu foto tulisanmu untuk diperiksa Miu-chan.</p>
-        <ol className={styles.steps}>
-          {steps.map((s, i) => (
-            <li key={s.key} className={styles.step} data-state={i < stepIndex ? "done" : i === stepIndex ? "active" : "todo"}>
-              <span className={styles.stepNum}>{i < stepIndex ? "✓" : i + 1}</span>
-              {s.label}
-            </li>
-          ))}
-        </ol>
+        <div className={styles.heroText}>
+          <p className={styles.eyebrow} lang="ja">
+            てがき・ノート
+          </p>
+          <h1 className={styles.heading}>Tulis di Buku</h1>
+          <p className={styles.lead}>Menulis dengan pensil di lembar cetak, lalu foto. Miu-chan menandai huruf yang perlu diperbaiki dan memberi nilai.</p>
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/neko/chibi/neko-chibi.webp" alt="" className={styles.heroMascot} />
+        <Stepper index={stepIndex} />
       </header>
 
       {step === "pilih" && (
-        <section className={styles.panel}>
-          <div className={styles.segment} role="tablist" aria-label="Jenis huruf">
-            {(["hiragana", "katakana", "kanji"] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                role="tab"
-                aria-selected={script === s}
-                className={styles.segmentBtn}
-                onClick={() => {
-                  setScript(s);
-                  setSheet(sheets.find((x) => x.script === s)!);
-                }}
-              >
-                {SCRIPT_LABEL[s]}
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.sheetList}>
-            {sheets
-              .filter((s) => s.script === script)
-              .map((s) => (
-                <button key={s.id} type="button" className={styles.sheetPick} aria-pressed={sheet.id === s.id} onClick={() => setSheet(s)}>
-                  <span className={styles.sheetPickChars} lang="ja">
-                    {s.chars.map((c) => c.char).join("")}
-                  </span>
-                  <span className={styles.sheetPickTitle}>{s.title}</span>
+        <div className={styles.pickLayout}>
+          <section className={styles.panel} aria-labelledby="pilih-lembar">
+            <h2 id="pilih-lembar" className={styles.panelTitle}>
+              Pilih lembar latihan
+            </h2>
+            <div className={styles.segment} role="tablist" aria-label="Jenis huruf">
+              {(["hiragana", "katakana", "kanji"] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  role="tab"
+                  aria-selected={script === s}
+                  className={styles.segmentBtn}
+                  onClick={() => {
+                    setScript(s);
+                    setSheet(sheets.find((x) => x.script === s)!);
+                  }}
+                >
+                  {SCRIPT_LABEL[s]}
                 </button>
               ))}
-          </div>
-
-          <div className={styles.previewHead}>
-            <h2 className={styles.panelTitle}>
-              Lembar: {SCRIPT_LABEL[sheet.script]} · {sheet.title}
-            </h2>
-            <p className={styles.muted}>Kotak pertama contoh, dua kotak berikutnya untuk menebalkan, sisanya tulis sendiri.</p>
-          </div>
-          <Worksheet sheet={sheet} />
-
-          <div className={styles.tipsRow}>
-            <div className={styles.tip}>
-              <strong>Tidak punya printer?</strong> Salin kotak-kotak ini ke buku bergaris kotak (genkō yōshi) atau buku kotak biasa.
             </div>
-            <div className={styles.tip}>
-              <strong>Pakai pensil 2B / pulpen hitam</strong> agar tulisan terbaca jelas saat difoto.
+            <div className={styles.sheetList}>
+              {sheets
+                .filter((s) => s.script === script)
+                .map((s) => {
+                  const p = progress[s.id];
+                  return (
+                    <button key={s.id} type="button" className={styles.sheetPick} aria-pressed={sheet.id === s.id} onClick={() => setSheet(s)}>
+                      <span className={styles.sheetPickChars} lang="ja">
+                        {charsOf(s)}
+                      </span>
+                      <span className={styles.sheetPickMeta}>
+                        <span className={styles.sheetPickTitle}>{s.title}</span>
+                        {p ? (
+                          <span className={styles.sheetBadge} data-grade={p.grade} title={`Nilai terakhir ${p.score}`}>
+                            {p.grade} · {p.score}
+                          </span>
+                        ) : (
+                          <span className={styles.sheetBadgeNew}>Belum</span>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
             </div>
-          </div>
+          </section>
 
-          <div className={styles.actions}>
-            <button type="button" className={styles.btnGhost} onClick={() => window.print()}>
-              🖨️ Cetak lembar
-            </button>
-            <button type="button" className={styles.btnPrimary} onClick={() => setStep("pindai")}>
-              Sudah menulis → Foto tulisan
-            </button>
-          </div>
-        </section>
+          <section className={`${styles.panel} ${styles.selected}`} aria-labelledby="lembar-terpilih">
+            <div className={styles.selectedHead}>
+              <div>
+                <p className={styles.kicker}>{SCRIPT_LABEL[sheet.script]}</p>
+                <h2 id="lembar-terpilih" className={styles.panelTitle}>
+                  {sheet.title} <span lang="ja">{charsOf(sheet)}</span>
+                </h2>
+              </div>
+              {last && (
+                <p className={styles.lastScore}>
+                  Nilai terakhir <b data-grade={last.grade}>{last.grade}</b> {last.score}
+                </p>
+              )}
+            </div>
+            <MiniSheet sheet={sheet} />
+            <ul className={styles.legend}>
+              <li data-kind="model">Contoh</li>
+              <li data-kind="trace">Tebalkan</li>
+              <li data-kind="own">Tulis sendiri</li>
+            </ul>
+
+            <div className={styles.actions}>
+              <button type="button" className={styles.btnPrimary} onClick={() => setStep("pindai")}>
+                📷 Sudah menulis, foto sekarang
+              </button>
+              <button type="button" className={styles.btnGhost} onClick={() => window.print()}>
+                🖨️ Cetak lembar
+              </button>
+            </div>
+
+            <ul className={styles.howto}>
+              <li>
+                <span aria-hidden="true">🖨️</span>
+                <span>
+                  <b>Cetak lembar ini.</b> Kotak hitam kecil di sudutnya membantu kamera menemukan setiap kotak.
+                </span>
+              </li>
+              <li>
+                <span aria-hidden="true">✏️</span>
+                <span>
+                  <b>Tulis dengan pensil 2B atau pulpen hitam</b>, di tengah kotak, mengikuti urutan goresan.
+                </span>
+              </li>
+              <li>
+                <span aria-hidden="true">📷</span>
+                <span>
+                  <b>Foto dari atas</b> dengan cahaya terang. Kamera memotret dan memeriksa otomatis.
+                </span>
+              </li>
+            </ul>
+            <details className={styles.noPrinter}>
+              <summary>Tidak punya printer?</summary>
+              <p>
+                Gambar kotak-kotak seperti pratinjau di atas di buku kotak (genkō yōshi), lengkap dengan huruf contoh di kolom pertama. Usahakan
+                ukuran kotaknya sama supaya Miu-chan bisa menemukannya.
+              </p>
+            </details>
+          </section>
+        </div>
       )}
 
       {step === "pindai" && (
         <section className={styles.panel}>
-          <h2 className={styles.panelTitle}>Foto lembar {sheet.title}</h2>
-          {!photo ? (
-            <>
-              <div className={styles.scanner} data-camera={camera}>
-                <video ref={videoRef} className={styles.video} playsInline muted />
-                {camera !== "on" && (
-                  <div className={styles.scannerIdle}>
-                    <span className={styles.scannerIcon} aria-hidden="true">
-                      📷
-                    </span>
-                    <p>
-                      {camera === "unavailable"
-                        ? "Kamera tidak bisa dibuka. Izinkan akses kamera, atau unggah foto dari galeri."
-                        : camera === "starting"
-                          ? "Membuka kamera…"
-                          : "Letakkan buku di permukaan datar dengan cahaya terang."}
-                    </p>
-                  </div>
-                )}
-                <div className={styles.frame} aria-hidden="true">
-                  <span className={styles.corner} data-pos="tl" />
-                  <span className={styles.corner} data-pos="tr" />
-                  <span className={styles.corner} data-pos="bl" />
-                  <span className={styles.corner} data-pos="br" />
-                  {camera === "on" && <span className={styles.scanLine} />}
-                </div>
-              </div>
-              <p className={styles.muted}>Pastikan seluruh kotak masuk ke dalam bingkai, foto dari atas tanpa bayangan tangan.</p>
-              <div className={styles.actions}>
-                <button type="button" className={styles.btnGhost} onClick={() => fileRef.current?.click()}>
-                  🖼️ Unggah foto
-                </button>
-                {camera === "on" ? (
-                  <button type="button" className={styles.btnPrimary} onClick={capture}>
-                    ◉ Ambil foto
-                  </button>
-                ) : (
-                  camera !== "unavailable" && (
-                    <button type="button" className={styles.btnPrimary} onClick={startCamera} disabled={camera === "starting"}>
-                      Buka kamera
-                    </button>
-                  )
-                )}
-              </div>
-              <input ref={fileRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => onFile(e.target.files?.[0])} />
-            </>
-          ) : (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photo} alt="Foto lembar tulisan" className={styles.photo} />
-              <div className={styles.actions}>
-                <button type="button" className={styles.btnGhost} onClick={() => setPhoto(null)}>
-                  Foto ulang
-                </button>
-                <button type="button" className={styles.btnPrimary} onClick={check}>
-                  Periksa tulisan
-                </button>
-              </div>
-            </>
-          )}
-          <button type="button" className={styles.backLink} onClick={() => restart("pilih")}>
-            ← Ganti lembar
-          </button>
+          <div className={styles.scanHead}>
+            <div>
+              <p className={styles.kicker}>Lembar yang diperiksa</p>
+              <h2 className={styles.panelTitle}>
+                {SCRIPT_LABEL[sheet.script]} · {sheet.title} <span lang="ja">{charsOf(sheet)}</span>
+              </h2>
+            </div>
+            <button type="button" className={styles.linkBtn} onClick={() => restart("pilih")}>
+              Ganti
+            </button>
+          </div>
+          <SheetScanner charCount={sheet.chars.length} sheetId={sheet.id} sheets={scannerSheets} onDone={(r) => void check(r)} />
         </section>
       )}
 
       {step === "periksa" && (
         <section className={`${styles.panel} ${styles.analyzing}`} aria-live="polite">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {photo && <img src={photo} alt="" className={styles.analyzingPhoto} />}
-          <span className={styles.analyzingLine} aria-hidden="true" />
-          <p className={styles.analyzingText}>Miu-chan sedang membaca tulisanmu…</p>
+          <div className={styles.analyzingPhotoWrap}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {scan && <img src={scan.photo.src} alt="" className={styles.analyzingPhoto} />}
+            <span className={styles.analyzingLine} aria-hidden="true" />
+          </div>
+          <div className={styles.analyzingSide}>
+            <p className={styles.analyzingText}>Miu-chan sedang memeriksa…</p>
+            <ol className={styles.stages}>
+              {CHECK_STAGES.map((label, i) => (
+                <li key={label} data-state={i < stage ? "done" : i === stage ? "active" : "todo"}>
+                  <span aria-hidden="true">{i < stage ? "✓" : ""}</span>
+                  {label}
+                </li>
+              ))}
+            </ol>
+            <p className={styles.muted}>Pemeriksaan teliti dua tahap, biasanya 20–40 detik.</p>
+          </div>
         </section>
       )}
 
-      {step === "hasil" && results && (
+      {step === "hasil" && (
         <section className={styles.panel}>
-          <div className={styles.preview}>
-            <strong>Mode pratinjau.</strong> Pemeriksaan tulisan dari foto masih dikembangkan; tanda benar/salah di bawah adalah contoh tampilan, bukan
-            penilaian sungguhan.
+          <div>
+            <p className={styles.kicker}>Hasil koreksi</p>
+            <h2 className={styles.panelTitle}>
+              {SCRIPT_LABEL[sheet.script]} · {sheet.title} <span lang="ja">{charsOf(sheet)}</span>
+            </h2>
           </div>
-          <div className={styles.scoreRow}>
-            <div className={styles.score}>
-              <span className={styles.scoreNum}>
-                {correct}/{results.length}
-              </span>
-              <span className={styles.muted}>huruf rapi</span>
+          {error || !result || !checked ? (
+            <div className={styles.notice} role="alert">
+              <strong>Belum bisa diperiksa</strong>
+              <p>{error ?? "Pemeriksaan gagal. Coba lagi sebentar lagi."}</p>
             </div>
-            <p className={styles.scoreMsg}>
-              {correct === results.length ? "Semua rapi! すばらしい！" : "Bagus! Perbaiki huruf yang ditandai, lalu tulis ulang di kotak kosong."}
-            </p>
-          </div>
-          <ul className={styles.results}>
-            {results.map((r) => (
-              <li key={r.char} className={styles.result} data-status={r.status}>
-                <div className={styles.resultModel} lang="ja">
-                  <span>{r.char}</span>
-                  <small>{r.reading}</small>
-                </div>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {r.crop ? <img src={r.crop} alt={`Tulisanmu untuk ${r.char}`} className={styles.resultCrop} /> : <div className={styles.resultCrop} />}
-                <div className={styles.resultBody}>
-                  <span className={styles.resultStatus}>{r.status === "benar" ? "✓ Rapi" : `✗ Terbaca "${r.detected}"`}</span>
-                  <span className={styles.resultNote}>{r.note}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
+          ) : !result.photoOk ? (
+            <div className={styles.notice} role="alert">
+              <strong>Fotonya belum bisa dibaca Miu-chan</strong>
+              <p>{result.photoProblem || "Tulisan di foto kurang jelas."}</p>
+              <p className={styles.muted}>Foto dari atas dengan cahaya terang, pastikan seluruh kotak masuk bingkai dan tidak ada bayangan tangan.</p>
+            </div>
+          ) : (
+            <TulisHasil result={result} photo={checked} />
+          )}
           <div className={styles.actions}>
+            {error ? (
+              <button type="button" className={styles.btnPrimary} onClick={() => void check()}>
+                Coba periksa lagi
+              </button>
+            ) : (
+              <button type="button" className={styles.btnPrimary} onClick={() => restart("pindai")}>
+                📷 {result?.photoOk === false ? "Foto ulang" : "Tulis ulang & foto lagi"}
+              </button>
+            )}
             <button type="button" className={styles.btnGhost} onClick={() => restart("pilih")}>
-              Lembar lain
-            </button>
-            <button type="button" className={styles.btnPrimary} onClick={() => restart("pindai")}>
-              Tulis ulang & foto lagi
+              Pilih lembar lain
             </button>
           </div>
           <Link href="/huruf" className={styles.backLink}>
@@ -423,7 +548,7 @@ export function TulisBuku() {
       )}
 
       {/* Hanya tampil saat dicetak */}
-      <Worksheet sheet={sheet} printable />
+      <PrintSheet sheet={sheet} />
     </div>
   );
 }

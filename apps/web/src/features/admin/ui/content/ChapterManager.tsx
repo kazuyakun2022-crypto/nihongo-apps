@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { contentApi, type ChapterRow, type ContentLevel, type ContentStatus } from "@/features/admin/data/contentApi";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { SkeletonRegion, SkeletonTableRows } from "@/shared/ui/Skeleton";
+import { Pagination, usePaged } from "../Pagination";
 import { FormModal } from "./FormModal";
 import { STATUS_LABEL, useFlash } from "./ContentShell";
 import styles from "./content.module.css";
@@ -81,6 +82,7 @@ export function ChapterManager() {
     return chapters.filter((c) => (!q || c.title.toLowerCase().includes(q)) && (!statusFilter || c.status === statusFilter));
   }, [chapters, query, statusFilter]);
   const isFiltered = filtered.length !== chapters.length;
+  const { pageItems, pagerProps } = usePaged(filtered, `${levelId}|${query}|${statusFilter}`, 20);
 
   async function move(index: number, delta: number) {
     if (!levelId) return;
@@ -174,7 +176,7 @@ export function ChapterManager() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((c) => {
+                {pageItems.map((c) => {
                   const index = chapters.indexOf(c);
                   return (
                     <tr key={c.id}>
@@ -227,6 +229,7 @@ export function ChapterManager() {
             </table>
           </div>
         )}
+        <Pagination {...pagerProps} unit="bab" />
       </section>
 
       {creating && levelId && (

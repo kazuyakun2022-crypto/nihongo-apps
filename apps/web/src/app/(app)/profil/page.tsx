@@ -316,7 +316,7 @@ export default function ProfilPage() {
                 <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Kontrol penuh seluruh pengguna: angkat & turunkan Admin/Guru</li>
                 <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pengaturan instruksi AI Level N5–N1 & kecepatan TTS Azure</li>
                 <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pemberian langganan status Premium manual tanpa batas</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pemantauan seluruh riwayat audit log keamanan platform</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pemantauan progres belajar & level seluruh pelajar</li>
               </ul>
               <Link href="/admin" className={styles.portalCtaBtn} style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)" }}>
                 Buka Dashboard Super Admin →

@@ -55,7 +55,7 @@ export default function AdminDashboardPage() {
         <div className={`${styles.roleNoticeBanner} ${styles.superAdminNotice}`}>
           <span>
             <strong>Otoritas Super Admin:</strong> Anda memiliki kontrol penuh tata kelola seluruh pengguna,
-            promosi/demosi akun Admin, konfigurasi instruksi AI dan kecepatan TTS, pemberian status premium, serta inspeksi log forensik audit.
+            promosi/demosi akun Admin, konfigurasi instruksi AI dan kecepatan TTS, pemberian status premium, serta pemantauan progres belajar seluruh pelajar.
           </span>
         </div>
       ) : (
@@ -201,7 +201,7 @@ export default function AdminDashboardPage() {
 
             {isSuperAdmin && (
               <Link
-                href="/admin/audit"
+                href="/admin/pantau"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -216,9 +216,9 @@ export default function AdminDashboardPage() {
                 }}
               >
                 <div>
-                  <strong style={{ display: "block", fontSize: "0.95rem" }}>Audit Trail Keamanan</strong>
+                  <strong style={{ display: "block", fontSize: "0.95rem" }}>Pantau Belajar</strong>
                   <span style={{ fontSize: "0.82rem", color: "var(--text-muted, #64748b)" }}>
-                    Inspeksi riwayat dan rekam jejak aksi sensitif administrator
+                    Level, progres bab, ujian, percakapan, dan pencapaian setiap pelajar
                   </span>
                 </div>
                 <span style={{ fontSize: "1.1rem", color: "var(--primary, #6366f1)" }}>→</span>

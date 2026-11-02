@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/shared/ui/Button";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
-import { useSpeech } from "@/shared/lib/useSpeech";
+import { preloadSpeech, useSpeech } from "@/shared/lib/useSpeech";
 import {
   HIRAGANA_BASIC,
   KATAKANA_BASIC,
@@ -755,6 +755,11 @@ export function HurufBrowser({ kanjiLevel }: { kanjiLevel: JlptLevel }) {
     return (kanjiForTab ?? []).map(toCard);
   }, [tab, kanjiForTab]);
 
+  // Suara huruf di tab ini dimuat lebih dulu supaya langsung berbunyi saat diketuk
+  useEffect(() => {
+    if (tab !== "kanji") preloadSpeech(quizCards.map((c) => c.char));
+  }, [tab, quizCards]);
+
   // Set default selected character when tab changes
   useEffect(() => {
     if (quizCards.length > 0) {
@@ -967,6 +972,7 @@ export function HurufBrowser({ kanjiLevel }: { kanjiLevel: JlptLevel }) {
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -83,15 +83,43 @@ const FALLBACK_PLAYBACK_RATE = 1.08;
  * Suara Miu-chan; nada, tempo, dan volume disesuaikan server dengan emosinya. `rate` = kecepatan level user:
  * server membacakan bahasa Indonesia normal, Jepang sedikit lebih pelan, dan bagian bertanda <pelan>/<cepat> sesuai tandanya.
  */
-async function fetchVoice(text: string, emotion: VoiceEmotion, rate = 1): Promise<{ url: string; isFallback: boolean }> {
+type Voice = { url: string; isFallback: boolean };
+
+/** `engine: "edge"` memaksa suara cadangan, supaya potongan kedua jawaban bersuara sama dengan potongan pertama. */
+async function fetchVoice(text: string, emotion: VoiceEmotion, rate = 1, engine: "auto" | "edge" = "auto"): Promise<Voice> {
   const res = await fetch("/api/ask/speak", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ text, emotion, rate }),
+    body: JSON.stringify({ text, emotion, rate, engine }),
   });
   if (!res.ok) throw new Error("Suara Miu-chan gagal dibuat.");
   const blob = await res.blob();
   return { url: URL.createObjectURL(blob), isFallback: blob.type === "audio/mpeg" };
+}
+
+const SENTENCE_END = /[。！？!?]+|\.(?=\s)/g;
+const PACE_TAG = /<\s*(\/)?\s*(?:pelan|lambat|slow|cepat|fast|eja|ejaan|spell)\s*>/gi;
+/** Kalimat pertama minimal sepanjang ini, supaya seruan pendek ("Eh!") tidak jadi potongan sendiri. */
+const MIN_FIRST_CHARS = 12;
+const MIN_REST_CHARS = 8;
+
+const plainLength = (text: string) => text.replace(PACE_TAG, "").trim().length;
+
+/**
+ * Pisahkan jawaban jadi kalimat pertama + sisanya, supaya kalimat pertama bisa langsung dibacakan sementara
+ * sisanya masih dibuat. Tidak pernah memotong di dalam tanda tempo (<pelan>…</pelan>). Jawaban pendek tidak dipecah.
+ */
+export function splitForSpeech(text: string): [string] | [string, string] {
+  for (const m of text.matchAll(SENTENCE_END)) {
+    const cut = (m.index ?? 0) + m[0].length;
+    const head = text.slice(0, cut);
+    let depth = 0;
+    for (const tag of head.matchAll(PACE_TAG)) depth += tag[1] ? -1 : 1;
+    if (depth !== 0 || plainLength(head) < MIN_FIRST_CHARS) continue;
+    const rest = text.slice(cut).trim();
+    return plainLength(rest) >= MIN_REST_CHARS ? [head.trim(), rest] : [text];
+  }
+  return [text];
 }
 
 function makeAudio(url: string, isFallback: boolean): HTMLAudioElement {
@@ -116,6 +144,10 @@ export function useVoiceChat() {
   const recorderRef = useRef<MediaRecorder | null>(null);
   const stopRequestedRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  /** Bagian ucapan yang sedang diputar, sebagai pecahan dari seluruh jawaban (untuk subtitle karaoke). */
+  const segmentRef = useRef({ start: 0, share: 1 });
+  /** Berganti setiap pemutaran baru/dihentikan, supaya potongan yang telat datang tidak ikut diputar. */
+  const playTokenRef = useRef<object | null>(null);
   /** Kecepatan bicara level user (Konfig AI), diketahui dari jawaban pertama. */
   const rateRef = useRef(1);
   const historyRef = useRef<HistoryItem[]>([]);
@@ -135,6 +167,7 @@ export function useVoiceChat() {
   }, []);
 
   const stopAudio = useCallback(() => {
+    playTokenRef.current = null;
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
@@ -150,33 +183,60 @@ export function useVoiceChat() {
   const getSpeechProgress = useCallback(() => {
     const audio = audioRef.current;
     if (!audio || !isFinite(audio.duration) || audio.duration <= 0) return null;
-    return audio.ended ? 1 : audio.currentTime / audio.duration;
+    const { start, share } = segmentRef.current;
+    return start + share * (audio.ended ? 1 : audio.currentTime / audio.duration);
   }, []);
 
-  const playVoice = useCallback(async (audioUrl: string, isFallback: boolean, text: string, runs?: SpeechRun[]) => {
-    const audio = makeAudio(audioUrl, isFallback);
-    audioRef.current = audio;
-    (meterRef.current ??= new AudioMeter()).attachVoice(audio);
-    const finish = () => {
-      if (audioRef.current !== audio) return;
-      setSpoken(null);
-      setState("idle");
-    };
-    audio.onended = () => {
-      URL.revokeObjectURL(audioUrl);
-      finish();
-    };
-    audio.onerror = finish;
+  /**
+   * Putar ucapan yang terdiri dari beberapa potongan berurutan. Potongan berikutnya boleh masih dimuat;
+   * ditunggu setelah potongan sebelumnya selesai. `weight` = panjang teks potongan, untuk posisi subtitle.
+   */
+  const playVoice = useCallback(async (parts: { voice: Promise<Voice>; weight: number }[], text: string, runs?: SpeechRun[]) => {
+    const token = {};
+    playTokenRef.current = token;
+    const total = parts.reduce((n, p) => n + p.weight, 0) || 1;
     setSpoken({ id: crypto.randomUUID(), text, runs });
     setState("speaking");
-    await audio.play();
+
+    let start = 0;
+    for (const [i, part] of parts.entries()) {
+      let voice: Voice;
+      try {
+        voice = await part.voice;
+      } catch (err) {
+        // Potongan pertama gagal = tidak ada suara sama sekali; potongan berikutnya gagal = cukup berhenti
+        if (i === 0) throw err;
+        break;
+      }
+      if (playTokenRef.current !== token) {
+        URL.revokeObjectURL(voice.url);
+        return;
+      }
+      const audio = makeAudio(voice.url, voice.isFallback);
+      audioRef.current = audio;
+      (meterRef.current ??= new AudioMeter()).attachVoice(audio);
+      segmentRef.current = { start: start / total, share: part.weight / total };
+      await new Promise<void>((resolve, reject) => {
+        audio.onended = () => {
+          URL.revokeObjectURL(voice.url);
+          resolve();
+        };
+        audio.onerror = () => resolve();
+        audio.play().catch((err) => (i === 0 ? reject(err) : resolve()));
+      });
+      start += part.weight;
+    }
+    if (playTokenRef.current !== token) return;
+    playTokenRef.current = null;
+    setSpoken(null);
+    setState("idle");
   }, []);
 
   /**
    * Mulai fetch audio sapaan di background (sebelum tab aktif).
    * Hasilnya disimpan di ref; greet() tinggal memutarnya tanpa delay fetch.
    */
-  const prefetchedGreetRef = useRef<{ text: string; voice: Promise<{ url: string; isFallback: boolean }> } | null>(null);
+  const prefetchedGreetRef = useRef<{ text: string; voice: Promise<Voice> } | null>(null);
 
   const prefetchGreet = useCallback((text: string) => {
     const voice = fetchVoice(text, "senang", rateRef.current);
@@ -193,13 +253,12 @@ export function useVoiceChat() {
       // Pakai hasil prefetch kalau teksnya sama; jika tidak cocok fetch ulang
       const prefetched = prefetchedGreetRef.current;
       prefetchedGreetRef.current = null;
-      const { url, isFallback } =
-        prefetched?.text === text ? await prefetched.voice : await fetchVoice(text, "senang", rateRef.current);
+      const voice = prefetched?.text === text ? await prefetched.voice : await fetchVoice(text, "senang", rateRef.current);
       if (turnRef.current !== turn) {
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(voice.url);
         return;
       }
-      await playVoice(url, isFallback, text);
+      await playVoice([{ voice: Promise.resolve(voice), weight: 1 }], text);
     } catch {
       if (turnRef.current === turn) setState("idle");
     }
@@ -222,10 +281,18 @@ export function useVoiceChat() {
       ].slice(-10);
       setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "ai", text: answer, emotion: mood, correction }]);
 
-      const { url: audioUrl, isFallback } = await fetchVoice(spokenText, mood, rateRef.current);
+      // Kalimat pertama dibuat lebih dulu dan langsung diputar; sisanya dibuat sambil kalimat pertama berbunyi
+      const [firstText, restText] = splitForSpeech(spokenText);
+      const first = await fetchVoice(firstText, mood, rateRef.current);
+      const parts = [{ voice: Promise.resolve(first), weight: plainLength(firstText) }];
+      if (restText) {
+        const rest = fetchVoice(restText, mood, rateRef.current, first.isFallback ? "edge" : "auto");
+        rest.catch(() => {});
+        parts.push({ voice: rest, weight: plainLength(restText) });
+      }
       setEmotion(mood);
       setTranscript("");
-      await playVoice(audioUrl, isFallback, answer, speech ?? undefined);
+      await playVoice(parts, answer, speech ?? undefined);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal mendapat jawaban.");
       setTranscript("");

@@ -123,52 +123,53 @@ enum MemoryType {
 // ───────────── Akun dan langganan ─────────────
 
 model User {
-  id                  String        @id @default(uuid()) @db.Uuid
-  email               String?       @unique @db.VarChar(255)
-  passwordHash        String?       @map("password_hash") @db.VarChar(255)
-  isGuest             Boolean       @default(false) @map("is_guest")
-  displayName         String        @map("display_name") @db.VarChar(50)
-  role                Role          @default(student)
-  status              UserStatus    @default(active)
-  currentLevelId      Int?          @map("current_level_id") @db.SmallInt
-  pendingLevelId      Int?          @map("pending_level_id") @db.SmallInt
+  id                  String     @id @default(uuid()) @db.Uuid
+  email               String?    @unique @db.VarChar(255)
+  passwordHash        String?    @map("password_hash") @db.VarChar(255)
+  isGuest             Boolean    @default(false) @map("is_guest")
+  displayName         String     @map("display_name") @db.VarChar(50)
+  role                Role       @default(student)
+  status              UserStatus @default(active)
+  currentLevelId      Int?       @map("current_level_id") @db.SmallInt
+  pendingLevelId      Int?       @map("pending_level_id") @db.SmallInt
   // Kunci tujuan belajar dari pengaturan pendaftaran (lihat AppSetting "onboarding")
-  learningGoal        String?       @map("learning_goal") @db.VarChar(50)
-  gender              Gender?       @map("gender")
-  genderUpdatedAt     DateTime?     @map("gender_updated_at") @db.Timestamptz
-  avatarUrl           String?       @map("avatar_url") @db.Text
-  dailyTargetMin      Int?          @map("daily_target_min") @db.SmallInt
-  xpTotal             Int           @default(0) @map("xp_total")
-  streakCount         Int           @default(0) @map("streak_count")
-  lastActiveDate      DateTime?     @map("last_active_date") @db.Date
-  emailVerifiedAt     DateTime?     @map("email_verified_at") @db.Timestamptz
-  failedLoginCount    Int           @default(0) @map("failed_login_count") @db.SmallInt
-  lockedUntil         DateTime?     @map("locked_until") @db.Timestamptz
-  lastLoginAt         DateTime?     @map("last_login_at") @db.Timestamptz
-  totpSecret          String?       @map("totp_secret") @db.VarChar(64)
-  deletionRequestedAt DateTime?     @map("deletion_requested_at") @db.Timestamptz
-  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  learningGoal        String?    @map("learning_goal") @db.VarChar(50)
+  gender              Gender?    @map("gender")
+  genderUpdatedAt     DateTime?  @map("gender_updated_at") @db.Timestamptz
+  avatarUrl           String?    @map("avatar_url") @db.Text
+  dailyTargetMin      Int?       @map("daily_target_min") @db.SmallInt
+  xpTotal             Int        @default(0) @map("xp_total")
+  streakCount         Int        @default(0) @map("streak_count")
+  lastActiveDate      DateTime?  @map("last_active_date") @db.Date
+  emailVerifiedAt     DateTime?  @map("email_verified_at") @db.Timestamptz
+  failedLoginCount    Int        @default(0) @map("failed_login_count") @db.SmallInt
+  lockedUntil         DateTime?  @map("locked_until") @db.Timestamptz
+  lastLoginAt         DateTime?  @map("last_login_at") @db.Timestamptz
+  totpSecret          String?    @map("totp_secret") @db.VarChar(64)
+  deletionRequestedAt DateTime?  @map("deletion_requested_at") @db.Timestamptz
+  createdAt           DateTime   @default(now()) @map("created_at") @db.Timestamptz
 
-  currentLevel        Level?               @relation(fields: [currentLevelId], references: [id])
-  pendingLevel        Level?               @relation("PendingLevel", fields: [pendingLevelId], references: [id])
-  oauthAccounts       OAuthAccount[]
-  sessions            AuthSession[]
-  emailVerifications  EmailVerification[]
-  passwordResets      PasswordReset[]
-  subscriptions       Subscription[]
-  achievements        UserAchievement[]
-  chapterProgress     UserChapterProgress[]
-  srsCards            SrsCard[]
-  examAttempts        ExamAttempt[]
-  conversations       ConversationSession[]
-  memories            UserMemory[]
-  mascots             UserMascot[]
-  chaptersCreated     Chapter[]            @relation("ChapterCreator")
-  chaptersApproved    Chapter[]            @relation("ChapterApprover")
-  scenariosCreated    Scenario[]
-  promptsUpdated      AiLevelPrompt[]
-  auditActions        AuditLog[]           @relation("AuditActor")
-  auditTargets        AuditLog[]           @relation("AuditTarget")
+  currentLevel       Level?                @relation(fields: [currentLevelId], references: [id])
+  pendingLevel       Level?                @relation("PendingLevel", fields: [pendingLevelId], references: [id])
+  oauthAccounts      OAuthAccount[]
+  sessions           AuthSession[]
+  emailVerifications EmailVerification[]
+  passwordResets     PasswordReset[]
+  subscriptions      Subscription[]
+  achievements       UserAchievement[]
+  chapterProgress    UserChapterProgress[]
+  srsCards           SrsCard[]
+  examAttempts       ExamAttempt[]
+  conversations      ConversationSession[]
+  memories           UserMemory[]
+  handwritingLogs    HandwritingLog[]
+  mascots            UserMascot[]
+  chaptersCreated    Chapter[]             @relation("ChapterCreator")
+  chaptersApproved   Chapter[]             @relation("ChapterApprover")
+  scenariosCreated   Scenario[]
+  promptsUpdated     AiLevelPrompt[]
+  auditActions       AuditLog[]            @relation("AuditActor")
+  auditTargets       AuditLog[]            @relation("AuditTarget")
 
   @@map("users")
 }
@@ -280,43 +281,43 @@ model UserAchievement {
 // ───────────── Materi ─────────────
 
 model Level {
-  id          Int      @id @db.SmallInt
-  code        String   @unique @db.VarChar(10)
-  name        String   @db.VarChar(50)
-  sortOrder   Int      @map("sort_order") @db.SmallInt
-  isPremium   Boolean  @default(false) @map("is_premium")
+  id        Int     @id @db.SmallInt
+  code      String  @unique @db.VarChar(10)
+  name      String  @db.VarChar(50)
+  sortOrder Int     @map("sort_order") @db.SmallInt
+  isPremium Boolean @default(false) @map("is_premium")
 
-  users                User[]
-  chapters             Chapter[]
-  scenarios            Scenario[]
-  prompt               AiLevelPrompt?
-  examAttempts         ExamAttempt[]
-  conversations        ConversationSession[]
-  levelExams           LevelExam[]
-  examQuestions        ExamQuestion[]
-  examAttemptsResult   ExamAttempt[]        @relation("ResultLevel")
-  dictionaryEntries    DictionaryEntry[]
-  usersPending         User[]               @relation("PendingLevel")
+  users              User[]
+  chapters           Chapter[]
+  scenarios          Scenario[]
+  prompt             AiLevelPrompt?
+  examAttempts       ExamAttempt[]
+  conversations      ConversationSession[]
+  levelExams         LevelExam[]
+  examQuestions      ExamQuestion[]
+  examAttemptsResult ExamAttempt[]         @relation("ResultLevel")
+  dictionaryEntries  DictionaryEntry[]
+  usersPending       User[]                @relation("PendingLevel")
 
   @@map("levels")
 }
 
 model Chapter {
-  id          String        @id @default(uuid()) @db.Uuid
-  levelId     Int           @map("level_id") @db.SmallInt
-  title       String        @db.VarChar(150)
-  explanation String?
-  sortOrder   Int           @map("sort_order") @db.SmallInt
-  status      ContentStatus @default(draft)
-  createdById String?       @map("created_by") @db.Uuid
-  approvedById String?      @map("approved_by") @db.Uuid
-  publishedAt DateTime?     @map("published_at") @db.Timestamptz
+  id           String        @id @default(uuid()) @db.Uuid
+  levelId      Int           @map("level_id") @db.SmallInt
+  title        String        @db.VarChar(150)
+  explanation  String?
+  sortOrder    Int           @map("sort_order") @db.SmallInt
+  status       ContentStatus @default(draft)
+  createdById  String?       @map("created_by") @db.Uuid
+  approvedById String?       @map("approved_by") @db.Uuid
+  publishedAt  DateTime?     @map("published_at") @db.Timestamptz
   // Penanda bab hasil impor dataset (mis. "jlpt:n5:makanan_minuman:1"); impor ulang tidak menimpa bab yang sudah ada
-  sourceKey   String?       @unique @map("source_key") @db.VarChar(100)
+  sourceKey    String?       @unique @map("source_key") @db.VarChar(100)
   // Kelompok topik besar dalam satu level (mis. "Fonetik & Kana"); bab berurutan dengan modul sama tampil sebagai satu grup
-  moduleTitle String?       @map("module_title") @db.VarChar(120)
+  moduleTitle  String?       @map("module_title") @db.VarChar(120)
   // Nilai minimal kuis untuk menyelesaikan bab; kosong = nilai bawaan (70)
-  passScore   Int?          @map("pass_score") @db.SmallInt
+  passScore    Int?          @map("pass_score") @db.SmallInt
 
   level         Level                 @relation(fields: [levelId], references: [id])
   createdBy     User?                 @relation("ChapterCreator", fields: [createdById], references: [id])
@@ -362,14 +363,14 @@ model Kanji {
 }
 
 model GrammarPoint {
-  id              String  @id @default(uuid()) @db.Uuid
-  chapterId       String  @map("chapter_id") @db.Uuid
-  pattern         String  @db.VarChar(100)
-  explanation     String
-  exampleSentence String? @map("example_sentence")
+  id                 String  @id @default(uuid()) @db.Uuid
+  chapterId          String  @map("chapter_id") @db.Uuid
+  pattern            String  @db.VarChar(100)
+  explanation        String
+  exampleSentence    String? @map("example_sentence")
   exampleTranslation String? @map("example_translation")
-  imageUrl        String? @map("image_url")
-  chapter         Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  imageUrl           String? @map("image_url")
+  chapter            Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   @@map("grammar_points")
 }
@@ -479,23 +480,23 @@ model QuizQuestion {
 }
 
 model Scenario {
-  id          String        @id @default(uuid()) @db.Uuid
-  levelId     Int           @map("level_id") @db.SmallInt
-  title       String        @db.VarChar(150)
-  goal        String
-  mascotRole  String        @map("mascot_role")
-  targetVocab Json?         @map("target_vocab")
-  maxTurns    Int           @default(20) @map("max_turns") @db.SmallInt
-  status      ContentStatus @default(draft)
-  createdById String?       @map("created_by") @db.Uuid
+  id             String        @id @default(uuid()) @db.Uuid
+  levelId        Int           @map("level_id") @db.SmallInt
+  title          String        @db.VarChar(150)
+  goal           String
+  mascotRole     String        @map("mascot_role")
+  targetVocab    Json?         @map("target_vocab")
+  maxTurns       Int           @default(20) @map("max_turns") @db.SmallInt
+  status         ContentStatus @default(draft)
+  createdById    String?       @map("created_by") @db.Uuid
   // Kalimat pembuka maskot; kosong = dibuat AI
-  initialMessage String?    @map("initial_message")
+  initialMessage String?       @map("initial_message")
   // Pola tata bahasa yang dilatih, mis. ["〜をください", "〜はいくらですか"]
-  targetGrammar  Json?      @map("target_grammar")
+  targetGrammar  Json?         @map("target_grammar")
   // Bab yang skenario ini latih (tombol latihan ngobrol di akhir bab)
-  chapterId      String?    @map("chapter_id") @db.Uuid
-  sortOrder      Int        @default(0) @map("sort_order") @db.SmallInt
-  sourceKey      String?    @unique @map("source_key") @db.VarChar(100)
+  chapterId      String?       @map("chapter_id") @db.Uuid
+  sortOrder      Int           @default(0) @map("sort_order") @db.SmallInt
+  sourceKey      String?       @unique @map("source_key") @db.VarChar(100)
 
   level         Level                 @relation(fields: [levelId], references: [id])
   createdBy     User?                 @relation(fields: [createdById], references: [id])
@@ -540,41 +541,41 @@ model SrsCard {
 }
 
 model ExamAttempt {
-  id            String    @id @default(uuid()) @db.Uuid
-  userId        String    @map("user_id") @db.Uuid
-  levelId       Int       @map("level_id") @db.SmallInt
+  id            String              @id @default(uuid()) @db.Uuid
+  userId        String              @map("user_id") @db.Uuid
+  levelId       Int                 @map("level_id") @db.SmallInt
   type          ExamType
-  score         Int       @db.SmallInt
+  score         Int                 @db.SmallInt
   passed        Boolean
   details       Json?
-  sectionScores Json?     @map("section_scores")
-  examId        String?   @map("exam_id")
-  resultLevelId Int?      @map("result_level_id") @db.SmallInt
-  startedAt     DateTime? @map("started_at") @db.Timestamptz
-  finishedAt    DateTime? @map("finished_at") @db.Timestamptz
-  takenAt       DateTime  @default(now()) @map("taken_at") @db.Timestamptz
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  level         Level     @relation(fields: [levelId], references: [id])
-  exam          LevelExam? @relation(fields: [examId], references: [id])
-  resultLevel   Level?    @relation("ResultLevel", fields: [resultLevelId], references: [id])
+  sectionScores Json?               @map("section_scores")
+  examId        String?             @map("exam_id")
+  resultLevelId Int?                @map("result_level_id") @db.SmallInt
+  startedAt     DateTime?           @map("started_at") @db.Timestamptz
+  finishedAt    DateTime?           @map("finished_at") @db.Timestamptz
+  takenAt       DateTime            @default(now()) @map("taken_at") @db.Timestamptz
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level         Level               @relation(fields: [levelId], references: [id])
+  exam          LevelExam?          @relation(fields: [examId], references: [id])
+  resultLevel   Level?              @relation("ResultLevel", fields: [resultLevelId], references: [id])
   answers       ExamAttemptAnswer[]
 
   @@map("exam_attempts")
 }
 
 model LevelExam {
-  id                   String   @id @default(uuid())
-  levelId              Int      @map("level_id") @db.SmallInt
+  id                   String        @id @default(uuid())
+  levelId              Int           @map("level_id") @db.SmallInt
   type                 ExamType
-  questionCount        Int      @default(20) @map("question_count") @db.SmallInt
-  timeLimitMin         Int      @default(15) @map("time_limit_min") @db.SmallInt
-  passScore            Int      @default(70) @map("pass_score") @db.SmallInt
-  sectionMinScore      Int      @default(50) @map("section_min_score") @db.SmallInt
-  cooldownHours        Int      @default(0) @map("cooldown_hours") @db.SmallInt
-  minChapterCompletion Int      @default(0) @map("min_chapter_completion") @db.SmallInt
+  questionCount        Int           @default(20) @map("question_count") @db.SmallInt
+  timeLimitMin         Int           @default(15) @map("time_limit_min") @db.SmallInt
+  passScore            Int           @default(70) @map("pass_score") @db.SmallInt
+  sectionMinScore      Int           @default(50) @map("section_min_score") @db.SmallInt
+  cooldownHours        Int           @default(0) @map("cooldown_hours") @db.SmallInt
+  minChapterCompletion Int           @default(0) @map("min_chapter_completion") @db.SmallInt
   // Aturan per bagian: { kosakata: { count, minScore }, ... }; kosong = dibagi rata & sectionMinScore
-  sectionRules         Json?    @map("section_rules")
-  level                Level    @relation(fields: [levelId], references: [id])
+  sectionRules         Json?         @map("section_rules")
+  level                Level         @relation(fields: [levelId], references: [id])
   attempts             ExamAttempt[]
 
   @@unique([levelId, type])
@@ -582,22 +583,22 @@ model LevelExam {
 }
 
 model ExamQuestion {
-  id            String      @id @default(uuid())
-  levelId       Int         @map("level_id") @db.SmallInt
-  examType      ExamType    @default(level_up) @map("exam_type")
+  id            String              @id @default(uuid())
+  levelId       Int                 @map("level_id") @db.SmallInt
+  examType      ExamType            @default(level_up) @map("exam_type")
   section       ExamSection
-  type          String      @default("pilihan_ganda")
+  type          String              @default("pilihan_ganda")
   question      String
-  hint          String?     @db.VarChar(255)
+  hint          String?             @db.VarChar(255)
   options       Json
-  correctAnswer String      @map("correct_answer")
-  audioUrl      String?     @map("audio_url")
-  imageUrl      String?     @map("image_url")
-  difficulty    Int         @default(1) @db.SmallInt
-  status        String      @default("published")
+  correctAnswer String              @map("correct_answer")
+  audioUrl      String?             @map("audio_url")
+  imageUrl      String?             @map("image_url")
+  difficulty    Int                 @default(1) @db.SmallInt
+  status        String              @default("published")
   explanation   String?
-  sourceKey     String?     @unique @map("source_key") @db.VarChar(100)
-  level         Level       @relation(fields: [levelId], references: [id])
+  sourceKey     String?             @unique @map("source_key") @db.VarChar(100)
+  level         Level               @relation(fields: [levelId], references: [id])
   answers       ExamAttemptAnswer[]
 
   @@index([levelId, examType])
@@ -719,4 +720,37 @@ model UserMascot {
 
   @@id([userId, mascotId])
   @@map("user_mascots")
+}
+
+/// Audio pelafalan (/api/tts) yang disimpan permanen. Suara VOICEVOX diunggah dari laptop admin
+/// (npm run audio:sync) karena VOICEVOX tidak bisa berjalan di server; teks yang belum punya suara VOICEVOX
+/// dibuat dengan suara cadangan dan tercatat di sini sebagai antrean sinkronisasi berikutnya.
+model TtsCache {
+  key       String   @id @db.VarChar(64)
+  // mis. "voicevox:猫使ビィ:ノーマル" atau "edge-pron-v1:nanami"
+  voice     String   @db.VarChar(60)
+  text      String   @db.VarChar(300)
+  mimeType  String   @map("mime_type") @db.VarChar(30)
+  data      Bytes
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([text])
+  @@map("tts_cache")
+}
+
+/// Riwayat kesalahan tulisan tangan per pengguna (Tulis di Buku): berapa kali masalah yang sama muncul pada huruf
+/// yang sama, supaya penjelasan Miu-chan berganti sudut pandang (langsung → analogi → urutan goresan).
+model HandwritingLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  char      String   @db.VarChar(4)
+  /// Kode masalah (writingGuide.ts) atau "salah:<huruf terbaca>"
+  issue     String   @db.VarChar(40)
+  count     Int      @default(1)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, char, issue])
+  @@index([userId])
+  @@map("handwriting_logs")
 }

@@ -1,0 +1,302 @@
+.scanner,
+.adjust {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+/* ── Kamera langsung ── */
+.live {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+}
+
+.hiddenVideo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.liveCanvas {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  max-height: 68vh;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  background: #1f1a1c;
+}
+
+.liveStatus {
+  margin: 0;
+  max-width: 34rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  line-height: 1.45;
+}
+
+.liveStatus[data-state="found"] {
+  background: var(--color-accent-soft);
+}
+
+.liveStatus[data-state="locked"] {
+  background: color-mix(in srgb, var(--color-success) 14%, var(--color-surface));
+  color: var(--color-success);
+}
+
+.idle {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: #1f1a1c;
+  color: #f1e9ea;
+  text-align: center;
+  font-size: var(--font-size-sm);
+}
+
+.idle p {
+  margin: 0;
+  max-width: 20rem;
+  line-height: 1.5;
+}
+
+.idleIcon {
+  font-size: 2.5rem;
+}
+
+/* ── Sesuaikan kisi ── */
+.stage {
+  position: relative;
+  justify-self: center;
+  width: 100%;
+  max-width: 34rem;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  touch-action: none;
+}
+
+.stageImg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cell {
+  fill: rgba(59, 130, 246, 0.08);
+  stroke: #2f6fe0;
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+.cell[data-good] {
+  fill: rgba(63, 191, 90, 0.08);
+  stroke: #2e9e4a;
+}
+
+.cell[data-model] {
+  fill: rgba(177, 42, 58, 0.16);
+}
+
+.handle {
+  fill: rgba(255, 255, 255, 0.55);
+  stroke: #2f6fe0;
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  cursor: grab;
+}
+
+.status {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.status[data-good] {
+  background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ── Tombol (sama dengan Tulis di Buku) ── */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.btnPrimary,
+.btnGhost {
+  min-height: 2.75rem;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.btnPrimary {
+  border: 0;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 3px 0 var(--color-primary-strong);
+}
+
+.btnPrimary:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--color-primary-strong);
+}
+
+.btnPrimary:disabled,
+.btnGhost:disabled {
+  opacity: 0.6;
+}
+
+.btnGhost {
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* ── Tambahan: pesan, lembar berbeda, petunjuk ── */
+.idleTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+}
+
+.spinner {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.tips li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.callout {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  background: var(--color-accent-soft);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+}
+
+.callout[data-tone="good"] {
+  background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-success) 40%, var(--color-border));
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+}
+
+.mismatch {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-soft);
+  border: 1.5px solid color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+}
+
+@media (min-width: 640px) {
+  .mismatch {
+    grid-template-columns: 11rem minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.mismatchPhoto {
+  width: 100%;
+  max-width: 14rem;
+  justify-self: center;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.mismatchBody {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.mismatchBody p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.mismatchTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+}
+
+.mismatchError {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-semibold);
+}
+
+.actions {
+  justify-content: flex-start;
+}
+
+@media (max-width: 640px) {
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+/* Teks tombol panjang (nama lembar) boleh dua baris dengan rapi */
+.btnPrimary,
+.btnGhost {
+  padding-block: 0.55rem;
+  line-height: 1.3;
+}

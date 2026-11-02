@@ -281,14 +281,22 @@ ruby rt {
   }
 }
 
-/* Halaman dengan lembar cetak (mis. Tulis di Buku): saat dicetak hanya lembar itu yang tampil */
+/* Halaman dengan lembar cetak (mis. Tulis di Buku): lembar dipasang langsung di <body>, dan saat dicetak
+   hanya lembar itu yang tampil. display:none (bukan visibility) supaya bagian lain tidak memakan halaman. */
 @media print {
-  body:has([data-print-sheet]) * {
-    visibility: hidden;
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
   }
 
-  [data-print-sheet],
-  [data-print-sheet] * {
-    visibility: visible;
+  html:has(body > [data-print-sheet]),
+  body:has(> [data-print-sheet]) {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body:has(> [data-print-sheet]) > :not([data-print-sheet]) {
+    display: none !important;
   }
 }

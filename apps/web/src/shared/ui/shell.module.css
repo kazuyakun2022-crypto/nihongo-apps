@@ -20,6 +20,18 @@
   animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
 }
 
+/* Halaman data lebar: tanpa batas --content-max dan dengan tepi samping lebih tipis */
+.mainWide {
+  max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .main.mainWide {
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+}
+
 /* Chat page: mengisi tepat area antara atas dan bottom navigation, tanpa duplikat scrollbar */
 .mainChat {
   display: flex !important;

@@ -125,12 +125,12 @@ export function AdminExecutiveBeranda() {
           </Link>
 
           {isSuper && (
-            <Link href="/admin/audit" className={styles.actionCard}>
-              <div className={styles.actionCardIcon}>📜</div>
+            <Link href="/admin/pantau" className={styles.actionCard}>
+              <div className={styles.actionCardIcon}>📈</div>
               <div className={styles.actionCardContent}>
-                <strong className={styles.actionCardTitle}>Audit Log Keamanan</strong>
+                <strong className={styles.actionCardTitle}>Pantau Belajar</strong>
                 <span className={styles.actionCardDesc}>
-                  Pantau rekam jejak setiap aksi administratif yang terjadi di sistem.
+                  Lihat level, progres bab, ujian, dan pencapaian setiap pelajar.
                 </span>
               </div>
             </Link>

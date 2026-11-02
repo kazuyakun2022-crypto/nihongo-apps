@@ -56,13 +56,19 @@ export function askRoutes(
   // POST /api/ask/speak — suara karakter Miu-chan dengan nada sesuai emosi; kalau Gemini gagal/kuota habis, pakai TTS cadangan.
   // `text` boleh bertanda <pelan>/<cepat>; `rate` = kecepatan bicara level user.
   r.post("/speak", asyncHandler(async (req, res) => {
-    const { text, emotion, rate } = parseBody(
-      z.object({ text: z.string().trim().min(1).max(2000), emotion: z.enum(EMOTIONS).optional(), rate: z.number().min(0.5).max(1.5).default(1) }),
+    const { text, emotion, rate, engine } = parseBody(
+      z.object({
+        text: z.string().trim().min(1).max(2000),
+        emotion: z.enum(EMOTIONS).optional(),
+        rate: z.number().min(0.5).max(1.5).default(1),
+        // "edge": langsung suara cadangan, dipakai untuk potongan lanjutan jawaban yang potongan pertamanya sudah memakai cadangan
+        engine: z.enum(["auto", "edge"]).default("auto"),
+      }),
       req.body,
     );
     res.setHeader("Cache-Control", "no-store");
 
-    if (speaker) {
+    if (speaker && engine === "auto") {
       try {
         const wav = await speaker.speak(text, emotion, rate);
         res.setHeader("Content-Type", "audio/wav");

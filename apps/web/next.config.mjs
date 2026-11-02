@@ -7,6 +7,10 @@ const API_URL = process.env.API_URL ?? "http://localhost:4000";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // Pemeriksaan foto tulisan (Gemini gratis) bisa butuh >30 detik saat layanannya sibuk; batas bawaan proxy 30 detik
+    proxyTimeout: 65_000,
+  },
   async redirects() {
     return [
       { source: "/neko", destination: "/suara", permanent: false },

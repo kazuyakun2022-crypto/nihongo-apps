@@ -11,6 +11,7 @@ import {
 import type { Role } from "@/features/auth/domain/types";
 import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
 import { SkeletonTableRows } from "@/shared/ui/Skeleton";
+import { Pagination } from "@/features/admin/ui/Pagination";
 import styles from "@/app/(app)/admin/admin.module.css";
 
 export default function AdminPenggunaPage() {
@@ -20,6 +21,8 @@ export default function AdminPenggunaPage() {
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [users, setUsers] = useState<AdminUserItem[]>([]);
   const [usersTotal, setUsersTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [userQuery, setUserQuery] = useState("");
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -44,11 +47,19 @@ export default function AdminPenggunaPage() {
   }, [user, isAdmin, router]);
 
   useEffect(() => {
-    if (isAdmin) {
-      loadStats();
-      loadUsers();
-    }
+    if (isAdmin) loadStats();
   }, [isAdmin]);
+
+  useEffect(() => {
+    if (isAdmin) loadUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin, selectedRoleFilter, page, pageSize]);
+
+  /** Pencarian & ganti filter selalu mulai dari halaman pertama. */
+  function searchFromStart() {
+    if (page === 1) loadUsers();
+    else setPage(1);
+  }
 
   const showMsg = (text: string, error = false) => {
     setActionMessage({ text, error });
@@ -70,6 +81,8 @@ export default function AdminPenggunaPage() {
       const res = await adminApi.searchUsers({
         q: userQuery || undefined,
         role: (selectedRoleFilter as Role) || undefined,
+        page,
+        pageSize,
       });
       setUsers(res.items);
       setUsersTotal(res.total);
@@ -180,12 +193,7 @@ export default function AdminPenggunaPage() {
               className={`${styles.rolePill} ${selectedRoleFilter === p.id ? styles.rolePillActive : ""}`}
               onClick={() => {
                 setSelectedRoleFilter(p.id);
-                adminApi
-                  .searchUsers({ q: userQuery || undefined, role: (p.id as Role) || undefined })
-                  .then((r) => {
-                    setUsers(r.items);
-                    setUsersTotal(r.total);
-                  });
+                setPage(1);
               }}
             >
               <span>{p.label}</span>
@@ -201,19 +209,14 @@ export default function AdminPenggunaPage() {
             className={styles.searchInput}
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && loadUsers()}
+            onKeyDown={(e) => e.key === "Enter" && searchFromStart()}
           />
           <select
             className={styles.selectInput}
             value={selectedRoleFilter}
             onChange={(e) => {
               setSelectedRoleFilter(e.target.value);
-              adminApi
-                .searchUsers({ q: userQuery || undefined, role: (e.target.value as Role) || undefined })
-                .then((r) => {
-                  setUsers(r.items);
-                  setUsersTotal(r.total);
-                });
+              setPage(1);
             }}
           >
             <option value="">Semua Role</option>
@@ -223,7 +226,7 @@ export default function AdminPenggunaPage() {
             <option value="admin">Admin</option>
             <option value="super_admin">Super Admin</option>
           </select>
-          <button type="button" className={`${styles.btnSm} ${styles.btnPrimary}`} onClick={loadUsers}>
+          <button type="button" className={`${styles.btnSm} ${styles.btnPrimary}`} onClick={searchFromStart}>
             Cari ({usersTotal})
           </button>
         </div>
@@ -330,6 +333,17 @@ export default function AdminPenggunaPage() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          pageSize={pageSize}
+          total={usersTotal}
+          unit="pengguna"
+          onPage={setPage}
+          onPageSize={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
+        />
       </div>
 
       {/* MODAL: UBAH ROLE */}

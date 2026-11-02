@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import styles from "./formattedMessage.module.css";
+import { versionedAudioUrl } from "@/shared/lib/useSpeech";
 
 interface FormattedChatMessageProps {
   content: string;
@@ -210,7 +211,7 @@ export function FormattedChatMessage({ content, isAi = false, timestamp }: Forma
       .replace(/`/g, "")
       .replace(/#+\s*/g, "");
 
-    const ttsUrl = `/api/tts?text=${encodeURIComponent(cleanText.slice(0, 300))}&voice=nanami`;
+    const ttsUrl = versionedAudioUrl(`/api/tts?text=${encodeURIComponent(cleanText.slice(0, 300))}&voice=nanami`);
 
     if (audioRef.current) {
       audioRef.current.pause();

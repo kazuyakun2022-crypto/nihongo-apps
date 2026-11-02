@@ -9,6 +9,7 @@ import { TileExercise } from "@/features/learning/ui/exercises/TileExercise";
 import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { examApi, type ExamKind, type ExamQuestion, type ExamStatus, type SubmitExamResponse } from "../data/examApi";
 import styles from "./levelUpTest.module.css";
+import { versionedAudioUrl } from "@/shared/lib/useSpeech";
 
 type Phase = "loading" | "error" | "ready" | "testing" | "submitting" | "result";
 
@@ -31,7 +32,7 @@ let questionAudio: HTMLAudioElement | null = null;
 /** Audio soal bagian mendengar: URL file biasa, atau /api/tts?text=… untuk suara buatan. */
 function playAudio(url: string) {
   questionAudio?.pause();
-  questionAudio = new Audio(url);
+  questionAudio = new Audio(versionedAudioUrl(url));
   void questionAudio.play().catch(() => {});
 }
 
