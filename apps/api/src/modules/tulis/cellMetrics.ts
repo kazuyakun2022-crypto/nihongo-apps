@@ -37,6 +37,14 @@ function inkPoints(img: RawImage, area: { x0: number; y0: number; x1: number; y1
   return pts.filter((p) => !p.red && p.l < paper * 0.6);
 }
 
+/**
+ * Bentuk tulisan dari titik-titik tinta di dalam `box` (koordinat bebas, mis. titik goresan kanvas). Titik sebaiknya
+ * rapat dan merata, seperti piksel tinta.
+ */
+export function shapeOf(points: { x: number; y: number }[], box: { x0: number; y0: number; x1: number; y1: number }): GlyphShape | null {
+  return shape(points, box);
+}
+
 function shape(points: { x: number; y: number }[], box: { x0: number; y0: number; x1: number; y1: number }): GlyphShape | null {
   if (points.length < 12) return null;
   const xs = points.map((p) => p.x).sort((a, b) => a - b);

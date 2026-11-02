@@ -11,6 +11,8 @@ export interface ReadinessResponse {
   weakCards: number;
   ready: "yes" | "almost" | "no";
   suggestion: string;
+  /** Gerbang Tulis (menulis tangan) sudah lulus: syarat sebelum tes naik tahap / Mastery Gate. */
+  workbookPassed: boolean;
   canTakeTest: boolean;
 }
 

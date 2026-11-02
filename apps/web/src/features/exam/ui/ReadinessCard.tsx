@@ -57,6 +57,8 @@ export function ReadinessCard({ levelId, levelCode, final = false }: Props) {
   const pct = data.chaptersTotal > 0 ? Math.round((data.chaptersCompleted / data.chaptersTotal) * 100) : 0;
   const cooldownLabel = status?.cooldownUntil ? formatCooldown(new Date(status.cooldownUntil)) : null;
   const canTakeNow = data.canTakeTest && (status?.canTake ?? true);
+  // Bab sudah cukup tetapi Gerbang Tulis belum lulus: langkah berikutnya adalah menulis tangan
+  const needsWorkbook = pct >= 80 && !data.workbookPassed;
 
   const readyText = data.ready === "yes" ? "✓ Siap" : data.ready === "almost" ? "~ Hampir" : "× Belum";
   const readyMod = data.ready === "yes" ? styles.chipNumSuccess : data.ready === "almost" ? styles.chipNumAccent : styles.chipNumMuted;
@@ -98,6 +100,10 @@ export function ReadinessCard({ levelId, levelCode, final = false }: Props) {
 
       <p className={styles.suggestion}>{data.suggestion}</p>
 
+      <p className={styles.gateStep} data-done={data.workbookPassed || undefined}>
+        {data.workbookPassed ? "✓ Gerbang Tulis lulus" : "✎ Gerbang Tulis: tulis huruf level ini dengan tangan sebelum ikut tes"}
+      </p>
+
       {!!status?.consecutiveFails && status.consecutiveFails >= 3 && (
         <p className={styles.warning}>Perhatian: Sudah {status.consecutiveFails}× belum lulus. Disarankan mengulang bab yang lemah dulu.</p>
       )}
@@ -106,6 +112,11 @@ export function ReadinessCard({ levelId, levelCode, final = false }: Props) {
         <p className={styles.cooldown}>Bisa ikut tes lagi dalam {cooldownLabel}</p>
       )}
 
+      {needsWorkbook ? (
+        <button className={styles.testBtn} onClick={() => router.push(`/belajar/gerbang-tulis?levelId=${levelId}`)}>
+          Kerjakan Gerbang Tulis
+        </button>
+      ) : (
       <button
         className={styles.testBtn}
         disabled={!canTakeNow}
@@ -121,6 +132,7 @@ export function ReadinessCard({ levelId, levelCode, final = false }: Props) {
           ? `Tunggu ${cooldownLabel}`
           : "Selesaikan bab dulu"}
       </button>
+      )}
     </div>
   );
 }

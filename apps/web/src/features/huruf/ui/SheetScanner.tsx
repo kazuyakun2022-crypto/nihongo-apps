@@ -4,6 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { INK_FIT_MIN, inkFit, inkMask, locateGrid } from "../lib/gridLocate";
 import { cellQuads, defaultGrid, luminance, snapToGrid, type Img, type Quad } from "../lib/sheetGeometry";
 import { loadSheetFont, matchSheet, type SheetLike } from "../lib/sheetIdentify";
+import { canvasAtWidth, imageOf, loadCanvas, nextFrame, quadBounds, scaleQuad } from "../lib/canvasImage";
+import { ANALYSIS_WIDTH, photoQuality, qualityProblems } from "../lib/photoQuality";
+import { useTilt } from "../lib/useTilt";
+import { QualityReview, ScanAids } from "./ScanAids";
 import type { CheckedPhoto } from "./TulisHasil";
 import styles from "./sheetScanner.module.css";
 
@@ -36,11 +40,7 @@ const MISMATCH_MARGIN = 0.12;
 /** Kecocokan huruf contoh yang sudah pasti lembar yang benar (lembar benar ±0,94; lembar lain < 0,2). */
 const SURE_MATCH = 0.7;
 
-type Mode = "idle" | "camera" | "locating" | "adjust" | "mismatch";
-
-function scaleQuad(q: Quad, sx: number, sy = sx): Quad {
-  return q.map(([x, y]) => [x * sx, y * sy]) as Quad;
-}
+type Mode = "idle" | "camera" | "locating" | "adjust" | "mismatch" | "quality";
 
 function drawGrid(ctx: CanvasRenderingContext2D, charCount: number, quad: Quad, tone: "locked" | "found", lineWidth: number) {
   ctx.save();
@@ -59,31 +59,6 @@ function drawGrid(ctx: CanvasRenderingContext2D, charCount: number, quad: Quad, 
   });
   ctx.restore();
 }
-
-/** Gambar sumber ke kanvas baru, diperkecil ke sisi terpanjang `max`. */
-async function loadCanvas(src: string | CanvasImageSource, width: number, height: number, max: number): Promise<HTMLCanvasElement> {
-  const scale = Math.min(1, max / Math.max(width, height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(width * scale);
-  canvas.height = Math.round(height * scale);
-  const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
-  if (typeof src === "string") {
-    const img = new Image();
-    img.src = src;
-    await img.decode();
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-  } else {
-    ctx.drawImage(src, 0, 0, canvas.width, canvas.height);
-  }
-  return canvas;
-}
-
-function imageOf(canvas: HTMLCanvasElement): Img {
-  const d = canvas.getContext("2d", { willReadFrequently: true })!.getImageData(0, 0, canvas.width, canvas.height);
-  return { data: d.data, width: d.width, height: d.height, channels: 4 };
-}
-
-const nextFrame = () => new Promise((r) => setTimeout(r, 30));
 
 // ───────────────────────── Cadangan: cocokkan kotak manual ─────────────────────────
 
@@ -220,6 +195,10 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
   const [shot, setShot] = useState<{ photo: CheckedPhoto; corners: Quad } | null>(null);
   const [pending, setPending] = useState<Pending | null>(null);
   const [switchFailed, setSwitchFailed] = useState(false);
+  /** Foto yang kurang baik (buram/gelap/bayangan) menunggu keputusan siswa. */
+  const [review, setReview] = useState<{ photo: CheckedPhoto; problems: string[]; hint: Quad | null } | null>(null);
+  const [liveProblems, setLiveProblems] = useState<string[]>([]);
+  const tilt = useTilt(mode === "camera");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -236,7 +215,11 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
   useEffect(() => void loadSheetFont(sheets), [sheets]);
 
   async function startCamera() {
+    // Izin sensor kemiringan (iPhone) harus diminta langsung dari ketukan ini
+    void tilt.request();
     setCameraError(false);
+    setReview(null);
+    setLiveProblems([]);
     setPending(null);
     setShot(null);
     setMode("camera");
@@ -257,13 +240,24 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
 
   /** Ambil gambar, cari kisi, pastikan lembarnya sesuai, lalu langsung periksa. */
   const takeShot = useCallback(
-    async (source: CanvasImageSource | string, width: number, height: number, hint: Quad | null) => {
+    async (source: CanvasImageSource | string, width: number, height: number, hint: Quad | null, force = false) => {
       // Salin bingkai kamera dulu; setelah kamera dimatikan videonya hitam
       const canvas = await loadCanvas(source, width, height, SEND_MAX);
       stopCamera();
       setMode("locating");
       await nextFrame();
       const photo: CheckedPhoto = { src: canvas.toDataURL("image/jpeg", 0.88), width: canvas.width, height: canvas.height };
+      // Buram/gelap/bayangan: tanya dulu sebelum memakai kuota pemeriksaan
+      const photoHint = hint ? scaleQuad(hint, canvas.width / width) : null;
+      if (!force) {
+        const qc = await canvasAtWidth(canvas, canvas.width, canvas.height, ANALYSIS_WIDTH);
+        const problems = qualityProblems(photoQuality(imageOf(qc), photoHint ? quadBounds(scaleQuad(photoHint, qc.width / canvas.width)) : undefined));
+        if (problems.length) {
+          setReview({ photo, problems, hint: photoHint });
+          setMode("quality");
+          return;
+        }
+      }
       const smallCanvas = await loadCanvas(canvas, canvas.width, canvas.height, ANALYZE_MAX);
       const small = imageOf(smallCanvas);
       // Cari kisi untuk jumlah huruf lembar terpilih, lalu cocokkan huruf contohnya. Bila tidak jelas cocok, coba juga
@@ -321,6 +315,7 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
     let stable = 0;
     let taken = false;
     const small = document.createElement("canvas");
+    const quality = document.createElement("canvas");
     const draw = (t: number) => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -343,7 +338,16 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
           const quad = found ? scaleQuad(found.corners, 1 / s) : null;
           const prev = quadRef.current;
           const moved = quad && prev ? Math.max(...quad.map((p, i) => Math.hypot(p[0] - prev[i][0], p[1] - prev[i][1]))) : Infinity;
-          stable = quad && moved < vw * 0.015 ? stable + 1 : quad ? 1 : 0;
+          // Foto otomatis ditahan selama gambar buram atau terlalu gelap
+          let problems: string[] = [];
+          if (found) {
+            quality.width = ANALYSIS_WIDTH;
+            quality.height = Math.round(vh * (ANALYSIS_WIDTH / vw));
+            quality.getContext("2d", { willReadFrequently: true })!.drawImage(video, 0, 0, quality.width, quality.height);
+            problems = qualityProblems(photoQuality(imageOf(quality), quadBounds(scaleQuad(found.corners, ANALYSIS_WIDTH / DETECT_WIDTH))));
+          }
+          setLiveProblems((prev) => (prev.join() === problems.join() ? prev : problems));
+          stable = quad && moved < vw * 0.015 && !problems.length ? stable + 1 : quad ? 1 : 0;
           quadRef.current = quad;
           setState(!quad ? "search" : stable >= STABLE_HITS ? "locked" : "found");
           if (quad && stable >= STABLE_HITS) {
@@ -388,6 +392,17 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
     );
   }
 
+  if (mode === "quality" && review) {
+    return (
+      <QualityReview
+        photo={review.photo}
+        problems={review.problems}
+        onRetake={() => void startCamera()}
+        onContinue={() => void takeShot(review.photo.src, review.photo.width, review.photo.height, review.hint, true)}
+      />
+    );
+  }
+
   if (mode === "mismatch" && pending) {
     return (
       <div className={styles.mismatch} role="alert">
@@ -419,6 +434,7 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
         <div className={styles.live}>
           <video ref={videoRef} className={styles.hiddenVideo} playsInline muted />
           <canvas ref={canvasRef} className={styles.liveCanvas} aria-label="Kamera dengan kisi kotak" />
+          <ScanAids tilt={tilt} problems={liveProblems} />
           <p className={styles.liveStatus} data-state={state} aria-live="polite">
             {state === "locked"
               ? "✓ Kotak ditemukan, memotret…"

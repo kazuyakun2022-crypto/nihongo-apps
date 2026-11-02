@@ -12,6 +12,8 @@ export interface MasteryGateStatus {
   chapterPct: number;
   minChapterPct: number;
   cooldownUntil: string | null;
+  /** Gerbang Tulis (menulis kana dengan tangan) wajib lulus sebelum Mastery Gate. */
+  workbookPassed: boolean;
   canTake: boolean;
   rules: MasteryGateRules;
   totalItems: number;

@@ -6,6 +6,7 @@ import { asyncHandler } from "../../../shared/http/asyncHandler";
 import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
+import { workbookPassed } from "./workbookGateRoutes";
 import { HIRAGANA_BASIC, MASTERY_GATE, buildGateItems, gradeGate, type GateItem } from "../domain/MasteryGate";
 
 /** Bab Pre-N5 hasil impor kurikulum (lihat prisma/scripts/kurikulumData.ts). */
@@ -41,13 +42,16 @@ async function eligibility(userId: string, levelId: number) {
   const cooldownMs = (config?.cooldownHours ?? 0) * 3_600_000;
   const cooldownUntil = lastFailed?.finishedAt && cooldownMs ? new Date(lastFailed.finishedAt.getTime() + cooldownMs) : null;
   const coolingDown = !!cooldownUntil && cooldownUntil > new Date();
+  // Gerbang Tulis (menulis kana dengan tangan) wajib lulus sebelum Mastery Gate
+  const workbookOk = await workbookPassed(userId, levelId);
   return {
+    workbookPassed: workbookOk,
     chaptersCompleted: completed,
     chaptersTotal: chapters.length,
     chapterPct: pct,
     minChapterPct: MIN_CHAPTER_PCT,
     cooldownUntil: coolingDown ? cooldownUntil!.toISOString() : null,
-    canTake: pct >= MIN_CHAPTER_PCT && !coolingDown,
+    canTake: pct >= MIN_CHAPTER_PCT && !coolingDown && workbookOk,
     examId: config?.id ?? null,
   };
 }
@@ -69,7 +73,13 @@ export function masteryGateRoutes() {
     const { level } = await gateLevels();
     const status = await eligibility(user.id, level.id);
     if (!status.canTake) {
-      throw Errors.forbidden(status.cooldownUntil ? "Tunggu masa jeda sebelum mencoba lagi." : `Selesaikan minimal ${MIN_CHAPTER_PCT}% bab Pemula dulu.`);
+      throw Errors.forbidden(
+        status.cooldownUntil
+          ? "Tunggu masa jeda sebelum mencoba lagi."
+          : status.chapterPct < MIN_CHAPTER_PCT
+            ? `Selesaikan minimal ${MIN_CHAPTER_PCT}% bab Pemula dulu.`
+            : "Lulus Gerbang Tulis dulu: tulis hiragana & katakana dengan tangan.",
+      );
     }
     // Kosakata kana dari bab Pre-N5 (bukan kartu huruf "Dibaca …")
     const vocab = await prisma.vocabulary.findMany({

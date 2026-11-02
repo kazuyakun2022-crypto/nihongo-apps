@@ -26,11 +26,22 @@ const sectionLabel = (s: ExamSection) => SECTIONS.find((x) => x.value === s)?.la
 const DEFAULT_CONFIG: Record<ExamType, ExamConfig> = {
   level_up: { questionCount: 30, timeLimitMin: 25, passScore: 75, sectionMinScore: 60, cooldownHours: 24, minChapterCompletion: 80 },
   placement: { questionCount: 20, timeLimitMin: 20, passScore: 70, sectionMinScore: 0, cooldownHours: 0, minChapterCompletion: 0 },
+  // Sama dengan WORKBOOK_DEFAULTS di server; batas waktu & nilai per bagian tidak dipakai
+  workbook: { questionCount: 20, timeLimitMin: 60, passScore: 75, sectionMinScore: 0, cooldownHours: 12, minChapterCompletion: 80 },
 };
 
 const EXAM_TYPES: { value: ExamType; param: string; label: string }[] = [
   { value: "level_up", param: "naik-tahap", label: "Tes naik tahap" },
   { value: "placement", param: "penempatan", label: "Tes penempatan (saat daftar)" },
+  { value: "workbook", param: "gerbang-tulis", label: "Gerbang Tulis (tulisan tangan)" },
+];
+
+/** Isian Gerbang Tulis: jumlah huruf acak, nilai lulus, jeda, dan syarat bab. */
+const WORKBOOK_FIELDS: typeof CONFIG_FIELDS = [
+  { key: "questionCount", label: "Jumlah huruf per percobaan", hint: "Diambil acak dari kanji level ini (kana untuk Pemula). Maks. 60; 5 huruf per lembar foto.", min: 4, max: 60 },
+  { key: "passScore", label: "Nilai lulus (0–100)", hint: "Rata-rata nilai semua huruf.", min: 1, max: 100 },
+  { key: "cooldownHours", label: "Jeda ulang setelah gagal (jam)", hint: "0 = boleh langsung mengulang.", min: 0, max: 720 },
+  { key: "minChapterCompletion", label: "Syarat bab selesai (%)", hint: "Persentase bab level ini yang harus selesai.", min: 0, max: 100 },
 ];
 
 const CONFIG_FIELDS: { key: Exclude<keyof ExamConfig, "sectionRules">; label: string; hint: string; min: number; max: number }[] = [
@@ -53,7 +64,8 @@ export function ExamManager() {
   const flash = useFlash();
   const params = useSearchParams();
   const router = useRouter();
-  const examType: ExamType = params.get("jenis") === "penempatan" ? "placement" : "level_up";
+  const jenis = params.get("jenis");
+  const examType: ExamType = jenis === "penempatan" ? "placement" : jenis === "gerbang-tulis" ? "workbook" : "level_up";
   const [levels, setLevels] = useState<ContentLevel[]>([]);
   const [levelId, selectLevel] = useLevelParam(levels);
   const [config, setConfig] = useState<ExamConfig | null>(null);
@@ -96,9 +108,10 @@ export function ExamManager() {
 
   const level = levels.find((l) => l.id === levelId);
   const isPlacement = examType === "placement";
-  // Level tertinggi tidak punya ujian naik level; tes penempatan tetap bisa diatur untuk semua level
-  const isTopLevel = !isPlacement && !!level && level.id === Math.max(...levels.map((l) => l.id));
-  const configFields = isPlacement ? CONFIG_FIELDS.filter((f) => f.key !== "minChapterCompletion") : CONFIG_FIELDS;
+  const isWorkbook = examType === "workbook";
+  // Level tertinggi tidak punya ujian naik level; tes penempatan & Gerbang Tulis tetap bisa diatur untuk semua level
+  const isTopLevel = examType === "level_up" && !!level && level.id === Math.max(...levels.map((l) => l.id));
+  const configFields = isWorkbook ? WORKBOOK_FIELDS : isPlacement ? CONFIG_FIELDS.filter((f) => f.key !== "minChapterCompletion") : CONFIG_FIELDS;
   const configDirty = JSON.stringify(config) !== JSON.stringify(savedConfig);
   const rules = config?.sectionRules ?? null;
   const neededFor = (s: ExamSection) => (rules ? rules[s]?.count ?? 0 : config ? Math.floor(config.questionCount / SECTIONS.length) : 0);
@@ -171,7 +184,7 @@ export function ExamManager() {
         levels={levels}
         value={levelId}
         onChange={(id) => { selectLevel(id); setConfig(null); setFilter({ search: "", page: 1 }); setSearch(""); }}
-        meta={(l) => `${isPlacement ? l.placementQuestions : l.examQuestions} soal`}
+        meta={(l) => (isWorkbook ? (l.hasWorkbook ? "diatur" : "bawaan") : `${isPlacement ? l.placementQuestions : l.examQuestions} soal`)}
       />
       {flash.node}
 
@@ -184,14 +197,24 @@ export function ExamManager() {
           <section className={adminStyles.panel}>
             <div className={styles.toolbar}>
               <h2 className={adminStyles.panelTitle}>
-                {isPlacement ? `Aturan tes penempatan untuk mulai di ${level?.code ?? ""}` : `Aturan ujian ${level?.code ?? ""} → level berikutnya`}
+                {isWorkbook
+                  ? `Aturan Gerbang Tulis ${level?.code ?? ""}`
+                  : isPlacement
+                    ? `Aturan tes penempatan untuk mulai di ${level?.code ?? ""}`
+                    : `Aturan ujian ${level?.code ?? ""} → level berikutnya`}
               </h2>
               {config && !savedConfig && (
                 <span className={styles.warn}>
-                  {isPlacement ? "Belum diatur, tes memakai aturan bawaan di bawah." : "Belum diatur, siswa belum bisa ujian."}
+                  {isPlacement || isWorkbook ? "Belum diatur, memakai aturan bawaan di bawah." : "Belum diatur, siswa belum bisa ujian."}
                 </span>
               )}
             </div>
+            {isWorkbook && (
+              <p className={styles.muted}>
+                Syarat menulis tangan sebelum tes naik tahap (atau Mastery Gate untuk Pemula). Siswa menulis huruf acak dari ingatan di kertas (difoto,
+                dinilai AI) atau di layar (urutan goresan ikut dinilai). Tidak memakai bank soal.
+              </p>
+            )}
             {isPlacement && (
               <p className={styles.muted}>
                 Dikerjakan siswa yang memilih mulai di {level?.name} saat mendaftar. Atur apakah titik mulai ini wajib tes di tab{" "}
@@ -231,7 +254,7 @@ export function ExamManager() {
                 ))}
               </div>
             )}
-            {config && (
+            {config && !isWorkbook && (
               <div className={styles.rulesBox}>
                 <label className={styles.rulesToggle}>
                   <input type="checkbox" checked={!!rules} onChange={(e) => toggleRules(e.target.checked)} />
@@ -290,6 +313,7 @@ export function ExamManager() {
             </div>
           </section>
 
+          {!isWorkbook && (
           <section className={adminStyles.panel}>
             <h2 className={adminStyles.panelTitle}>Bank soal terbit per bagian</h2>
             <div className={styles.sectionStats}>
@@ -314,9 +338,11 @@ export function ExamManager() {
                 : " Selama bank soal belum cukup untuk satu ujian, ujian memakai soal pilihan ganda dari bab level ini."}
             </p>
           </section>
+          )}
         </>
       )}
 
+      {!isWorkbook && (
       <section className={adminStyles.panel}>
         <div className={styles.toolbar}>
           <h2 className={adminStyles.panelTitle}>
@@ -383,6 +409,7 @@ export function ExamManager() {
         )}
         <Pagination page={filter.page} pageSize={pageSize} total={total} unit="soal" onPage={(page) => setFilter((f) => ({ ...f, page }))} />
       </section>
+      )}
 
       {editing && levelId && (
         <ExamQuestionForm
