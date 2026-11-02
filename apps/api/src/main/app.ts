@@ -55,7 +55,7 @@ export function createApp(env: Env, c: Container) {
   app.use(express.json({ limit: "100kb" }));
   app.use(cookieParser());
 
-  app.get("/api/health", (_req, res) => res.json({ ok: true, ai: c.aiMode }));
+  app.get("/api/health", (_req, res) => res.json({ ok: true, ai: c.aiMode, voice: c.voiceMode }));
 
   // Audio pelafalan (huruf, kosakata, contoh kalimat). Disimpan permanen di tts_cache dan boleh di-cache
   // browser/CDN, karena teks yang sama selalu menghasilkan audio yang sama (versi suara ada di parameter v).
@@ -94,7 +94,7 @@ export function createApp(env: Env, c: Container) {
   app.use("/api/admin/content", auth, requireRole("admin"), contentAdminRoutes());
   app.use("/api/admin/learners", auth, requireRole("super_admin"), learnerMonitorRoutes());
   app.use("/api/admin", auth, requireRole("admin"), adminUserRoutes(c.adminUsers));
-  app.use("/api/ask", askRoutes(c.askUc, c.transcriber, c.speaker, optionalAuth(c.accessTokens)));
+  app.use("/api/ask", askRoutes(c.askUc, c.transcriber, c.voices, optionalAuth(c.accessTokens)));
 
   app.use((_req, res) => res.status(404).json({ error: { code: "NOT_FOUND", message: "Endpoint tidak ditemukan." } }));
   app.use(errorHandler);

@@ -17,7 +17,9 @@
     "content:import": "tsx prisma/scripts/importCurriculum.ts",
     "content:kurikulum": "tsx prisma/scripts/importKurikulum.ts",
     "content:kamus": "tsx prisma/scripts/importKamus.ts",
-    "audio:pronunciation": "tsx scripts/buildPronunciationAudio.ts"
+    "audio:pronunciation": "tsx scripts/buildPronunciationAudio.ts",
+    "voice:elevenlabs": "tsx scripts/elevenlabsVoice.ts",
+    "voice:voicevox": "tsx scripts/voicevoxVoice.ts"
   },
   "dependencies": {
     "@prisma/client": "5.22.0",

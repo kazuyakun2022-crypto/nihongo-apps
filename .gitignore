@@ -32,3 +32,7 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
+
+# Contoh suara dari `npm run voice:elevenlabs -- --try`
+apps/api/voice-*.wav
+apps/api/voicevox-*.wav

@@ -58,7 +58,7 @@ function stripC2paTrailer(pcm: Buffer): Buffer {
  * yang diambil; header dan manifest C2PA yang ikut diputar terdengar seperti statis radio di akhir.
  * Respons PCM mentah (model lama) diteruskan ke stripC2paTrailer.
  */
-function extractPcm(audio: Buffer): { pcm: Buffer; sampleRate: number } {
+export function extractPcm(audio: Buffer): { pcm: Buffer; sampleRate: number } {
   if (audio.length < 12 || audio.toString("latin1", 0, 4) !== "RIFF" || audio.toString("latin1", 8, 12) !== "WAVE") {
     return { pcm: stripC2paTrailer(audio), sampleRate: SAMPLE_RATE };
   }
@@ -78,7 +78,7 @@ function extractPcm(audio: Buffer): { pcm: Buffer; sampleRate: number } {
   throw new Error("WAV tanpa chunk data");
 }
 
-function pcmToWav(pcm: Buffer, sampleRate: number): Buffer {
+export function pcmToWav(pcm: Buffer, sampleRate: number): Buffer {
   const header = Buffer.alloc(44);
   header.write("RIFF", 0);
   header.writeUInt32LE(36 + pcm.length, 4);
@@ -121,8 +121,42 @@ export class GeminiTts {
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
-    // Model mana pun yang gagal (kuota, 5xx, timeout) dilewati, supaya voice Leda tetap dipakai
-    // selama masih ada model lain; TTS cadangan (suara berbeda) hanya dipakai kalau semuanya gagal.
+    const { pcm, sampleRate } = await this.synthesize(clean);
+    const shifted = shiftPitchByPace(applyGain(pcm, tone.gain), sampleRate, tone.pitch, parts);
+    const wav = pcmToWav(shifted.pcm, shifted.sampleRate);
+    if (this.cache.size < 200) this.cache.set(cacheKey, wav);
+    return wav;
+  }
+
+  /** Masih ada model yang belum kena batas kuota. */
+  get available(): boolean {
+    return MODELS.some((m) => (this.limitedUntil.get(m) ?? 0) <= Date.now());
+  }
+
+  /**
+   * PCM 16-bit untuk satu bagian kalimat (suara campuran, lihat mixedVoice.ts): nada imut Leda + emosi + `tempo`
+   * bagian itu, lalu di-resample ke `targetRate` supaya bisa disambung dengan mesin lain.
+   */
+  async pcm(text: string, emotion: string | undefined, tempo: number, targetRate: number): Promise<Buffer> {
+    const clean = text.trim();
+    const key = `pcm:${emotion ?? "biasa"}:${tempo}:${targetRate}:${clean}`;
+    const cached = this.cache.get(key);
+    if (cached) return cached;
+    const tone = voiceTone(emotion);
+    const { pcm, sampleRate } = await this.synthesize(clean);
+    const shifted = shiftPitchByPace(applyGain(pcm, tone.gain), sampleRate, tone.pitch, [
+      { seconds: estimateSpeechSeconds(clean), tempo: Math.min(1.3, Math.max(0.8, tone.tempo * tempo)) },
+    ]);
+    const out = resamplePcm(shifted.pcm, shifted.sampleRate, targetRate);
+    if (this.cache.size < 200) this.cache.set(key, out);
+    return out;
+  }
+
+  /**
+   * Satu permintaan TTS. Model mana pun yang gagal (kuota, 5xx, timeout) dilewati, supaya voice Leda tetap dipakai
+   * selama masih ada model lain; TTS cadangan (suara berbeda) hanya dipakai kalau semuanya gagal.
+   */
+  private async synthesize(clean: string): Promise<{ pcm: Buffer; sampleRate: number }> {
     const errors: string[] = [];
     for (const model of MODELS) {
       if ((this.limitedUntil.get(model) ?? 0) > Date.now()) continue;
@@ -155,16 +189,27 @@ export class GeminiTts {
         const data = (await res.json()) as GeminiTtsResponse;
         const audio = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
         if (!audio) throw new Error("tidak mengembalikan audio");
-
-        const { pcm, sampleRate } = extractPcm(Buffer.from(audio, "base64"));
-        const shifted = shiftPitchByPace(applyGain(pcm, tone.gain), sampleRate, tone.pitch, parts);
-        const wav = pcmToWav(shifted.pcm, shifted.sampleRate);
-        if (this.cache.size < 200) this.cache.set(cacheKey, wav);
-        return wav;
+        return extractPcm(Buffer.from(audio, "base64"));
       } catch (err) {
         errors.push(`${model}: ${err instanceof Error ? err.message : err}`);
       }
     }
     throw new Error(`Semua model Gemini TTS gagal atau kena batas kuota (${errors.join("; ") || "semua masih cooldown"})`);
   }
+}
+
+/** Ubah sample rate PCM 16-bit mono (interpolasi linear). Dipakai untuk menyambung audio dari mesin berbeda. */
+export function resamplePcm(pcm: Buffer, from: number, to: number): Buffer {
+  if (from === to) return pcm;
+  const n = pcm.length >> 1;
+  const outN = Math.max(1, Math.round((n * to) / from));
+  const out = Buffer.alloc(outN * 2);
+  for (let i = 0; i < outN; i++) {
+    const pos = (i * from) / to;
+    const a = Math.min(n - 1, Math.floor(pos));
+    const b = Math.min(n - 1, a + 1);
+    const t = pos - a;
+    out.writeInt16LE(Math.round(pcm.readInt16LE(a * 2) * (1 - t) + pcm.readInt16LE(b * 2) * t), i * 2);
+  }
+  return out;
 }

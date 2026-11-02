@@ -83,10 +83,16 @@ const FALLBACK_PLAYBACK_RATE = 1.08;
  * Suara Miu-chan; nada, tempo, dan volume disesuaikan server dengan emosinya. `rate` = kecepatan level user:
  * server membacakan bahasa Indonesia normal, Jepang sedikit lebih pelan, dan bagian bertanda <pelan>/<cepat> sesuai tandanya.
  */
-type Voice = { url: string; isFallback: boolean };
+type VoiceEngine = "auto" | "voicevox" | "elevenlabs" | "gemini" | "edge";
+/** `credit`: kredit wajib mesin suara (mis. "VOICEVOX:春日部つむぎ"), ditampilkan di layar percakapan. */
+type Voice = { url: string; isFallback: boolean; engine: VoiceEngine; credit: string | null };
+const ENGINES: VoiceEngine[] = ["voicevox", "elevenlabs", "gemini", "edge"];
 
-/** `engine: "edge"` memaksa suara cadangan, supaya potongan kedua jawaban bersuara sama dengan potongan pertama. */
-async function fetchVoice(text: string, emotion: VoiceEmotion, rate = 1, engine: "auto" | "edge" = "auto"): Promise<Voice> {
+/**
+ * `engine` = mesin suara yang dicoba lebih dulu (VOICEVOX+ElevenLabs → ElevenLabs → Gemini → Edge). Potongan kedua jawaban memakai mesin
+ * potongan pertama, supaya suara Miu-chan tidak berganti di tengah jawaban.
+ */
+async function fetchVoice(text: string, emotion: VoiceEmotion, rate = 1, engine: VoiceEngine = "auto"): Promise<Voice> {
   const res = await fetch("/api/ask/speak", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -94,7 +100,15 @@ async function fetchVoice(text: string, emotion: VoiceEmotion, rate = 1, engine:
   });
   if (!res.ok) throw new Error("Suara Miu-chan gagal dibuat.");
   const blob = await res.blob();
-  return { url: URL.createObjectURL(blob), isFallback: blob.type === "audio/mpeg" };
+  const used = res.headers.get("x-voice-engine") as VoiceEngine | null;
+  const credit = res.headers.get("x-voice-credit");
+  const isFallback = blob.type === "audio/mpeg";
+  return {
+    url: URL.createObjectURL(blob),
+    isFallback,
+    engine: used && ENGINES.includes(used) ? used : isFallback ? "edge" : "auto",
+    credit: credit ? decodeURIComponent(credit) : null,
+  };
 }
 
 const SENTENCE_END = /[。！？!?]+|\.(?=\s)/g;
@@ -140,6 +154,7 @@ export function useVoiceChat() {
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
   const [emotion, setEmotion] = useState<VoiceEmotion>("biasa");
+  const [voiceCredit, setVoiceCredit] = useState<string | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const stopRequestedRef = useRef(false);
@@ -254,6 +269,7 @@ export function useVoiceChat() {
       const prefetched = prefetchedGreetRef.current;
       prefetchedGreetRef.current = null;
       const voice = prefetched?.text === text ? await prefetched.voice : await fetchVoice(text, "senang", rateRef.current);
+      if (voice.credit) setVoiceCredit(voice.credit);
       if (turnRef.current !== turn) {
         URL.revokeObjectURL(voice.url);
         return;
@@ -284,9 +300,10 @@ export function useVoiceChat() {
       // Kalimat pertama dibuat lebih dulu dan langsung diputar; sisanya dibuat sambil kalimat pertama berbunyi
       const [firstText, restText] = splitForSpeech(spokenText);
       const first = await fetchVoice(firstText, mood, rateRef.current);
+      if (first.credit) setVoiceCredit(first.credit);
       const parts = [{ voice: Promise.resolve(first), weight: plainLength(firstText) }];
       if (restText) {
-        const rest = fetchVoice(restText, mood, rateRef.current, first.isFallback ? "edge" : "auto");
+        const rest = fetchVoice(restText, mood, rateRef.current, first.engine);
         rest.catch(() => {});
         parts.push({ voice: rest, weight: plainLength(restText) });
       }
@@ -398,6 +415,7 @@ export function useVoiceChat() {
     spoken,
     getSpeechProgress,
     error,
+    voiceCredit,
     isSupported,
     startListening,
     stopListening,
