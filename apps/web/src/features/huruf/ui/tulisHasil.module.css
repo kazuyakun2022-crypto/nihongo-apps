@@ -1,0 +1,683 @@
+/* Hasil koreksi Tulis di Buku: rapor nilai, foto bertanda, dan catatan per huruf. */
+.wrap {
+  --c-good: var(--color-success);
+  --c-ok: #b7791f;
+  --c-low: var(--color-danger);
+  --c-empty: #8a7f83;
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.muted {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.bar {
+  height: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-border) 70%, var(--color-surface));
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--bar, var(--color-primary));
+  transition: width 0.8s ease-out;
+}
+
+/* ── Rapor ── */
+.report {
+  --tint: var(--color-primary);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--tint) 14%, transparent), transparent 55%),
+    linear-gradient(135deg, var(--color-surface), var(--color-accent-soft));
+  border: var(--border-width) solid color-mix(in srgb, var(--tint) 35%, var(--color-border));
+}
+
+.report[data-grade="S"],
+.report[data-grade="A"] {
+  --tint: var(--color-primary);
+}
+
+.report[data-grade="B"] {
+  --tint: #b7791f;
+}
+
+.report[data-grade="C"],
+.report[data-grade="D"] {
+  --tint: var(--palette-ai);
+}
+
+.stamp {
+  flex: none;
+  width: 7.5rem;
+  height: 7.5rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border-radius: 50%;
+  border: 4px double var(--tint);
+  color: var(--tint);
+  transform: rotate(-8deg);
+  background: color-mix(in srgb, var(--tint) 6%, var(--color-surface));
+  animation: stampIn 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+.stampGrade {
+  font-size: 3.2rem;
+  font-weight: var(--font-weight-heavy);
+  line-height: 1;
+}
+
+.stampText {
+  font-family: var(--font-japanese);
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+}
+
+@keyframes stampIn {
+  from {
+    opacity: 0;
+    transform: rotate(-8deg) scale(1.8);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+  }
+}
+
+.reportBody {
+  flex: 1 1 16rem;
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  --bar: var(--tint);
+}
+
+.reportTitle {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-heavy);
+  color: var(--tint);
+}
+
+.reportScore {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.reportScore strong {
+  font-size: 2.4rem;
+  line-height: 1;
+  font-weight: var(--font-weight-heavy);
+}
+
+.reportScore span {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+}
+
+.reportLine {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.5;
+}
+
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chips li {
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+}
+
+.chips li[data-tone="good"] b { color: var(--c-good); }
+.chips li[data-tone="ok"] b { color: var(--c-ok); }
+.chips li[data-tone="low"] b { color: var(--c-low); }
+
+/* ── Pesan Miu-chan ── */
+.miu {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.miu img {
+  width: 4.5rem;
+  height: auto;
+  flex: none;
+}
+
+.miuBubble {
+  position: relative;
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md) var(--radius-md) var(--radius-md) 4px;
+  background: var(--color-sakura-soft);
+  border: 1px solid color-mix(in srgb, var(--color-sakura) 40%, var(--color-border));
+  line-height: 1.5;
+  font-size: var(--font-size-sm);
+}
+
+/* ── Foto bertanda ── */
+.section {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-heavy);
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.mark rect,
+.markBest rect,
+.mark path {
+  fill: none;
+  stroke-width: 3px;
+}
+
+.mark circle,
+.markBest circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.mark text,
+.markBest text {
+  fill: #fff;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-family: var(--font-family);
+}
+
+.mark[data-kind="salah"] rect,
+.mark[data-kind="salah"] path { stroke: var(--c-low); }
+.mark[data-kind="salah"] circle { fill: var(--c-low); }
+.mark[data-kind="salah"] rect { fill: color-mix(in srgb, var(--c-low) 10%, transparent); }
+
+.mark[data-kind="kurang"] rect {
+  stroke: var(--c-ok);
+  stroke-dasharray: 7 4;
+}
+.mark[data-kind="kurang"] circle { fill: var(--c-ok); }
+
+.mark[data-kind="kosong"] rect {
+  stroke: var(--c-empty);
+  stroke-dasharray: 3 4;
+}
+.mark[data-kind="kosong"] circle { fill: var(--c-empty); }
+
+.markBest rect { stroke: var(--c-good); }
+.markBest circle { fill: var(--c-good); }
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.legend i {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 3px;
+  border: 2px solid;
+}
+
+.legend [data-kind="best"] i { border-color: var(--c-good); }
+.legend [data-kind="salah"] i { border-color: var(--c-low); background: color-mix(in srgb, var(--c-low) 12%, transparent); }
+.legend [data-kind="kurang"] i { border-color: var(--c-ok); border-style: dashed; }
+.legend [data-kind="kosong"] i { border-color: var(--c-empty); border-style: dotted; }
+
+.allGood {
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+  color: var(--c-good);
+}
+
+/* ── Fokus latihan ── */
+.focus {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  border: 1px dashed color-mix(in srgb, var(--color-accent) 60%, var(--color-border));
+}
+
+.focusChars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.focusChars span {
+  display: grid;
+  justify-items: center;
+  min-width: 3rem;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1.5px solid var(--tone-color);
+  font-family: var(--font-japanese);
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.focusChars small {
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--tone-color);
+}
+
+.wrap [data-tone="good"] { --tone-color: var(--c-good); }
+.wrap [data-tone="ok"] { --tone-color: var(--c-ok); }
+.wrap [data-tone="low"] { --tone-color: var(--c-low); }
+
+/* ── Kartu per huruf ── */
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid color-mix(in srgb, var(--tone-color) 40%, var(--color-border));
+  border-left-width: 5px;
+  background: color-mix(in srgb, var(--tone-color) 4%, var(--color-surface));
+  min-width: 0;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cardChar {
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-primary);
+  background: var(--color-surface);
+}
+
+.cardChar span {
+  font-family: var(--font-japanese);
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--color-primary);
+}
+
+.cardChar small {
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  max-width: 3.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardStats {
+  flex: 1;
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  --bar: var(--tone-color);
+}
+
+.cardScoreLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--space-1);
+}
+
+.cardScore {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-heavy);
+  color: var(--tone-color);
+  line-height: 1;
+}
+
+.cardNeat {
+  margin-left: auto;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+}
+
+.praise,
+.tip {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.tip {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-soft);
+}
+
+.issues {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.issue {
+  --k: var(--c-low);
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+}
+
+.issue[data-kind="kurang"] { --k: var(--c-ok); }
+.issue[data-kind="kosong"] { --k: var(--c-empty); }
+
+.issueNum {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--k);
+  color: #fff;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-heavy);
+}
+
+.issueKind {
+  display: block;
+  font-weight: var(--font-weight-bold);
+  color: var(--k);
+}
+
+.issueKind b {
+  font-family: var(--font-japanese);
+  font-size: 1.05rem;
+}
+
+.issueText {
+  display: block;
+  color: var(--color-text);
+}
+
+.issueFix {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-text-muted);
+}
+
+.issueFix b {
+  color: var(--color-text);
+}
+
+.scoreRule {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.approx {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 50%, var(--color-border));
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .report {
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .stamp {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .stampGrade {
+    font-size: 2.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp {
+    animation: none;
+  }
+
+  .bar span {
+    transition: none;
+  }
+}
+
+/* ── Sorotan kuadran (grid 2×2) & warna keparahan ── */
+.focus {
+  fill: rgba(255, 204, 0, 0.32);
+  stroke: #e0a800;
+  stroke-width: 1.5px;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.focus[data-severity="sedang"] {
+  fill: rgba(255, 140, 0, 0.3);
+  stroke: #e07000;
+}
+
+.mark[data-kind="kurang"][data-severity="sedang"] rect {
+  stroke: #e07000;
+}
+
+.mark[data-kind="kurang"][data-severity="sedang"] circle {
+  fill: #e07000;
+}
+
+.legend [data-kind="focus"] i {
+  border-color: #e0a800;
+  border-style: dashed;
+  background: rgba(255, 204, 0, 0.35);
+}
+
+.issue[data-severity="sedang"] {
+  --k: #c45f00;
+}
+
+/* ── Lulus / belum ── */
+.pass {
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-heavy);
+  background: color-mix(in srgb, var(--c-low) 10%, var(--color-surface));
+  color: var(--c-low);
+}
+
+.pass[data-pass] {
+  background: color-mix(in srgb, var(--c-good) 14%, var(--color-surface));
+  color: var(--c-good);
+}
+
+/* ── Umpan balik Miu-chan ── */
+.neko {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-sakura-soft);
+  border: 1px solid color-mix(in srgb, var(--color-sakura) 35%, var(--color-border));
+}
+
+.neko[data-severity="sedang"] {
+  background: var(--color-accent-soft);
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+}
+
+.neko[data-severity="berat"] {
+  background: color-mix(in srgb, var(--palette-ai) 8%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--palette-ai) 30%, var(--color-border));
+}
+
+.nekoFace {
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: cover;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 2px solid var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.nekoBody {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.nekoHeadline {
+  margin: 0;
+  font-weight: var(--font-weight-heavy);
+}
+
+.nekoText,
+.nekoTip {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.nekoTip {
+  color: var(--color-text-muted);
+}
+
+.nekoAngle {
+  margin: 2px 0 0;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.02em;
+  color: var(--color-text-muted);
+}
+
+/* ── Rubrik 5 dimensi ── */
+.rubric {
+  font-size: var(--font-size-sm);
+}
+
+.rubric summary {
+  cursor: pointer;
+  font-weight: var(--font-weight-bold);
+}
+
+.rubric ul {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.rubric li {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 2rem;
+  gap: var(--space-2);
+  align-items: center;
+  --bar: var(--tone-color);
+}
+
+.rubric li b {
+  text-align: right;
+  color: var(--tone-color);
+}
+
+.rubric li[data-flagged] .rubricLabel {
+  font-weight: var(--font-weight-bold);
+}
+
+.rubricLabel {
+  font-size: var(--font-size-xs);
+}
+
+.rubricLabel small {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 480px) {
+  .rubric li {
+    grid-template-columns: minmax(0, 1fr) 2rem;
+  }
+
+  .rubric li > .bar {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

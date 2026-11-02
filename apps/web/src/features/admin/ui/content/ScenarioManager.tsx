@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { contentApi, type ChapterRow, type ContentLevel, type ContentStatus, type ScenarioInput, type ScenarioRow } from "@/features/admin/data/contentApi";
 import { SkeletonRegion, SkeletonTableRows } from "@/shared/ui/Skeleton";
+import { Pagination, usePaged } from "../Pagination";
 import { LevelPicker, useLevelParam } from "./ChapterManager";
 import { STATUS_LABEL, useFlash } from "./ContentShell";
 import { FormModal, type FieldDef, type FormValues } from "./FormModal";
@@ -113,6 +114,8 @@ export function ScenarioManager() {
     }
   }
 
+  const { pageItems, pagerProps } = usePaged(scenarios ?? [], levelId, 20);
+
   return (
     <>
       {flash.node}
@@ -145,7 +148,7 @@ export function ScenarioManager() {
           <div className={adminStyles.tableWrap}>
             <table className={adminStyles.table}>
               <tbody>
-                {scenarios.map((s) => (
+                {pageItems.map((s) => (
                   <tr key={s.id}>
                     <td>
                       <div className={styles.itemMain}>
@@ -181,6 +184,7 @@ export function ScenarioManager() {
             </table>
           </div>
         )}
+        <Pagination {...pagerProps} unit="skenario" />
       </section>
 
       {editing && levelId && (

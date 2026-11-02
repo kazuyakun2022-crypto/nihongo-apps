@@ -15,6 +15,7 @@ const instances = new Map<string, Promise<MsEdgeTTS>>();
 
 const JAPANESE_CHAR = /[　-〿぀-ゟ゠-ヿ一-鿿！-｠]/;
 const LETTER = /\p{L}/u;
+const SINGLE_KANA = /^[ぁ-ゖァ-ヺ][ゃゅょャュョぁぃぅぇぉァィゥェォ]?$/;
 
 function getTts(voice: string): Promise<MsEdgeTTS> {
   let instance = instances.get(voice);
@@ -144,4 +145,25 @@ export async function synthesizeChildVoice(
 
   if (ttsCache.size < 3000) ttsCache.set(cacheKey, buffer);
   return buffer;
+}
+
+/**
+ * Suara contoh pelafalan (huruf, kosakata) dengan Nanami bernada sedikit tinggi supaya terdengar imut,
+ * dan sedikit diperlambat supaya bunyi tiap mora jelas untuk ditirukan. Di atas ±16% Edge makin sering salah
+ * ucap (きって → しって, にょ → にゃ). Menaikkan nada sesudahnya (pitchShift) mengaburkan konsonan k, jadi
+ * jangan dipakai di sini.
+ */
+export async function synthesizePronunciation(text: string): Promise<Buffer> {
+  const trimmed = text.slice(0, 200).trim();
+  // Huruf tunggal dibacakan sebagai 「katakana」: dalam hiragana Edge membacanya seperti partikel/potongan kata
+  // (へ → "ha", ふ → "furu"), dan tanpa tanda kutip ujungnya terpotong kasar (イ → "ii", ハ → "hat")
+  const clean = SINGLE_KANA.test(trimmed) ? `「${trimmed.replace(/[ぁ-ゖ]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60))}」` : trimmed;
+  if (!clean) throw new Error("Teks tidak bisa dibacakan");
+  const prosody: Prosody = { pitch: "+16%", rate: "-5%" };
+  try {
+    return await streamToBuffer(await getTts("ja-JP-NanamiNeural"), clean, prosody);
+  } catch {
+    instances.delete("ja-JP-NanamiNeural");
+    return streamToBuffer(await getTts("ja-JP-NanamiNeural"), clean, prosody);
+  }
 }

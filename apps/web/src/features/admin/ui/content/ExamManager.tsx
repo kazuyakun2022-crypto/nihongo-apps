@@ -11,6 +11,7 @@ import { ExerciseSummary } from "./ChapterEditor";
 import { ExerciseForm } from "./ExerciseForm";
 import { LevelPicker, useLevelParam } from "./ChapterManager";
 import { STATUS_LABEL, useFlash } from "./ContentShell";
+import { Pagination } from "../Pagination";
 import styles from "./content.module.css";
 
 const SECTIONS: { value: ExamSection; label: string }[] = [
@@ -117,7 +118,6 @@ export function ExamManager() {
     const current = config.sectionRules[s] ?? { count: 0, minScore: config.sectionMinScore };
     setConfig({ ...config, sectionRules: { ...config.sectionRules, [s]: { ...current, [key]: value } } });
   }
-  const pages = Math.max(1, Math.ceil(total / pageSize));
 
   async function saveConfig() {
     if (!levelId || !config) return;
@@ -381,17 +381,7 @@ export function ExamManager() {
             </table>
           </div>
         )}
-        {pages > 1 && (
-          <div className={styles.pager}>
-            <button type="button" className={`${styles.btn} ${adminStyles.btnSecondary}`} disabled={filter.page <= 1} onClick={() => setFilter((f) => ({ ...f, page: f.page - 1 }))}>
-              ← Sebelumnya
-            </button>
-            <span>Halaman {filter.page} dari {pages}</span>
-            <button type="button" className={`${styles.btn} ${adminStyles.btnSecondary}`} disabled={filter.page >= pages} onClick={() => setFilter((f) => ({ ...f, page: f.page + 1 }))}>
-              Berikutnya →
-            </button>
-          </div>
-        )}
+        <Pagination page={filter.page} pageSize={pageSize} total={total} unit="soal" onPage={(page) => setFilter((f) => ({ ...f, page }))} />
       </section>
 
       {editing && levelId && (

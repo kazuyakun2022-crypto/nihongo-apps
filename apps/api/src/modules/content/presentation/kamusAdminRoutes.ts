@@ -73,10 +73,12 @@ const categorySchema = z.object({
 const listQuery = z.object({
   type: z.enum(KAMUS_TYPES).default("kosakata"),
   levelId: z.coerce.number().int().min(1).optional(),
-  categoryId: z.string().uuid().optional(),
+  // "none" = entri tanpa kategori
+  categoryId: z.union([z.literal("none"), z.string().uuid()]).optional(),
   status: z.enum(["published", "draft"]).optional(),
   q: z.string().trim().max(100).optional(),
   page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(5).max(100).default(PAGE_SIZE),
 });
 
 const adminSelect = {
@@ -127,7 +129,7 @@ export function kamusAdminRoutes() {
     const where: Prisma.DictionaryEntryWhereInput = {
       type: q.type,
       ...(q.levelId ? { levelId: q.levelId } : {}),
-      ...(q.categoryId ? { categoryId: q.categoryId } : {}),
+      ...(q.categoryId ? { categoryId: q.categoryId === "none" ? null : q.categoryId } : {}),
       ...(q.status ? { status: q.status } : {}),
       ...(q.q
         ? {
@@ -139,13 +141,13 @@ export function kamusAdminRoutes() {
       prisma.dictionaryEntry.findMany({
         where,
         orderBy: [{ level: { sortOrder: "asc" } }, { sortOrder: "asc" }, { term: "asc" }],
-        skip: (q.page - 1) * PAGE_SIZE,
-        take: PAGE_SIZE,
+        skip: (q.page - 1) * q.pageSize,
+        take: q.pageSize,
         select: adminSelect,
       }),
       prisma.dictionaryEntry.count({ where }),
     ]);
-    res.json({ entries, total, page: q.page, pageSize: PAGE_SIZE });
+    res.json({ entries, total, page: q.page, pageSize: q.pageSize });
   }));
 
   r.post("/entries", asyncHandler(async (req, res) => {
@@ -182,12 +184,29 @@ export function kamusAdminRoutes() {
   // ── Kategori ──
   r.get("/categories", asyncHandler(async (req, res) => {
     const { type } = parseBody(z.object({ type: z.enum(["gambar", "ungkapan"]).optional() }), req.query);
-    const categories = await prisma.dictionaryCategory.findMany({
-      where: type ? { type } : {},
-      orderBy: [{ type: "asc" }, { sortOrder: "asc" }],
-      include: { _count: { select: { entries: true } } },
+    const byType = type ? { type } : {};
+    const [categories, drafts, samples, uncategorized] = await Promise.all([
+      prisma.dictionaryCategory.findMany({
+        where: byType,
+        orderBy: [{ type: "asc" }, { sortOrder: "asc" }],
+        include: { _count: { select: { entries: true } } },
+      }),
+      prisma.dictionaryEntry.groupBy({ by: ["categoryId"], where: { ...byType, status: "draft", categoryId: { not: null } }, _count: { _all: true } }),
+      // Gambar entri pertama tiap kategori, dipakai sebagai sampul bila kategori belum punya sampul sendiri
+      prisma.dictionaryEntry.findMany({
+        where: { ...byType, categoryId: { not: null }, imageUrl: { not: null } },
+        distinct: ["categoryId"],
+        orderBy: [{ categoryId: "asc" }, { sortOrder: "asc" }],
+        select: { categoryId: true, imageUrl: true },
+      }),
+      type ? prisma.dictionaryEntry.count({ where: { type, categoryId: null } }) : Promise.resolve(0),
+    ]);
+    const draftBy = new Map(drafts.map((d) => [d.categoryId, d._count._all]));
+    const sampleBy = new Map(samples.map((s) => [s.categoryId, s.imageUrl]));
+    res.json({
+      categories: categories.map((c) => ({ ...c, draftCount: draftBy.get(c.id) ?? 0, sampleImage: sampleBy.get(c.id) ?? null })),
+      uncategorized,
     });
-    res.json({ categories });
   }));
 
   r.post("/categories", asyncHandler(async (req, res) => {

@@ -7,7 +7,7 @@ import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { Mascot, type MascotMood } from "@/shared/ui/Mascot";
 import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
-import { useSpeech } from "@/shared/lib/useSpeech";
+import { useSpeech, versionedAudioUrl } from "@/shared/lib/useSpeech";
 import { EXERCISES, SKILLS, countBySkill, type SkillId } from "@/shared/lib/exercises";
 import { useChapterLesson, type StudyCard } from "../application/useChapterLesson";
 import type { ChapterQuizQuestion } from "../domain/types";
@@ -23,7 +23,7 @@ let quizAudio: HTMLAudioElement | null = null;
 /** Audio soal mendengar: URL file biasa, atau /api/tts?text=… untuk suara buatan. */
 function playAudio(url: string) {
   quizAudio?.pause();
-  quizAudio = new Audio(url);
+  quizAudio = new Audio(versionedAudioUrl(url));
   void quizAudio.play().catch(() => {});
 }
 

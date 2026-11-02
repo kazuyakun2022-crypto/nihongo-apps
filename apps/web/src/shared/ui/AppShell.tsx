@@ -37,9 +37,9 @@ const adminNav = [
     icon: "M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2zM7.5 13a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z",
   },
   {
-    href: "/admin/audit",
-    label: "Audit Log",
-    icon: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z",
+    href: "/admin/pantau",
+    label: "Pantau",
+    icon: "M4 20 V4 M4 20 H20 M8 16 V12 M12 16 V8 M16 16 V11",
     superAdminOnly: true,
   },
   {
@@ -64,6 +64,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ? adminNav.filter((item) => !item.superAdminOnly || isSuperAdmin)
     : studentNav;
   const isChatPage = pathname.startsWith("/ngobrol") || pathname.startsWith("/suara");
+  // Panel admin berisi tabel & data padat, jadi memakai seluruh lebar layar
+  const isWidePage = pathname.startsWith("/admin");
 
   return (
     <div className={styles.shell}>
@@ -87,7 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </ul>
       </nav>
-      <main className={`${styles.main} ${isChatPage ? styles.mainChat : ""}`}>
+      <main className={`${styles.main} ${isChatPage ? styles.mainChat : ""} ${isWidePage ? styles.mainWide : ""}`}>
         {!isChatPage && <InstallPrompt />}
         {children}
       </main>

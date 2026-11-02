@@ -20,17 +20,6 @@ export interface AdminUserItem {
   lastLoginAt: string | null;
 }
 
-export interface AuditLogItem {
-  id: string;
-  actorId: string;
-  actorName: string;
-  targetUserId: string | null;
-  targetUserName: string | null;
-  action: string;
-  details: Record<string, unknown> | null;
-  createdAt: string;
-}
-
 export interface AiPromptItem {
   id: number;
   levelId: number;
@@ -73,14 +62,6 @@ export const adminApi = {
     apiRequest<void>(`/admin/users/${userId}/unsuspend`, {
       method: "POST",
     }),
-
-  getAuditLogs: (params: { page?: number; pageSize?: number; action?: string } = {}) => {
-    const sp = new URLSearchParams();
-    if (params.page) sp.set("page", String(params.page));
-    if (params.pageSize) sp.set("pageSize", String(params.pageSize));
-    if (params.action) sp.set("action", params.action);
-    return apiRequest<{ items: AuditLogItem[]; total: number }>(`/admin/audit-logs?${sp.toString()}`);
-  },
 
   getAiPrompts: () => apiRequest<AiPromptItem[]>("/admin/ai-prompts"),
 
