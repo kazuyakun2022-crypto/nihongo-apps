@@ -2,9 +2,9 @@ import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
 import { planSpeech } from "../domain/speechPace";
 import { voiceTone } from "./voiceTone";
 
-export type Lang = "ja" | "id";
+type Lang = "ja" | "id";
 
-export interface Segment {
+interface Segment {
   lang: Lang;
   text: string;
 }
@@ -36,7 +36,7 @@ export function stripRomajiGloss(text: string): string {
 }
 
 /** Pecah teks campuran jadi potongan berbahasa Jepang dan non-Jepang; spasi & tanda baca ikut potongan sebelumnya. */
-export function splitByLanguage(text: string): Segment[] {
+function splitByLanguage(text: string): Segment[] {
   const segments: Segment[] = [];
   let current: { lang: Lang | null; text: string } = { lang: null, text: "" };
 

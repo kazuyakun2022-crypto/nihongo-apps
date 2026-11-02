@@ -10,12 +10,5 @@ services:
       - "5433:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-  # Suara Jepang Miu-chan (VOICEVOX, gratis & open-source). API: VOICEVOX_URL=http://localhost:50021
-  # Kredit wajib di aplikasi: "VOICEVOX:<nama karakter>" (lihat syarat tiap karakter di voicevox.hiroshiba.jp)
-  voicevox:
-    image: voicevox/voicevox_engine:cpu-amd64-0.26.0
-    restart: unless-stopped
-    ports:
-      - "50021:50021"
 volumes:
   db-data:

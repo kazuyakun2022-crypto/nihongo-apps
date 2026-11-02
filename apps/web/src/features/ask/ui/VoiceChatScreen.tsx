@@ -77,7 +77,6 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
     spoken,
     getSpeechProgress,
     error,
-    voiceCredit,
     isSupported,
     startListening,
     stopListening,
@@ -347,8 +346,6 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
         <p className={`${styles.keyHint} ${isActive || isBusy ? styles.keyHintHidden : ""}`}>
           atau tahan <kbd className={styles.kbd}>Spasi</kbd>
         </p>
-        {/* Kredit wajib suara Jepang VOICEVOX */}
-        {voiceCredit && <p className={styles.voiceCredit}>Suara Jepang: {voiceCredit}</p>}
       </div>
 
       {/* Panel transkrip — slide up overlay */}

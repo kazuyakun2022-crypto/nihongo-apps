@@ -52,9 +52,6 @@ import { MockAskProvider } from "../modules/ask/infrastructure/MockAskProvider";
 import { GroqTranscriber } from "../modules/ask/infrastructure/GroqTranscriber";
 import { loadLearnerProfile } from "../modules/ask/infrastructure/PrismaLearnerProfile";
 import { GeminiTts } from "../shared/infrastructure/geminiTts";
-import { ElevenLabsTts } from "../shared/infrastructure/elevenLabsTts";
-import { MixedVoice, elevenLabsIndonesian, geminiIndonesian, voicevoxIndonesian, type IndonesianVoice } from "../shared/infrastructure/mixedVoice";
-import { VoicevoxTts } from "../shared/infrastructure/voicevoxTts";
 import { AskQuestion } from "../modules/ask/application/AskUseCase";
 
 
@@ -155,23 +152,7 @@ export function buildContainer(env: Env, db: Db) {
     }),
   };
   const transcriber = env.GROQ_API_KEY ? new GroqTranscriber(env.GROQ_API_KEY) : null;
-  const elevenlabs = env.ELEVENLABS_API_KEY && env.ELEVENLABS_VOICE_ID ? new ElevenLabsTts(env.ELEVENLABS_API_KEY, env.ELEVENLABS_VOICE_ID, env.ELEVENLABS_MODEL) : null;
-  const gemini = env.GEMINI_API_KEY ? new GeminiTts(env.GEMINI_API_KEY) : null;
-  const voicevox = env.VOICEVOX_URL ? new VoicevoxTts(env.VOICEVOX_URL, env.VOICEVOX_SPEAKER) : null;
-  // Bagian Indonesia saat VOICEVOX aktif: mesin pilihan, lalu VOICEVOX sendiri (katakana) bila gagal/kuota habis
-  const indonesian: IndonesianVoice[] = [];
-  if (voicevox) {
-    if (env.VOICEVOX_INDONESIAN === "gemini" && gemini) indonesian.push(geminiIndonesian(gemini));
-    if (env.VOICEVOX_INDONESIAN === "elevenlabs" && elevenlabs) indonesian.push(elevenLabsIndonesian(elevenlabs));
-    indonesian.push(voicevoxIndonesian(voicevox));
-  }
-  const voices = {
-    // Bagian Jepang VOICEVOX + bagian Indonesia sesuai VOICEVOX_INDONESIAN
-    mixed: voicevox ? new MixedVoice(voicevox, indonesian) : null,
-    elevenlabs,
-    gemini,
-  };
-  const voiceMode = voices.mixed ? `voicevox+${indonesian.map((v) => v.name).join(">")}` : voices.elevenlabs ? "elevenlabs" : voices.gemini ? "gemini" : "edge";
+  const speaker = env.GEMINI_API_KEY ? new GeminiTts(env.GEMINI_API_KEY) : null;
   const convDeps = { repo: new PrismaConversationRepository(db), ai, clock, freeDailyLimit: env.FREE_DAILY_AI_SESSIONS };
   const conversation = {
     start: new StartConversation(convDeps),
@@ -201,7 +182,7 @@ export function buildContainer(env: Env, db: Db) {
   };
 
   const aiMode = env.ANTHROPIC_API_KEY ? "anthropic" : env.GROQ_API_KEY ? "groq" : env.GEMINI_API_KEY ? "gemini" : "mock";
-  return { accessTokens, auth, learning, srs, conversation, adminUsers, askUc, transcriber, voices, voiceMode, aiMode };
+  return { accessTokens, auth, learning, srs, conversation, adminUsers, askUc, transcriber, speaker, aiMode };
 }
 
 export type Container = ReturnType<typeof buildContainer>;

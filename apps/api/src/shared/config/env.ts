@@ -13,16 +13,6 @@ const schema = z.object({
   AI_MODEL: z.string().default("claude-haiku-5-5"),
   GEMINI_API_KEY: z.string().optional().default(""),
   GROQ_API_KEY: z.string().optional().default(""),
-  // Suara Miu-chan lewat ElevenLabs (aktif bila API key + voice ID diisi; kosong = Gemini TTS / Edge TTS)
-  ELEVENLABS_API_KEY: z.string().optional().default(""),
-  ELEVENLABS_VOICE_ID: z.string().optional().default(""),
-  ELEVENLABS_MODEL: z.string().default("eleven_flash_v2_5"),
-  // Bagian Jepang lewat VOICEVOX (gratis); aktif bila URL diisi.
-  // Lokal: docker compose up -d voicevox → http://localhost:50021. Speaker 8 = 春日部つむぎ (ノーマル).
-  VOICEVOX_URL: z.string().optional().default(""),
-  VOICEVOX_SPEAKER: z.coerce.number().int().min(0).default(8),
-  // Mesin bagian bahasa Indonesia saat VOICEVOX aktif. Bila gagal/kuota habis, dibacakan VOICEVOX (katakana).
-  VOICEVOX_INDONESIAN: z.enum(["gemini", "elevenlabs", "voicevox"]).default("gemini"),
   FREE_DAILY_AI_SESSIONS: z.coerce.number().default(5),
   GOOGLE_CLIENT_ID: z.string().optional().default(""),
   GOOGLE_CLIENT_SECRET: z.string().optional().default(""),
