@@ -172,11 +172,19 @@ export function MasteryGate() {
               <Alert tone="info">
                 {status.cooldownUntil
                   ? `Bisa mencoba lagi pada ${new Date(status.cooldownUntil).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}.`
-                  : `Selesaikan dulu minimal ${status.minChapterPct}% bab Pemula (sekarang ${status.chaptersCompleted}/${status.chaptersTotal} bab).`}
+                  : status.chapterPct < status.minChapterPct
+                    ? `Selesaikan dulu minimal ${status.minChapterPct}% bab Pemula (sekarang ${status.chaptersCompleted}/${status.chaptersTotal} bab).`
+                    : "Satu langkah lagi: lulus Gerbang Tulis dulu, yaitu menulis hiragana & katakana dengan tangan."}
               </Alert>
-              <Link href="/belajar" className={styles.backLink}>
-                ← Lanjutkan belajar
-              </Link>
+              {!status.cooldownUntil && status.chapterPct >= status.minChapterPct && !status.workbookPassed ? (
+                <Link href="/belajar/gerbang-tulis" className={styles.primaryLink}>
+                  Kerjakan Gerbang Tulis
+                </Link>
+              ) : (
+                <Link href="/belajar" className={styles.backLink}>
+                  ← Lanjutkan belajar
+                </Link>
+              )}
             </>
           )}
         </section>

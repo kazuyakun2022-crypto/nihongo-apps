@@ -7,6 +7,7 @@ import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
 import { EXERCISE_TYPES, isAnswerCorrect, type ExerciseType } from "../../learning/domain/Exercise";
 import { stringList, toChapterExercise } from "../../learning/infrastructure/PrismaLearningRepository";
+import { workbookPassed } from "./workbookGateRoutes";
 import { EXAM_SECTIONS, LATE_GRACE_MS, examTotal, parseSectionRules, pickQuestions, sectionMin } from "../domain/SectionRules";
 
 /**
@@ -91,6 +92,9 @@ export function levelExamRoutes() {
       where: { userId: user.id, isWeak: true },
     });
 
+    // Gerbang Tulis: syarat menulis tangan sebelum ujian naik level
+    const workbookOk = await workbookPassed(user.id, levelId);
+
     let ready: "yes" | "almost" | "no";
     let suggestion: string;
 
@@ -98,6 +102,9 @@ export function levelExamRoutes() {
       const need = Math.ceil(chaptersTotal * 0.8) - chaptersCompleted;
       ready = "no";
       suggestion = `Selesaikan dulu minimal 80% bab (${need} bab lagi).`;
+    } else if (!workbookOk) {
+      ready = "no";
+      suggestion = "Lulus Gerbang Tulis dulu: tulis huruf-huruf level ini dengan tangan.";
     } else if (avgQuizScore < 80 || weakCards >= 10) {
       ready = "almost";
       suggestion = avgQuizScore < 80
@@ -115,7 +122,8 @@ export function levelExamRoutes() {
       weakCards,
       ready,
       suggestion,
-      canTakeTest: pct >= 80,
+      workbookPassed: workbookOk,
+      canTakeTest: pct >= 80 && workbookOk,
     });
   }));
 
@@ -153,9 +161,14 @@ export function levelExamRoutes() {
         else break;
       }
 
+      // Ujian naik level baru terbuka setelah Gerbang Tulis lulus (penempatan tidak memakai gerbang)
+      const workbookOk = type === "level_up" ? await workbookPassed(user.id, levelId) : true;
+      if (!workbookOk) canTake = false;
+
       const rules = parseSectionRules(config.sectionRules);
       res.json({
         canTake,
+        workbookPassed: workbookOk,
         cooldownUntil,
         consecutiveFails,
         config: {
@@ -174,6 +187,9 @@ export function levelExamRoutes() {
       const levelId = levelIdQuery(req.query.levelId);
       const user = learner(req);
       const config = await examConfig(levelId, type);
+      if (type === "level_up" && !(await workbookPassed(user.id, levelId))) {
+        throw Errors.forbidden("Lulus Gerbang Tulis level ini dulu sebelum ikut tes naik tahap.");
+      }
 
       const bank = await prisma.examQuestion.findMany({
         where: { levelId, examType: type, status: "published" },

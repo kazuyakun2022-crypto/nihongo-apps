@@ -14,6 +14,7 @@ import { adminUserRoutes } from "../modules/users/presentation/adminUserRoutes";
 import { learnerMonitorRoutes } from "../modules/monitoring/learnerMonitorRoutes";
 import { levelExamRoutes } from "../modules/exam/presentation/levelExamRoutes";
 import { masteryGateRoutes } from "../modules/exam/presentation/masteryGateRoutes";
+import { workbookGateRoutes } from "../modules/exam/presentation/workbookGateRoutes";
 import { askRoutes } from "../modules/ask/presentation/askRoutes";
 import { contentAdminRoutes } from "../modules/content/presentation/contentAdminRoutes";
 import { adminMediaRoutes, publicMediaRoutes } from "../modules/content/presentation/mediaRoutes";
@@ -50,6 +51,7 @@ export function createApp(env: Env, c: Container) {
   );
   // Foto lembar tulisan butuh batas lebih besar; dipasang lebih dulu sehingga parser umum di bawah melewatinya
   app.use("/api/tulis", express.json({ limit: "3mb" }));
+  app.use("/api/exam/workbook", express.json({ limit: "3mb" }));
   app.use(express.json({ limit: "100kb" }));
   app.use(cookieParser());
 
@@ -82,6 +84,7 @@ export function createApp(env: Env, c: Container) {
   app.use("/api/srs", auth, srsRoutes(c.srs));
   app.use("/api/conversation", auth, conversationRoutes(c.conversation));
   app.use("/api/exam/mastery-gate", auth, masteryGateRoutes());
+  app.use("/api/exam/workbook", auth, workbookGateRoutes(env.GEMINI_API_KEY));
   app.use("/api/exam", auth, levelExamRoutes());
   app.use("/api/media", publicMediaRoutes());
   app.use("/api/kamus", auth, kamusRoutes());

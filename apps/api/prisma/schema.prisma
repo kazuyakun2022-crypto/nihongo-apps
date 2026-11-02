@@ -84,6 +84,8 @@ enum ExamType {
   placement
   level_up
   jlpt_sim
+  /// Gerbang tulis tangan (Workbook Gate): syarat sebelum ujian naik level
+  workbook
 }
 
 enum ExamSection {

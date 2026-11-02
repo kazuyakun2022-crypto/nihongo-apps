@@ -6,7 +6,8 @@ export type ExamSection = "kosakata" | "tata_bahasa" | "membaca" | "mendengar";
 export type ItemKind = "block" | "vocab" | "kanji" | "grammar" | "quiz";
 export type LessonBlockType = "teks" | "gambar" | "dialog" | "tips" | "huruf";
 /** Tes naik tahap atau tes penempatan saat daftar; masing-masing punya aturan dan bank soal sendiri. */
-export type ExamType = "level_up" | "placement";
+/** workbook = Gerbang Tulis (tulisan tangan): hanya aturan, tanpa bank soal. */
+export type ExamType = "level_up" | "placement" | "workbook";
 
 export interface ContentLevel {
   id: number;
@@ -18,6 +19,7 @@ export interface ContentLevel {
   placementQuestions: number;
   hasExam: boolean;
   hasPlacement: boolean;
+  hasWorkbook: boolean;
 }
 
 export interface ChapterRow {

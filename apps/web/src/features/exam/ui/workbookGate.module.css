@@ -1,0 +1,565 @@
+/* Gerbang Tulis (Workbook Gate) */
+
+.wrap {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: var(--space-4) 0 var(--space-8);
+  width: 100%;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.card > * {
+  width: 100%;
+}
+
+.card > img,
+.card > :first-child {
+  width: auto;
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: 0.08em;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-heavy);
+}
+
+.titleSm {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+}
+
+.lead {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.muted {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.rules {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+  text-align: left;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-size: var(--font-size-sm);
+}
+
+.rules li::before {
+  content: "✎ ";
+  color: var(--color-primary);
+}
+
+/* ── Pilihan jalur ── */
+.modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-3);
+}
+
+.mode {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.mode span:last-child {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.mode:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.mode:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.mode:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.modeIcon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.backLink,
+.primaryLink {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.primaryLink {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  text-decoration: none;
+  box-shadow: 0 3px 0 var(--color-primary-strong);
+}
+
+.actions {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+}
+
+/* ── Jalur kanvas ── */
+.canvasStage {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.progressRow {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.progressLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dot {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.dot[data-done] {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.dot[data-active] {
+  box-shadow: 0 0 0 3px var(--color-focus);
+}
+
+.prompt {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-soft);
+  text-align: center;
+}
+
+.promptHint {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.promptReading {
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-2xl, 1.75rem);
+  font-weight: var(--font-weight-heavy);
+  overflow-wrap: anywhere;
+}
+
+.promptMeaning {
+  color: var(--color-text-muted);
+}
+
+.padWrap {
+  width: min(100%, 22rem);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+/* Grid juuji 2×2: garis bantu silang di tengah kotak */
+.pad {
+  width: 100%;
+  height: 100%;
+  display: block;
+  color: var(--color-text);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(to right, transparent calc(50% - 0.5px), var(--color-border) calc(50% - 0.5px), var(--color-border) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 0.5px), var(--color-border) calc(50% - 0.5px), var(--color-border) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    var(--color-surface);
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.strokeCount {
+  margin: 0;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.padTools,
+.navRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.navRow {
+  justify-content: space-between;
+}
+
+.warnText {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Jalur kertas ── */
+.sheetList {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.sheetItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+}
+
+.sheetItem[data-done] {
+  border-color: var(--color-success);
+}
+
+.sheetInfo {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+
+.sheetPrompts {
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.sheetActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ── Hasil ── */
+.scoreBox {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+}
+
+.scoreNum {
+  font-size: 3.5rem;
+  font-weight: var(--font-weight-heavy);
+  line-height: 1;
+  color: var(--color-danger);
+}
+
+.scoreBox[data-ok] .scoreNum {
+  color: var(--color-success);
+}
+
+.charGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3.25rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Hijau = rapi, kuning = perlu dirapikan, merah = salah; garis kiri tebal supaya tidak bergantung pada warna saja */
+.charCell {
+  display: grid;
+  justify-items: center;
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  border-left-width: 6px;
+  background: var(--color-surface-raised);
+}
+
+.charCell span {
+  font-family: var(--font-japanese);
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.charCell small {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.charCell[data-status="rapi"] {
+  border-color: var(--color-success);
+}
+
+.charCell[data-status="kurang"] {
+  border-color: var(--color-accent);
+}
+
+.charCell[data-status="salah"],
+.charCell[data-status="kosong"] {
+  border-color: var(--color-danger);
+}
+
+.notes {
+  display: grid;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.notesTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+}
+
+.notes ul {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-sm);
+}
+
+.notes li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.noteChar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-japanese);
+  font-size: 1.25rem;
+  background: var(--color-accent-soft);
+}
+
+.noteChar[data-status="salah"],
+.noteChar[data-status="kosong"] {
+  color: var(--color-danger);
+  background: var(--color-surface-muted);
+}
+
+/* Konfeti CSS saat lulus (sama dengan hasil tes naik tahap) */
+.confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.confetti::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, #f9a825 2px, transparent 2px),
+    radial-gradient(circle, #e53935 2px, transparent 2px),
+    radial-gradient(circle, #43a047 2px, transparent 2px),
+    radial-gradient(circle, #1e88e5 2px, transparent 2px),
+    radial-gradient(circle, #8e24aa 2px, transparent 2px);
+  background-size: 50px 50px, 70px 70px, 60px 60px, 80px 80px, 55px 55px;
+  background-position: 0 -10px, 25px 5px, 10px 15px, 40px -5px, 20px 10px;
+  animation: confettiFall 2s ease-out forwards;
+  opacity: 0.5;
+}
+
+@keyframes confettiFall {
+  from {
+    transform: translateY(-20px);
+    opacity: 0.7;
+  }
+  to {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti::before {
+    animation: none;
+    opacity: 0;
+  }
+  .mode {
+    transition: none;
+  }
+}
+
+/* ── Kisi gambar sendiri ── */
+.cardLeft {
+  justify-items: stretch;
+  text-align: left;
+}
+
+.drawGuide {
+  display: grid;
+  grid-template-columns: minmax(7rem, 9rem) 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+@media (max-width: 30rem) {
+  .drawGuide {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+.drawPreview {
+  width: 100%;
+  max-width: 9rem;
+  height: auto;
+}
+
+.drawFrame,
+.drawLine {
+  fill: none;
+  stroke: var(--color-text);
+}
+
+.drawFrame {
+  stroke-width: 1.6;
+}
+
+.drawLine {
+  stroke-width: 1;
+}
+
+.drawNo {
+  font-size: 7px;
+  font-weight: 700;
+  fill: var(--color-text-muted);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.drawNo[data-unused] {
+  opacity: 0.4;
+}
+
+.drawSteps {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.promptList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.promptList li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--space-2);
+  align-items: baseline;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-border);
+}
+
+.promptList li > .muted {
+  grid-column: 2;
+  font-size: 0.75rem;
+}
+
+.promptNo {
+  grid-row: span 2;
+  min-width: 1.6rem;
+  font-weight: var(--font-weight-heavy);
+  color: var(--color-primary);
+}
+
+.promptText {
+  font-family: var(--font-japanese);
+  font-weight: var(--font-weight-bold);
+  overflow-wrap: anywhere;
+}

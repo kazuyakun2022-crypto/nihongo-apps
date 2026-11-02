@@ -107,6 +107,18 @@
   border-radius: var(--radius-md);
 }
 
+/* Syarat Gerbang Tulis sebelum tes naik tahap */
+.gateStep {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.gateStep[data-done] {
+  color: var(--color-success);
+}
+
 .warning {
   font-size: var(--font-size-sm);
   margin: 0;

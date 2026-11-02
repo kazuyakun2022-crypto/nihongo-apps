@@ -16,11 +16,22 @@ import styles from "./tulisBuku.module.css";
  * Foto diperiksa server (Gemini): kotak yang salah/kurang rapi ditandai di foto, lalu diberi nilai per huruf.
  */
 
-interface Sheet {
+export interface Sheet {
   id: string;
   script: "hiragana" | "katakana" | "kanji";
   title: string;
-  chars: { char: string; reading: string; strokes?: number }[];
+  chars: { char: string; reading: string; strokes?: number; meaning?: string }[];
+}
+
+/**
+ * Lembar ujian Gerbang Tulis: kisi dan penanda sama persis dengan lembar latihan (pemindai & server tidak berubah),
+ * tetapi kotak contoh hanya mencetak bacaan + arti dan tidak ada huruf abu-abu, karena huruf ditulis dari ingatan.
+ */
+export interface ExamPrint {
+  levelCode: string;
+  index: number;
+  total: number;
+  requiredWrites: number;
 }
 
 /** Lembar cetak A4 lebih lebar: 1 contoh + 9 kotak (3 untuk menebalkan), lalu satu baris "sekali lagi". */
@@ -72,6 +83,7 @@ function buildSheets(): Sheet[] {
 }
 
 const SCRIPT_LABEL: Record<Sheet["script"], string> = { hiragana: "Hiragana", katakana: "Katakana", kanji: "Kanji N5" };
+const SCRIPT_JA_LABEL: Record<Sheet["script"], string> = { hiragana: "Hiragana", katakana: "Katakana", kanji: "Kanji" };
 
 type Step = "pilih" | "pindai" | "periksa" | "hasil";
 
@@ -155,19 +167,28 @@ const CHECK_STAGES = [
 ];
 
 /** Lembar A4 untuk dicetak: dekoratif tapi tetap jelas di printer hitam-putih. */
-function PrintWorksheet({ sheet }: { sheet: Sheet }) {
+function PrintWorksheet({ sheet, exam }: { sheet: Sheet; exam?: ExamPrint }) {
   const seed = [...sheet.id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
   const proverb = PROVERBS[seed % PROVERBS.length];
-  const subtitle = sheet.script === "kanji" ? `N5 · ${sheet.title}` : `${sheet.chars[0].char}行`;
+  const subtitle = exam ? `${exam.levelCode}　しけん ${exam.index + 1}/${exam.total}` : sheet.script === "kanji" ? `N5 · ${sheet.title}` : `${sheet.chars[0].char}行`;
+  const trace = exam ? 0 : PRINT_TRACE;
   return (
     <div className={styles.printSheet} data-print-sheet data-dense={sheet.chars.length > 5 || undefined}>
       <header className={styles.pHead}>
         <div className={styles.pHeadText}>
           <p className={styles.pEyebrow}>
-            <span lang="ja">れんしゅうちょう</span> · Lembar Latihan Menulis
+            {exam ? (
+              <>
+                <span lang="ja">しけん</span> · Gerbang Tulis
+              </>
+            ) : (
+              <>
+                <span lang="ja">れんしゅうちょう</span> · Lembar Latihan Menulis
+              </>
+            )}
           </p>
           <h1 className={styles.pTitle}>
-            {SCRIPT_LABEL[sheet.script]} · {sheet.title}
+            {exam ? `${SCRIPT_JA_LABEL[sheet.script]} · Lembar ${exam.index + 1} dari ${exam.total}` : `${SCRIPT_LABEL[sheet.script]} · ${sheet.title}`}
           </h1>
           <p className={styles.pSubtitle} lang="ja">
             {SCRIPT_JA[sheet.script]}　{subtitle}
@@ -191,20 +212,37 @@ function PrintWorksheet({ sheet }: { sheet: Sheet }) {
         </div>
       </header>
 
-      <ol className={styles.pSteps}>
-        <li>
-          <b>1</b> Lihat contoh &amp; urutan goresan
-        </li>
-        <li>
-          <b>2</b> Tebalkan huruf abu-abu
-        </li>
-        <li>
-          <b>3</b> Tulis sendiri di kotak kosong
-        </li>
-        <li>
-          <b>☆</b> Warnai bintang kalau rapi
-        </li>
-      </ol>
+      {exam ? (
+        <ol className={styles.pSteps}>
+          <li>
+            <b>1</b> Baca bacaan &amp; arti di kotak merah
+          </li>
+          <li>
+            <b>2</b> Tulis hurufnya {exam.requiredWrites}× di kotak 1–{exam.requiredWrites} baris atas
+          </li>
+          <li>
+            <b>3</b> Dari ingatan, tanpa melihat contoh
+          </li>
+          <li>
+            <b>☆</b> Foto lembar ini di aplikasi
+          </li>
+        </ol>
+      ) : (
+        <ol className={styles.pSteps}>
+          <li>
+            <b>1</b> Lihat contoh &amp; urutan goresan
+          </li>
+          <li>
+            <b>2</b> Tebalkan huruf abu-abu
+          </li>
+          <li>
+            <b>3</b> Tulis sendiri di kotak kosong
+          </li>
+          <li>
+            <b>☆</b> Warnai bintang kalau rapi
+          </li>
+        </ol>
+      )}
 
       {/* Penanda hitam di keempat sudut: server memakainya untuk meluruskan foto dan menghitung letak tiap kotak.
           Posisinya harus sama dengan PRINT_LAYOUT di apps/api/src/modules/tulis/sheetLayout.ts. */}
@@ -217,18 +255,25 @@ function PrintWorksheet({ sheet }: { sheet: Sheet }) {
         {sheet.chars.map((c) => (
           <section key={c.char} className={styles.pChar}>
             <div className={styles.pRow}>
-              <div className={`${styles.box} ${styles.boxModel}`}>
-                <span>{c.char}</span>
-                <small>{c.reading}</small>
-              </div>
+              {exam ? (
+                <div className={`${styles.box} ${styles.boxModel} ${styles.boxPrompt}`}>
+                  <span>{c.reading}</span>
+                  {c.meaning ? <small>{c.meaning}</small> : null}
+                </div>
+              ) : (
+                <div className={`${styles.box} ${styles.boxModel}`}>
+                  <span>{c.char}</span>
+                  <small>{c.reading}</small>
+                </div>
+              )}
               {Array.from({ length: PRINT_BOXES }, (_, i) => (
                 <div key={i} className={styles.box}>
-                  {i < PRINT_TRACE && <span className={styles.trace}>{c.char}</span>}
+                  {i < trace && <span className={styles.trace}>{c.char}</span>}
                 </div>
               ))}
               <div className={styles.pRate}>
                 <span aria-hidden="true">☆☆☆</span>
-                {c.strokes ? <small>{c.strokes} goresan</small> : null}
+                {c.strokes && !exam ? <small>{c.strokes} goresan</small> : null}
               </div>
             </div>
             <div className={styles.pRow}>
@@ -250,7 +295,7 @@ function PrintWorksheet({ sheet }: { sheet: Sheet }) {
           <small>{proverb.id}</small>
         </div>
         <ul className={styles.pChecklist}>
-          <li>Semua kotak sudah terisi</li>
+          <li>{exam ? `Kotak 1–${exam.requiredWrites} sudah terisi` : "Semua kotak sudah terisi"}</li>
           <li>Tulisan di dalam kotak</li>
           <li>Sudah difoto di aplikasi</li>
         </ul>
@@ -265,10 +310,10 @@ function PrintWorksheet({ sheet }: { sheet: Sheet }) {
 }
 
 /** Lembar cetak dipasang langsung di <body> supaya saat dicetak tidak terpotong oleh tata letak aplikasi yang bergulir. */
-function PrintSheet({ sheet }: { sheet: Sheet }) {
+export function PrintSheet({ sheet, exam }: { sheet: Sheet; exam?: ExamPrint }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  return mounted ? createPortal(<PrintWorksheet sheet={sheet} />, document.body) : null;
+  return mounted ? createPortal(<PrintWorksheet sheet={sheet} exam={exam} />, document.body) : null;
 }
 
 export function TulisBuku() {

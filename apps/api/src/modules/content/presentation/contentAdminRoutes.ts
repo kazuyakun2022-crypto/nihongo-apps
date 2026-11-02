@@ -132,8 +132,9 @@ const examConfigSchema = z.object({
 });
 
 /** Jenis ujian yang dikelola: tes naik tahap (bawaan) atau tes penempatan saat daftar. */
+/** workbook = Gerbang Tulis: hanya konfigurasi (jumlah huruf, ambang, jeda), tanpa bank soal. */
 const examTypeQuery = (query: unknown) =>
-  parseBody(z.object({ type: z.enum(["level_up", "placement"]).default("level_up") }), query).type;
+  parseBody(z.object({ type: z.enum(["level_up", "placement", "workbook"]).default("level_up") }), query).type;
 
 const text = (max: number) => z.string().trim().min(1).max(max);
 const onboardingSchema = z
@@ -207,6 +208,7 @@ export function contentAdminRoutes() {
         placementQuestions: questionCounts.find((q) => q.levelId === l.id && q.examType === "placement")?._count._all ?? 0,
         hasExam: configs.some((c) => c.levelId === l.id && c.type === "level_up"),
         hasPlacement: configs.some((c) => c.levelId === l.id && c.type === "placement"),
+        hasWorkbook: configs.some((c) => c.levelId === l.id && c.type === "workbook"),
       })),
     });
   }));
@@ -451,7 +453,9 @@ export function contentAdminRoutes() {
     const levelId = levelIdParam(req.params.levelId);
     const data = parseBody(examQuestionSchema, req.body);
     await checkExercise({ levelId }, data);
-    const question = await prisma.examQuestion.create({ data: { ...data, levelId, examType: examTypeQuery(req.query), options: data.options } });
+    const examType = examTypeQuery(req.query);
+    if (examType === "workbook") throw Errors.validation("Gerbang Tulis tidak memakai bank soal.");
+    const question = await prisma.examQuestion.create({ data: { ...data, levelId, examType, options: data.options } });
     res.status(201).json({ question });
   }));
 

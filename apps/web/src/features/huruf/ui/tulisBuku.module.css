@@ -945,6 +945,25 @@
     font-size: 20pt;
   }
 
+  /* Lembar ujian Gerbang Tulis: kotak contoh berisi bacaan (bukan huruf), jadi teksnya kecil dan boleh dua baris */
+  .printSheet .boxModel.boxPrompt span {
+    max-width: calc(var(--p-box) - 1mm);
+    font-size: 8.5pt;
+    font-weight: 700;
+    line-height: 1.15;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .printSheet .boxModel.boxPrompt small {
+    white-space: normal;
+    line-height: 1.1;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
   .pRate {
     display: grid;
     justify-items: center;

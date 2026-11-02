@@ -3,6 +3,7 @@ import { compareChars, DIMENSION_OF, DISTINCT, ISSUE_CODES, ISSUES, lookalikes, 
 import { measureModel, measureWriting, placementScore, proportionScore, type GlyphShape } from "./cellMetrics";
 import { buildNekoFeedback, type MainIssue, type NekoFeedback } from "./nekoFeedback";
 import { apply, cellOrigin, composeLabeled, composePair, geometry, homography, inkFit, inkRatio, PRINT_LAYOUT, rectify, type Geometry, type Matrix, type Point, type RawImage } from "./sheetLayout";
+import { renderReference } from "./kanjiVg";
 
 /**
  * Pemeriksaan tulisan tangan dari foto lembar latihan (Tulis di Buku).
@@ -23,6 +24,19 @@ export interface SheetChar {
   strokes?: number;
   /** Urutan goresan, mis. "1. Garis mendatar pendek …". */
   tips?: string[];
+}
+
+/**
+ * Lembar ujian (Gerbang Tulis): kotak contoh mencetak bacaan, bukan hurufnya, dan tidak ada huruf abu-abu untuk
+ * ditebalkan. Contoh bentuk yang benar digambar dari KanjiVG di server.
+ */
+export interface ExamSheetOptions {
+  /** Path goresan KanjiVG per huruf (urutan sama dengan chars); null = tidak tersedia. */
+  references: (string[] | null)[];
+  /** Bobot rubrik untuk nilai kotak (menggantikan WEIGHTS). */
+  weights: Record<Dimension, number>;
+  /** Berapa kali setiap huruf wajib ditulis (kotak A1, A2, …); kotak wajib yang kosong bernilai 0. */
+  requiredWrites: number;
 }
 
 /** Koordinat di foto, skala 0–1000: [atas, kiri, bawah, kanan]. */
@@ -394,7 +408,7 @@ function toCell(p: RawProblem, c: SheetChar, base: Pick<Cell, "label" | "box">):
  * Nilai 5 dimensi satu kotak. Posisi tengah dan proporsi diukur langsung dari gambar (deterministik); kelengkapan dan
  * akhiran goresan serta kerapian berasal dari kode masalah penilai AI.
  */
-function scoreCell(cell: Cell, writing: GlyphShape | null, model: GlyphShape | null): Cell {
+function scoreCell(cell: Cell, writing: GlyphShape | null, model: GlyphShape | null, weights: Record<Dimension, number> = WEIGHTS): Cell {
   if (cell.status === "kosong") return { ...cell, dims: null, score: 0 };
   const wrong = cell.status === "salah";
   const count = (d: Dimension) => cell.issues.filter((i) => DIMENSION_OF[i] === d).length;
@@ -418,11 +432,11 @@ function scoreCell(cell: Cell, writing: GlyphShape | null, model: GlyphShape | n
   const score = wrong
     ? 0
     : Math.round(
-        WEIGHTS.strokeCount * dims.strokeCountScore +
-          WEIGHTS.strokeEnding * dims.strokeEndingScore +
-          WEIGHTS.proportion * dims.proportionScore +
-          WEIGHTS.centerAlignment * dims.centerAlignmentScore +
-          WEIGHTS.legibility * dims.legibilityScore,
+        weights.strokeCount * dims.strokeCountScore +
+          weights.strokeEnding * dims.strokeEndingScore +
+          weights.proportion * dims.proportionScore +
+          weights.centerAlignment * dims.centerAlignmentScore +
+          weights.legibility * dims.legibilityScore,
       );
   return { ...next, dims, score };
 }
@@ -464,13 +478,15 @@ function quadrantArea(q: Quadrant, B: number): [number, number, number, number] 
   return [q.includes("kanan") ? B / 2 : 0, q.includes("bawah") ? B / 2 : 0, B / 2, B / 2];
 }
 
-function buildChar(c: SheetChar, cells: Cell[], row: Box | null, best: Box | null, attempt: number, focusOf: (cell: Cell) => Box | null): CharResult {
+function buildChar(c: SheetChar, cells: Cell[], row: Box | null, best: Box | null, attempt: number, focusOf: (cell: Cell) => Box | null, required = 0): CharResult {
   const counts: Record<CellStatus, number> = { rapi: 0, kurang: 0, salah: 0, kosong: 0 };
   for (const x of cells) counts[x.status]++;
   const written = cells.length - counts.kosong;
-  const score = written ? Math.round(cells.reduce((n, x) => n + x.score, 0) / cells.length) : 0;
+  // Lembar ujian: rata-rata kotak yang ditulis, minimal sebanyak kotak wajib (kotak wajib yang kosong = 0)
+  const score = written ? Math.round(cells.reduce((n, x) => n + x.score, 0) / (required ? Math.max(written, required) : cells.length)) : 0;
+  const requiredCell = (x: Cell) => x.label[0] === "A" && Number(x.label.slice(1)) <= required;
   const marks = cells.flatMap((x): CheckMark[] =>
-    x.status === "rapi" || !x.box
+    x.status === "rapi" || !x.box || (required > 0 && x.status === "kosong" && !requiredCell(x))
       ? []
       : [
           {
@@ -602,21 +618,27 @@ async function checkMarked(
   judgeModels: ModelChoice[],
   history: Record<string, number>,
   debug?: Debug,
+  exam?: ExamSheetOptions,
 ): Promise<CheckResult> {
   const cols = PRINT_LAYOUT.cols;
+  const traced = exam ? 0 : TRACED_COLS;
   const side = g.box + 2 * CELL_PAD;
   const grab = (x: number, y: number) => rectify(img, h, { x: x - CELL_PAD, y: y - CELL_PAD, w: side, h: side }, CELL_SCALE);
-  const sheets = chars.map((_, ci) => {
-    const cells = [0, 1].map((l) => Array.from({ length: cols }, (_, k) => grab(...cellOrigin(g, ci, l, k))));
-    const [mx, my] = cellOrigin(g, ci, 0, -1);
-    const modelImg = grab(mx, my);
-    return { cells, modelImg, labeled: composeLabeled(modelImg, cells) };
-  });
+  // Lembar ujian tidak mencetak hurufnya: contoh digambar dari KanjiVG seukuran potongan kotak
+  const reference = (ci: number, scale: number) => renderReference(exam?.references[ci] ?? [], Math.round(side * scale), Math.round(CELL_PAD * scale));
+  const sheets = await Promise.all(
+    chars.map(async (_, ci) => {
+      const cells = [0, 1].map((l) => Array.from({ length: cols }, (_, k) => grab(...cellOrigin(g, ci, l, k))));
+      const [mx, my] = cellOrigin(g, ci, 0, -1);
+      const modelImg = exam ? await reference(ci, CELL_SCALE) : grab(mx, my);
+      return { cells, modelImg, labeled: composeLabeled(modelImg, cells) };
+    }),
+  );
   // Tinta per kotak (tanpa tepi kotak)
   const pad = Math.round(CELL_PAD * CELL_SCALE);
   const ink = sheets.map((s) => s.cells.map((row) => row.map((c) => inkRatio(c, pad, pad, c.width - 2 * pad))));
-  // Ukuran deterministik (grid juuji): huruf contoh cetak dan tulisan di tiap kotak
-  const models = sheets.map((s) => measureModel(s.modelImg, pad));
+  // Ukuran deterministik (grid juuji): huruf contoh (cetak, atau KanjiVG di lembar ujian) dan tulisan di tiap kotak
+  const models = sheets.map((s, ci) => (exam ? (exam.references[ci] ? measureWriting(s.modelImg, pad) : null) : measureModel(s.modelImg, pad)));
   const shapes = sheets.map((s) => s.cells.map((row) => row.map((c) => measureWriting(c, pad))));
   type Variant = 0 | 1 | 2;
   const encode = (image: RawImage, variant: Variant) => {
@@ -632,9 +654,13 @@ async function checkMarked(
     {
       text: `Kamu guru menulis ${SCRIPT_NAME[script]} yang teliti dan adil untuk pelajar Indonesia pemula.
 Berikut ${chars.length} gambar hasil pindaian lembar latihan, satu gambar per huruf. Di setiap gambar:
-- kotak paling kiri (berbingkai merah) = contoh cetak, BUKAN tulisan siswa; pakai sebagai pembanding bentuk.
+- kotak paling kiri (berbingkai merah) = contoh ${exam ? "bentuk yang benar (digambar komputer)" : "cetak"}, BUKAN tulisan siswa; pakai sebagai pembanding bentuk.
 - di kanannya 2 baris kotak tulisan, baris A (atas) dan B (bawah), kolom bernomor 1–9 di atasnya. Sebut kotak dengan
-  label seperti "A3" atau "B7" (huruf baris B tergambar seperti "b"). Kotak A1–A3 berisi huruf abu-abu cetak untuk ditebalkan; kotak lain ditulis sendiri.
+  label seperti "A3" atau "B7" (huruf baris B tergambar seperti "b"). ${
+    exam
+      ? `Ini lembar UJIAN: siswa menulis dari ingatan di kotak A1–A${exam.requiredWrites}; kotak lain boleh kosong dan kosong di sana BUKAN masalah.`
+      : "Kotak A1–A3 berisi huruf abu-abu cetak untuk ditebalkan; kotak lain ditulis sendiri."
+  }
 Untuk setiap gambar, cantumkan HANYA kotak yang bermasalah di problems (field cell = labelnya), dan best = label kotak
 tulisan terbaik. Variasi kecil gaya tulisan tangan tetap dianggap rapi; tandai "kurang" hanya bila guru memang akan
 mencoretnya.
@@ -674,14 +700,14 @@ ${RULES}`,
   const verdicts = new Map<string, (Verdict | undefined)[]>();
   if (candidates.length) {
     const grabHi = (x: number, y: number) => rectify(img, h, { x: x - CELL_PAD, y: y - CELL_PAD, w: side, h: side }, VERIFY_SCALE);
-    const modelHi = chars.map((_, ci) => grabHi(...cellOrigin(g, ci, 0, -1)));
+    const modelHi = await Promise.all(chars.map((_, ci) => (exam ? reference(ci, VERIFY_SCALE) : grabHi(...cellOrigin(g, ci, 0, -1)))));
     const pairs = candidates.map(({ ci, l, k }) => composePair(modelHi[ci], grabHi(...cellOrigin(g, ci, l, k))));
     const pairJpegs = await Promise.all(([0, 1] as const).map((variant) => Promise.all(pairs.map((image) => encode(image, variant)))));
     const used = [...new Set(candidates.map((x) => x.ci))];
     const verifyParts = (variant: 0 | 1): Part[] => [
       {
         text: `Kamu guru menulis ${SCRIPT_NAME[script]} yang teliti dan adil untuk pelajar Indonesia pemula. Ini PEMERIKSAAN ULANG
-kotak-kotak yang dicurigai bermasalah. Setiap gambar: KIRI = huruf contoh cetak (bentuk yang benar), KANAN = tulisan siswa
+kotak-kotak yang dicurigai bermasalah. Setiap gambar: KIRI = huruf contoh ${exam ? "(digambar komputer)" : "cetak"} (bentuk yang benar), KANAN = tulisan siswa
 di satu kotak. Banyak kecurigaan ternyata keliru, jadi periksa dengan teliti dan adil.
 Huruf yang dilatih:
 ${used.map((ci) => `- ${charInfo(chars[ci])}`).join("\n")}
@@ -694,7 +720,7 @@ Untuk "kurang"/"salah" isi juga issues, stroke, quadrant, dan detail seperti atu
 ${RULES}`,
       },
       ...candidates.flatMap(({ ci, l, k, id }, i): Part[] => [
-        { text: `[${id}] seharusnya ${chars[ci].char} (${chars[ci].reading}), kotak ${l ? "B" : "A"}${k + 1}${l === 0 && k < TRACED_COLS ? " (kotak tebalkan)" : ""}` },
+        { text: `[${id}] seharusnya ${chars[ci].char} (${chars[ci].reading}), kotak ${l ? "B" : "A"}${k + 1}${l === 0 && k < traced ? " (kotak tebalkan)" : ""}` },
         { inline_data: { mime_type: "image/jpeg", data: pairJpegs[variant][i].toString("base64") } },
       ]),
     ];
@@ -738,11 +764,11 @@ ${RULES}`,
         // Kosong dipastikan dengan tinta; tulisan yang dinilai salah/kurang tetap dipertahankan
         if (cell.status === "rapi" && v < INK_EMPTY) cell = { ...cell, status: "kosong" };
         else if (cell.status === "kosong" && v >= INK_WRITTEN) cell = { ...cell, status: "rapi" };
-        cells.push(scoreCell(cell, shapes[ci][l][k], models[ci]));
+        cells.push(scoreCell(cell, shapes[ci][l][k], models[ci], exam?.weights));
       }
     }
     // Tulisan terbaik dipilih dari kotak yang ditulis sendiri (bukan kotak abu-abu yang ditebalkan)
-    const own = (l: number, k: number) => !(l === 0 && k < TRACED_COLS);
+    const own = (l: number, k: number) => !(l === 0 && k < traced);
     const bestAt = grids.map((x) => parseCell(x.best)).find((b) => b && own(b.l, b.k) && cells[b.l * cols + b.k].status === "rapi") ?? null;
     const fallback = cells.findIndex((x, i) => x.status === "rapi" && own(Math.floor(i / cols), i % cols));
     const best = bestAt ? cells[bestAt.l * cols + bestAt.k].box : fallback >= 0 ? cells[fallback].box : null;
@@ -758,7 +784,7 @@ ${RULES}`,
     };
     // Riwayat dibaca untuk masalah utama huruf ini (lihat nekoFeedback)
     const issue = mainIssueOf(cells);
-    return buildChar(c, cells, row, best, issue ? (history[`${c.char}|${issue.key}`] ?? 0) : 0, focusOf);
+    return buildChar(c, cells, row, best, issue ? (history[`${c.char}|${issue.key}`] ?? 0) : 0, focusOf, exam?.requiredWrites ?? 0);
   });
   return finish(results, true);
 }
@@ -786,7 +812,7 @@ export async function checkHandwriting(
   script: Script,
   chars: SheetChar[],
   corners: Point[],
-  options: { judge?: ModelChoice[]; debug?: Debug; history?: Record<string, number> } = {},
+  options: { judge?: ModelChoice[]; debug?: Debug; history?: Record<string, number>; exam?: ExamSheetOptions } = {},
 ): Promise<CheckResult> {
   const deadline = Date.now() + TOTAL_BUDGET_MS;
   const t0 = Date.now();
@@ -816,5 +842,149 @@ export async function checkHandwriting(
     return { ...notAligned(), photoProblem: "Miu-chan belum menemukan tulisan di dalam kotak. Tulis dulu di kotak-kotaknya, lalu foto lagi." };
   }
   if (fit < INK_FIT_MIN) return notAligned();
-  return checkMarked(apiKey, img, h, g, script, chars, deadline, options.judge ?? JUDGE_MODELS, options.history ?? {}, options.debug);
+  return checkMarked(apiKey, img, h, g, script, chars, deadline, options.judge ?? JUDGE_MODELS, options.history ?? {}, options.debug, options.exam);
+}
+
+// ───────────────────────── Kisi gambar sendiri (tanpa printer) ─────────────────────────
+
+/**
+ * Kisi yang digambar siswa sendiri (Gerbang Tulis tanpa printer): satu bingkai berisi `cols × rows` kotak, satu huruf
+ * per kotak, urut baris demi baris. Sudut bingkai dan letak sekat diukur pemindai web dari garis yang benar-benar
+ * digambar (apps/web/src/features/huruf/lib/drawnGrid.ts), karena kotak gambar tangan tidak pernah sama persis.
+ */
+export interface DrawnGridInput {
+  /** Sudut bingkai luar di foto (skala 0–1): kiri-atas, kanan-atas, kanan-bawah, kiri-bawah. */
+  corners: Point[];
+  /** Letak garis vertikal (cols+1) dan horizontal (rows+1) di bingkai yang diluruskan, 0–1. */
+  xs: number[];
+  ys: number[];
+}
+
+/** Ukuran nominal kotak di ruang lurus ("mm") dan resolusi potongan (piksel per satuan). */
+const DRAWN_UNIT = 20;
+const DRAWN_SCALE = 9;
+/** Potongan dimulai sedikit di dalam garis gambar tangan supaya garisnya tidak terhitung tinta. */
+const DRAWN_INSET = 0.08;
+
+function encodeView(image: RawImage, variant: 0 | 1 | 2) {
+  const base = sharp(image.data, { raw: { width: image.width, height: image.height, channels: 3 } });
+  const view = variant === 1 ? base.linear(1.25, -30).sharpen() : variant === 2 ? base.greyscale().normalise() : base;
+  return view.jpeg({ quality: 88 }).toBuffer();
+}
+
+export interface DrawnCell {
+  /** Potongan persegi di ruang lurus (satuan DRAWN_UNIT per kotak). */
+  area: { x: number; y: number; w: number; h: number };
+  crop: RawImage;
+}
+
+/**
+ * Potong `count` kotak (urut baris demi baris) dari foto kisi gambar sendiri. Potongannya persegi di tengah tiap kotak,
+ * sedikit di dalam garis: kotak gambar tangan bisa lonjong, tetapi proporsi huruf tidak boleh ikut melar.
+ */
+export function cropDrawnCells(img: RawImage, grid: DrawnGridInput, count: number): { h: Matrix; cells: DrawnCell[] } {
+  const cols = grid.xs.length - 1;
+  const rows = grid.ys.length - 1;
+  const W = cols * DRAWN_UNIT;
+  const H = rows * DRAWN_UNIT;
+  const h = homography(
+    [
+      [0, 0],
+      [W, 0],
+      [W, H],
+      [0, H],
+    ],
+    grid.corners.map(([x, y]) => [x * img.width, y * img.height] as Point),
+  );
+  const cells = Array.from({ length: Math.min(count, cols * rows) }, (_, i): DrawnCell => {
+    const r = Math.floor(i / cols);
+    const c = i % cols;
+    const x0 = grid.xs[c] * W;
+    const x1 = grid.xs[c + 1] * W;
+    const y0 = grid.ys[r] * H;
+    const y1 = grid.ys[r + 1] * H;
+    const side = Math.min(x1 - x0, y1 - y0) * (1 - 2 * DRAWN_INSET);
+    const area = { x: (x0 + x1 - side) / 2, y: (y0 + y1 - side) / 2, w: side, h: side };
+    return { area, crop: rectify(img, h, area, DRAWN_SCALE) };
+  });
+  return { h, cells };
+}
+
+/**
+ * Periksa foto kisi gambar sendiri. Setiap kotak bertinta dipasangkan dengan contoh KanjiVG-nya dan SEMUA pasangan
+ * dinilai dalam satu permintaan oleh tiga penilai (asli, kontras tinggi, hitam-putih) → suara terbanyak. Jadi satu
+ * lembar hanya memakai 3 permintaan Gemini. Kotak tanpa tinta langsung "kosong" tanpa AI.
+ */
+export async function checkDrawnGrid(
+  apiKey: string,
+  image: { data: string; mimeType: string },
+  chars: SheetChar[],
+  grid: DrawnGridInput,
+  exam: ExamSheetOptions,
+  options: { judge?: ModelChoice[]; history?: Record<string, number> } = {},
+): Promise<CheckResult> {
+  const deadline = Date.now() + TOTAL_BUDGET_MS;
+  const { data, info } = await sharp(Buffer.from(image.data, "base64")).rotate().removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const img: RawImage = { data, width: info.width, height: info.height, channels: info.channels };
+  const size = { width: img.width, height: img.height };
+  let h: Matrix;
+  let cells: DrawnCell[];
+  try {
+    ({ h, cells } = cropDrawnCells(img, grid, chars.length));
+  } catch {
+    return { photoOk: false, photoProblem: "Bingkai kisi belum terbaca. Foto ulang dari atas dengan seluruh kisi terlihat.", precise: true, score: 0, grade: "D", isPass: false, summary: "", chars: [] };
+  }
+  const ink = cells.map(({ crop }) => inkRatio(crop, 0, 0, crop.width));
+  const refs = await Promise.all(cells.map(({ crop }, i) => renderReference(exam.references[i] ?? [], crop.width, 0)));
+  const written = cells.map((_, i) => i).filter((i) => ink[i] >= INK_EMPTY);
+  if (!written.length) {
+    return { photoOk: false, photoProblem: "Miu-chan belum menemukan tulisan di dalam kotak. Tulis dulu di kotak-kotaknya, lalu foto lagi.", precise: true, score: 0, grade: "D", isPass: false, summary: "", chars: [] };
+  }
+
+  const pairs = written.map((i) => composePair(refs[i], cells[i].crop));
+  const jpegs = await Promise.all(([0, 1, 2] as const).map((variant) => Promise.all(pairs.map((p) => encodeView(p, variant)))));
+  const id = (i: number) => `K${i + 1}`;
+  const parts = (variant: 0 | 1 | 2): Part[] => [
+    {
+      text: `Kamu guru menulis huruf Jepang yang teliti dan adil untuk pelajar Indonesia. Ini UJIAN menulis dari ingatan:
+siswa menggambar kisi sendiri di kertas biasa dan menulis satu huruf di tiap kotak. Setiap gambar: KIRI = huruf contoh
+(digambar komputer, bentuk yang benar), KANAN = tulisan siswa di satu kotak (sisa garis kisi gambar tangan di tepi
+gambar bukan bagian huruf). Variasi tulisan tangan yang wajar tetap rapi.
+Untuk setiap [id], status:
+- "rapi": hurufnya benar dan bentuknya wajar dibanding contoh.
+- "kurang": hurufnya benar tetapi ada masalah bentuk yang JELAS dan akan dicoret guru.
+- "salah": yang tertulis huruf lain / tidak bisa dikenali sebagai huruf yang diminta (isi read dengan huruf Jepang
+  yang terbaca, mis. り atau ツ, BUKAN romaji).
+Untuk "kurang"/"salah" isi juga issues, stroke, quadrant, dan detail seperti aturan berikut.
+${RULES}`,
+    },
+    ...written.flatMap((i, k): Part[] => [
+      { text: `[${id(i)}] seharusnya ${charInfo(chars[i])}` },
+      { inline_data: { mime_type: "image/jpeg", data: jpegs[variant][k].toString("base64") } },
+    ]),
+  ];
+  const judges = options.judge ?? JUDGE_MODELS;
+  const votes = await allVotes(([0, 1, 2] as const).map((variant) => gemini<VerifyJudged>(apiKey, parts(variant), VERIFY_SCHEMA, judges, deadline, 31 + variant)));
+
+  const history = options.history ?? {};
+  const results = chars.map((c, i) => {
+    const { area, crop } = cells[i];
+    const box = photoBox(h, size, area.x, area.y, area.w, area.h);
+    const verdicts = votes.map((v) => v.checks.find((x) => x.id.replace(/[[\]\s]/g, "") === id(i))).filter((v): v is NonNullable<typeof v> => !!v);
+    const settled = majority(verdicts.map((v): RawProblem | null => (v.status === "rapi" ? null : { ...v, status: v.status })));
+    let cell: Cell = settled
+      ? toCell(settled, c, { label: String(i + 1), box })
+      : { label: String(i + 1), status: "rapi", box, read: "", issues: [], stroke: 0, detail: "", quadrant: null, dims: null, score: 0 };
+    if (ink[i] < INK_EMPTY) cell = { ...cell, status: "kosong", read: "", issues: [] };
+    const model = exam.references[i] ? measureWriting(refs[i], 0) : null;
+    cell = scoreCell(cell, measureWriting(crop, 0), model, exam.weights);
+    const focusOf = (x: Cell) => {
+      if (!x.quadrant) return null;
+      const [qx, qy, qw, qh] = quadrantArea(x.quadrant, area.w);
+      return photoBox(h, size, area.x + qx, area.y + qy, qw, qh);
+    };
+    const issue = mainIssueOf([cell]);
+    return buildChar(c, [cell], box, cell.status === "rapi" ? box : null, issue ? (history[`${c.char}|${issue.key}`] ?? 0) : 0, focusOf);
+  });
+  return finish(results, true);
 }
