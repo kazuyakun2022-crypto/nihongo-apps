@@ -12,6 +12,7 @@ import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { learningApi } from "../data/learningApi";
 import type { OnboardingOptions } from "../domain/types";
 import styles from "./learning.module.css";
+import { MessageIcon } from "@/shared/ui/icons";
 
 /** Layar onboarding interaktif dua langkah:
  * 1. Data Diri (Nama panggilan & Jenis kelamin/sapaan akrab).
@@ -183,7 +184,7 @@ export function OnboardingForm() {
         <form onSubmit={handleNextStep1} className={styles.stepCard}>
           <div className={styles.headerWrap}>
             <Mascot mood="senang" size={88} />
-            <h1 className={styles.heading}>Hajimemashite! Mari Berkenalan ✨</h1>
+            <h1 className={styles.heading}>Hajimemashite! Mari Berkenalan</h1>
             <p className={styles.muted}>
               Beri tahu nama panggilan dan panggilan akrabmu agar teman belajarmu bisa menyapamu dengan ramah.
             </p>
@@ -219,7 +220,7 @@ export function OnboardingForm() {
                     checked={gender === "male"}
                     onChange={() => setGender("male")}
                   />
-                  <span style={{ fontSize: "1.75rem", lineHeight: 1 }}>👦</span>
+                  <span className={styles.genderGlyph} lang="ja" aria-hidden="true">兄</span>
                   <span className={styles.genderCall}>お兄ちゃん (Onii-chan)</span>
                   <span className={styles.genderLabel}>Laki-laki</span>
                 </label>
@@ -239,7 +240,7 @@ export function OnboardingForm() {
                     checked={gender === "female"}
                     onChange={() => setGender("female")}
                   />
-                  <span style={{ fontSize: "1.75rem", lineHeight: 1 }}>👧</span>
+                  <span className={styles.genderGlyph} lang="ja" aria-hidden="true">姉</span>
                   <span className={styles.genderCall}>お姉ちゃん (Onee-chan)</span>
                   <span className={styles.genderLabel}>Perempuan</span>
                 </label>
@@ -263,7 +264,7 @@ export function OnboardingForm() {
                   gap: "var(--space-3)",
                 }}
               >
-                <span style={{ fontSize: "1.5rem" }}>💬</span>
+                <MessageIcon size={22} />
                 <span>
                   Sensei akan memanggilmu:{" "}
                   <strong style={{ color: "var(--color-primary)" }}>
@@ -295,7 +296,7 @@ export function OnboardingForm() {
         <form onSubmit={handleFinalSubmit} className={styles.stepCard}>
           <div className={styles.headerWrap}>
             <Mascot mood="semangat" size={88} />
-            <h1 className={styles.heading}>{options.title || "Tentukan Target Belajarmu 🎯"}</h1>
+            <h1 className={styles.heading}>{options.title || "Tentukan Target Belajarmu"}</h1>
             <p className={styles.muted}>
               Pilih tujuan dan titik awal yang paling pas agar materi disesuaikan dengan kebutuhanmu.
             </p>
@@ -364,7 +365,7 @@ export function OnboardingForm() {
                 ? "Menyimpan…"
                 : selected?.requiresTest
                   ? "Lanjut ke Tes Penempatan →"
-                  : "Mulai Belajar Sekarang 🚀"}
+                  : "Mulai Belajar Sekarang"}
             </Button>
             <Button
               variant="ghost"

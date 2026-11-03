@@ -29,11 +29,11 @@ export const INTENTS: NavIntent[] = [
   },
   {
     tour: "kana-table",
-    keywords: ["tabel huruf", "daftar huruf", "huruf jepang", "tabel hiragana", "tabel katakana", "hiragana", "katakana", "kana", "ひらがな", "カタカナ"],
+    keywords: ["tabel huruf", "daftar huruf", "huruf jepang", "tabel hiragana", "tabel katakana", "belajar huruf", "lihat huruf", "hiragana", "katakana", "kana", "ひらがな", "カタカナ"],
   },
   {
     tour: "workbook",
-    keywords: ["lembar kerja", "buku tulis", "tulis tangan", "tulisan tangan", "foto tulisan", "scan tulisan", "cetak lembar", "tulis di buku", "pindai", "workbook"],
+    keywords: ["lembar kerja", "buku tulis", "tulis tangan", "tulisan tangan", "foto tulisan", "scan tulisan", "cetak lembar", "tulis di buku", "menulis di buku", "nulis di buku", "di buku", "di kertas", "pakai pensil", "pensil", "kertas", "pindai", "workbook"],
   },
   {
     tour: "review",
@@ -74,7 +74,7 @@ export const INTENTS: NavIntent[] = [
   {
     tour: "dictionary",
     // Sengaja tanpa "artinya"/"arti kata": pertanyaan arti lebih baik dijawab langsung oleh Miu-chan
-    keywords: ["buka kamus", "cari kata", "kamus", "じしょ", "jisho"],
+    keywords: ["buka kamus", "cari kata", "cari arti", "kamus", "じしょ", "jisho"],
   },
   {
     tour: "progress",
@@ -91,7 +91,7 @@ export const INTENTS: NavIntent[] = [
   {
     // "lanjut belajar", "harus ngapain", "mulai dari mana" → bab yang sedang dipelajari
     tour: "continue",
-    keywords: ["lanjut belajar", "mulai belajar", "bab berikutnya", "harus ngapain", "mulai dari mana", "tahu harus", "peta belajar", "lanjutkan", "pelajaran", "べんきょう", "benkyou"],
+    keywords: ["lanjut belajar", "mulai belajar", "memulai belajar", "tempat belajar", "bab berikutnya", "bab selanjutnya", "lanjut pelajaran", "harus ngapain", "mulai dari mana", "tahu harus", "peta belajar", "daftar bab", "lanjutkan", "pelajaran", "べんきょう", "benkyou"],
   },
 ];
 
@@ -104,14 +104,16 @@ const normalize = (s: string) =>
     .trim();
 
 /** Kalimat berbentuk permintaan pindah/tunjuk jalan. */
-const NAV_CUE = /(^|\s)(buka|bukain|ke|mau|ingin|pengen|pingin|tunjukkan|tunjukin|antar|anterin|pergi|cara|gimana|bagaimana|dimana|di mana|letak|mana|latihan|mulai|lihat)(\s|$)/;
+const NAV_CUE = /(^|\s)(buka|bukain|ke|mau|ingin|pengen|pingin|tunjukkan|tunjukin|antar|anterin|pergi|cara|gimana|bagaimana|dimana|dimanakah|di mana|di manakah|letak|mana|latihan|mulai|memulai|lihat|lanjut|lanjutkan|kembali|balik|cari|tempat)(\s|$)/;
 /** Pertanyaan materi: biarkan AI yang menjawab (AI tetap bisa menawarkan tunjuk jalan). */
 const CONTENT_QUESTION = /^(apa itu|apa arti|apa bedanya|beda|kenapa|mengapa|artinya|arti|bagaimana cara (membaca|baca|mengucapkan)|gimana cara (baca|bacanya|ngucapin))(\s|$)/;
+/** Kata tanya materi di mana pun dalam kalimat ("di buku ini artinya apa") juga berarti pertanyaan, bukan minta pindah. */
+const CONTENT_ANYWHERE = /(^|\s)(artinya|apa arti|apa bedanya|apa itu|maksudnya|kenapa|mengapa|dibaca apa|bacanya)(\s|$)/;
 
 /** Maksud dengan skor tertinggi; null kalau tidak ada yang cocok (lalu diteruskan ke AI). */
 export function matchIntent(utterance: string): NavIntent | null {
   const text = normalize(utterance);
-  if (!text || CONTENT_QUESTION.test(text)) return null;
+  if (!text || CONTENT_QUESTION.test(text) || CONTENT_ANYWHERE.test(text)) return null;
   const padded = ` ${text} `;
   const cue = NAV_CUE.test(text);
   let best: { intent: NavIntent; score: number } | null = null;
@@ -123,7 +125,8 @@ export function matchIntent(utterance: string): NavIntent | null {
       if (!multi && !cue) continue;
       // Kata pendek berhuruf latin harus utuh ("kana" tidak cocok di "rekanan")
       const hit = /^[a-z]{1,5}$/.test(key) ? new RegExp(`(^|\\s)${key}(\\s|$)`).test(padded) : padded.includes(key);
-      if (hit) score += multi ? 2 : 1;
+      // Frasa lebih panjang lebih spesifik: "kamus tata bahasa" (3) mengalahkan "buka kamus" (2)
+      if (hit) score += key.split(" ").length;
     }
     if (score > 0 && (!best || score > best.score)) best = { intent, score };
   }

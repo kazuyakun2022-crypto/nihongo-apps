@@ -135,7 +135,9 @@ export function WorkbookCanvas({
               onClick={() => go(i)}
               aria-label={`Huruf ${i + 1}${all[i].length ? ", sudah ditulis" : ""}`}
               aria-current={i === index ? "step" : undefined}
-            />
+            >
+              {i + 1}
+            </button>
           ))}
         </div>
       </div>

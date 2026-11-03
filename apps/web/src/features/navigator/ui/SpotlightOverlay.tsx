@@ -7,6 +7,7 @@ import { useNavigator } from "../application/NavigatorProvider";
 import { linesFor, type Say } from "../domain/tours";
 import { Reveal } from "./Reveal";
 import styles from "./navigator.module.css";
+import { PointerIcon } from "@/shared/ui/icons";
 
 const PAD = 8;
 const MARGIN = 12;
@@ -199,7 +200,7 @@ export function SpotlightOverlay() {
           <div className={styles.block} style={{ top: hole.top, left: 0, width: Math.max(0, hole.left), height: hole.height }} onClick={nudge} />
           <div className={styles.block} style={{ top: hole.top, left: hole.left + hole.width, right: 0, height: hole.height }} onClick={nudge} />
           <span className={styles.tapHand} style={{ top: hole.top + hole.height - 14, left: hole.left + hole.width - 18 }} aria-hidden>
-            👆
+            <PointerIcon size={30} strokeWidth={1.8} />
           </span>
         </>
       ) : (

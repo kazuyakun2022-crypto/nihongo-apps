@@ -13,6 +13,7 @@ import { FormattedChatMessage } from "./FormattedChatMessage";
 import { SpeechSubtitle } from "./SpeechSubtitle";
 import subtitleStyles from "./subtitle.module.css";
 import styles from "./voiceChat.module.css";
+import { FrownIcon } from "@/shared/ui/icons";
 
 /* ── Label status ── */
 const STATUS: Record<VoiceState, string> = {
@@ -224,7 +225,7 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
   if (!isSupported) {
     return (
       <div className={styles.unsupported}>
-        <span style={{ fontSize: "3rem" }}>😔</span>
+        <FrownIcon size={48} strokeWidth={1.5} className={styles.unsupportedIcon} />
         <p>Browser ini belum mendukung perekaman suara. Coba buka dengan <strong>Chrome</strong>, <strong>Edge</strong>, atau <strong>Safari</strong> terbaru.</p>
       </div>
     );
@@ -235,7 +236,7 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
       {/* Top bar info (ditampilkan jika bukan bagian dari halaman gabungan) */}
       {!hideHeader && (
         <div className={styles.topBar}>
-          <span className={styles.topTitle}>Miu-chan 🐱</span>
+          <span className={styles.topTitle}>Miu-chan</span>
           <div style={{ display: "flex", gap: "var(--space-2)" }}>
             {messages.length > 0 && (
               <button
@@ -331,7 +332,7 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
       )}
 
       {/* Tombol hold-to-talk */}
-      <div className={styles.holdArea}>
+      <div className={styles.holdArea} data-no-swipe>
         <button
           className={`${styles.holdBtn} ${isActive ? styles.holdBtnActive : ""}`}
           type="button"

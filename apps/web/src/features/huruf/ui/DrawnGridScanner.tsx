@@ -9,6 +9,7 @@ import { useTilt } from "../lib/useTilt";
 import { QualityReview, ScanAids } from "./ScanAids";
 import type { CheckedPhoto } from "./TulisHasil";
 import styles from "./sheetScanner.module.css";
+import { ArrowDownToLineIcon, CameraIcon, CheckIcon, ImageIcon, ScanFrameIcon, SunIcon } from "@/shared/ui/icons";
 
 /**
  * Pemindai kisi yang digambar sendiri (Gerbang Tulis tanpa printer). Kamera mencari bingkai `cols × rows` dari garis
@@ -150,11 +151,11 @@ function CornerAdjuster({
         </svg>
       </div>
       <p className={styles.callout} data-tone={measured ? "good" : "warn"}>
-        {measured ? "✓ Garis-garis kisimu terbaca." : `Garis sekat belum terbaca; kotak akan dibagi rata ${cols} × ${rows}.`}
+        {measured ? <span><CheckIcon size={14} strokeWidth={3} /> Garis-garis kisimu terbaca.</span> : `Garis sekat belum terbaca; kotak akan dibagi rata ${cols} × ${rows}.`}
       </p>
       <div className={styles.actions}>
         <button type="button" className={styles.btnPrimary} onClick={onRetake}>
-          📷 Foto ulang
+          <CameraIcon size={18} /> Foto ulang
         </button>
         <button
           type="button"
@@ -340,7 +341,7 @@ export function DrawnGridScanner({ cols, rows, onDone }: { cols: number; rows: n
           <ScanAids tilt={tilt} problems={liveProblems} />
           <p className={styles.liveStatus} data-state={state} aria-live="polite">
             {state === "locked"
-              ? "✓ Kisi ditemukan, memotret…"
+              ? <><CheckIcon size={14} strokeWidth={3} /> Kisi ditemukan, memotret…</>
               : state === "found"
                 ? "Kisi ditemukan, tahan kamera tetap diam…"
                 : `Arahkan kamera tepat di atas kisimu (${cols} kolom × ${rows} baris) sampai seluruh bingkai masuk layar.`}
@@ -354,7 +355,7 @@ export function DrawnGridScanner({ cols, rows, onDone }: { cols: number; rows: n
       ) : (
         <div className={styles.idle}>
           <span className={styles.idleIcon} aria-hidden="true">
-            📷
+            <CameraIcon size={40} strokeWidth={1.6} />
           </span>
           <p className={styles.idleTitle}>{cameraError ? "Kamera tidak bisa dibuka" : "Siap memotret kisimu"}</p>
           <p>
@@ -376,15 +377,15 @@ export function DrawnGridScanner({ cols, rows, onDone }: { cols: number; rows: n
                 if (v?.videoWidth) void takeShot(v, v.videoWidth, v.videoHeight, gridRef.current?.corners ?? null);
               }}
             >
-              ◉ Ambil foto sekarang
+              <CameraIcon size={18} /> Ambil foto sekarang
             </button>
           ) : (
             <button type="button" className={styles.btnPrimary} onClick={startCamera}>
-              📷 Buka kamera
+              <CameraIcon size={18} /> Buka kamera
             </button>
           )}
           <button type="button" className={styles.btnGhost} onClick={() => fileRef.current?.click()}>
-            🖼️ Unggah dari galeri
+            <ImageIcon size={18} /> Unggah dari galeri
           </button>
         </div>
       )}
@@ -392,13 +393,13 @@ export function DrawnGridScanner({ cols, rows, onDone }: { cols: number; rows: n
       {mode === "idle" && (
         <ul className={styles.tips}>
           <li>
-            <span aria-hidden="true">☀️</span> Cahaya terang, tanpa bayangan HP atau tangan
+            <SunIcon size={16} /> Cahaya terang, tanpa bayangan HP atau tangan
           </li>
           <li>
-            <span aria-hidden="true">⬇️</span> Kamera tepat di atas kertas, sejajar
+            <ArrowDownToLineIcon size={16} /> Kamera tepat di atas kertas, sejajar
           </li>
           <li>
-            <span aria-hidden="true">🔲</span> Seluruh bingkai kisi masuk layar, sedekat mungkin
+            <ScanFrameIcon size={16} /> Seluruh bingkai kisi masuk layar, sedekat mungkin
           </li>
         </ul>
       )}

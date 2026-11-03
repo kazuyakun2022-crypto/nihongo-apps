@@ -7,13 +7,15 @@ import { KamusGambar } from "@/features/kamus/ui/KamusGambar";
 import { KamusTeks } from "@/features/kamus/ui/KamusTeks";
 import type { KamusTab } from "@/features/kamus/data/kamusApi";
 import styles from "@/features/kamus/ui/kamusTeks.module.css";
+import { BookOpenIcon, ImageIcon, MessageIcon, PuzzleIcon } from "@/shared/ui/icons";
+import type { ReactNode } from "react";
 
-const TABS: { key: "gambar" | KamusTab; label: string; icon: string }[] = [
-  { key: "gambar", label: "Bergambar", icon: "🖼️" },
-  { key: "kosakata", label: "Kosakata", icon: "📖" },
-  { key: "kanji", label: "Kanji", icon: "漢" },
-  { key: "tata_bahasa", label: "Tata Bahasa", icon: "🧩" },
-  { key: "ungkapan", label: "Ungkapan & Sebutan", icon: "💬" },
+const TABS: { key: "gambar" | KamusTab; label: string; icon: ReactNode }[] = [
+  { key: "gambar", label: "Bergambar", icon: <ImageIcon size={15} /> },
+  { key: "kosakata", label: "Kosakata", icon: <BookOpenIcon size={15} /> },
+  { key: "kanji", label: "Kanji", icon: <span className={styles.tabKanji}>漢</span> },
+  { key: "tata_bahasa", label: "Tata Bahasa", icon: <PuzzleIcon size={15} /> },
+  { key: "ungkapan", label: "Ungkapan & Sebutan", icon: <MessageIcon size={15} /> },
 ];
 
 function Kamus() {

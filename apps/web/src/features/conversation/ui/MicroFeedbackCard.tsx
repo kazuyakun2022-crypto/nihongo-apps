@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Correction } from "../domain/types";
-import { ArrowRightIcon, PawIcon, SparklesIcon } from "@/shared/ui/icons";
+import { ArrowRightIcon, ChevronDownIcon, PawIcon, SparklesIcon } from "@/shared/ui/icons";
 import styles from "./chat.module.css";
 
 interface MicroFeedbackCardProps {
@@ -33,7 +33,7 @@ export function MicroFeedbackCard({ correction }: MicroFeedbackCardProps) {
           {isOpen ? "Tutup Catatan" : "Lihat Catatan Tata Bahasa"}
         </span>
         <span className={`${styles.feedbackChevron} ${isOpen ? styles.feedbackChevronOpen : ""}`}>
-          ▼
+          <ChevronDownIcon size={14} strokeWidth={2.6} />
         </span>
       </button>
 

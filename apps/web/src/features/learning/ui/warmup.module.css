@@ -130,6 +130,9 @@
 }
 
 .tap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-top: var(--space-2);
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);

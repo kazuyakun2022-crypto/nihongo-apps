@@ -283,7 +283,8 @@ export type TourKey =
   | "dict-grammar"
   | "dict-phrases"
   | "ask"
-  | "progress";
+  | "progress"
+  | "welcome";
 
 export const TOURS: Record<TourKey, Tour> = {
   "page-beranda": { title: "Kenalan dengan Beranda", steps: BERANDA },
@@ -405,6 +406,56 @@ export const TOURS: Record<TourKey, Tour> = {
       {
         target: "tanya-input",
         say: { id: "Ketik pertanyaanmu di sini, misalnya cara pakai partikel atau arti sebuah kanji. Jawabannya lengkap dengan contoh.", ja: "ここに しつもんを かいてね。", romaji: "koko ni shitsumon o kaite ne." },
+      },
+    ],
+  },
+  // Sambutan pengguna baru: kenalan dengan semua menu tanpa berpindah layar
+  welcome: {
+    title: "Selamat datang!",
+    steps: [
+      {
+        target: null,
+        say: {
+          id: "Ini aplikasi belajar bahasa Jepang dari nol sampai JLPT. Aku kenalkan menu-menunya satu per satu ya.",
+          ja: "ようこそ！アプリを あんないするね。",
+          romaji: "youkoso! apuri o annai suru ne.",
+        },
+      },
+      {
+        target: "nav-beranda",
+        say: { id: "Beranda: ringkasan harianmu, progres, dan tombol untuk langsung lanjut ke bab berikutnya.", ja: "ホームは まいにちの スタート！", romaji: "hoomu wa mainichi no sutaato!" },
+      },
+      {
+        target: "nav-belajar",
+        say: {
+          id: "Belajar: peta bab dari Pemula sampai N1. Tiap bab berisi materi, latihan, dan kuis. Lulus kuis membuka bab berikutnya.",
+          ja: "べんきょうは レッスンの ちず だよ。",
+          romaji: "benkyou wa ressun no chizu da yo.",
+        },
+      },
+      {
+        target: "nav-huruf",
+        say: { id: "Huruf: tabel hiragana, katakana, dan kanji lengkap dengan suaranya, plus latihan menulis.", ja: "もじの れんしゅうは ここ！", romaji: "moji no renshuu wa koko!" },
+      },
+      {
+        target: "nav-ngobrol",
+        say: { id: "Ngobrol: tanya apa saja, bicara langsung denganku pakai suara, atau latihan peran seperti belanja di konbini.", ja: "わたしと おしゃべり しよう！", romaji: "watashi to oshaberi shiyou!" },
+      },
+      {
+        target: "nav-kamus",
+        say: { id: "Kamus: cari arti kata, kanji, tata bahasa, dan ungkapan sehari-hari.", ja: "じしょで しらべよう。", romaji: "jisho de shirabeyou." },
+      },
+      {
+        target: "nav-profil",
+        say: { id: "Profil: ganti foto dan nama, serta atur target menit belajar harianmu.", ja: "プロフィールは ここ。", romaji: "purofiiru wa koko." },
+      },
+      {
+        target: null,
+        say: {
+          id: "Terakhir, aku selalu ada di pojok layar. Ketuk aku kapan saja lalu bicara: tanya materi yang bikin bingung, atau minta ditunjukkan jalan. Yuk mulai bab pertamamu!",
+          ja: "こまったら、いつでも よんでね！",
+          romaji: "komattara, itsudemo yonde ne!",
+        },
       },
     ],
   },

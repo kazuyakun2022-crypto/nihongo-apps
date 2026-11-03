@@ -70,7 +70,9 @@
 }
 
 .idleIcon {
-  font-size: 2.5rem;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
 }
 
 /* ── Sesuaikan kisi ── */
@@ -336,4 +338,19 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   text-align: center;
+}
+
+/* Label bantuan & tombol berikon: ikon SVG sejajar teks (pengganti emoji) */
+.aid {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btnPrimary,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }

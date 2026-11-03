@@ -15,7 +15,7 @@ const BADGE: Record<string, { label: string; className: string }> = {
 };
 
 /** Blok huruf ditulis admin satu huruf per baris: "あ | a | mnemonik". */
-function parseKana(body: string) {
+export function parseKana(body: string) {
   return body
     .split("\n")
     .map((line) => line.split("|").map((p) => p.trim()))

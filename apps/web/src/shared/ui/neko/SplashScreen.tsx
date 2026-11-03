@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { MiuMeshEngine } from "./MiuMeshEngine";
 import { createSplashScript, SPLASH_DURATION, WINK_AT } from "./splashScript";
 import styles from "./splashScreen.module.css";
+import { HeartIcon } from "@/shared/ui/icons";
 
 export interface SplashScreenProps {
   /** Durasi tampil (ms) sebelum fade-out. Default 1250 (≈1,6 detik termasuk fade). */
@@ -213,7 +214,7 @@ export function SplashScreen({
                   } as React.CSSProperties
                 }
               >
-                ♥
+                <HeartIcon filled size={h.size} strokeWidth={0} />
               </span>
             ))}
           </div>

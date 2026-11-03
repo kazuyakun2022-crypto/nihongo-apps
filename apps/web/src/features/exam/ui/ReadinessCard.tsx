@@ -6,6 +6,7 @@ import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { examApi, type ExamStatus, type ReadinessResponse } from "../data/examApi";
 import { masteryGateApi } from "../data/masteryGateApi";
 import styles from "./readinessCard.module.css";
+import { CheckIcon, PenLineIcon } from "@/shared/ui/icons";
 
 interface Props {
   levelId: number;
@@ -60,7 +61,7 @@ export function ReadinessCard({ levelId, levelCode, final = false }: Props) {
   // Bab sudah cukup tetapi Gerbang Tulis belum lulus: langkah berikutnya adalah menulis tangan
   const needsWorkbook = pct >= 80 && !data.workbookPassed;
 
-  const readyText = data.ready === "yes" ? "✓ Siap" : data.ready === "almost" ? "~ Hampir" : "× Belum";
+  const readyText = data.ready === "yes" ? "Siap" : data.ready === "almost" ? "Hampir" : "Belum";
   const readyMod = data.ready === "yes" ? styles.chipNumSuccess : data.ready === "almost" ? styles.chipNumAccent : styles.chipNumMuted;
   const barMod = pct >= 80 ? styles.statBarFillSuccess : styles.statBarFillPrimary;
 
@@ -101,7 +102,8 @@ export function ReadinessCard({ levelId, levelCode, final = false }: Props) {
       <p className={styles.suggestion}>{data.suggestion}</p>
 
       <p className={styles.gateStep} data-done={data.workbookPassed || undefined}>
-        {data.workbookPassed ? "✓ Gerbang Tulis lulus" : "✎ Gerbang Tulis: tulis huruf level ini dengan tangan sebelum ikut tes"}
+        {data.workbookPassed ? <CheckIcon size={14} strokeWidth={3} /> : <PenLineIcon size={14} />}
+        <span>{data.workbookPassed ? "Gerbang Tulis lulus" : "Gerbang Tulis: tulis huruf level ini dengan tangan sebelum ikut tes"}</span>
       </p>
 
       {!!status?.consecutiveFails && status.consecutiveFails >= 3 && (

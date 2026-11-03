@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { apiUpload } from "@/core/http/apiClient";
 import styles from "./content.module.css";
+import { ImageIcon } from "@/shared/ui/icons";
 
 const MAX_EDGE = 1280;
 const TARGET_BYTES = 350 * 1024;
@@ -102,7 +103,7 @@ export function ImageField({
           <img src={value} alt="" className={styles.imagePreview} />
         ) : (
           <span className={styles.imagePlaceholder} aria-hidden="true">
-            🖼️
+            <ImageIcon size={28} strokeWidth={1.5} />
           </span>
         )}
         <div className={styles.imageActions}>

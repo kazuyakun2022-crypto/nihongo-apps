@@ -17,7 +17,9 @@
   padding: var(--space-4) var(--space-3) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-4));
   display: grid;
   gap: var(--space-3);
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  /* backwards, bukan both: transform yang tertinggal setelah animasi menjadikan <main> containing block,
+     sehingga modal & elemen position:fixed di dalam halaman ikut tergeser/terpotong (bukan menempel ke layar) */
+  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 /* Halaman data lebar: tanpa batas --content-max dan dengan tepi samping lebih tipis */

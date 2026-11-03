@@ -5,28 +5,12 @@ import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { Mascot, type MascotMood } from "@/shared/ui/Mascot";
 import { useNavigator, type Caption, type VoiceState } from "../application/NavigatorProvider";
-import { pageTourFor, type TourKey } from "../domain/tours";
+import { pageTourFor } from "../domain/tours";
 import { Reveal } from "./Reveal";
 import styles from "./navigator.module.css";
+import { LightbulbIcon, LockIcon, MoreIcon, SendIcon, SparklesIcon, VolumeIcon, VolumeOffIcon } from "@/shared/ui/icons";
 
 const POS_KEY = "nihongo:navigator-pos";
-/** Halaman yang sudah pernah ditawari tur, supaya tawaran hanya muncul sekali per halaman. */
-const OFFERED_KEY = "nihongo:navigator-offered";
-
-function readOffered(): string[] {
-  try {
-    return JSON.parse(localStorage.getItem(OFFERED_KEY) ?? "[]") as string[];
-  } catch {
-    return [];
-  }
-}
-function markOffered(key: string) {
-  try {
-    localStorage.setItem(OFFERED_KEY, JSON.stringify([...new Set([...readOffered(), key])]));
-  } catch {
-    /* abaikan */
-  }
-}
 const DRAG_THRESHOLD = 6;
 
 const MOOD: Record<VoiceState, MascotMood> = {
@@ -39,7 +23,7 @@ const MOOD: Record<VoiceState, MascotMood> = {
 };
 
 const STATE_LABEL: Record<VoiceState, string> = {
-  IDLE_FLOATING: "Ketuk untuk bicara dengan Miu-chan",
+  IDLE_FLOATING: "Ketuk untuk memanggil Miu-chan",
   LISTENING: "Mendengarkan, ketuk lagi untuk selesai",
   THINKING: "Miu-chan sedang berpikir",
   SPEAKING: "Miu-chan sedang bicara",
@@ -66,12 +50,12 @@ function CaptionBubble({
       </button>
       {caption.refusal && (
         <p className={styles.examTag}>
-          <span aria-hidden>🔒</span> Mode ujian
+          <LockIcon size={12} /> Mode ujian
         </p>
       )}
       {hintMode && caption.reply && (
         <p className={styles.hintTag}>
-          <span aria-hidden>💡</span> Mode petunjuk · jawaban tetap kamu yang cari
+          <LightbulbIcon size={12} /> Mode petunjuk · jawaban tetap kamu yang cari
         </p>
       )}
       {caption.ja && (
@@ -104,7 +88,7 @@ function CaptionBubble({
             aria-label="Pertanyaan lanjutan untuk Miu-chan"
           />
           <button type="submit" className={styles.menuSend} aria-label="Kirim">
-            ➤
+            <SendIcon size={16} />
           </button>
         </form>
       )}
@@ -129,26 +113,6 @@ export function MascotNavigator() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const pathname = usePathname() ?? "";
-  const [offer, setOffer] = useState<TourKey | null>(null);
-
-  // Pertama kali membuka halaman yang punya tur: Miu-chan menawarkan penjelasan (sekali saja per halaman)
-  useEffect(() => {
-    setOffer(null);
-    const key = pageTourFor(pathname);
-    if (!key || !nav.isWidgetVisible || readOffered().includes(key)) return;
-    const show = window.setTimeout(() => {
-      setOffer(key);
-      markOffered(key);
-    }, 1600);
-    return () => window.clearTimeout(show);
-  }, [pathname, nav.isWidgetVisible]);
-
-  useEffect(() => {
-    if (!offer) return;
-    const hide = window.setTimeout(() => setOffer(null), 14000);
-    return () => window.clearTimeout(hide);
-  }, [offer]);
-
   useEffect(() => {
     try {
       const raw = localStorage.getItem(POS_KEY);
@@ -198,9 +162,15 @@ export function MascotNavigator() {
         return p;
       });
     } else {
-      setOffer(null);
-      nav.toggleListening();
+      openStage();
     }
+  };
+
+  /** Ketuk: Miu-chan terbang dari posisi widget ke tengah layar dan langsung mendengarkan. */
+  const openStage = () => {
+    const r = rootRef.current?.querySelector<HTMLElement>(`.${styles.avatar}`)?.getBoundingClientRect();
+    setMenuOpen(false);
+    nav.openStage(r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : undefined);
   };
 
   const resetPos = () => {
@@ -223,13 +193,13 @@ export function MascotNavigator() {
 
   const state = nav.voiceState;
   const style = pos ? ({ right: pos.right, bottom: pos.bottom } as React.CSSProperties) : undefined;
-  const showCaption = nav.captionsOn && (nav.caption || nav.micError);
-  // Selama tur, Miu-chan "pindah" ke kartu penjelas; widget melayang disembunyikan
-  const visible = nav.isWidgetVisible && !nav.tour;
+  // Saat panggung terbuka, teks tampil di panggung, bukan di gelembung pojok
+  const showCaption = nav.captionsOn && !nav.stage.open && (nav.caption || nav.micError);
+  // Selama tur Miu-chan "pindah" ke kartu penjelas, dan selama panggung terbuka ia ada di tengah layar
+  const visible = nav.isWidgetVisible && !nav.tour && !nav.stage.open;
   const pageTour = pageTourFor(pathname);
   const exam = nav.examLocked;
   const hintMode = !!nav.assessment;
-  const showOffer = !!offer && !exam && !hintMode && !showCaption && !menuOpen && state === "IDLE_FLOATING";
 
   // Portal ke body: leluhur ber-transform (animasi halaman) mematahkan position: fixed
   if (!mounted) return null;
@@ -240,42 +210,10 @@ export function MascotNavigator() {
       style={style}
       data-hidden={!visible || undefined}
       data-state={state}
-      data-offer={showOffer || undefined}
       data-exam={exam || undefined}
       data-hint={hintMode || undefined}
       aria-hidden={!visible}
     >
-      {showOffer && (
-        <div className={styles.bubble} role="status">
-          <button type="button" className={styles.bubbleClose} onClick={() => setOffer(null)} aria-label="Tutup">
-            ×
-          </button>
-          {(nav.band === "PRE_N5" || nav.band === "N5") && (
-            <p className={styles.capJa} lang="ja">
-              せつめい しようか？
-            </p>
-          )}
-          <p className={styles.capMain}>
-            <Reveal text="Hai! Mau aku jelaskan isi halaman ini satu per satu?" />
-          </p>
-          <div className={styles.offerActions}>
-            <button
-              type="button"
-              className={styles.btnMain}
-              onClick={() => {
-                setOffer(null);
-                nav.startTour(offer!);
-              }}
-            >
-              Ya, jelaskan
-            </button>
-            <button type="button" className={styles.btnGhost} onClick={() => setOffer(null)}>
-              Nanti saja
-            </button>
-          </div>
-        </div>
-      )}
-
       {showCaption && (
         <CaptionBubble
           caption={nav.micError ? { id: nav.micError } : (nav.caption as Caption)}
@@ -297,7 +235,7 @@ export function MascotNavigator() {
               autoFocus
             />
             <button type="submit" className={styles.menuSend} aria-label="Kirim">
-              ➤
+              <SendIcon size={16} />
             </button>
           </form>
           <div className={styles.quick}>
@@ -325,12 +263,20 @@ export function MascotNavigator() {
                 nav.startTour(pageTour);
               }}
             >
-              ✨ Jelaskan halaman ini
+              <SparklesIcon size={15} /> Jelaskan halaman ini
             </button>
           )}
           <div className={styles.menuRow}>
             <button type="button" role="menuitem" className={styles.menuBtn} onClick={() => nav.setMuted(!nav.isMuted)}>
-              {nav.isMuted ? "🔇 Suara mati" : "🔊 Suara nyala"}
+              {nav.isMuted ? (
+                <>
+                  <VolumeOffIcon size={14} /> Suara mati
+                </>
+              ) : (
+                <>
+                  <VolumeIcon size={14} /> Suara nyala
+                </>
+              )}
             </button>
             <button type="button" role="menuitem" className={styles.menuBtn} onClick={() => nav.setCaptionsOn(!nav.captionsOn)}>
               {nav.captionsOn ? "Subtitle: nyala" : "Subtitle: mati"}
@@ -368,7 +314,7 @@ export function MascotNavigator() {
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={() => (drag.current = null)}
-          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), nav.toggleListening())}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), openStage())}
           aria-label={exam ? "Mode ujian: Miu-chan tidak bisa membantu sekarang" : STATE_LABEL[state]}
           aria-pressed={state === "LISTENING"}
           tabIndex={visible ? 0 : -1}
@@ -379,11 +325,16 @@ export function MascotNavigator() {
         </button>
         {exam && (
           <span className={styles.lockBadge} aria-hidden>
-            🔒
+            <LockIcon size={13} />
           </span>
         )}
 
-        <span className={styles.badge} data-mic={nav.isMuted ? "muted" : state === "LISTENING" ? "on" : state === "THINKING" ? "busy" : undefined} aria-hidden />
+        {/* Status ditunjukkan lewat animasi kepala; hanya suara mati yang perlu penanda tetap */}
+        {nav.isMuted && !exam && (
+          <span className={styles.muteBadge} aria-hidden>
+            <VolumeOffIcon size={12} strokeWidth={2.4} />
+          </span>
+        )}
 
         <button
           type="button"
@@ -393,7 +344,7 @@ export function MascotNavigator() {
           aria-expanded={menuOpen}
           tabIndex={visible ? 0 : -1}
         >
-          ⋯
+          <MoreIcon size={16} strokeWidth={2.6} />
         </button>
       </div>
     </div>,

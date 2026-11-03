@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { Mascot } from "@/shared/ui/Mascot";
 import { starsFor } from "./WorldMap";
 import styles from "./scoreScreen.module.css";
+import { StarIcon } from "@/shared/ui/icons";
 
 /** Angka naik dari 0 ke target supaya momen nilai terasa. */
 export function useCountUp(target: number, durationMs = 900, delayMs = 0) {
@@ -118,7 +119,7 @@ export function ScoreScreen({
               <p className={styles.stars} aria-label={`${stars} dari 3 bintang`}>
                 {[0, 1, 2].map((i) => (
                   <span key={i} data-on={i < stars || undefined} style={{ "--si": i } as React.CSSProperties}>
-                    ★
+                    <StarIcon filled size={36} strokeWidth={1.5} />
                   </span>
                 ))}
               </p>

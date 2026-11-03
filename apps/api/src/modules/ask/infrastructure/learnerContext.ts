@@ -87,8 +87,13 @@ export function levelGuideSection(user: AskUser | undefined, mode: "text" | "voi
   const lesson = user?.lesson;
   if (lesson) {
     const grammar = lesson.grammar.map((g) => sanitizeForPrompt(g, 60)).filter(Boolean);
+    // Bab ini = bab pertama yang BELUM selesai. Saat user membuka layar tertentu (mis. mengulang bab yang sudah
+    // lulus), isi layar yang benar; tanpa penegasan ini AI membahas bab berikutnya (layar あ dijawab か).
+    const label = user?.app?.screen
+      ? "BAB BERIKUTNYA YANG BELUM DISELESAIKAN USER (belum tentu yang sedang tampil di layar; untuk pertanyaan tentang layar, ikuti KONTEKS APLIKASI)"
+      : "BAB YANG SEDANG DIPELAJARI USER";
     lines.push(
-      `\n\nBAB YANG SEDANG DIPELAJARI USER: ${sanitizeForPrompt(lesson.title, 100)}.` +
+      `\n\n${label}: ${sanitizeForPrompt(lesson.title, 100)}.` +
         (grammar.length ? ` Pola target: ${grammar.join("; ")}.` : "") +
         " Kalau nyambung dengan obrolan, ajak user memakai pola ini dan puji kalau dia berhasil.",
     );

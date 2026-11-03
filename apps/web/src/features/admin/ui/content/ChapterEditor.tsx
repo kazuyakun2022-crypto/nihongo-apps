@@ -11,6 +11,9 @@ import { ExerciseForm } from "./ExerciseForm";
 import { FormModal, type FieldDef, type FormValues } from "./FormModal";
 import { STATUS_LABEL, useFlash } from "./ContentShell";
 import styles from "./content.module.css";
+import { SkillIcon } from "@/shared/ui/SkillIcon";
+import { CheckIcon, FileTextIcon, ImageIcon, LightbulbIcon, MessageIcon } from "@/shared/ui/icons";
+import type { ReactNode } from "react";
 
 /** Definisi tiap jenis materi: field form, nilai awal, dan cara menampilkannya di daftar. */
 const BLOCK_TYPES = [
@@ -20,7 +23,13 @@ const BLOCK_TYPES = [
   { value: "tips", label: "Tips / catatan penting" },
   { value: "huruf", label: "Kartu huruf (kana + mnemonik)" },
 ];
-const BLOCK_ICON: Record<string, string> = { teks: "📝", gambar: "🖼️", dialog: "💬", tips: "💡", huruf: "あ" };
+const BLOCK_ICON: Record<string, ReactNode> = {
+  teks: <FileTextIcon size={14} />,
+  gambar: <ImageIcon size={14} />,
+  dialog: <MessageIcon size={14} />,
+  tips: <LightbulbIcon size={14} />,
+  huruf: <span lang="ja">あ</span>,
+};
 
 const KINDS: Record<ItemKind, { tab: string; label: string; fields: FieldDef[]; empty: FormValues; listKey: keyof ChapterDetail }> = {
   block: {
@@ -113,7 +122,7 @@ function ItemText({ kind, item, s }: { kind: ItemKind; item: AnyItem; s: (k: str
     return (
       <>
         <div className={styles.itemMain}>
-          {BLOCK_ICON[s("type")] ?? "📝"} {s("title") || BLOCK_TYPES.find((t) => t.value === s("type"))?.label}
+          {BLOCK_ICON[s("type")] ?? <FileTextIcon size={14} />} {s("title") || BLOCK_TYPES.find((t) => t.value === s("type"))?.label}
         </div>
         {s("body") && (
           <div className={`${styles.muted} ${styles.clamp3}`} lang="ja">
@@ -159,7 +168,7 @@ export function ExerciseSummary({ item }: { item: Omit<QuizItem, "id"> }) {
   return (
     <>
       <span className={styles.typeTag}>
-        {SKILLS[meta.skill].icon} {meta.label}
+        <SkillIcon skill={meta.skill} /> {meta.label}
       </span>
       <div style={{ fontWeight: 600 }} lang="ja">
         {item.type === "berbicara" ? item.correctAnswer : item.question}
@@ -169,7 +178,7 @@ export function ExerciseSummary({ item }: { item: Omit<QuizItem, "id"> }) {
         <div className={styles.counts} lang="ja">
           {options.map((o) => (
             <span key={o} className={o === item.correctAnswer ? styles.correct : undefined}>
-              {o === item.correctAnswer ? "✓ " : ""}
+              {o === item.correctAnswer ? <CheckIcon size={12} strokeWidth={3} /> : null}
               {o}
             </span>
           ))}
@@ -407,7 +416,7 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
               </button>
               {skillCounts.map(({ skill: s, count }) => (
                 <button key={s} type="button" className={styles.skillFilterBtn} aria-pressed={skill === s} onClick={() => setSkill(s)}>
-                  {SKILLS[s].icon} {SKILLS[s].label} ({count})
+                  <SkillIcon skill={s} /> {SKILLS[s].label} ({count})
                 </button>
               ))}
             </div>

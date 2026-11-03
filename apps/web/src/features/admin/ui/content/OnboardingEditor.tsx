@@ -7,6 +7,7 @@ import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { useFlash } from "./ContentShell";
 import styles from "./content.module.css";
+import { CloseIcon } from "@/shared/ui/icons";
 
 type Start = OnboardingConfig["starts"][number];
 
@@ -178,7 +179,7 @@ export function OnboardingEditor() {
                   update({ minuteOptions: rest, defaultMinutes: config.defaultMinutes === m ? rest[0] : config.defaultMinutes });
                 }}
               >
-                ✕
+                <CloseIcon size={14} strokeWidth={2.6} />
               </button>
             </div>
           ))}

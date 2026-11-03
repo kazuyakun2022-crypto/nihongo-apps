@@ -9,6 +9,9 @@
 }
 
 .linkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   justify-self: center;
   align-self: center;
   padding: var(--space-2) var(--space-3);
@@ -184,6 +187,10 @@
 }
 
 .padBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   min-height: 2.5rem;
   padding: var(--space-2) var(--space-3);
   border: var(--border-width) solid var(--color-border);
@@ -235,7 +242,7 @@
 }
 .micBtn[data-recording="true"] { animation: pulse 1.2s ease-in-out infinite; }
 .micBtn:disabled { opacity: 0.6; cursor: progress; }
-.micIcon { font-size: 1.1em; }
+.micIcon { display: inline-grid; place-items: center; }
 
 .transcript {
   font-size: var(--font-size-md);

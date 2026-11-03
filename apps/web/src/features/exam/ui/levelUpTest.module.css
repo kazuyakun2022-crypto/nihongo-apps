@@ -370,3 +370,40 @@
 .audioBtn:hover {
   background: var(--color-surface-muted);
 }
+
+/* Ikon SVG (pengganti emoji) sejajar dengan teks */
+.warnBox,
+.cooldownBox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.warnBox svg,
+.cooldownBox svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.resultEmoji {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin-inline: auto;
+  border-radius: 50%;
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  font-size: 0;
+}
+
+.resultEmoji[data-passed] {
+  background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+  color: var(--color-accent);
+}

@@ -1,10 +1,12 @@
 "use client";
 
+import { useAssessment, useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import { useState } from "react";
 import { srsApi } from "@/features/srs/data/srsApi";
 import type { DueCard, ReviewGrade } from "@/features/srs/domain/types";
 import { useSpeech } from "@/shared/lib/useSpeech";
 import styles from "./warmup.module.css";
+import { VolumeIcon } from "@/shared/ui/icons";
 
 const GRADES: { value: ReviewGrade; label: string; hint: string }[] = [
   { value: "lupa", label: "Lupa", hint: "Ulang segera" },
@@ -20,6 +22,16 @@ export function WarmupDeck({ cards, chapterTitle, onDone }: { cards: DueCard[]; 
   const [flipped, setFlipped] = useState(false);
   const [busy, setBusy] = useState(false);
   const card = cards[index];
+  // Pemanasan = latihan mengingat: sebelum kartu dibalik Miu-chan hanya memberi petunjuk, bukan arti
+  useAssessment("pemanasan", card && !flipped ? "latihan" : null);
+  useScreenContext(
+    "pemanasan",
+    card
+      ? `Pemanasan bab "${chapterTitle}" (mengulang kosakata bab sebelumnya), kartu ${index + 1} dari ${cards.length}: ${card.front}${
+          flipped ? ` (${card.reading ?? ""} = ${card.meaning})` : " (belum dibalik; jangan beri tahu artinya, beri petunjuk saja)"
+        }`
+      : null,
+  );
 
   function reveal() {
     setFlipped(true);
@@ -69,7 +81,7 @@ export function WarmupDeck({ cards, chapterTitle, onDone }: { cards: DueCard[]; 
             <span className={styles.word} lang="ja">{card.front}</span>
             {card.reading && <span className={styles.reading} lang="ja">{card.reading}</span>}
             <span className={styles.meaning}>{card.meaning}</span>
-            <span className={styles.tap}>🔊 Ketuk untuk dengar lagi</span>
+            <span className={styles.tap}><VolumeIcon size={14} /> Ketuk untuk dengar lagi</span>
           </span>
         </button>
       </div>

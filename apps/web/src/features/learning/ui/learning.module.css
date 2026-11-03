@@ -110,6 +110,21 @@
   opacity: 0;
 }
 
+/* Pilihan panggilan kakak: huruf 兄/姉 (bukan emoji) sebagai ikon pilihan */
+.genderGlyph {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-family: var(--font-japanese);
+  font-size: 1.15rem;
+  font-weight: var(--font-weight-heavy);
+  line-height: 1;
+}
+
 .genderCall {
   font-size: 0.82rem;
   font-weight: var(--font-weight-heavy);

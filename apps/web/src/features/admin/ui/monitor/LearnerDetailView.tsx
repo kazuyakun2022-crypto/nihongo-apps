@@ -7,6 +7,7 @@ import { Skeleton, SkeletonTableRows } from "@/shared/ui/Skeleton";
 import { Paged, Pagination, usePaged } from "../Pagination";
 import { ActivityHeatmap, Avatar, KpiCard, ProgressBar, daysAgoLabel, fmt, formatDate, levelLabel } from "./charts";
 import styles from "./monitor.module.css";
+import { CheckIcon } from "@/shared/ui/icons";
 
 const EXAM_TYPE: Record<LearnerDetail["exams"][number]["type"], string> = {
   placement: "Tes penempatan",
@@ -22,14 +23,14 @@ const SECTION: Record<string, string> = {
 };
 
 const CHAPTER_STATUS: Record<ChapterProgressItem["status"], { label: string; cls: string }> = {
-  completed: { label: "✓ Selesai", cls: styles.badgeGood },
-  open: { label: "● Sedang dipelajari", cls: styles.badgeWarn },
+  completed: { label: "Selesai", cls: styles.badgeGood },
+  open: { label: "Sedang dipelajari", cls: styles.badgeWarn },
   locked: { label: "Belum dibuka", cls: "" },
 };
 
 const STAGE_STATE = {
-  passed: { label: "✓ Sudah dilewati", cls: styles.badgeGood },
-  current: { label: "● Level saat ini", cls: styles.badgeLevel },
+  passed: { label: "Sudah dilewati", cls: styles.badgeGood },
+  current: { label: "Level saat ini", cls: styles.badgeLevel },
   locked: { label: "Terkunci", cls: "" },
 } as const;
 
@@ -219,7 +220,7 @@ export function LearnerDetailView({ userId }: { userId: string }) {
                     </td>
                     <td className={styles.num}>{e.score}</td>
                     <td>
-                      <span className={`${styles.badge} ${e.passed ? styles.badgeGood : styles.badgeBad}`}>{e.passed ? "✓ Lulus" : "✗ Belum lulus"}</span>
+                      <span className={`${styles.badge} ${e.passed ? styles.badgeGood : styles.badgeBad}`}>{e.passed ? "Lulus" : "Belum lulus"}</span>
                     </td>
                     <td>
                       {e.sectionScores ? (
@@ -355,7 +356,9 @@ export function LearnerDetailView({ userId }: { userId: string }) {
           <div className={styles.achGrid}>
             {data.achievements.map((a) => (
               <div key={a.id} className={`${styles.ach} ${a.earnedAt ? "" : styles.achLocked}`}>
-                <strong>{a.earnedAt ? "✓ " : ""}{a.name}</strong>
+                <strong>
+                  {a.earnedAt && <CheckIcon size={13} strokeWidth={3} />} {a.name}
+                </strong>
                 <span className={styles.userEmail}>{a.description ?? ""}</span>
                 <span className={styles.userEmail}>{a.earnedAt ? `Diraih ${formatDate(a.earnedAt)}` : "Belum diraih"}</span>
               </div>

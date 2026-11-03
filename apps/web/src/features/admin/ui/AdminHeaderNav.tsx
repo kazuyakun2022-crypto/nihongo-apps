@@ -21,17 +21,12 @@ export function AdminHeaderNav({ title, subtitle }: AdminPageHeaderProps) {
           </span>
           <h1 className={styles.title}>{title}</h1>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div className={styles.systemStatusBadge}>
-            <span className={styles.systemStatusDot} />
-            <span>Sistem Operasional</span>
-          </div>
-          {isSuperAdmin ? (
-            <span className={styles.superBadge}>Super Admin</span>
-          ) : (
-            <span className={styles.adminBadge}>Admin</span>
-          )}
-        </div>
+        {/* Peran saja; status "Sistem Operasional" dihapus karena tidak pernah memeriksa apa pun */}
+        {isSuperAdmin ? (
+          <span className={styles.superBadge}>Super Admin</span>
+        ) : (
+          <span className={styles.adminBadge}>Admin</span>
+        )}
       </div>
       <p className={styles.subtitle}>{subtitle}</p>
     </header>

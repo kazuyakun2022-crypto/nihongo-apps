@@ -6,6 +6,7 @@ import { useSpeech } from "@/shared/lib/useSpeech";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { kamusApi, type KamusEntry, type KamusPage, type KamusTab } from "../data/kamusApi";
 import styles from "./kamusTeks.module.css";
+import { LightbulbIcon, LockIcon, VolumeIcon } from "@/shared/ui/icons";
 
 const TAB_COPY: Record<KamusTab, { eyebrow: string; title: string; lead: string; placeholder: string }> = {
   kosakata: {
@@ -38,7 +39,7 @@ function SpeakBtn({ text }: { text: string }) {
   const { speak } = useSpeech();
   return (
     <button type="button" className={styles.speak} onClick={() => speak(text)} aria-label={`Dengarkan ${text}`}>
-      🔊
+      <VolumeIcon size={18} />
     </button>
   );
 }
@@ -66,7 +67,7 @@ function VocabCard({ v }: { v: KamusEntry }) {
         <span className={styles.level}>{v.level}</span>
       </div>
       <p className={styles.meaning}>{v.meaning}</p>
-      {v.note && <p className={styles.note}>💡 {v.note}</p>}
+      {v.note && <p className={styles.note}><LightbulbIcon size={14} /> {v.note}</p>}
       {v.exampleSentence && (
         <p className={styles.example}>
           <span lang="ja">{v.exampleSentence}</span>
@@ -153,7 +154,7 @@ function UngkapanCard({ u, showCategory }: { u: KamusEntry; showCategory: boolea
         <span className={styles.level}>{u.level}</span>
       </div>
       <p className={styles.meaning}>{u.meaning}</p>
-      {u.note && <p className={styles.note}>💡 {u.note}</p>}
+      {u.note && <p className={styles.note}><LightbulbIcon size={14} /> {u.note}</p>}
       {showCategory && u.category && <span className={styles.category}>{u.category.title}</span>}
     </article>
   );
@@ -301,7 +302,7 @@ export function KamusTeks({ tab, tabs }: { tab: KamusTab; tabs?: ReactNode }) {
           {data && data.lockedCount > 0 && data.nextLevel && (
             <aside className={styles.locked}>
               <span className={styles.lockIcon} aria-hidden="true">
-                🔒
+                <LockIcon size={22} />
               </span>
               <div>
                 <strong>

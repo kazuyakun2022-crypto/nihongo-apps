@@ -11,6 +11,7 @@ import {
   type Stroke,
 } from "../../application/handwritingRecognizer";
 import styles from "./exercises.module.css";
+import { DeleteIcon } from "@/shared/ui/icons";
 
 const PAD = 300;
 /** Jeda setelah goresan terakhir sebelum huruf dianggap selesai ditulis. */
@@ -248,7 +249,7 @@ export function HandwritingExercise({
           Hapus coretan
         </button>
         <button type="button" className={styles.padBtn} onClick={backspace} disabled={!chars.some(Boolean)}>
-          ⌫ Hapus huruf
+          <DeleteIcon size={16} /> Hapus huruf
         </button>
       </div>
     </div>

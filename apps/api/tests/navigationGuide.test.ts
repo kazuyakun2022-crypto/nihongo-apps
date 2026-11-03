@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { appSection, extractGuide } from "../src/modules/ask/domain/navigationGuide";
+import { appSection, extractGuide, shortGuideReply, withScreen } from "../src/modules/ask/domain/navigationGuide";
 
 describe("navigationGuide", () => {
   it("mengambil tanda tunjuk yang dikenal dan membuangnya dari jawaban", () => {
@@ -23,5 +23,34 @@ describe("navigationGuide", () => {
     expect(s).toContain("[[tunjuk:KUNCI]]");
     expect(s).toContain("kana-writing");
     expect(appSection(null)).toBe("");
+  });
+});
+
+describe("shortGuideReply", () => {
+  it("memangkas jawaban tunjuk jalan jadi kalimat pertama", () => {
+    expect(shortGuideReply("Yuk, aku tunjukkan tempat mulai belajar! Di peta belajar ada bab-bab dari Pemula sampai N1. Tiap bab punya materi.")).toBe(
+      "Yuk, aku tunjukkan tempat mulai belajar!",
+    );
+  });
+  it("tanda emosi suara tetap di depan", () => {
+    expect(shortGuideReply("[semangat] Oke, ayo ke Tulis di Buku! Nanti kamu cetak lembarnya.")).toBe("[semangat] Oke, ayo ke Tulis di Buku!");
+  });
+  it("kalimat sangat panjang dipotong rapi", () => {
+    const r = shortGuideReply("a ".repeat(100));
+    expect(r.length).toBeLessThanOrEqual(121);
+    expect(r.endsWith("…")).toBe(true);
+  });
+});
+
+describe("withScreen", () => {
+  it("pertanyaan widget ditempeli isi layar SAAT INI", () => {
+    const q = withScreen("cara nulisnya gimana?", { widget: true, screen: "Latihan menulis huruf た (dibaca ta), 4 goresan" });
+    expect(q).toContain("cara nulisnya gimana?");
+    expect(q).toContain("SEKARANG: Latihan menulis huruf た (dibaca ta), 4 goresan");
+  });
+  it("bukan widget atau tanpa layar: pertanyaan tidak diubah", () => {
+    expect(withScreen("halo", { screen: "Beranda" })).toBe("halo");
+    expect(withScreen("halo", { widget: true })).toBe("halo");
+    expect(withScreen("halo", undefined)).toBe("halo");
   });
 });
