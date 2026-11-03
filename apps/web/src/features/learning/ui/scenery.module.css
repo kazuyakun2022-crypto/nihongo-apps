@@ -1,0 +1,350 @@
+/*
+ * Pemandangan di belakang halaman Belajar. Warna mengikuti jam lokal pengguna (data-time, lihat useTimeOfDay);
+ * level hanya menentukan bangunan khasnya. .realm membawa warna dan dipasang di halaman & latar.
+ */
+
+/* Pagi (05–10): fajar hangat. Juga bawaan sebelum jam terbaca. */
+.realm {
+  --sky-top: #ffd6c4;
+  --sky-bottom: #fff3e6;
+  --sun: #ff9a76;
+  --mount-far: #c8b6d8;
+  --mount-far-2: #d7c9e2;
+  --snow: #ffffff;
+  --hill-far: #b6d9a4;
+  --hill-near: #8cc37b;
+  --landmark: #6e4a5c;
+  --cloud: #ffffff;
+  --windows: 0;
+  --realm-ink: #5a3b47;
+  --path-color: color-mix(in srgb, var(--realm-ink) 32%, transparent);
+}
+
+/* Siang (10–15): langit biru cerah */
+.realm[data-time="siang"] {
+  --sky-top: #b9defc;
+  --sky-bottom: #eef9ff;
+  --sun: #ffd97a;
+  --mount-far: #a7bdd6;
+  --mount-far-2: #bfd0e2;
+  --hill-far: #a6d79c;
+  --hill-near: #6db466;
+  --landmark: #4b6b52;
+  --realm-ink: #2f5a3a;
+}
+
+/* Sore (15–17.30): keemasan */
+.realm[data-time="sore"] {
+  --sky-top: #ffc58f;
+  --sky-bottom: #fff0d6;
+  --sun: #ff9a3d;
+  --mount-far: #c2a39a;
+  --mount-far-2: #d8bfb2;
+  --hill-far: #c4d48f;
+  --hill-near: #97b562;
+  --landmark: #7a3f33;
+  --realm-ink: #6a3a24;
+}
+
+/* Senja (17.30–19): jingga ke ungu, lampu mulai menyala */
+.realm[data-time="senja"] {
+  --sky-top: #7f86c9;
+  --sky-bottom: #ffb99c;
+  --sun: #ff7a4f;
+  --mount-far: #7d6f9c;
+  --mount-far-2: #9a8bb3;
+  --hill-far: #6c7896;
+  --hill-near: #4f5a7a;
+  --landmark: #2f3352;
+  --cloud: #f8d6d6;
+  --windows: 0.8;
+  --art-filter: brightness(0.78) saturate(0.85) hue-rotate(-8deg);
+  --realm-ink: #ffffff;
+}
+
+/* Malam (19–05): bulan sabit dan bintang */
+.realm[data-time="malam"] {
+  --sky-top: #182346;
+  --sky-bottom: #464b7e;
+  --sun: #fff3cc;
+  --mount-far: #363c66;
+  --mount-far-2: #2d3359;
+  --snow: #dfe4ff;
+  --hill-far: #2a3055;
+  --hill-near: #1d2242;
+  --landmark: #11142b;
+  --cloud: #7c82b3;
+  --windows: 0.9;
+  --art-filter: brightness(0.5) saturate(0.6);
+  --realm-ink: #ffffff;
+}
+
+/* Pergantian waktu (mis. lewat jam 19) berubah halus, tidak meloncat */
+.backdrop * {
+  transition:
+    fill 2s ease,
+    opacity 2s ease;
+}
+
+/* ── Latar layar penuh ──
+   Di belakang konten (z-index -1 di atas kanvas body). Desktop: mulai dari tepi sidebar. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  animation: backdropIn 500ms ease-out both;
+}
+
+@media (min-width: 900px) {
+  .backdrop {
+    left: var(--sidebar-width);
+  }
+}
+
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.backdropSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sun {
+  fill: var(--sun);
+}
+
+.mountFar {
+  fill: var(--mount-far);
+}
+
+.mountFar2 {
+  fill: var(--mount-far-2);
+}
+
+.snow {
+  fill: var(--snow);
+  opacity: 0.92;
+}
+
+.hillFar {
+  fill: var(--hill-far);
+}
+
+.hillNear {
+  fill: var(--hill-near);
+}
+
+/* Bangunan berwarna penuh; diredupkan & dibirukan saat senja/malam supaya menyatu dengan langit */
+.landmarkArt {
+  filter: var(--art-filter, none);
+}
+
+/* Gunung: sisi bayangan, salju bayangan, alur punggungan */
+.mountShade {
+  fill: color-mix(in srgb, var(--mount-far) 78%, #1a1030);
+}
+
+.mountShade2 {
+  fill: color-mix(in srgb, var(--mount-far-2) 80%, #1a1030);
+}
+
+.snowShade {
+  fill: color-mix(in srgb, var(--snow) 78%, var(--mount-far));
+}
+
+.ridge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--mount-far) 70%, #1a1030);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+
+/* Pepohonan & rumput mengikuti warna bukit */
+.hillTrees {
+  fill: color-mix(in srgb, var(--hill-far) 62%, #14301a);
+}
+
+.treeLight {
+  fill: color-mix(in srgb, var(--hill-far) 85%, #ffffff);
+  opacity: 0.45;
+}
+
+.trunk {
+  fill: color-mix(in srgb, var(--hill-far) 35%, #3b2416);
+}
+
+.grass {
+  fill: none;
+  stroke: color-mix(in srgb, var(--hill-near) 65%, #14301a);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trail {
+  fill: none;
+  stroke: color-mix(in srgb, var(--hill-near) 55%, #f5e6c8);
+  stroke-width: 26;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.cloudShade {
+  fill: color-mix(in srgb, var(--cloud) 82%, var(--sky-top));
+}
+
+.birds {
+  stroke: color-mix(in srgb, var(--realm-ink) 70%, transparent);
+  animation: birdsFly 26s linear infinite;
+}
+
+@keyframes birdsFly {
+  from {
+    transform: translateX(-120px);
+  }
+  to {
+    transform: translateX(160px);
+  }
+}
+
+/* Jendela & lentera menyala mengikuti gelapnya langit */
+.lamp {
+  opacity: calc(0.15 + var(--windows) * 0.85);
+}
+
+.beacon {
+  animation: blink 1.6s steps(2, jump-none) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.windows {
+  fill: #ffe29a;
+  opacity: var(--windows);
+}
+
+.stream {
+  fill: color-mix(in srgb, var(--sky-bottom) 45%, #5f9fd0);
+  stroke: color-mix(in srgb, #ffffff 55%, transparent);
+  stroke-width: 2;
+}
+
+/* Bayangan lembut di bawah bangunan & pohon sprite supaya menapak di tanah */
+.groundShadow {
+  fill: color-mix(in srgb, var(--hill-near) 40%, #0b1a0b);
+  opacity: 0.35;
+}
+
+/* Cahaya jendela & lentera rumah: tidak ikut diredupkan, menyala sesuai gelapnya langit */
+.houseGlow {
+  opacity: var(--windows);
+  filter: drop-shadow(0 0 6px rgb(255 190 90 / 0.7));
+  transition: opacity 2s ease;
+}
+
+.clouds {
+  fill: var(--cloud);
+  opacity: 0.85;
+}
+
+.cloudA,
+.cloudB,
+.cloudC {
+  animation: drift 38s ease-in-out infinite alternate;
+}
+
+.cloudB {
+  animation-duration: 52s;
+  animation-delay: -12s;
+}
+
+.cloudC {
+  animation-duration: 44s;
+  animation-delay: -20s;
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(-60px);
+  }
+  to {
+    transform: translateX(80px);
+  }
+}
+
+.stars {
+  fill: #fff;
+}
+
+.stars circle {
+  animation: twinkle 3.2s ease-in-out infinite;
+  animation-delay: var(--d);
+}
+
+@keyframes twinkle {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* Nama wilayah di pojok atas panel */
+.realmTag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: var(--space-5);
+  color: var(--realm-ink);
+  text-align: center;
+}
+
+.realmTag small {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.realmTag strong {
+  font-size: var(--font-size-xl);
+  line-height: 1.15;
+}
+
+/* Teks halaman yang langsung di atas langit */
+.ink {
+  color: var(--realm-ink);
+}
+
+/* ── Hiasan di samping node ── */
+/* Sprite hiasan: tinggi = --prop × --ph, lebar mengikuti rasio gambar */
+.prop {
+  display: block;
+  height: calc(var(--prop, 40px) * var(--ph, 1));
+  width: auto;
+  max-width: none;
+  user-select: none;
+  filter: var(--art-filter, none) drop-shadow(0 4px 3px rgb(0 0 0 / 0.18));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloudA,
+  .cloudB,
+  .cloudC,
+  .stars circle,
+  .backdrop,
+  .birds,
+  .beacon {
+    animation: none;
+  }
+}

@@ -90,6 +90,16 @@
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-entrance: cubic-bezier(0.0, 0.0, 0.2, 1);
+
+  /* Katalog gerak peta belajar: ketuk node, balik kartu, panel naik, isi progres, denyut node aktif */
+  --motion-tap: 300ms;
+  --motion-flip: 500ms;
+  --motion-sheet: 400ms;
+  --motion-fill: 800ms;
+  --motion-pulse: 2000ms;
+  --ease-flip: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-sheet: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-fill: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 @media (min-width: 768px) {
@@ -111,5 +121,9 @@
     --motion-base: 0ms;
     --motion-slow: 0ms;
     --motion-entrance: 0ms;
+    --motion-tap: 0ms;
+    --motion-flip: 0ms;
+    --motion-sheet: 0ms;
+    --motion-fill: 0ms;
   }
 }

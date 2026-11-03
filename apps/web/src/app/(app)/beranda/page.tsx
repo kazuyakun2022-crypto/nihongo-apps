@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
+import { ReadinessCard } from "@/features/exam/ui/ReadinessCard";
 import { learningApi } from "@/features/learning/data/learningApi";
 import type { Level, LevelProgress, NextChapter } from "@/features/learning/domain/types";
 import { srsApi } from "@/features/srs/data/srsApi";
@@ -29,6 +30,7 @@ export default function BerandaPage() {
   const [due, setDue] = useState<number | null>(null);
   const [nextChapter, setNextChapter] = useState<NextChapter | null | undefined>(undefined);
   const [level, setLevel] = useState<Level | null>(null);
+  const [isTopLevel, setIsTopLevel] = useState(false);
   const [progress, setProgress] = useState<LevelProgress | null | undefined>(undefined);
 
   useEffect(() => {
@@ -45,7 +47,13 @@ export default function BerandaPage() {
       setProgress(null);
       return;
     }
-    learningApi.levels().then((all) => setLevel(all.find((l) => l.id === levelId) ?? null)).catch(() => setLevel(null));
+    learningApi
+      .levels()
+      .then((all) => {
+        setLevel(all.find((l) => l.id === levelId) ?? null);
+        setIsTopLevel(levelId === Math.max(...all.map((l) => l.id)));
+      })
+      .catch(() => setLevel(null));
     learningApi.getProgress(levelId).then(setProgress).catch(() => setProgress(null));
   }, [isAdmin, levelId]);
 
@@ -206,6 +214,8 @@ export default function BerandaPage() {
           </dl>
         </section>
       </div>
+
+      {level && <ReadinessCard levelId={level.id} levelCode={level.code} final={isTopLevel} />}
 
       <section className={styles.panel} aria-labelledby="practice-title">
         <h2 id="practice-title" className={styles.panelTitle}>Latihan lain</h2>
