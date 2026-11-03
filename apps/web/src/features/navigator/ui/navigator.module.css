@@ -1074,3 +1074,22 @@
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
 }
+
+/* ── Mode petunjuk (latihan/kuis): membantu tanpa memberi jawaban ── */
+.hintTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px !important;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, #22d3ee 16%, var(--color-surface));
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.root[data-hint] .avatar {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, #facc15 70%, #fff),
+    0 8px 22px rgb(80 20 40 / 0.28);
+}

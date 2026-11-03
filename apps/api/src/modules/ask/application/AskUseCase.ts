@@ -3,6 +3,7 @@ import type { AskProvider, AskUser } from "../infrastructure/MockAskProvider";
 import { planSpeech, speechText, stripPaceTags, type SpeechRun } from "../../../shared/domain/speechPace";
 import { extractCorrection, extractEmotion, type Emotion } from "../domain/emotion";
 import { extractGuide, type AppContext } from "../domain/navigationGuide";
+import { SAFE_HINT, leakedTerms, type AnswerKey } from "../domain/answerGuard";
 
 export interface AskMessage {
   role: "user" | "assistant";
@@ -26,6 +27,8 @@ interface Deps {
   ask: AskProvider;
   /** Nama, jenis kelamin, level, dan memori akun terdaftar; null untuk tamu atau user tidak ditemukan. */
   userProfile?: (userId: string) => Promise<AskUser | null>;
+  /** Kunci jawaban soal latihan/kuis, untuk memastikan mode petunjuk tidak membocorkannya. */
+  answerKey?: (questionId: string) => Promise<AnswerKey | null>;
 }
 
 /** Menjawab pertanyaan pengguna tentang bahasa Jepang dengan konteks percakapan. */
@@ -50,7 +53,20 @@ export class AskQuestion {
     const profile = userId && this.deps.userProfile ? await this.deps.userProfile(userId) : null;
     const user = profile && app ? { ...profile, app } : profile;
     const alt = mode === "voice" ? transcriptAlt?.trim() || undefined : undefined;
-    const { text: raw, guide } = extractGuide(await this.deps.ask.answer(q, trimmedHistory, mode, user ?? undefined, alt));
+    let { text: raw, guide: wantedGuide } = extractGuide(await this.deps.ask.answer(q, trimmedHistory, mode, user ?? undefined, alt));
+
+    // Mode petunjuk: periksa kebocoran kunci jawaban; tulis ulang sekali dengan kata terlarang, lalu jawaban aman
+    if (user?.app?.assessment && user.app.questionId && this.deps.answerKey) {
+      const key = await this.deps.answerKey(user.app.questionId);
+      const leaked = key ? leakedTerms(raw, key) : [];
+      if (key && leaked.length) {
+        const retryUser = { ...user, app: { ...user.app, avoid: leaked } };
+        const retry = extractGuide(await this.deps.ask.answer(q, trimmedHistory, mode, retryUser, alt)).text;
+        raw = leakedTerms(retry, key).length ? SAFE_HINT : retry;
+        wantedGuide = null;
+      }
+    }
+    const guide = app?.assessment ? null : wantedGuide;
     const speechRate = user?.levelGuide?.speechRate ?? null;
     if (mode !== "voice") return { answer: raw, emotion: "biasa", correction: null, speechRate, speech: null, guide };
     // Mode suara: AI menulis tanda emosi di awal jawaban ("[marah]"), koreksi di akhir ("{{benar: …}}"),

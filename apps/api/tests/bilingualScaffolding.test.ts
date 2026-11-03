@@ -157,6 +157,22 @@ describe("GroqTranscriber ucapan campuran", () => {
     expect(await transcribe()).toEqual({ text: "aku mau tau arti tabel dong", alt: "アクマウタウアルティ食べるドン" });
   });
 
+  // Kasus nyata dari uji suara pelan: mode Jepang mengarang 頑張りたい dan penggabung menempelkannya
+  it("penggabung yang hanya menempelkan halusinasi Jepang ditolak", async () => {
+    stub({ id: { text: "Lanjut.", logprob: -0.42 }, ja: { text: "頑張りたい。", logprob: -1.02 } }, "Lanjut. 頑張りたい。");
+    expect(await transcribe()).toEqual({ text: "Lanjut.", alt: null });
+  });
+
+  it("ucapan Indonesia di mikrofon pelan tidak kalah oleh katakana yang sedikit lebih yakin", async () => {
+    stub({ id: { text: "Buka kamus", logprob: -0.75 }, ja: { text: "ブカカムス", logprob: -0.55 } }, new Error("timeout"));
+    expect((await transcribe()).text).toBe("Buka kamus");
+  });
+
+  it("ucapan Jepang yang jelas tetap dipilih walau mode Indonesia menulis romaji", async () => {
+    stub({ id: { text: "O hayo gozaimasu", logprob: -1.05 }, ja: { text: "おはようございます。", logprob: -0.41 } }, new Error("timeout"));
+    expect((await transcribe()).text).toBe("おはようございます。");
+  });
+
   it("jawaban penggabung yang mengarang panjang diabaikan", async () => {
     stub({ id: { text: "apa arti tabel", logprob: -0.3 }, ja: { text: "食べる", logprob: -0.5 } }, "Apa arti 食べる? ".repeat(10));
     expect((await transcribe()).text).toBe("apa arti tabel");

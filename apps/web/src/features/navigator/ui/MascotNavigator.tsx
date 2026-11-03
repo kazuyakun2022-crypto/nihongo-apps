@@ -47,7 +47,17 @@ const STATE_LABEL: Record<VoiceState, string> = {
   SPOTLIGHT_POINT: "Miu-chan menunjukkan tombolnya",
 };
 
-function CaptionBubble({ caption, onClose, onAsk }: { caption: Caption; onClose: () => void; onAsk: (text: string) => void }) {
+function CaptionBubble({
+  caption,
+  onClose,
+  onAsk,
+  hintMode,
+}: {
+  caption: Caption;
+  onClose: () => void;
+  onAsk: (text: string) => void;
+  hintMode: boolean;
+}) {
   const [followUp, setFollowUp] = useState("");
   return (
     <div className={styles.bubble} role="status" aria-live="polite" data-refusal={caption.refusal || undefined}>
@@ -57,6 +67,11 @@ function CaptionBubble({ caption, onClose, onAsk }: { caption: Caption; onClose:
       {caption.refusal && (
         <p className={styles.examTag}>
           <span aria-hidden>🔒</span> Mode ujian
+        </p>
+      )}
+      {hintMode && caption.reply && (
+        <p className={styles.hintTag}>
+          <span aria-hidden>💡</span> Mode petunjuk · jawaban tetap kamu yang cari
         </p>
       )}
       {caption.ja && (
@@ -85,7 +100,7 @@ function CaptionBubble({ caption, onClose, onAsk }: { caption: Caption; onClose:
             className={styles.menuInput}
             value={followUp}
             onChange={(e) => setFollowUp(e.target.value)}
-            placeholder="Tanya lagi…"
+            placeholder={hintMode ? "Minta petunjuk lagi…" : "Tanya lagi…"}
             aria-label="Pertanyaan lanjutan untuk Miu-chan"
           />
           <button type="submit" className={styles.menuSend} aria-label="Kirim">
@@ -98,7 +113,9 @@ function CaptionBubble({ caption, onClose, onAsk }: { caption: Caption; onClose:
 }
 
 /** Saran cepat di menu: memberi tahu pengguna apa saja yang bisa ditanyakan. */
-const QUICK_ASKS = ["Jelaskan halaman ini", "Aku bingung di bagian ini", "Aku harus belajar apa sekarang?", "Mau latihan menulis huruf"];
+const QUICK_ASKS = ["Aku sedang belajar apa?", "Jelaskan bagian ini", "Jelaskan halaman ini", "Aku harus belajar apa sekarang?"];
+/** Saat latihan/kuis: hanya bantuan yang tidak membocorkan jawaban. */
+const QUICK_HINTS = ["Maksud soal ini apa?", "Beri aku petunjuk", "Ingatkan materinya", "Aku bingung"];
 
 type Pos = { right: number; bottom: number } | null;
 
@@ -211,7 +228,8 @@ export function MascotNavigator() {
   const visible = nav.isWidgetVisible && !nav.tour;
   const pageTour = pageTourFor(pathname);
   const exam = nav.examLocked;
-  const showOffer = !!offer && !exam && !showCaption && !menuOpen && state === "IDLE_FLOATING";
+  const hintMode = !!nav.assessment;
+  const showOffer = !!offer && !exam && !hintMode && !showCaption && !menuOpen && state === "IDLE_FLOATING";
 
   // Portal ke body: leluhur ber-transform (animasi halaman) mematahkan position: fixed
   if (!mounted) return null;
@@ -224,6 +242,7 @@ export function MascotNavigator() {
       data-state={state}
       data-offer={showOffer || undefined}
       data-exam={exam || undefined}
+      data-hint={hintMode || undefined}
       aria-hidden={!visible}
     >
       {showOffer && (
@@ -262,6 +281,7 @@ export function MascotNavigator() {
           caption={nav.micError ? { id: nav.micError } : (nav.caption as Caption)}
           onClose={nav.dismissCaption}
           onAsk={(t) => void nav.sendCommand(t)}
+          hintMode={hintMode}
         />
       )}
 
@@ -272,7 +292,7 @@ export function MascotNavigator() {
               className={styles.menuInput}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder="Ketik: cara latihan menulis…"
+              placeholder={hintMode ? "Tanya soal ini, aku beri petunjuk…" : "Ketik: cara latihan menulis…"}
               aria-label="Ketik perintah untuk Miu-chan"
               autoFocus
             />
@@ -281,7 +301,7 @@ export function MascotNavigator() {
             </button>
           </form>
           <div className={styles.quick}>
-            {QUICK_ASKS.map((q) => (
+            {(hintMode ? QUICK_HINTS : QUICK_ASKS).map((q) => (
               <button
                 key={q}
                 type="button"
@@ -295,7 +315,7 @@ export function MascotNavigator() {
               </button>
             ))}
           </div>
-          {pageTour && (
+          {pageTour && !hintMode && (
             <button
               type="button"
               role="menuitem"

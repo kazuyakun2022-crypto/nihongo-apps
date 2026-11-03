@@ -10,7 +10,7 @@ import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { useSpeech, versionedAudioUrl } from "@/shared/lib/useSpeech";
 import { EXERCISES, SKILLS, countBySkill, type SkillId } from "@/shared/lib/exercises";
 import { useAuth } from "@/features/auth/application/AuthProvider";
-import { useExamLock, useScreenContext } from "@/features/navigator/application/NavigatorProvider";
+import { useAssessment, useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import { isPracticeQuestion, useChapterLesson, type StudyCard } from "../application/useChapterLesson";
 import type { ChapterQuizQuestion } from "../domain/types";
 import { LessonBlockView } from "./LessonBlockView";
@@ -46,6 +46,51 @@ function stepInfo(card: StudyCard): { kind: string; text: string } {
     case "grammar":
       return { kind: "Tata bahasa", text: stripFurigana(card.data.pattern) };
   }
+}
+
+const cut = (s: string | null | undefined, n: number) => {
+  const t = stripFurigana(s ?? "").replace(/\s+/g, " ").trim();
+  return t.length > n ? `${t.slice(0, n)}…` : t;
+};
+
+const PHASE_LABEL: Record<string, string> = {
+  warmup: "pemanasan (mengulang kosakata bab sebelumnya)",
+  study: "materi",
+  "quiz-intro": "persiapan kuis",
+  result: "hasil kuis",
+};
+
+/** Ringkasan isi layar pelajaran untuk Miu-chan: materi lengkap saat belajar, soal & pilihan saat latihan/kuis. */
+function lessonContext(
+  chapterTitle: string,
+  phase: string,
+  card: StudyCard | null,
+  question: ChapterQuizQuestion | null,
+  index: number,
+  total: number,
+): string {
+  const head = `Bab "${cut(chapterTitle, 60)}"`;
+  if (question) {
+    const kind = isPracticeQuestion(question) ? "latihan" : "kuis";
+    const parts = [`${head}, ${kind} soal ${index + 1} dari ${total} (jenis ${question.type})`, `soal: ${cut(question.question, 160)}`];
+    if (question.hint) parts.push(`petunjuk di layar: ${cut(question.hint, 80)}`);
+    if (question.speakText) parts.push(`kalimat yang harus diucapkan: ${cut(question.speakText, 80)}`);
+    if (question.options.length) parts.push(`pilihan/kepingan: ${question.options.map((o) => cut(o, 30)).join(" | ")}`);
+    return parts.join("; ");
+  }
+  if (phase === "study" && card) {
+    switch (card.kind) {
+      case "vocab":
+        return `${head}, materi kosakata: ${card.data.word} (${card.data.reading}) = ${cut(card.data.meaningId, 60)}${card.data.exampleSentence ? `; contoh: ${cut(card.data.exampleSentence, 80)} = ${cut(card.data.exampleTranslation, 80)}` : ""}`;
+      case "kanji":
+        return `${head}, materi kanji: ${card.data.character}, onyomi ${card.data.onyomi ?? "-"}, kunyomi ${card.data.kunyomi ?? "-"}, arti ${cut(card.data.meaningId, 60)}`;
+      case "grammar":
+        return `${head}, materi tata bahasa: pola ${cut(card.data.pattern, 60)}; penjelasan: ${cut(card.data.explanation, 220)}${card.data.exampleSentence ? `; contoh: ${cut(card.data.exampleSentence, 80)}` : ""}`;
+      case "block":
+        return `${head}, materi ${BLOCK_LABEL[card.data.type] ?? "teks"}${card.data.title ? ` "${cut(card.data.title, 60)}"` : ""}: ${cut(card.data.body ?? card.data.caption, 300)}`;
+    }
+  }
+  return `${head}, tahap ${PHASE_LABEL[phase] ?? phase}`;
 }
 
 /** Saran Miu-chan di panel samping, sesuai jenis kartu yang sedang dibuka. */
@@ -142,16 +187,11 @@ function isTypingTarget(target: EventTarget | null): boolean {
 
 export function ChapterLesson({ chapterId }: { chapterId: string }) {
   const lesson = useChapterLesson(chapterId);
-  // Kuis bab dihitung ujian: Miu-chan pemandu dibekukan total supaya tidak membocorkan jawaban
-  useExamLock("kuis-bab", lesson.phase === "quiz" || lesson.phase === "submitting");
-  // Konteks untuk Miu-chan: bab, langkah, dan materi yang sedang dibuka (supaya "aku bingung di sini" nyambung)
-  const studyStep = lesson.phase === "study" && lesson.currentStudyCard ? stepInfo(lesson.currentStudyCard) : null;
-  useScreenContext(
-    "bab",
-    lesson.chapter
-      ? `Bab "${lesson.chapter.title}", tahap ${lesson.phase}${studyStep ? `, sedang membaca ${studyStep.kind}: ${studyStep.text}` : ""}`
-      : null,
-  );
+  // Latihan & kuis bab: Miu-chan tetap boleh menjelaskan dan memberi petunjuk, tapi tidak memberi jawaban
+  const inQuiz = (lesson.phase === "quiz" || lesson.phase === "submitting") && !!lesson.currentQuestion;
+  useAssessment("bab", inQuiz ? (isPracticeQuestion(lesson.currentQuestion!) ? "latihan" : "kuis") : null, inQuiz ? lesson.currentQuestion!.id : undefined);
+  // Konteks untuk Miu-chan: isi yang sedang tampil (materi atau soal, tanpa kunci jawaban yang memang tidak ada di klien)
+  useScreenContext("bab", lesson.chapter ? lessonContext(lesson.chapter.title, lesson.phase, lesson.currentStudyCard, inQuiz ? lesson.currentQuestion : null, lesson.quizIndex, lesson.quizQuestions.length) : null);
   const { speak } = useSpeech();
   const chapterKanji = useMemo(() => lesson.chapter?.kanji.map((k) => k.character) ?? [], [lesson.chapter]);
 

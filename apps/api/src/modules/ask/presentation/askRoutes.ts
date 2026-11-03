@@ -27,7 +27,13 @@ export function askRoutes(
         mode: z.enum(["text", "voice"]).default("text"),
         transcriptAlt: z.string().trim().max(500).optional(),
         app: z
-          .object({ screen: z.string().trim().max(300).optional(), guide: z.boolean().optional(), widget: z.boolean().optional() })
+          .object({
+            screen: z.string().trim().max(700).optional(),
+            guide: z.boolean().optional(),
+            widget: z.boolean().optional(),
+            assessment: z.enum(["latihan", "kuis"]).optional(),
+            questionId: z.string().uuid().optional(),
+          })
           .optional(),
       }),
       req.body,

@@ -18,6 +18,10 @@ export interface AskAppContext {
   screen?: string;
   /** Boleh mengembalikan `guide` (tujuan tur) bila user minta ditunjukkan suatu fitur. */
   guide?: boolean;
+  /** Sedang latihan/kuis: Miu-chan memberi petunjuk, bukan jawaban. */
+  assessment?: "latihan" | "kuis";
+  /** Soal yang sedang dikerjakan (kunci jawabannya hanya ada di server). */
+  questionId?: string;
   /** Jawaban ringkas untuk gelembung asisten. */
   widget?: boolean;
 }

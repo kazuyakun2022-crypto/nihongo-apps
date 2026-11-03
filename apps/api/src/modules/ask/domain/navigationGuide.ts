@@ -31,6 +31,12 @@ export interface AppContext {
   guide?: boolean;
   /** Jawaban tampil di gelembung kecil asisten, jadi harus ringkas. */
   widget?: boolean;
+  /** User sedang mengerjakan latihan/kuis: boleh menjelaskan & memberi petunjuk, dilarang memberi jawaban. */
+  assessment?: "latihan" | "kuis";
+  /** Soal yang sedang dikerjakan (untuk memeriksa kebocoran kunci jawaban). */
+  questionId?: string;
+  /** Diisi server saat jawaban pertama membocorkan kunci: kata yang dilarang muncul. */
+  avoid?: string[];
 }
 
 const clean = (s: string, max: number) => s.replace(/[\r\n\[\]{}<>`"]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
@@ -38,13 +44,26 @@ const clean = (s: string, max: number) => s.replace(/[\r\n\[\]{}<>`"]/g, " ").re
 export function appSection(app?: AppContext | null): string {
   if (!app) return "";
   const parts: string[] = [];
-  if (app.screen) parts.push(`- Layar yang sedang dibuka user: ${clean(app.screen, 240)}. Kalau user bilang "ini", "soal ini", atau kesulitan, anggap ia membicarakan layar ini dan bantu langsung sesuai isinya.`);
+  if (app.screen) {
+    parts.push(
+      `- Yang sedang tampil di layar user: ${clean(app.screen, 560)}. Kalau user bertanya "ini apa", "soal ini", "aku bingung", atau "sedang belajar apa", jawab berdasarkan isi layar ini: sebutkan apa yang sedang dipelajari dan jelaskan bagian yang dibutuhkan (arti, cara baca, pola, fungsi), dengan contoh singkat.`,
+    );
+  }
+  if (app.assessment) {
+    parts.push(
+      `- User sedang mengerjakan ${app.assessment === "kuis" ? "KUIS (dinilai)" : "LATIHAN"}. ATURAN KERAS: jangan pernah memberi jawaban soal, menyebut atau menunjuk pilihan yang benar, mengonfirmasi apakah jawaban user benar/salah, menuliskan kata/huruf yang diminta soal, atau menerjemahkan kalimat soal kalau terjemahan itu sendiri adalah jawabannya. Yang BOLEH: menjelaskan maksud soal, mengingatkan konsep/pola/aturan dari materi bab, arti kata pendukung yang bukan inti jawaban, dan petunjuk bertahap (mulai dari yang paling samar). Petunjuk TIDAK BOLEH memuat kata, terjemahan, atau sinonim langsung dari jawaban yang benar (mis. untuk soal arti salam pagi, jangan sebut "pagi"); arahkan ke cara berpikir atau materi yang perlu diingat. Kalau user minta jawaban langsung, tolak dengan lembut ("Itu harus kamu temukan sendiri ya") lalu beri satu petunjuk.`,
+    );
+  }
+  if (app.assessment && app.avoid?.length) {
+    parts.push(`- Jawabanmu sebelumnya membocorkan jawaban soal. Tulis ulang petunjuknya TANPA menyebut kata berikut, artinya, atau sinonimnya: ${app.avoid.map((w) => clean(w, 40)).join(", ")}.`);
+  }
   if (app.widget) {
     parts.push(
       "- Kamu sedang menjawab sebagai asisten belajar di gelembung kecil yang melayang di atas layar. Jawab ringkas, paling banyak 4 kalimat pendek, tanpa tabel atau judul. Bantu langkah belajar berikutnya dengan sabar; kalau user bingung, pecah jadi langkah kecil.",
     );
   }
-  if (app.guide) {
+  // Saat latihan/kuis tidak ada tunjuk jalan: pindah layar di tengah soal bisa menghilangkan jawaban
+  if (app.guide && !app.assessment) {
     const list = Object.entries(GUIDE_DESTINATIONS)
       .map(([k, d]) => `  ${k}: ${d}`)
       .join("\n");

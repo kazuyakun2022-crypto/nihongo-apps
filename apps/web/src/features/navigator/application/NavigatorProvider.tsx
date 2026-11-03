@@ -75,7 +75,12 @@ interface NavigatorContextValue {
   lockForExam: (key: string, locked: boolean) => void;
   /** Detail layar saat ini (mis. bab & langkah) untuk konteks jawaban Miu-chan. */
   setScreenDetail: (key: string, detail: string | null) => void;
+  /** Sedang latihan/kuis: Miu-chan menjelaskan & memberi petunjuk, tapi tidak memberi jawaban. */
+  assessment: Assessment | null;
+  setAssessment: (key: string, kind: Assessment | null, questionId?: string) => void;
 }
+
+export type Assessment = "latihan" | "kuis";
 
 const NavigatorContext = createContext<NavigatorContextValue | null>(null);
 
@@ -124,6 +129,11 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
   const [locks, setLocks] = useState<Set<string>>(new Set());
   const [tour, setTour] = useState<ActiveTour | null>(null);
   const detailsRef = useRef(new Map<string, string>());
+  const [assessments, setAssessments] = useState<Map<string, { kind: Assessment; questionId?: string }>>(new Map());
+  const assessmentList = [...assessments.values()];
+  const assessment: Assessment | null = assessmentList.length ? (assessmentList.some((a) => a.kind === "kuis") ? "kuis" : "latihan") : null;
+  /** Soal yang sedang dikerjakan: server memakainya untuk memastikan petunjuk tidak membocorkan kunci jawaban. */
+  const questionId = assessmentList.find((a) => a.questionId)?.questionId;
   /** Riwayat tanya-jawab widget supaya pertanyaan lanjutan ("terus yang ini?") tetap nyambung. */
   const historyRef = useRef<AskMessage[]>([]);
 
@@ -195,6 +205,22 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
     if (detail) detailsRef.current.set(key, detail);
     else detailsRef.current.delete(key);
   }, []);
+
+  const setAssessment = useCallback((key: string, kind: Assessment | null, qid?: string) => {
+    setAssessments((prev) => {
+      const cur = prev.get(key);
+      if ((cur?.kind ?? null) === kind && cur?.questionId === qid) return prev;
+      const next = new Map(prev);
+      if (kind) next.set(key, { kind, questionId: qid });
+      else next.delete(key);
+      return next;
+    });
+  }, []);
+
+  // Masuk latihan/kuis: tur dihentikan supaya pengguna tidak terbawa pindah layar di tengah soal
+  useEffect(() => {
+    if (assessment) setTour(null);
+  }, [assessment]);
 
   const refuse = useCallback(() => {
     setVoiceState("IDLE_FLOATING");
@@ -318,7 +344,8 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       setVoiceState("THINKING");
       setCaption({ id: `“${text}”` });
 
-      const intent = matchIntent(text);
+      // Saat latihan/kuis semua pertanyaan ke AI (mode petunjuk), tanpa tunjuk jalan
+      const intent = assessment ? null : matchIntent(text);
       if (intent) {
         const key = intent.tour === "page" ? pageTourFor(window.location.pathname) : intent.tour;
         if (!key) {
@@ -339,7 +366,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       const details = [...detailsRef.current.values()].join("; ");
       const screen = screenName(window.location.pathname) + (details ? ` — ${details}` : "");
       try {
-        const res = await postAssistant(text, historyRef.current, { screen, guide: true, widget: true });
+        const res = await postAssistant(text, historyRef.current, assessment ? { screen, widget: true, assessment, questionId } : { screen, guide: true, widget: true });
         if (run !== runRef.current) return;
         const answer = stripTags(res.answer);
         historyRef.current = [...historyRef.current, { role: "user" as const, content: text }, { role: "assistant" as const, content: answer }].slice(-8);
@@ -358,7 +385,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
         setVoiceState("IDLE_FLOATING");
       }
     },
-    [examLocked, refuse, speak, startTour],
+    [examLocked, assessment, questionId, refuse, speak, startTour],
   );
 
   const startListening = useCallback(async () => {
@@ -371,7 +398,8 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
     setMicError(null);
     const run = runRef.current;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Peredam bising + penguat otomatis: mikrofon laptop yang pelan atau ruangan ramai membuat Whisper salah bahasa
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
       if (run !== runRef.current) {
         stream.getTracks().forEach((t) => t.stop());
         return;
@@ -473,8 +501,10 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       speakLine,
       lockForExam,
       setScreenDetail,
+      assessment,
+      setAssessment,
     }),
-    [isWidgetVisible, examLocked, isMuted, captionsOn, voiceState, caption, micError, band, tour, toggleListening, sendCommand, setMuted, setCaptionsOn, dismissCaption, startTour, tourNext, tourBack, endTour, speakLine, lockForExam, setScreenDetail],
+    [isWidgetVisible, examLocked, isMuted, captionsOn, voiceState, caption, micError, band, tour, toggleListening, sendCommand, setMuted, setCaptionsOn, dismissCaption, startTour, tourNext, tourBack, endTour, speakLine, lockForExam, setScreenDetail, assessment, setAssessment],
   );
 
   return <NavigatorContext.Provider value={value}>{children}</NavigatorContext.Provider>;
@@ -501,7 +531,17 @@ export function useScreenContext(key: string, detail: string | null) {
   }, [set, key, detail]);
 }
 
-/** Bekukan navigator selama `active` (kuis bab, dsb.). Aman dipakai di luar provider. */
+/** Tandai layar sebagai latihan/kuis (null = tidak): Miu-chan beralih ke mode petunjuk tanpa jawaban. */
+export function useAssessment(key: string, kind: Assessment | null, questionId?: string) {
+  const set = useContext(NavigatorContext)?.setAssessment;
+  useEffect(() => {
+    if (!set) return;
+    set(key, kind, questionId);
+    return () => set(key, null);
+  }, [set, key, kind, questionId]);
+}
+
+/** Bekukan navigator selama `active` (ujian resmi). Aman dipakai di luar provider. */
 export function useExamLock(key: string, active: boolean) {
   const ctx = useContext(NavigatorContext);
   const lock = ctx?.lockForExam;

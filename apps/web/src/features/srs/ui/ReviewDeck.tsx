@@ -1,6 +1,6 @@
 "use client";
 
-import { useScreenContext } from "@/features/navigator/application/NavigatorProvider";
+import { useAssessment, useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import Link from "next/link";
 import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
@@ -19,6 +19,8 @@ const grades: { value: ReviewGrade; label: string }[] = [
 export function ReviewDeck() {
   const { loading, current, remaining, revealed, reveal, grade } = useReview();
   // Jawaban kartu baru diberikan ke Miu-chan setelah dibuka, supaya ia tidak membocorkannya
+  // Sebelum jawaban dibuka, kartu ini latihan mengingat: Miu-chan memberi petunjuk, bukan arti
+  useAssessment("review", current && !revealed ? "latihan" : null);
   useScreenContext("kartu", current ? `Kartu review: ${current.front}${revealed ? ` (${current.reading ?? ""} = ${current.meaning})` : " (jawaban belum dibuka; jangan beri tahu artinya, beri petunjuk saja)"}` : null);
 
   if (loading) {
