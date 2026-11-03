@@ -111,7 +111,7 @@ export default function BerandaPage() {
             <>
               <p className={styles.heroEyebrow}>Bab berikutnya · {nextChapter.levelCode}</p>
               <h1 id="hero-title" className={styles.heroTitle} lang="ja">{nextChapter.title}</h1>
-              <Link href={`/belajar/${nextChapter.id}`} className={styles.heroCta}>
+              <Link href={`/belajar/${nextChapter.id}`} className={styles.heroCta} data-spotlight="beranda-lanjut">
                 Mulai bab
               </Link>
             </>
@@ -119,7 +119,7 @@ export default function BerandaPage() {
             <>
               <p className={styles.heroEyebrow}>Jalur belajar</p>
               <h1 id="hero-title" className={styles.heroTitle}>Semua bab yang terbuka sudah selesai</h1>
-              <Link href="/belajar" className={styles.heroCta}>
+              <Link href="/belajar" className={styles.heroCta} data-spotlight="beranda-lanjut">
                 Lihat daftar bab
               </Link>
             </>
@@ -151,7 +151,7 @@ export default function BerandaPage() {
       </section>
 
       <div className={styles.overview}>
-        <section className={styles.panel} aria-labelledby="progress-title">
+        <section className={styles.panel} aria-labelledby="progress-title" data-spotlight="beranda-progres">
           <div className={styles.panelHead}>
             <h2 id="progress-title" className={styles.panelTitle}>
               Progres {level?.code ?? "level"}
@@ -183,7 +183,7 @@ export default function BerandaPage() {
           )}
         </section>
 
-        <section className={styles.panel} aria-labelledby="habit-title">
+        <section className={styles.panel} aria-labelledby="habit-title" data-spotlight="beranda-streak">
           <h2 id="habit-title" className={styles.panelTitle}>Konsistensi</h2>
           <div className={styles.streak}>
             <span className={styles.streakIcon} data-active={streak > 0} aria-hidden="true">
@@ -217,11 +217,11 @@ export default function BerandaPage() {
 
       {level && <ReadinessCard levelId={level.id} levelCode={level.code} final={isTopLevel} />}
 
-      <section className={styles.panel} aria-labelledby="practice-title">
+      <section className={styles.panel} aria-labelledby="practice-title" data-spotlight="beranda-latihan">
         <h2 id="practice-title" className={styles.panelTitle}>Latihan lain</h2>
         <ul className={styles.practiceList}>
           <li>
-            <Link href="/review" className={styles.practice} data-highlight={!!due}>
+            <Link href="/review" className={styles.practice} data-highlight={!!due} data-spotlight="beranda-review">
               <span className={styles.practiceIcon} aria-hidden="true">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="5" width="14" height="16" rx="2" />

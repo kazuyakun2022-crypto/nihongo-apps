@@ -1,0 +1,1095 @@
+/* Widget Miu-chan melayang + gelembung subtitle + sorotan elemen. */
+
+.root {
+  --size: 64px;
+  --glow: #22d3ee;
+  position: fixed;
+  z-index: 210;
+  right: 16px;
+  bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  pointer-events: none;
+  transition:
+    opacity 300ms ease,
+    transform 300ms var(--ease-spring),
+    visibility 0s;
+}
+
+@media (min-width: 768px) {
+  .root {
+    --size: 80px;
+  }
+}
+
+@media (min-width: 900px) {
+  .root {
+    right: 24px;
+    bottom: 24px;
+  }
+}
+
+/* Exam Mode Lock & halaman tanpa widget: memudar lalu hilang total */
+.root[data-hidden] {
+  opacity: 0;
+  transform: scale(0.6) translateY(16px);
+  visibility: hidden;
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease,
+    visibility 0s 300ms;
+}
+
+.root > * {
+  pointer-events: auto;
+}
+
+/* ── Avatar ── */
+.avatarWrap {
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+}
+
+.avatar {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #fff6f8, #ffd9e2);
+  box-shadow:
+    0 8px 22px rgb(80 20 40 / 0.28),
+    0 0 0 1px rgb(0 0 0 / 0.05);
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--motion-tap) var(--ease-spring);
+}
+
+.avatar:active {
+  cursor: grabbing;
+  transform: scale(0.94);
+}
+
+.avatar:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.avatarBody {
+  display: block;
+  width: 88%;
+  height: 88%;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.avatarImg {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 50% 15%;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* IDLE: melayang pelan, sesekali menoleh dan melompat kecil supaya tidak terasa kaku */
+.root[data-state="IDLE_FLOATING"] .avatarBody {
+  animation: idlePlay 9s ease-in-out infinite;
+}
+
+@keyframes idlePlay {
+  0%,
+  40%,
+  70%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: scale(1.03);
+  }
+  48%,
+  56% {
+    transform: rotate(-9deg);
+  }
+  62% {
+    transform: rotate(6deg);
+  }
+  84% {
+    transform: scale(1.06, 0.92);
+  }
+  89% {
+    transform: translateY(-9px) scale(0.96, 1.05);
+  }
+  94% {
+    transform: scale(1.04, 0.95);
+  }
+}
+
+.root[data-state="IDLE_FLOATING"] .avatar {
+  animation: floaty 4s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes breathe {
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+/* LISTENING: kepala miring bergantian + gelombang suara */
+.root[data-state="LISTENING"] .avatarBody {
+  animation: tilt 1.4s ease-in-out infinite;
+}
+
+@keyframes tilt {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+
+.waves {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.root[data-state="LISTENING"] .waves::before,
+.root[data-state="LISTENING"] .waves::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid var(--glow);
+  animation: wave 1.3s ease-out infinite;
+}
+
+.root[data-state="LISTENING"] .waves::after {
+  animation-delay: 0.65s;
+}
+
+@keyframes wave {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* THINKING: gelembung titik di atas kepala */
+.thinkBubble {
+  position: absolute;
+  z-index: 2;
+  top: -14px;
+  right: -4px;
+  display: none;
+  gap: 3px;
+  padding: 4px 7px;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.15);
+}
+
+.root[data-state="THINKING"] .thinkBubble {
+  display: flex;
+}
+
+.thinkBubble i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: dot 1s ease-in-out infinite;
+}
+
+.thinkBubble i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.thinkBubble i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dot {
+  50% {
+    transform: translateY(-4px);
+    opacity: 0.4;
+  }
+}
+
+.root[data-state="THINKING"] .avatarBody {
+  animation: ponder 2s ease-in-out infinite;
+}
+
+@keyframes ponder {
+  50% {
+    transform: translateY(-2px) rotate(-4deg);
+  }
+}
+
+/* SPEAKING: memantul mengikuti irama + partikel bintang */
+.root[data-state="SPEAKING"] .avatarBody {
+  animation: talk 0.36s ease-in-out infinite alternate;
+}
+
+@keyframes talk {
+  to {
+    transform: translateY(-2px) scale(1.04, 0.97);
+  }
+}
+
+.sparkles,
+.dash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sparkles i,
+.dash i {
+  position: absolute;
+  display: none;
+}
+
+.root[data-state="SPEAKING"] .sparkles i,
+.root[data-state="SPOTLIGHT_POINT"] .sparkles i {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: #ffd257;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: spark 1.2s ease-out infinite;
+}
+
+.sparkles i:nth-child(1) {
+  top: 8%;
+  left: -6%;
+}
+
+.sparkles i:nth-child(2) {
+  top: -8%;
+  left: 60%;
+  animation-delay: 0.4s !important;
+}
+
+.sparkles i:nth-child(3) {
+  top: 50%;
+  left: 100%;
+  animation-delay: 0.8s !important;
+}
+
+@keyframes spark {
+  0% {
+    transform: scale(0) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4) translateY(-10px) rotate(90deg);
+    opacity: 0;
+  }
+}
+
+/* NAVIGATING: condong ke depan + garis angin */
+.root[data-state="NAVIGATING"] .avatar {
+  animation: dashOff 0.6s var(--ease-spring) both;
+}
+
+@keyframes dashOff {
+  40% {
+    transform: translateX(-10px) rotate(-10deg) scale(1.06);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.root[data-state="NAVIGATING"] .dash i {
+  display: block;
+  right: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--glow) 70%, #fff);
+  animation: wind 0.5s linear infinite;
+}
+
+.dash i:nth-child(1) {
+  top: 25%;
+  width: 22px;
+}
+
+.dash i:nth-child(2) {
+  top: 50%;
+  width: 30px;
+  animation-delay: 0.15s !important;
+}
+
+.dash i:nth-child(3) {
+  top: 72%;
+  width: 18px;
+  animation-delay: 0.3s !important;
+}
+
+@keyframes wind {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+}
+
+/* SPOTLIGHT_POINT: mengangguk menunjuk */
+.root[data-state="SPOTLIGHT_POINT"] .avatarBody {
+  animation: point 0.9s ease-in-out infinite;
+}
+
+@keyframes point {
+  50% {
+    transform: translateY(-3px) rotate(-8deg);
+  }
+}
+
+.root[data-state="SPOTLIGHT_POINT"] .avatar {
+  box-shadow:
+    0 0 0 4px var(--glow),
+    0 8px 22px rgb(80 20 40 / 0.28);
+}
+
+/* Lencana status mikrofon */
+.badge {
+  position: absolute;
+  z-index: 2;
+  right: 2px;
+  bottom: 2px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: transparent;
+  display: none;
+}
+
+.badge[data-mic] {
+  display: block;
+}
+
+.badge[data-mic="on"] {
+  background: #22c55e;
+  animation: blink 1s ease-in-out infinite;
+}
+
+.badge[data-mic="busy"] {
+  background: #f59e0b;
+}
+
+.badge[data-mic="muted"] {
+  background: #9ca3af;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.more {
+  position: absolute;
+  z-index: 2;
+  top: -4px;
+  left: -8px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+  cursor: pointer;
+}
+
+.more:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ── Gelembung subtitle ── */
+.bubble {
+  position: relative;
+  max-width: min(20rem, calc(100vw - 32px));
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-6) var(--space-3) var(--space-4);
+  border-radius: 18px 18px 4px 18px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 10px 28px rgb(30 10 30 / 0.22);
+  animation: bubbleIn 260ms var(--ease-spring) both;
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.92);
+  }
+}
+
+.bubble p {
+  margin: 0;
+}
+
+.capJa {
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.capRomaji {
+  font-size: var(--font-size-xs);
+  font-style: italic;
+  color: var(--color-primary);
+}
+
+.capId {
+  margin-top: 2px !important;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.capMain {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.revealRest {
+  opacity: 0;
+}
+
+.bubbleClose {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* ── Menu kontrol ── */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(18rem, calc(100vw - 32px));
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: 0 10px 28px rgb(30 10 30 / 0.22);
+  animation: bubbleIn 220ms var(--ease-spring) both;
+}
+
+.menuForm {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.menuInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.5rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-size: var(--font-size-sm);
+}
+
+.menuSend {
+  width: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  cursor: pointer;
+}
+
+.menuRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.menuBtn {
+  min-height: 2.25rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+
+/* ── Tawaran tur & menu ── */
+.offerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.menuTour {
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #0891b2, #4f46e5);
+  color: #fff;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+/* Saat menawarkan tur: melambai kecil supaya terlihat memanggil */
+.root[data-offer] .avatarBody {
+  animation: waveHello 1.6s ease-in-out infinite;
+}
+
+@keyframes waveHello {
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  10%,
+  30% {
+    transform: rotate(-10deg) translateY(-3px);
+  }
+  20%,
+  40% {
+    transform: rotate(8deg) translateY(-3px);
+  }
+}
+
+/* ── Tombol kartu ── */
+.btnMain,
+.btnSoft,
+.btnGhost {
+  min-height: 2.5rem;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: transform var(--motion-tap) var(--ease-spring);
+}
+
+.btnMain {
+  border: 0;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--color-primary) 60%, #000);
+}
+
+.btnMain:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btnSoft {
+  border: 2px solid #22d3ee;
+  background: color-mix(in srgb, #22d3ee 12%, var(--color-surface));
+  color: var(--color-text);
+}
+
+.btnGhost {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.btnMain:active:not(:disabled),
+.btnSoft:active,
+.btnGhost:active {
+  transform: translateY(2px) scale(0.97);
+}
+
+.btnMain:focus-visible,
+.btnSoft:focus-visible,
+.btnGhost:focus-visible,
+.cardClose:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ── Tur: sorotan ── */
+.spot {
+  --glow: #22d3ee;
+  --ease-glide: cubic-bezier(0.22, 1, 0.36, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  pointer-events: none;
+  animation: shadeIn 280ms ease both;
+}
+
+@keyframes shadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Satu lubang dengan bayangan raksasa = layar gelap; posisi & ukurannya meluncur antar langkah. */
+.hole {
+  position: fixed;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 3px var(--glow),
+    0 0 26px 4px rgb(34 211 238 / 0.6),
+    0 0 0 200vmax rgb(6 10 24 / 0.62);
+  transition:
+    top 520ms var(--ease-glide),
+    left 520ms var(--ease-glide),
+    width 520ms var(--ease-glide),
+    height 520ms var(--ease-glide);
+  animation: holePulse 1.6s ease-in-out infinite;
+}
+
+.hole[data-empty] {
+  box-shadow: 0 0 0 200vmax rgb(6 10 24 / 0.62);
+  animation: none;
+}
+
+@keyframes holePulse {
+  50% {
+    box-shadow:
+      0 0 0 5px var(--glow),
+      0 0 40px 8px rgb(34 211 238 / 0.8),
+      0 0 0 200vmax rgb(6 10 24 / 0.62);
+  }
+}
+
+.block {
+  position: fixed;
+  pointer-events: auto;
+}
+
+/* Jari yang mengetuk-ngetuk target pada langkah "ketuk" */
+.tapHand {
+  position: fixed;
+  font-size: 30px;
+  line-height: 1;
+  filter: drop-shadow(0 3px 6px rgb(0 0 0 / 0.45));
+  animation: tapTap 1.1s ease-in-out infinite;
+  transition:
+    top 520ms var(--ease-glide),
+    left 520ms var(--ease-glide);
+}
+
+@keyframes tapTap {
+  0%,
+  100% {
+    transform: rotate(-12deg);
+  }
+  45% {
+    transform: translate(-6px, -8px) rotate(-12deg) scale(0.9);
+  }
+}
+
+/* ── Tur: kartu penjelas ── */
+.card {
+  position: fixed;
+  width: min(22rem, calc(100vw - 24px));
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-radius: 20px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 18px 48px rgb(0 0 0 / 0.35);
+  pointer-events: auto;
+  transition:
+    top 520ms var(--ease-glide),
+    left 520ms var(--ease-glide);
+  animation: cardIn 380ms var(--ease-spring) both;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.92);
+  }
+}
+
+/* Ekor kartu menunjuk ke target */
+.card::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--notch) - 9px);
+  width: 18px;
+  height: 18px;
+  background: inherit;
+  transform: rotate(45deg);
+  transition: left 520ms var(--ease-glide);
+}
+
+.card[data-place="below"]::before {
+  top: -8px;
+}
+
+.card[data-place="above"]::before {
+  bottom: -8px;
+}
+
+.card[data-place="over"]::before,
+.card[data-place="center"]::before {
+  display: none;
+}
+
+.card[data-shake] {
+  animation: cardShake 420ms ease both;
+}
+
+@keyframes cardShake {
+  20%,
+  60% {
+    transform: translateX(-7px);
+  }
+  40%,
+  80% {
+    transform: translateX(7px);
+  }
+}
+
+/* Miu-chan mengintip dari pojok kartu; melompat masuk tiap langkah baru */
+.cardMascot {
+  position: absolute;
+  top: -40px;
+  right: 14px;
+  width: 64px;
+  height: 64px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #fff6f8, #ffd9e2);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.25);
+  animation:
+    peekIn 520ms var(--ease-spring) both,
+    floaty 3.2s ease-in-out 520ms infinite;
+}
+
+.cardMascot img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 50% 15%;
+}
+
+.cardMascot[data-speaking] {
+  animation:
+    peekIn 520ms var(--ease-spring) both,
+    talk 0.34s ease-in-out 520ms infinite alternate;
+}
+
+@keyframes peekIn {
+  from {
+    transform: translateY(26px) scale(0.4) rotate(-20deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-8px) scale(1.08) rotate(6deg);
+    opacity: 1;
+  }
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 30px;
+  padding-right: 80px;
+  margin-bottom: var(--space-2);
+}
+
+.cardTitle {
+  flex: 1;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0e7490;
+}
+
+.cardClose {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cardBody {
+  display: grid;
+  gap: 4px;
+  min-height: 3.5rem;
+  animation: bodyIn 320ms ease both;
+}
+
+@keyframes bodyIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+}
+
+.cardBody p {
+  margin: 0;
+}
+
+.tJa {
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.tRomaji {
+  font-size: var(--font-size-xs);
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.tMain {
+  font-size: var(--font-size-md);
+  line-height: 1.55;
+}
+
+.tMainJa {
+  font-family: var(--font-japanese);
+  font-weight: var(--font-weight-semibold);
+}
+
+.tSub {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.tDetails summary {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.tDetails p {
+  font-size: var(--font-size-sm);
+}
+
+.tapHint {
+  margin-top: var(--space-1) !important;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #0e7490;
+}
+
+.finding {
+  color: var(--color-text-muted);
+}
+
+.findingDots {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 6px;
+}
+
+.findingDots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: dot 1s ease-in-out infinite;
+}
+
+.findingDots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.findingDots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dots li {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+  transition:
+    width 300ms var(--ease-spring),
+    background 300ms ease;
+}
+
+.dots li[data-state="done"] {
+  background: color-mix(in srgb, #22d3ee 55%, var(--color-border));
+}
+
+.dots li[data-state="now"] {
+  width: 20px;
+  background: #22d3ee;
+}
+
+.cardActions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root *,
+  .root,
+  .spot,
+  .spot * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── Asisten: tanya lanjutan & saran cepat ── */
+.followUp {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+}
+
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quickChip {
+  min-height: 2rem;
+  padding: 0 var(--space-3);
+  border: 1px solid color-mix(in srgb, #22d3ee 45%, var(--color-border));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, #22d3ee 8%, var(--color-surface));
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+}
+
+.quickChip:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ── Mode ujian: Miu-chan tetap ada, tapi terkunci dan menolak membantu ── */
+.root[data-exam] .avatar {
+  filter: saturate(0.35);
+  opacity: 0.8;
+  animation: none;
+}
+
+.root[data-exam] .avatarBody {
+  animation: none;
+}
+
+.root[data-exam] .more,
+.root[data-exam] .badge {
+  display: none;
+}
+
+.lockBadge {
+  position: absolute;
+  z-index: 2;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
+}
+
+.examTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px !important;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, #f59e0b 18%, var(--color-surface));
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ── Mode petunjuk (latihan/kuis): membantu tanpa memberi jawaban ── */
+.hintTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px !important;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, #22d3ee 16%, var(--color-surface));
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.root[data-hint] .avatar {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, #facc15 70%, #fff),
+    0 8px 22px rgb(80 20 40 / 0.28);
+}

@@ -34,6 +34,7 @@ describe("AskQuestion mode suara", () => {
       correction: "学校に行きます",
       speechRate: null,
       speech: [{ text: "Tujuan pakai に ya!", tempo: 1 }],
+      guide: null,
     });
   });
 });

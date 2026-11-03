@@ -31,6 +31,28 @@ const CODE_SWITCH_PROMPT: Record<"id" | "ja", string> = {
  */
 const MIXED_MAX_SCORE_GAP = 0.8;
 
+/**
+ * Pengguna orang Indonesia: bila mode Indonesia menghasilkan teks Latin biasa, mode Jepang baru dipilih kalau
+ * jauh lebih yakin. Mode Jepang sering "menerjemahkan" ucapan Indonesia ("Lanjut" → 続く) atau menulisnya
+ * dengan katakana ("Buka kamus" → ブカカムス), dan di mikrofon pelan skornya bisa mendekati mode Indonesia
+ * (uji suara pelan: selisih 0,23–0,6). Ucapan Jepang sungguhan menang dengan selisih ≥0,64 di uji yang sama,
+ * atau mode Indonesianya sendiri sudah menulis huruf Jepang.
+ */
+const JA_OVER_LATIN_MARGIN = 0.3;
+
+/**
+ * Hasil penggabungan yang hanya MENAMBAHKAN teks Jepang (semua kata Latin dari transkrip Indonesia masih ada)
+ * berarti LLM menempelkan halusinasi mode Jepang, mis. "Lanjut. 頑張りたい。". Ucapan campuran asli selalu
+ * MENGGANTI kata yang salah dengar ("gambar tek" → 頑張って).
+ */
+export function fusionOnlyAppends(idText: string, fused: string): boolean {
+  if (!containsJapanese(fused)) return false;
+  const latin = (t: string) => t.toLowerCase().match(/[a-z]+/g) ?? [];
+  const kept = new Set(latin(fused));
+  const original = latin(idText);
+  return original.length > 0 && original.every((w) => kept.has(w));
+}
+
 // Dipilih dari uji 8 pasangan transkrip: qwen 7/8 benar (median ±0,7 s), gpt-oss-120b 5/8 (±1,3 s), gpt-oss-20b 2/6.
 const FUSION_MODEL = "qwen/qwen3.8-27b";
 const FUSION_TIMEOUT_MS = 3000;
@@ -118,7 +140,8 @@ export class GroqTranscriber {
       language ? null : this.request(file, fileName, "id"),
       this.request(file, fileName, "ja"),
     ]);
-    const best = id && id.score >= ja.score ? id : ja;
+    const idIsLatin = !!id && !containsJapanese(id.text);
+    const best = id && (idIsLatin ? ja.score - id.score <= JA_OVER_LATIN_MARGIN : id.score >= ja.score) ? id : ja;
     if (isNoise(best.text)) return { text: "", alt: null };
 
     const mixed =
@@ -134,6 +157,8 @@ export class GroqTranscriber {
       console.warn("[transcribe] penggabungan transkrip gagal:", err instanceof Error ? err.message : err);
       return null;
     });
+    // Penggabung menempelkan halusinasi: pakai transkrip Indonesia, dan jangan kirim versi Jepang karangan ke AI
+    if (fused && fusionOnlyAppends(id.text, fused)) return { text: id.text, alt: null };
     return { text: fused ?? best.text, alt: ja.text };
   }
 

@@ -50,11 +50,12 @@ describe("AskQuestion emosi", () => {
       correction: null,
       speechRate: null,
       speech: [{ text: "Aku ikut sedih.", tempo: 1 }],
+      guide: null,
     });
   });
 
   it("mode teks tidak mengubah jawaban", async () => {
     const uc = new AskQuestion({ ask: provider("(senang) = happy") });
-    await expect(uc.execute("arti senang", [], "text")).resolves.toEqual({ answer: "(senang) = happy", emotion: "biasa", correction: null, speechRate: null, speech: null });
+    await expect(uc.execute("arti senang", [], "text")).resolves.toEqual({ answer: "(senang) = happy", emotion: "biasa", correction: null, speechRate: null, speech: null, guide: null });
   });
 });

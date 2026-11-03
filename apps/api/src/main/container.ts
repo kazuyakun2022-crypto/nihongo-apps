@@ -50,7 +50,7 @@ import { GeminiAskProvider } from "../modules/ask/infrastructure/GeminiAskProvid
 import { GroqAskProvider } from "../modules/ask/infrastructure/GroqAskProvider";
 import { MockAskProvider } from "../modules/ask/infrastructure/MockAskProvider";
 import { GroqTranscriber } from "../modules/ask/infrastructure/GroqTranscriber";
-import { loadLearnerProfile } from "../modules/ask/infrastructure/PrismaLearnerProfile";
+import { loadAnswerKey, loadLearnerProfile } from "../modules/ask/infrastructure/PrismaLearnerProfile";
 import { GeminiTts } from "../shared/infrastructure/geminiTts";
 import { AskQuestion } from "../modules/ask/application/AskUseCase";
 
@@ -149,6 +149,7 @@ export function buildContainer(env: Env, db: Db) {
     ask: new AskQuestion({
       ask: askProvider,
       userProfile: (id) => loadLearnerProfile(db, id),
+      answerKey: (questionId) => loadAnswerKey(db, questionId),
     }),
   };
   const transcriber = env.GROQ_API_KEY ? new GroqTranscriber(env.GROQ_API_KEY) : null;

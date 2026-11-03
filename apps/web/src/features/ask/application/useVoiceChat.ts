@@ -66,13 +66,27 @@ async function fetchAnswer(
   question: string,
   history: HistoryItem[],
   transcriptAlt: string | null,
-): Promise<{ answer: string; emotion: VoiceEmotion; correction: string | null; speechRate: number | null; speech: SpeechRun[] | null }> {
-  const res = await apiRequest<{ answer: string; emotion?: string; correction?: string | null; speechRate?: number | null; speech?: SpeechRun[] | null }>("/ask", {
+): Promise<{ answer: string; emotion: VoiceEmotion; correction: string | null; speechRate: number | null; speech: SpeechRun[] | null; guide: string | null }> {
+  const res = await apiRequest<{ answer: string; emotion?: string; correction?: string | null; speechRate?: number | null; speech?: SpeechRun[] | null; guide?: string | null }>("/ask", {
     method: "POST",
-    body: { question, history, mode: "voice", ...(transcriptAlt ? { transcriptAlt } : {}) },
+    body: {
+      question,
+      history,
+      mode: "voice",
+      ...(transcriptAlt ? { transcriptAlt } : {}),
+      // Miu-chan di layar suara juga pemandu: bila user minta ditunjukkan suatu fitur, server mengembalikan `guide`
+      app: { screen: "Layar obrolan suara dengan Miu-chan", guide: true },
+    },
   });
   const emotion = EMOTIONS.find((e) => e === res.emotion) ?? "biasa";
-  return { answer: res.answer, emotion, correction: res.correction ?? null, speechRate: res.speechRate ?? null, speech: res.speech?.length ? res.speech : null };
+  return {
+    answer: res.answer,
+    emotion,
+    correction: res.correction ?? null,
+    speechRate: res.speechRate ?? null,
+    speech: res.speech?.length ? res.speech : null,
+    guide: res.guide ?? null,
+  };
 }
 
 // Suara cadangan (MP3, dipakai saat kuota Gemini habis) diputar lebih cepat tanpa menjaga pitch,
@@ -132,7 +146,10 @@ function makeAudio(url: string, isFallback: boolean): HTMLAudioElement {
   return audio;
 }
 
-export function useVoiceChat() {
+/** onGuide: dipanggil setelah Miu-chan selesai bicara bila ia memutuskan menunjukkan jalan ke suatu fitur. */
+export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => void } = {}) {
+  const onGuideRef = useRef(onGuide);
+  onGuideRef.current = onGuide;
   const [state, setState] = useState<VoiceState>("idle");
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [transcript, setTranscript] = useState("");
@@ -270,7 +287,8 @@ export function useVoiceChat() {
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", text: question }]);
 
     try {
-      const { answer, emotion: mood, correction, speechRate, speech } = await fetchAnswer(question, historyRef.current, transcriptAlt);
+      const turn = turnRef.current;
+      const { answer, emotion: mood, correction, speechRate, speech, guide } = await fetchAnswer(question, historyRef.current, transcriptAlt);
       if (speechRate) rateRef.current = speechRate;
       const spokenText = speech ? withPaceTags(speech) : answer;
       historyRef.current = [
@@ -293,6 +311,8 @@ export function useVoiceChat() {
       setEmotion(mood);
       setTranscript("");
       await playVoice(parts, answer, speech ?? undefined);
+      // Hanya bila user tidak menyela selama Miu-chan bicara
+      if (guide && turnRef.current === turn) onGuideRef.current?.(guide);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal mendapat jawaban.");
       setTranscript("");
@@ -330,7 +350,7 @@ export function useVoiceChat() {
 
     try {
       streamRef.current ??= await navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true },
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 },
       });
     } catch {
       setError("Izin mikrofon ditolak. Aktifkan mikrofon di pengaturan browser.");

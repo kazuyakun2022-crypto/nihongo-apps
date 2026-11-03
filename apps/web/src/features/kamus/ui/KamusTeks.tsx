@@ -226,6 +226,7 @@ export function KamusTeks({ tab, tabs }: { tab: KamusTab; tabs?: ReactNode }) {
           <p className={styles.lead}>{copy.lead}</p>
         </div>
         <input
+          data-spotlight="kamus-cari"
           type="search"
           className={styles.search}
           placeholder={copy.placeholder}

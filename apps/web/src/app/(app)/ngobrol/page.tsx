@@ -39,11 +39,12 @@ function Ngobrol() {
         </div>
 
         {/* Capsule Segmented Switcher */}
-        <div className={styles.segmentedControl} role="tablist" aria-label="Mode ngobrol">
+        <div className={styles.segmentedControl} role="tablist" aria-label="Mode ngobrol" data-spotlight="ngobrol-tabs">
           <button
             type="button"
             role="tab"
             aria-selected={tab === "tanya"}
+            data-spotlight="ngobrol-tab-tanya"
             className={`${styles.segmentBtn} ${tab === "tanya" ? styles.segmentActive : ""}`}
             onClick={() => setTab("tanya")}
           >
@@ -56,6 +57,7 @@ function Ngobrol() {
             type="button"
             role="tab"
             aria-selected={tab === "suara"}
+            data-spotlight="ngobrol-tab-suara"
             className={`${styles.segmentBtn} ${tab === "suara" ? styles.segmentActive : ""}`}
             onClick={() => setTab("suara")}
           >
@@ -72,6 +74,7 @@ function Ngobrol() {
             type="button"
             role="tab"
             aria-selected={tab === "skenario"}
+            data-spotlight="ngobrol-tab-skenario"
             className={`${styles.segmentBtn} ${tab === "skenario" ? styles.segmentActive : ""}`}
             onClick={() => setTab("skenario")}
           >

@@ -398,12 +398,14 @@ export function TulisBuku() {
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/neko/chibi/neko-chibi.webp" alt="" className={styles.heroMascot} />
-        <Stepper index={stepIndex} />
+        <div data-spotlight="tulis-buku-langkah">
+          <Stepper index={stepIndex} />
+        </div>
       </header>
 
       {step === "pilih" && (
         <div className={styles.pickLayout}>
-          <section className={styles.panel} aria-labelledby="pilih-lembar">
+          <section className={styles.panel} aria-labelledby="pilih-lembar" data-spotlight="tulis-buku-lembar">
             <h2 id="pilih-lembar" className={styles.panelTitle}>
               Pilih lembar latihan
             </h2>
@@ -471,7 +473,7 @@ export function TulisBuku() {
               <li data-kind="own">Tulis sendiri</li>
             </ul>
 
-            <div className={styles.actions}>
+            <div className={styles.actions} data-spotlight="tulis-buku-aksi">
               <button type="button" className={styles.btnPrimary} onClick={() => setStep("pindai")}>
                 📷 Sudah menulis, foto sekarang
               </button>
@@ -480,7 +482,7 @@ export function TulisBuku() {
               </button>
             </div>
 
-            <ul className={styles.howto}>
+            <ul className={styles.howto} data-spotlight="tulis-buku-cara">
               <li>
                 <span aria-hidden="true">🖨️</span>
                 <span>

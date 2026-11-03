@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
+import { NavigatorProvider } from "@/features/navigator/application/NavigatorProvider";
+import { MascotNavigator } from "@/features/navigator/ui/MascotNavigator";
+import { SpotlightOverlay } from "@/features/navigator/ui/SpotlightOverlay";
 import { InstallPrompt } from "./InstallPrompt";
 import styles from "./shell.module.css";
 
@@ -68,31 +71,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isWidePage = pathname.startsWith("/admin");
 
   return (
-    <div className={styles.shell}>
-      <nav className={styles.nav} aria-label="Menu utama">
-        <span className={styles.brand} lang="ja">
-          にほんご
-        </span>
-        <ul className={styles.navList} style={{ "--nav-cols": nav.length } as React.CSSProperties}>
-          {nav.map((item) => {
-            const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
-            return (
-              <li key={item.href}>
-                <Link href={item.href} className={styles.navLink} aria-current={active ? "page" : undefined}>
-                  <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-                    <path d={item.icon} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-                  </svg>
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-      <main className={`${styles.main} ${isChatPage ? styles.mainChat : ""} ${isWidePage ? styles.mainWide : ""}`}>
-        {!isChatPage && <InstallPrompt />}
-        {children}
-      </main>
-    </div>
+    <NavigatorProvider>
+      <div className={styles.shell}>
+        <nav className={styles.nav} aria-label="Menu utama">
+          <span className={styles.brand} lang="ja">
+            にほんご
+          </span>
+          <ul className={styles.navList} style={{ "--nav-cols": nav.length } as React.CSSProperties}>
+            {nav.map((item) => {
+              const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={styles.navLink}
+                    aria-current={active ? "page" : undefined}
+                    data-spotlight={`nav-${item.href.slice(1)}`}
+                  >
+                    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                      <path d={item.icon} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+                    </svg>
+                    <span>{item.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <main className={`${styles.main} ${isChatPage ? styles.mainChat : ""} ${isWidePage ? styles.mainWide : ""}`}>
+          {!isChatPage && <InstallPrompt />}
+          {children}
+        </main>
+        {/* Miu-chan pemandu: widget melayang + sorotan (disembunyikan otomatis saat ujian) */}
+        <MascotNavigator />
+        <SpotlightOverlay />
+      </div>
+    </NavigatorProvider>
   );
 }

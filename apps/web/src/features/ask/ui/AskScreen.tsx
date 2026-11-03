@@ -190,6 +190,7 @@ export function AskScreen({ hideHeader = false }: AskScreenProps = {}) {
       <div className={styles.composerWrap}>
         <div className={styles.composerInner}>
           <form
+            data-spotlight="tanya-input"
             className={styles.composer}
             onSubmit={(e) => {
               e.preventDefault();

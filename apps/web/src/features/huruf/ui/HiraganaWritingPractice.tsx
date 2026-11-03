@@ -1,5 +1,6 @@
 "use client";
 
+import { useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { HIRAGANA_BASIC, type HiraganaChar } from "../data/characters";
 import { HIRAGANA_STROKE_DATA } from "../data/hiraganaStrokes";
@@ -205,6 +206,7 @@ export function HiraganaWritingPractice({
 }) {
   const { speak } = useSpeech();
   const [selectedChar, setSelectedChar] = useState<string>(initialChar);
+  useScreenContext("tulis-huruf", `Latihan menulis huruf ${selectedChar} di kanvas`);
   const [showGuide, setShowGuide] = useState<boolean>(true);
   const [selectedColor, setSelectedColor] = useState<string>("#1f1a1c");
   const [brushWidth, setBrushWidth] = useState<number>(14);
@@ -467,7 +469,7 @@ export function HiraganaWritingPractice({
       </div>
 
       {/* ── Horizontal Character Picker ── */}
-      <div className={styles.pickerWrapper}>
+      <div className={styles.pickerWrapper} data-spotlight="tulis-pilih-huruf">
         <div className={styles.pickerScroller}>
           {HIRAGANA_BASIC.map((item) => (
             <button
@@ -511,7 +513,7 @@ export function HiraganaWritingPractice({
           </div>
 
           {/* Canvas Wrapper */}
-          <div className={styles.canvasWrapper}>
+          <div className={styles.canvasWrapper} data-spotlight="tulis-kanvas">
             {/* Background Character Shadow Guide */}
             {showGuide && (
               <div className={styles.guideShadow} lang="ja" aria-hidden="true">
@@ -568,6 +570,7 @@ export function HiraganaWritingPractice({
             <button
               type="button"
               className={`${styles.toggleGuideBtn} ${showGuide ? styles.toggleGuideActive : ""}`}
+              data-spotlight="tulis-panduan"
               onClick={() => setShowGuide(!showGuide)}
               title="Tampilkan atau sembunyikan bayangan bentuk huruf"
             >
@@ -593,6 +596,7 @@ export function HiraganaWritingPractice({
             <button
               type="button"
               className={styles.checkBtn}
+              data-spotlight="tulis-koreksi"
               onClick={handleManualCheck}
               disabled={strokes.length === 0}
             >

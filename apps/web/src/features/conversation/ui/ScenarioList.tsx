@@ -34,8 +34,8 @@ export function ScenarioList() {
   return (
     <div className={styles.wrap}>
       <p className={styles.lead}>Latihan percakapan dengan peran: Miu-chan jadi kasir, pelayan, atau temanmu. Kesalahanmu dikoreksi dengan lembut di setiap balasan.</p>
-      {levels.map((level) => (
-        <section key={level} className={styles.group}>
+      {levels.map((level, li) => (
+        <section key={level} className={styles.group} data-spotlight={li === 0 ? "ngobrol-skenario" : undefined}>
           <h2 className={styles.groupTitle}>{level === "PEMULA" ? "Pemula" : `JLPT ${level}`}</h2>
           <ul className={styles.grid}>
             {items

@@ -20,9 +20,9 @@ function Kamus() {
   const raw = useSearchParams().get("tab");
   const tab = TABS.find((t) => t.key === raw)?.key ?? "gambar";
   const tabs = (
-    <nav className={styles.tabs} aria-label="Jenis kamus">
+    <nav className={styles.tabs} aria-label="Jenis kamus" data-spotlight="kamus-tabs">
       {TABS.map((t) => (
-        <Link key={t.key} href={t.key === "gambar" ? "/kamus" : `/kamus?tab=${t.key}`} className={styles.tab} aria-current={tab === t.key ? "page" : undefined} scroll={false}>
+        <Link key={t.key} href={t.key === "gambar" ? "/kamus" : `/kamus?tab=${t.key}`} data-spotlight={`kamus-tab-${t.key}`} className={styles.tab} aria-current={tab === t.key ? "page" : undefined} scroll={false}>
           <span aria-hidden="true">{t.icon}</span> {t.label}
         </Link>
       ))}

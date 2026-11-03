@@ -1,6 +1,7 @@
 import type { Db } from "../../../shared/infrastructure/prisma";
 import { currentChapter, goalLabel } from "../../conversation/infrastructure/PrismaConversationRepository";
 import type { AskUser } from "./learnerContext";
+import type { AnswerKey } from "../domain/answerGuard";
 
 /** Nama, jenis kelamin, level, panduan level, bab aktif, dan memori akun terdaftar untuk prompt Miu-chan; null untuk tamu. */
 export async function loadLearnerProfile(db: Db, userId: string): Promise<AskUser | null> {
@@ -50,4 +51,12 @@ export async function loadLearnerProfile(db: Db, userId: string): Promise<AskUse
     lesson: level ? await currentChapter(db, userId, level.id) : null,
     goal: await goalLabel(db, user.learningGoal),
   };
+}
+
+/** Kunci jawaban soal latihan/kuis bab, dipakai penjaga mode petunjuk (tidak pernah dikirim ke klien). */
+export async function loadAnswerKey(db: Db, questionId: string): Promise<AnswerKey | null> {
+  const q = await db.quizQuestion.findUnique({ where: { id: questionId }, select: { type: true, correctAnswer: true, options: true } });
+  if (!q) return null;
+  const options = Array.isArray(q.options) ? q.options.filter((o): o is string => typeof o === "string") : [];
+  return { type: q.type, answer: q.correctAnswer, options };
 }
