@@ -10,6 +10,7 @@ import { Alert } from "@/shared/ui/Alert";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 import type { Gender } from "@/features/auth/domain/types";
 import styles from "./profil.module.css";
+import { BookOpenIcon, CheckIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
 
 const roleLabel = {
   guest: "Tamu",
@@ -265,7 +266,7 @@ export default function ProfilPage() {
               <p className={styles.userEmail}>{user.email ?? "Akun Tamu (Belum ada email)"}</p>
               <div style={{ marginTop: "6px" }}>
                 <button type="button" className={styles.editProfileBtn} onClick={handleOpenEditProfile}>
-                  ✏️ Edit Profil
+                  <PencilIcon size={14} /> Edit Profil
                 </button>
               </div>
             </div>
@@ -313,10 +314,10 @@ export default function ProfilPage() {
                 <span className={styles.roleBadge} style={{ background: "#f59e0b", color: "#fff" }}>Akses Penuh</span>
               </div>
               <ul className={styles.perksList}>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Kontrol penuh seluruh pengguna: angkat & turunkan Admin/Guru</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pengaturan instruksi AI Level N5–N1 & kecepatan TTS Azure</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pemberian langganan status Premium manual tanpa batas</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pemantauan progres belajar & level seluruh pelajar</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Kontrol penuh seluruh pengguna: angkat & turunkan Admin/Guru</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Pengaturan instruksi AI Level N5–N1 & kecepatan suara Miu-chan</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Pemberian langganan status Premium manual tanpa batas</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Pemantauan progres belajar & level seluruh pelajar</li>
               </ul>
               <Link href="/admin" className={styles.portalCtaBtn} style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)" }}>
                 Buka Dashboard Super Admin →
@@ -333,10 +334,10 @@ export default function ProfilPage() {
                 <span className={styles.roleBadge} style={{ background: "#6366f1", color: "#fff" }}>Pengelola Platform</span>
               </div>
               <ul className={styles.perksList}>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Moderasi akun siswa, pencarian cepat & penangguhan (suspend)</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pemantauan metrik dan ringkasan aktivitas siswa real-time</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Akses penuh seluruh materi pembelajaran level N5–N1</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Mode pantau konfigurasi prompt AI maskot Miu-chan</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Moderasi akun siswa, pencarian cepat & penangguhan (suspend)</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Pemantauan metrik dan ringkasan aktivitas siswa real-time</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Akses penuh seluruh materi pembelajaran level N5–N1</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Mode pantau konfigurasi prompt AI maskot Miu-chan</li>
               </ul>
               <Link href="/admin" className={styles.portalCtaBtn} style={{ background: "linear-gradient(135deg, #6366f1, #4f46e5)" }}>
                 Buka Dashboard Administrator →
@@ -353,9 +354,9 @@ export default function ProfilPage() {
                 <span className={styles.roleBadge} style={{ background: "#0284c7", color: "#fff" }}>Sensei Pendidik</span>
               </div>
               <ul className={styles.perksList}>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Akses bebas tanpa batas ke seluruh kurikulum JLPT N5 s/d N1</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Sesi Tanya Sensei & Ngobrol Suara tanpa limit harian</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Evaluasi bab materi dan pengujian fitur simulasi ujian</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Akses bebas tanpa batas ke seluruh kurikulum JLPT N5 s/d N1</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Sesi Tanya Sensei & Ngobrol Suara tanpa limit harian</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Evaluasi bab materi dan pengujian fitur simulasi ujian</li>
               </ul>
             </div>
           )}
@@ -369,10 +370,10 @@ export default function ProfilPage() {
                 <span className={styles.roleBadge} style={{ background: "#16a34a", color: "#fff" }}>VIP Aktif</span>
               </div>
               <ul className={styles.perksList}>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Seluruh level JLPT (N5, N4, N3, N2, N1) terbuka penuh</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Latihan percakapan AI & Tanya Sensei tanpa batasan harian</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Pengulangan berjarak (SRS) kosakata & kanji tak terbatas</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Akses simulasi ujian kenaikan level & JLPT lengkap</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Seluruh level JLPT (N5, N4, N3, N2, N1) terbuka penuh</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Latihan percakapan AI & Tanya Sensei tanpa batasan harian</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Pengulangan berjarak (SRS) kosakata & kanji tak terbatas</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Akses simulasi ujian kenaikan level & JLPT lengkap</li>
               </ul>
             </div>
           )}
@@ -386,8 +387,8 @@ export default function ProfilPage() {
                 <span className={styles.roleBadge}>Akun Gratis</span>
               </div>
               <ul className={styles.perksList}>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> Akses materi dasar JLPT N5 dan N4 terbuka</li>
-                <li className={styles.perkItem}><span className={styles.perkCheck}>✓</span> 5 sesi Tanya Sensei AI per hari</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Akses materi dasar JLPT N5 dan N4 terbuka</li>
+                <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> 5 sesi Tanya Sensei AI per hari</li>
                 <li className={styles.perkItem}><span className={styles.perkCheck}>•</span> Materi N3, N2, N1 & Ngobrol Suara tanpa batas (Perlu Premium)</li>
               </ul>
             </div>
@@ -414,7 +415,7 @@ export default function ProfilPage() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-2)" }}>
               <h3 className={styles.cardHeaderTitle} style={{ margin: 0 }}>Informasi Akun</h3>
               <button type="button" className={styles.editProfileBtn} onClick={handleOpenEditProfile}>
-                ✏️ Edit Data
+                <PencilIcon size={14} /> Edit Data
               </button>
             </div>
             <div className={styles.infoRow}>
@@ -425,9 +426,9 @@ export default function ProfilPage() {
               <span className={styles.infoLabel}>Jenis Kelamin</span>
               <span className={styles.infoValue}>
                 {user.gender === "male"
-                  ? "👦 Laki-laki (お兄ちゃん)"
+                  ? "Laki-laki (お兄ちゃん)"
                   : user.gender === "female"
-                  ? "👧 Perempuan (お姉ちゃん)"
+                  ? "Perempuan (お姉ちゃん)"
                   : "Belum diatur"}
               </span>
             </div>
@@ -439,7 +440,7 @@ export default function ProfilPage() {
               <span className={styles.infoLabel}>Status Email</span>
               <span className={styles.infoValue}>
                 {user.emailVerified ? (
-                  <span className={styles.badgeVerified}>✓ Terverifikasi</span>
+                  <span className={styles.badgeVerified}><CheckIcon size={12} strokeWidth={3} /> Terverifikasi</span>
                 ) : user.email ? (
                   <span className={styles.badgeUnverified}>Belum diverifikasi</span>
                 ) : (
@@ -464,19 +465,19 @@ export default function ProfilPage() {
             <h3 className={styles.shortcutTitle}>Akses Cepat</h3>
             <div className={styles.shortcutLinks}>
               <Link href="/belajar" className={styles.shortcutBtn}>
-                📖 Mulai Belajar
+                <BookOpenIcon size={14} /> Mulai Belajar
               </Link>
               <Link href="/huruf" className={styles.shortcutBtn}>
-                🔤 Latihan Huruf
+                <TypeIcon size={14} /> Latihan Huruf
               </Link>
               <Link href="/review" className={styles.shortcutBtn}>
-                🔁 Review Kartu
+                <RepeatIcon size={14} /> Review Kartu
               </Link>
               <Link href="/ngobrol" className={styles.shortcutBtn}>
-                💬 Tanya Miu-chan
+                <MessageIcon size={14} /> Tanya Miu-chan
               </Link>
               <Link href="/suara" className={styles.shortcutBtn}>
-                🎙️ Ngobrol Suara
+                <MicIcon size={14} /> Ngobrol Suara
               </Link>
               {(user.role === "admin" || user.role === "super_admin") && (
                 <Link
@@ -488,7 +489,7 @@ export default function ProfilPage() {
                     fontWeight: 700,
                   }}
                 >
-                  👑 Portal Admin
+                  <ShieldIcon size={16} /> Portal Admin
                 </Link>
               )}
             </div>
@@ -540,7 +541,7 @@ export default function ProfilPage() {
                 disabled={uploading}
                 aria-label="Tutup modal"
               >
-                ✕
+                <CloseIcon size={18} />
               </button>
             </div>
 
@@ -573,7 +574,7 @@ export default function ProfilPage() {
                     feedback.type === "success" ? styles.modalStatusSuccess : styles.modalStatusError
                   }`}
                 >
-                  <span>{feedback.type === "success" ? "✓ " : "✕ "}</span>
+                  {feedback.type === "success" ? <CircleCheckIcon size={16} /> : <CircleXIcon size={16} />}
                   <span>{feedback.text}</span>
                 </div>
               )}
@@ -680,7 +681,7 @@ export default function ProfilPage() {
                 disabled={savingProfile}
                 aria-label="Tutup modal"
               >
-                ✕
+                <CloseIcon size={18} />
               </button>
             </div>
 
@@ -720,7 +721,7 @@ export default function ProfilPage() {
                         disabled={isGenderLocked}
                         onChange={() => setEditGender("male")}
                       />
-                      <span style={{ fontSize: "1.75rem", lineHeight: 1 }}>👦</span>
+                      <span className={styles.genderGlyph} lang="ja" aria-hidden="true">兄</span>
                       <span className={styles.editGenderCall}>お兄ちゃん (Onii-chan)</span>
                       <span className={styles.editGenderLabel}>Laki-laki</span>
                     </label>
@@ -742,7 +743,7 @@ export default function ProfilPage() {
                         disabled={isGenderLocked}
                         onChange={() => setEditGender("female")}
                       />
-                      <span style={{ fontSize: "1.75rem", lineHeight: 1 }}>👧</span>
+                      <span className={styles.genderGlyph} lang="ja" aria-hidden="true">姉</span>
                       <span className={styles.editGenderCall}>お姉ちゃん (Onee-chan)</span>
                       <span className={styles.editGenderLabel}>Perempuan</span>
                     </label>
@@ -750,7 +751,7 @@ export default function ProfilPage() {
 
                   {isGenderLocked ? (
                     <div className={`${styles.cooldownBox} ${styles.cooldownBoxLocked}`}>
-                      <span style={{ fontSize: "1.2rem" }}>🔒</span>
+                      <LockIcon size={18} />
                       <div>
                         <strong>Jenis kelamin dalam masa jeda 2 hari.</strong>
                         <p style={{ margin: "2px 0 0", opacity: 0.9 }}>
@@ -760,7 +761,7 @@ export default function ProfilPage() {
                     </div>
                   ) : (
                     <div className={`${styles.cooldownBox} ${styles.cooldownBoxUnlocked}`}>
-                      <span style={{ fontSize: "1.1rem" }}>⏳</span>
+                      <HourglassIcon size={18} />
                       <span>
                         Setelah disimpan, pilihan jenis kelamin akan memasuki jeda selama <strong>2 hari (48 jam)</strong> sebelum dapat diubah kembali.
                       </span>

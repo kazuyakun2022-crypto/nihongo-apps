@@ -46,7 +46,7 @@ export function appSection(app?: AppContext | null): string {
   const parts: string[] = [];
   if (app.screen) {
     parts.push(
-      `- Yang sedang tampil di layar user: ${clean(app.screen, 560)}. Kalau user bertanya "ini apa", "soal ini", "aku bingung", atau "sedang belajar apa", jawab berdasarkan isi layar ini: sebutkan apa yang sedang dipelajari dan jelaskan bagian yang dibutuhkan (arti, cara baca, pola, fungsi), dengan contoh singkat.`,
+      `- Yang sedang tampil di layar user: ${clean(app.screen, 560)}. Isi layar ini adalah SUMBER KEBENARAN tentang apa yang sedang dipelajari: kalau user bertanya "ini apa", "soal ini", "aku bingung", atau "sedang belajar apa", jawab tepat tentang isi layar ini (huruf, kata, pola, atau soal yang tertulis di atas), jangan materi lain. Sebutkan dulu apa yang sedang tampil, lalu jelaskan bagian yang dibutuhkan (arti, cara baca, pola, fungsi) dengan contoh singkat. Kalau isi layarnya tidak cukup jelas, katakan saja dan tanyakan bagian mana yang dimaksud.`,
     );
   }
   if (app.assessment) {
@@ -83,4 +83,26 @@ export function extractGuide(text: string): { text: string; guide: string | null
     return "";
   });
   return { text: stripped.replace(/[ \t]+$/gm, "").trim(), guide };
+}
+
+/**
+ * Jawaban yang disertai tunjuk jalan dipangkas jadi kalimat pertama (maks ±120 huruf): user ingin langsung
+ * ditunjukkan, bukan membaca paragraf. Tanda emosi di depan ([senang]) dipertahankan untuk mode suara.
+ */
+export function shortGuideReply(text: string): string {
+  const t = text.trim();
+  const tag = t.match(/^\[[a-z]+\]\s*/)?.[0] ?? "";
+  const body = t.slice(tag.length).replace(/\s+/g, " ");
+  const first = body.match(/^.+?[.!?。！？](?=\s|$)/)?.[0] ?? body;
+  const short = first.length > 120 ? `${first.slice(0, 117).replace(/\s+\S*$/, "")}…` : first;
+  return (tag + (short || "Ayo, aku tunjukkan jalannya!")).trim();
+}
+
+/**
+ * Pertanyaan dari widget ditempeli isi layar SAAT INI. Info layar di prompt sistem saja kalah oleh riwayat
+ * obrolan (uji: setelah pindah dari と ke た, "cara nulisnya gimana?" tetap dijawab tentang と).
+ */
+export function withScreen(question: string, app?: AppContext | null): string {
+  if (!app?.widget || !app.screen) return question;
+  return `${question}\n\n(Yang sedang tampil di layarku SEKARANG: ${clean(app.screen, 560)}. Jawab tentang ini, bukan tentang layar sebelumnya.)`;
 }

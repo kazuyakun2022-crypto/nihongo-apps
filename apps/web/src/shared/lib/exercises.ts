@@ -2,12 +2,13 @@ export type ExerciseType = "pilihan_ganda" | "mendengar" | "susun_huruf" | "susu
 export type SkillId = "pemahaman" | "mendengar" | "menyusun" | "menulis" | "berbicara";
 
 /** Keterampilan yang dilatih — dipakai untuk mengelompokkan latihan di admin dan menunjukkan ke siswa apa yang sedang dipelajari. */
-export const SKILLS: Record<SkillId, { label: string; icon: string }> = {
-  pemahaman: { label: "Pemahaman", icon: "📖" },
-  mendengar: { label: "Mendengar", icon: "🎧" },
-  menyusun: { label: "Menyusun", icon: "🧩" },
-  menulis: { label: "Menulis", icon: "✍️" },
-  berbicara: { label: "Berbicara", icon: "🎤" },
+/** Ikonnya ada di <SkillIcon skill={...} /> (shared/ui/SkillIcon.tsx), bukan emoji. */
+export const SKILLS: Record<SkillId, { label: string }> = {
+  pemahaman: { label: "Pemahaman" },
+  mendengar: { label: "Mendengar" },
+  menyusun: { label: "Menyusun" },
+  menulis: { label: "Menulis" },
+  berbicara: { label: "Berbicara" },
 };
 export const SKILL_ORDER: SkillId[] = ["pemahaman", "mendengar", "menyusun", "menulis", "berbicara"];
 

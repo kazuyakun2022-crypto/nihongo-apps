@@ -513,3 +513,8 @@
   height: 100%;
   justify-content: center;
 }
+
+.unsupportedIcon {
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}

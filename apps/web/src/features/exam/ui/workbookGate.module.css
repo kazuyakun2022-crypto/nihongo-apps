@@ -76,9 +76,30 @@
   font-size: var(--font-size-sm);
 }
 
+.rules {
+  counter-reset: rule;
+}
+
+.rules li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+/* Nomor aturan (pengganti emoji sebagai penanda poin) */
 .rules li::before {
-  content: "✎ ";
+  counter-increment: rule;
+  content: counter(rule);
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 6px;
+  background: var(--color-primary-soft);
   color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
 }
 
 /* ── Pilihan jalur ── */
@@ -176,23 +197,42 @@
   gap: 6px;
 }
 
+/* Navigasi huruf: kotak bernomor (bukan titik) supaya mudah diketuk dan jelas urutannya */
 .dot {
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 8px;
   border: 2px solid var(--color-border);
   background: var(--color-surface);
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
+  transition:
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    color var(--motion-fast) ease;
 }
 
 .dot[data-done] {
   background: var(--color-primary-soft);
-  border-color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
+  color: var(--color-primary);
 }
 
 .dot[data-active] {
-  box-shadow: 0 0 0 3px var(--color-focus);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.dot:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 .prompt {

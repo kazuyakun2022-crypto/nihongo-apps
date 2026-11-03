@@ -39,12 +39,19 @@
 
 /* ── Close button ── */
 .closeBtn {
+  /* Area ketuk 40px: ikon tutup sebelumnya hanya ±22px di ponsel */
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
   text-decoration: none;
-  padding: 0.25rem;
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
+  transition: background-color var(--motion-fast) ease, color var(--motion-fast) ease;
 }
+.closeBtn:hover { background: var(--color-surface-muted); }
+.closeBtn:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 0; }
 .closeBtn:hover { color: var(--color-text); }
 
 /* ── Explanation intro card ── */
@@ -71,23 +78,27 @@
 }
 
 /* ── Dot navigator ── */
+/* Penanda posisi kartu/soal: segmen garis (bukan titik); yang sudah lewat ikut berwarna */
 .dotNav {
   display: flex;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 4px;
   flex-wrap: wrap;
 }
 .dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
   background: var(--color-border);
   flex: none;
-  transition: background var(--motion-fast), transform var(--motion-fast);
+  transition: background-color var(--motion-fast) ease, width var(--motion-fast) var(--ease-spring);
+}
+.dot[data-done] {
+  background: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
 }
 .dotActive {
+  width: 26px;
   background: var(--color-primary);
-  transform: scale(1.35);
 }
 
 /* ── Study card ── */
@@ -401,10 +412,16 @@
 }
 
 .reviewIcon {
-  font-size: 1.25rem;
+  display: grid;
+  place-items: center;
   flex: none;
-  line-height: 1.4;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--color-surface-muted);
 }
+.reviewItem[data-correct="true"] .reviewIcon { color: var(--color-success); }
+.reviewItem[data-correct="false"] .reviewIcon { color: var(--color-danger); }
 
 .reviewQ {
   font-size: var(--font-size-sm);

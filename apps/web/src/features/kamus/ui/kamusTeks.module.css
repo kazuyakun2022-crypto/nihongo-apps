@@ -399,3 +399,30 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
 }
+
+/* Ikon tab "Kanji" memakai huruf 漢 sendiri (bukan emoji), disamakan ukurannya dengan ikon SVG */
+.tabKanji {
+  font-family: var(--font-japanese);
+  font-size: 15px;
+  font-weight: var(--font-weight-heavy);
+  line-height: 1;
+}
+
+/* Ikon SVG (pengganti emoji) */
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.note svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--color-accent);
+}
+
+.speak,
+.lockIcon {
+  display: inline-grid;
+  place-items: center;
+}

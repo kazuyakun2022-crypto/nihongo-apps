@@ -210,3 +210,8 @@
     height: 112px;
   }
 }
+
+/* Ikon SVG info/peringatan (pengganti emoji) */
+.iconWrap {
+  font-size: 0;
+}

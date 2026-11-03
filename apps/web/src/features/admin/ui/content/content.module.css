@@ -19,21 +19,21 @@
   min-width: 96px;
   padding: 10px 14px;
   border-radius: 12px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface, #fff);
-  color: var(--text-main, #0f172a);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
   cursor: pointer;
   text-align: left;
   font: inherit;
 }
 
 .levelPill:hover {
-  border-color: var(--primary, #6366f1);
+  border-color: var(--color-primary);
 }
 
 .levelPillActive {
-  border-color: var(--primary, #6366f1);
-  background: var(--primary, #6366f1);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
   color: #fff;
 }
 
@@ -84,16 +84,16 @@
   display: inline-grid;
   place-items: center;
   border-radius: 8px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface, #fff);
-  color: var(--text-muted, #64748b);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   cursor: pointer;
   font-size: 0.85rem;
 }
 
 .iconBtn:hover:not(:disabled) {
-  color: var(--primary, #6366f1);
-  border-color: var(--primary, #6366f1);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .status_published {
@@ -116,23 +116,23 @@
   flex-wrap: wrap;
   gap: 6px;
   font-size: 0.75rem;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
 }
 
 .counts span {
   padding: 2px 8px;
   border-radius: 999px;
-  background: var(--surface-subtle, #f1f5f9);
+  background: var(--color-surface-muted);
 }
 
 .chapterTitle {
   font-weight: 700;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
   text-decoration: none;
 }
 
 .chapterTitle:hover {
-  color: var(--primary, #6366f1);
+  color: var(--color-primary);
 }
 
 .jp {
@@ -140,7 +140,7 @@
 }
 
 .muted {
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
   font-size: 0.82rem;
 }
 
@@ -166,19 +166,19 @@
   width: 100%;
   padding: 9px 12px;
   border-radius: 10px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface-subtle, #f8fafc);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
   font: inherit;
   font-size: 0.9rem;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
 }
 
 .input:focus,
 .textarea:focus,
 .select:focus {
-  outline: 2px solid var(--primary, #6366f1);
+  outline: 2px solid var(--color-primary);
   outline-offset: 1px;
-  background: var(--surface, #fff);
+  background: var(--color-surface);
 }
 
 .textarea {
@@ -189,7 +189,7 @@
 
 .hint {
   font-size: 0.75rem;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
 }
 
 .modalWide {
@@ -235,11 +235,11 @@
   gap: 6px;
   align-items: center;
   font-size: 0.85rem;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
 }
 
 .breadcrumb a {
-  color: var(--primary, #6366f1);
+  color: var(--color-primary);
   text-decoration: none;
   font-weight: 600;
 }
@@ -271,8 +271,8 @@
 .sectionStat {
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface-subtle, #f8fafc);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
 }
 
 .sectionStat strong {
@@ -311,7 +311,7 @@
 .typeGroupLabel {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
 }
 
 .typeOptions {
@@ -326,8 +326,8 @@
   gap: 6px;
   padding: 7px 12px;
   border-radius: 999px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface, #fff);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -340,13 +340,13 @@
 }
 
 .typeOption:has(input:focus-visible) {
-  outline: 2px solid var(--primary, #6366f1);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 .typeOption[data-active="true"] {
-  border-color: var(--primary, #6366f1);
-  background: var(--primary, #6366f1);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
   color: #fff;
 }
 
@@ -354,7 +354,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--primary, #6366f1);
+  color: var(--color-primary);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -366,8 +366,8 @@
   margin-top: 12px;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px dashed var(--border, #e2e8f0);
-  background: var(--surface-subtle, #f8fafc);
+  border: 1px dashed var(--color-border);
+  background: var(--color-surface-muted);
 }
 
 .previewPrompt {
@@ -385,9 +385,9 @@
 .previewTile {
   padding: 4px 10px;
   border-radius: 8px;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   border-bottom-width: 3px;
-  background: var(--surface, #fff);
+  background: var(--color-surface);
   font-size: 1rem;
 }
 
@@ -395,7 +395,7 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  border: 2px dashed var(--border, #cbd5e1);
+  border: 2px dashed var(--color-border);
 }
 
 /* ── Daftar latihan per keterampilan ── */
@@ -408,17 +408,17 @@
 .skillFilterBtn {
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface, #fff);
-  color: var(--text-main, #0f172a);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
 }
 
 .skillFilterBtn[aria-pressed="true"] {
-  border-color: var(--primary, #6366f1);
-  background: var(--primary, #6366f1);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
   color: #fff;
 }
 
@@ -427,8 +427,8 @@
   margin-bottom: 4px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: var(--surface-subtle, #f1f5f9);
-  color: var(--text-muted, #64748b);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -447,13 +447,13 @@
   display: grid;
   gap: 10px;
   padding: 14px;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: var(--surface, #fff);
+  background: var(--color-surface);
 }
 
 .startCardOff {
-  background: var(--surface-subtle, #f8fafc);
+  background: var(--color-surface-muted);
 }
 
 .startCardOff .startFields {
@@ -486,7 +486,7 @@
 .check input {
   width: 18px;
   height: 18px;
-  accent-color: var(--primary, #6366f1);
+  accent-color: var(--color-primary);
 }
 
 .minuteChip {
@@ -503,19 +503,19 @@
   gap: 14px;
   padding: 12px;
   border-radius: 12px;
-  border: 1.5px dashed var(--border, #cbd5e1);
+  border: 1.5px dashed var(--color-border);
   background: var(--surface-muted, #f8fafc);
   transition: border-color 150ms, background 150ms;
 }
 
 .imageDrop:focus-visible {
-  outline: 2px solid var(--primary, #6366f1);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 .imageDrop[data-dragging] {
-  border-color: var(--primary, #6366f1);
-  background: color-mix(in srgb, var(--primary, #6366f1) 8%, transparent);
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .imageDrop[data-filled] {
@@ -528,7 +528,7 @@
   object-fit: contain;
   border-radius: 10px;
   background: #fff;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
@@ -540,7 +540,7 @@
   font-size: 2rem;
   border-radius: 10px;
   background: #fff;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   flex-shrink: 0;
   opacity: 0.7;
 }
@@ -563,14 +563,14 @@
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface, #fff);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   color: var(--text, #0f172a);
 }
 
 .btnSmall:hover:not(:disabled) {
-  border-color: var(--primary, #6366f1);
-  color: var(--primary, #6366f1);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .btnSmall:disabled {
@@ -593,7 +593,7 @@
   height: 44px;
   object-fit: cover;
   border-radius: 8px;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   background: #fff;
   flex-shrink: 0;
 }
@@ -627,7 +627,7 @@
   padding: 12px;
   border-radius: 12px;
   background: var(--surface-muted, #f8fafc);
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
 }
 
 .rulesToggle {
@@ -653,10 +653,10 @@
 .catCard {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   border-radius: 14px;
   overflow: hidden;
-  background: var(--surface, #fff);
+  background: var(--color-surface);
   transition: box-shadow 0.15s, transform 0.15s;
 }
 
@@ -676,7 +676,7 @@
   aspect-ratio: 16 / 10;
   border: 0;
   padding: 12px;
-  background: var(--surface-subtle, #f8fafc);
+  background: var(--color-surface-muted);
   cursor: pointer;
 }
 
@@ -687,7 +687,9 @@
 }
 
 .catCoverEmpty {
-  font-size: 2.5rem;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
   opacity: 0.6;
 }
 
@@ -703,13 +705,13 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
 }
 
 .catMeta {
   margin: 0;
   font-size: 0.82rem;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
 }
 
 .catActions {
@@ -725,7 +727,7 @@
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
 }
 
 .breadcrumbBack {
@@ -733,7 +735,7 @@
   background: none;
   padding: 0;
   font: inherit;
-  color: var(--primary, #6366f1);
+  color: var(--color-primary);
   cursor: pointer;
 }
 
@@ -747,9 +749,9 @@
   gap: 14px;
   flex-wrap: wrap;
   padding: 14px 16px;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   border-radius: 14px;
-  background: var(--surface-subtle, #f8fafc);
+  background: var(--color-surface-muted);
 }
 
 .catHeaderImg {
@@ -758,5 +760,5 @@
   object-fit: contain;
   border-radius: 10px;
   background: #fff;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
 }

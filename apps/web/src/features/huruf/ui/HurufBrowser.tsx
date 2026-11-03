@@ -1,5 +1,6 @@
 "use client";
 
+import { useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import Link from "next/link";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/shared/ui/Button";
@@ -653,10 +654,10 @@ function QuizView({ cards, onBack }: { cards: CharCard[]; onBack: () => void }) 
         </div>
         <p style={{ fontWeight: "bold", margin: 0, fontSize: "1.25rem" }}>
           {score === questions.length
-            ? "Sempurna! Semua terjawab benar 🎉"
+            ? "Sempurna! Semua terjawab benar."
             : score >= questions.length * 0.7
-            ? "Bagus sekali! Hampir sempurna 👍"
-            : "Terus berlatih! Latihan membuat lancar 💪"}
+            ? "Bagus sekali! Hampir sempurna."
+            : "Terus berlatih, latihan membuat lancar."}
         </p>
         <p className={styles.muted}>Akurasi: {Math.round((score / questions.length) * 100)}%</p>
         <Button onClick={onBack}>Kembali ke Tabel Huruf</Button>
@@ -737,6 +738,14 @@ export function HurufBrowser({ kanjiLevel }: { kanjiLevel: JlptLevel }) {
   const [mode, setMode] = useState<Mode>("table");
   const [writingInitialChar, setWritingInitialChar] = useState<string>("あ");
   const [selected, setSelected] = useState<CharCard | null>(null);
+  useScreenContext(
+    "tabel-huruf",
+    mode === "table"
+      ? `Tabel huruf tab ${tab}${selected ? `, huruf yang sedang dipilih: ${selected.char} (${selected.romaji})${selected.detail ? `, ${selected.detail}` : ""}` : ", belum ada huruf yang dipilih"}`
+      : mode === "quiz"
+        ? `Kuis huruf ${tab}`
+        : null,
+  );
   const [mobileModalOpen, setMobileModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDesktop, setIsDesktop] = useState(true);

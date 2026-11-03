@@ -8,8 +8,24 @@ interface GroqMessage {
 }
 
 interface GroqResponse {
-  choices: { message: { content: string } }[];
+  choices: { message: { content: string | null } }[];
 }
+
+/**
+ * Model dicoba berurutan; kalau satu kena batas kuota (429) atau gagal, lanjut ke berikutnya, lalu ke penyedia
+ * cadangan (Gemini). Tiap model Groq punya kuota per menit sendiri, jadi rantai ini melipatgandakan kapasitas.
+ *
+ * Mode teks (tab Tanya AI) mendahulukan gpt-oss-120b: dalam uji pertanyaan tata bahasa dasar (は/が, golongan
+ * kata kerja, bentuk て, です/ます) jawabannya benar semua, sedangkan qwen sering mengarang (mis. 食べる disebut
+ * golongan I). Temperature rendah karena ini penjelasan fakta, bukan obrolan.
+ * Catatan kuota gratis: qwen hanya 1.000 token keluaran/menit (±3 jawaban), gpt-oss 8.000 token/menit.
+ */
+const TEXT_MODELS = [
+  { model: "openai/gpt-oss-120b", max_tokens: 2048, temperature: 0.3, reasoning_effort: "medium" },
+  { model: "qwen/qwen3.8-27b", max_tokens: 1024, temperature: 0.3 },
+];
+// Mode suara tidak diubah: format tanda emosi/tempo/koreksinya sudah diuji dengan gpt-oss
+const VOICE_MODELS = [{ model: "openai/gpt-oss-120b", max_tokens: 1024, temperature: 0.9, reasoning_effort: "low" }];
 
 export class GroqAskProvider implements AskProvider {
   constructor(
@@ -33,30 +49,32 @@ export class GroqAskProvider implements AskProvider {
       { role: "user", content: question },
     ];
 
-    try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "authorization": `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify(
-          voice
-            ? { model: "openai/gpt-oss-120b", messages, max_tokens: 1024, temperature: 0.9, reasoning_effort: "low" }
-            : { model: "qwen/qwen3.8-27b", messages, max_tokens: 1024, temperature: 0.75 },
-        ),
-      });
+    let lastError: unknown = null;
+    for (const config of voice ? VOICE_MODELS : TEXT_MODELS) {
+      try {
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "authorization": `Bearer ${this.apiKey}`,
+          },
+          body: JSON.stringify({ ...config, messages }),
+          signal: AbortSignal.timeout(12000),
+        });
+        if (!res.ok) throw new Error(`Groq ${config.model} ${res.status}: ${(await res.text()).slice(0, 200)}`);
 
-      if (!res.ok) throw new Error(`Groq API error ${res.status}: ${await res.text()}`);
-
-      const data = (await res.json()) as GroqResponse;
-      return data.choices[0]?.message?.content ?? "Maaf, tidak ada jawaban dari Miu-chan.";
-    } catch (err) {
-      if (this.fallbackProvider) {
-        console.warn("[GroqAskProvider] Groq gagal atau kena batas kuota, beralih ke penyedia cadangan:", (err as Error).message);
-        return this.fallbackProvider.answer(question, history, mode, user, transcriptAlt);
+        const data = (await res.json()) as GroqResponse;
+        const content = data.choices[0]?.message?.content?.trim();
+        // Jawaban kosong (mis. jatah token habis untuk berpikir) dianggap gagal supaya model berikutnya dicoba
+        if (!content) throw new Error(`Groq ${config.model}: jawaban kosong`);
+        return content;
+      } catch (err) {
+        lastError = err;
+        console.warn("[GroqAskProvider] model gagal atau kena batas kuota, coba berikutnya:", (err as Error).message);
       }
-      throw err;
     }
+
+    if (this.fallbackProvider) return this.fallbackProvider.answer(question, history, mode, user, transcriptAlt);
+    throw lastError instanceof Error ? lastError : new Error("Miu-chan belum bisa menjawab sekarang.");
   }
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { ImageField } from "./ImageField";
 import styles from "./content.module.css";
+import { CloseIcon } from "@/shared/ui/icons";
 
 export type FieldDef =
   | { name: string; label: string; type: "text" | "textarea"; required?: boolean; hint?: string; wide?: boolean; jp?: boolean }
@@ -112,7 +113,7 @@ export function Field({ def, values, set }: { def: FieldDef; values: FormValues;
             />
             {options.length > 2 && (
               <button type="button" className={styles.iconBtn} aria-label={`Hapus pilihan ${i + 1}`} onClick={() => set(def.name, options.filter((_, j) => j !== i))}>
-                ✕
+                <CloseIcon size={14} strokeWidth={2.6} />
               </button>
             )}
           </div>

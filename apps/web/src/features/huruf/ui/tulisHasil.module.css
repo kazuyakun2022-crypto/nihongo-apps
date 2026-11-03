@@ -219,6 +219,13 @@
 }
 
 .mark text,
+.markCheck {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .markBest text {
   fill: #fff;
   font-weight: 800;
@@ -617,7 +624,15 @@
 }
 
 .nekoTip {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
   color: var(--color-text-muted);
+}
+
+.nekoTip svg {
+  margin-top: 2px;
+  color: var(--color-accent);
 }
 
 .nekoAngle {

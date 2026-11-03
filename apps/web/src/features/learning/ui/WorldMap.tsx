@@ -8,6 +8,7 @@ import { Mascot } from "@/shared/ui/Mascot";
 import { SceneProp } from "./MapScenery";
 import type { ChapterSummary, Level } from "../domain/types";
 import styles from "./worldMap.module.css";
+import { StarIcon } from "@/shared/ui/icons";
 
 export interface MapUnit {
   key: string;
@@ -96,7 +97,7 @@ function Stars({ count }: { count: number }) {
     <span className={styles.stars} aria-hidden>
       {[0, 1, 2].map((i) => (
         <span key={i} className={i < count ? styles.starOn : styles.starOff} style={{ "--si": i } as React.CSSProperties}>
-          ★
+          <StarIcon filled size={14} strokeWidth={1.5} />
         </span>
       ))}
     </span>

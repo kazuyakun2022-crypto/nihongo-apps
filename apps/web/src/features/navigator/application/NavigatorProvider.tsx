@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { postAssistant, type AskMessage } from "@/features/ask/data/askApi";
+import { AudioMeter } from "@/shared/lib/audioMeter";
 import { EXAM_ROUTES, OWN_MASCOT_ROUTES, bandForLevel, matchIntent, type LevelBand } from "../domain/intents";
 import { TOURS, isTourKey, pageTourFor, type TourKey, type TourStep } from "../domain/tours";
 
@@ -78,6 +79,17 @@ interface NavigatorContextValue {
   /** Sedang latihan/kuis: Miu-chan menjelaskan & memberi petunjuk, tapi tidak memberi jawaban. */
   assessment: Assessment | null;
   setAssessment: (key: string, kind: Assessment | null, questionId?: string) => void;
+  /** Panggung: Miu-chan besar di tengah layar saat diajak bicara. origin = titik asal terbang (pusat widget). */
+  stage: { open: boolean; origin: { x: number; y: number } | null };
+  openStage: (origin?: { x: number; y: number }) => void;
+  closeStage: () => void;
+  /** Sambutan pengguna baru (sekali per akun di perangkat ini). */
+  welcome: boolean;
+  acceptWelcome: () => void;
+  skipWelcome: () => void;
+  /** Volume mikrofon & suara Miu-chan 0..1 untuk animasi kepala (gerak bibir, telinga mendengar). */
+  getMicLevel: () => number;
+  getVoiceLevel: () => number;
 }
 
 export type Assessment = "latihan" | "kuis";
@@ -88,6 +100,7 @@ const MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "a
 const MAX_RECORD_MS = 8000;
 const PREFS_KEY = "nihongo:navigator-prefs";
 const AUDIO_CACHE_MAX = 40;
+const WELCOME_KEY = "nihongo:navigator-welcomed";
 
 function readPrefs(): { muted: boolean; captions: boolean } {
   try {
@@ -136,12 +149,17 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
   const questionId = assessmentList.find((a) => a.questionId)?.questionId;
   /** Riwayat tanya-jawab widget supaya pertanyaan lanjutan ("terus yang ini?") tetap nyambung. */
   const historyRef = useRef<AskMessage[]>([]);
+  /** Isi layar saat pertanyaan terakhir; berubah (pindah huruf/kartu/soal) = riwayat lama dibuang. */
+  const historyScreenRef = useRef<string | null>(null);
 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCache = useRef(new Map<string, string>());
   const runRef = useRef(0);
+  const meterRef = useRef<AudioMeter | null>(null);
+  const [stage, setStage] = useState<{ open: boolean; origin: { x: number; y: number } | null }>({ open: false, origin: null });
+  const [welcome, setWelcome] = useState(false);
   const tourRef = useRef<ActiveTour | null>(null);
   tourRef.current = tour;
   const mutedRef = useRef(false);
@@ -189,6 +207,8 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
     setTour(null);
     setCaption(null);
     setMicError(null);
+    setStage({ open: false, origin: null });
+    setWelcome(false);
   }, [examLocked, haltAll]);
 
   // Halaman yang punya Miu-chan sendiri (layar suara dsb.): widget diam, tapi tur yang dimulai dari sana tetap jalan
@@ -256,6 +276,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       if (run !== runRef.current) return;
       const audio = new Audio(url);
       audioRef.current = audio;
+      meterRef.current?.attachVoice(audio);
       // Selesai saat audio habis, gagal, atau dihentikan (pause dari haltAll)
       const done = new Promise<void>((resolve) => {
         audio.onended = audio.onerror = audio.onpause = () => resolve();
@@ -278,6 +299,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       haltAll();
       setCaption(null);
       setMicError(null);
+      setStage({ open: false, origin: null });
       setVoiceState("SPOTLIGHT_POINT");
       setTour((prev) => ({ key, title: def.title, steps: def.steps, index, history: [], seq: (prev?.seq ?? 0) + 1 }));
     },
@@ -365,6 +387,12 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       // dan boleh memilih tur sendiri kalau ternyata user minta ditunjukkan suatu fitur
       const details = [...detailsRef.current.values()].join("; ");
       const screen = screenName(window.location.pathname) + (details ? ` — ${details}` : "");
+      // Riwayat yang membahas huruf/kartu/soal sebelumnya membuat AI tetap menjawab tentang layar lama
+      // (uji: pindah dari と ke た, "cara nulisnya gimana?" tetap dijawab と)
+      if (historyScreenRef.current !== screen) {
+        historyRef.current = [];
+        historyScreenRef.current = screen;
+      }
       try {
         const res = await postAssistant(text, historyRef.current, assessment ? { screen, widget: true, assessment, questionId } : { screen, guide: true, widget: true });
         if (run !== runRef.current) return;
@@ -396,6 +424,8 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
     }
     haltAll();
     setMicError(null);
+    // Dibuat & dilanjutkan di dalam aksi pengguna (ketukan), syarat browser untuk AudioContext
+    (meterRef.current ??= new AudioMeter()).resume();
     const run = runRef.current;
     try {
       // Peredam bising + penguat otomatis: mikrofon laptop yang pelan atau ruangan ramai membuat Whisper salah bahasa
@@ -405,6 +435,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
         return;
       }
       streamRef.current = stream;
+      meterRef.current?.attachMic(stream);
       const mimeType = MIME_CANDIDATES.find((t) => MediaRecorder.isTypeSupported(t));
       const rec = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       const chunks: Blob[] = [];
@@ -478,6 +509,83 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
   );
   const dismissCaption = useCallback(() => setCaption(null), []);
 
+  /* ── Panggung & sambutan ── */
+
+  const markWelcomed = useCallback(() => {
+    try {
+      localStorage.setItem(`${WELCOME_KEY}:${user?.id ?? "tamu"}`, "1");
+    } catch {
+      /* abaikan */
+    }
+  }, [user?.id]);
+
+  const openStage = useCallback(
+    (origin?: { x: number; y: number }) => {
+      if (examLocked) {
+        refuse();
+        return;
+      }
+      setCaption(null);
+      setStage({ open: true, origin: origin ?? null });
+      void startListening();
+    },
+    [examLocked, refuse, startListening],
+  );
+
+  const closeStage = useCallback(() => {
+    haltAll();
+    setStage((s) => ({ ...s, open: false }));
+    setCaption(null);
+    setMicError(null);
+    if (welcome) {
+      // Menutup sambutan = melewatinya
+      markWelcomed();
+      setWelcome(false);
+    }
+  }, [haltAll, welcome, markWelcomed]);
+
+  const acceptWelcome = useCallback(() => {
+    markWelcomed();
+    setWelcome(false);
+    startTour("welcome");
+  }, [markWelcomed, startTour]);
+
+  const skipWelcome = useCallback(() => {
+    markWelcomed();
+    setWelcome(false);
+    haltAll();
+    setStage((s) => ({ ...s, open: false }));
+    setCaption({ ja: "またね！", id: "Oke! Kalau butuh bantuan, ketuk aku di pojok layar ya." });
+  }, [markWelcomed, haltAll]);
+
+  // Pengguna baru: disambut sekali di tengah layar, lalu ditawari keliling aplikasi
+  useEffect(() => {
+    if (!user || !isWidgetVisible || examLocked || assessment || tour || stage.open) return;
+    let seen = true;
+    try {
+      seen = localStorage.getItem(`${WELCOME_KEY}:${user.id}`) === "1";
+    } catch {
+      /* penyimpanan tidak tersedia: jangan ganggu */
+    }
+    if (seen) return;
+    const id = window.setTimeout(() => {
+      const name = user.displayName?.trim().split(/\s+/)[0];
+      const greeting = `Hai${name ? ` ${name}` : ""}! Aku Miu-chan, teman belajarmu di sini. Mau aku ajak keliling aplikasi sebentar? Cuma satu menit kok.`;
+      setWelcome(true);
+      setStage({ open: true, origin: null });
+      setCaption({ ja: "はじめまして！ミウだよ。", id: greeting });
+      const run = ++runRef.current;
+      // Browser bisa menolak memutar suara sebelum ada ketukan; teks tetap tampil
+      void speak(greeting, run, "IDLE_FLOATING");
+    }, 1200);
+    return () => window.clearTimeout(id);
+    // Hanya saat akun/rute siap; jangan muncul ulang saat state lain berubah
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, isWidgetVisible, examLocked]);
+
+  const getMicLevel = useCallback(() => meterRef.current?.micLevel() ?? 0, []);
+  const getVoiceLevel = useCallback(() => meterRef.current?.voiceLevel() ?? 0, []);
+
   const value = useMemo<NavigatorContextValue>(
     () => ({
       isWidgetVisible,
@@ -503,8 +611,16 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       setScreenDetail,
       assessment,
       setAssessment,
+      stage,
+      openStage,
+      closeStage,
+      welcome,
+      acceptWelcome,
+      skipWelcome,
+      getMicLevel,
+      getVoiceLevel,
     }),
-    [isWidgetVisible, examLocked, isMuted, captionsOn, voiceState, caption, micError, band, tour, toggleListening, sendCommand, setMuted, setCaptionsOn, dismissCaption, startTour, tourNext, tourBack, endTour, speakLine, lockForExam, setScreenDetail, assessment, setAssessment],
+    [isWidgetVisible, examLocked, isMuted, captionsOn, voiceState, caption, micError, band, tour, toggleListening, sendCommand, setMuted, setCaptionsOn, dismissCaption, startTour, tourNext, tourBack, endTour, speakLine, lockForExam, setScreenDetail, assessment, setAssessment, stage, openStage, closeStage, welcome, acceptWelcome, skipWelcome, getMicLevel, getVoiceLevel],
   );
 
   return <NavigatorContext.Provider value={value}>{children}</NavigatorContext.Provider>;

@@ -25,6 +25,7 @@ import {
 } from "../data/workbookGateApi";
 import { WorkbookCanvas } from "./WorkbookCanvas";
 import styles from "./workbookGate.module.css";
+import { NotebookIcon, PenLineIcon, PrinterIcon } from "@/shared/ui/icons";
 
 type Phase = "loading" | "intro" | "kertas" | "pindai" | "periksa" | "kanvas" | "hasil" | "error";
 
@@ -231,21 +232,21 @@ export function WorkbookGate({ levelId }: { levelId: number }) {
                 <div className={styles.modes}>
                   <button type="button" className={styles.mode} onClick={() => start("kertas", "gambar")} disabled={busy}>
                     <span className={styles.modeIcon} aria-hidden="true">
-                      📓
+                      <NotebookIcon size={26} strokeWidth={1.7} />
                     </span>
                     <strong>Gambar kisi sendiri</strong>
                     <span>Tanpa printer: gambar kotak-kotak di buku atau kertas apa saja, tulis satu huruf per kotak, lalu foto sekali.</span>
                   </button>
                   <button type="button" className={styles.mode} onClick={() => start("kertas", "cetak")} disabled={busy}>
                     <span className={styles.modeIcon} aria-hidden="true">
-                      🖨️
+                      <PrinterIcon size={26} strokeWidth={1.7} />
                     </span>
                     <strong>Cetak lembar</strong>
                     <span>Cetak lembar ujian, tulis tiap huruf 3×, lalu foto per lembar.</span>
                   </button>
                   <button type="button" className={styles.mode} onClick={() => start("kanvas")} disabled={busy}>
                     <span className={styles.modeIcon} aria-hidden="true">
-                      ✍️
+                      <PenLineIcon size={26} strokeWidth={1.7} />
                     </span>
                     <strong>Tulis di layar</strong>
                     <span>Pakai jari atau stilus. Urutan dan arah goresan ikut dinilai, hasilnya langsung keluar.</span>
@@ -398,7 +399,7 @@ export function WorkbookGate({ levelId }: { levelId: number }) {
                   setPhase("pindai");
                 }}
               >
-                {done ? "Foto ulang" : "📷 Foto kisimu"}
+                {done ? "Foto ulang" : "Foto kisimu"}
               </Button>
               <Button disabled={!done || busy} onClick={finishPaper}>
                 {busy ? "Menghitung nilai…" : "Selesai & lihat nilai"}

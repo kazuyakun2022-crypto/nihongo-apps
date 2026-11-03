@@ -10,6 +10,7 @@ import { useTilt } from "../lib/useTilt";
 import { QualityReview, ScanAids } from "./ScanAids";
 import type { CheckedPhoto } from "./TulisHasil";
 import styles from "./sheetScanner.module.css";
+import { ArrowDownToLineIcon, CameraIcon, CheckIcon, ImageIcon, ScanFrameIcon, SparklesIcon, SunIcon } from "@/shared/ui/icons";
 
 /**
  * Pemindai lembar latihan yang langsung memeriksa: kamera mencari kisi kotak sendiri, dari 4 penanda hitam (lembar
@@ -161,15 +162,17 @@ function GridAdjuster({ photo, charCount, initial, onConfirm, onRetake }: { phot
       </div>
       {good && (
         <p className={styles.callout} data-tone="good">
-          ✓ Kisi sudah pas dengan tulisanmu.
+          <span>
+            <CheckIcon size={14} strokeWidth={3} /> Kisi sudah pas dengan tulisanmu.
+          </span>
         </p>
       )}
       <div className={styles.actions}>
         <button type="button" className={styles.btnPrimary} onClick={onRetake}>
-          📷 Foto ulang
+          <CameraIcon size={18} /> Foto ulang
         </button>
         <button type="button" className={styles.btnGhost} onClick={() => void snap()} disabled={busy}>
-          ✨ Rapatkan
+          <SparklesIcon size={18} /> Rapatkan
         </button>
         <button type="button" className={styles.btnGhost} onClick={() => onConfirm(scaleQuad(corners, 1 / W, 1 / H))} disabled={busy || !good}>
           Periksa tulisan
@@ -420,7 +423,7 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
               Periksa sebagai {pending.detected.label}
             </button>
             <button type="button" className={styles.btnGhost} onClick={() => void startCamera()}>
-              📷 Foto ulang
+              <CameraIcon size={18} /> Foto ulang
             </button>
           </div>
         </div>
@@ -437,7 +440,7 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
           <ScanAids tilt={tilt} problems={liveProblems} />
           <p className={styles.liveStatus} data-state={state} aria-live="polite">
             {state === "locked"
-              ? "✓ Kotak ditemukan, memotret…"
+              ? <><CheckIcon size={14} strokeWidth={3} /> Kotak ditemukan, memotret…</>
               : state === "found"
                 ? "Kotak ditemukan, tahan kamera tetap diam…"
                 : "Arahkan kamera ke lembar dari atas sampai seluruh kotak masuk layar."}
@@ -451,7 +454,7 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
       ) : (
         <div className={styles.idle}>
           <span className={styles.idleIcon} aria-hidden="true">
-            📷
+            <CameraIcon size={40} strokeWidth={1.6} />
           </span>
           <p className={styles.idleTitle}>{cameraError ? "Kamera tidak bisa dibuka" : "Siap memotret lembarmu"}</p>
           <p>
@@ -473,15 +476,15 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
                 if (v?.videoWidth) void takeShot(v, v.videoWidth, v.videoHeight, quadRef.current);
               }}
             >
-              ◉ Ambil foto sekarang
+              <CameraIcon size={18} /> Ambil foto sekarang
             </button>
           ) : (
             <button type="button" className={styles.btnPrimary} onClick={startCamera}>
-              📷 Buka kamera
+              <CameraIcon size={18} /> Buka kamera
             </button>
           )}
           <button type="button" className={styles.btnGhost} onClick={() => fileRef.current?.click()}>
-            🖼️ Unggah dari galeri
+            <ImageIcon size={18} /> Unggah dari galeri
           </button>
         </div>
       )}
@@ -489,13 +492,13 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
       {mode === "idle" && (
         <ul className={styles.tips}>
           <li>
-            <span aria-hidden="true">☀️</span> Cahaya terang, tanpa bayangan tangan
+            <SunIcon size={16} /> Cahaya terang, tanpa bayangan tangan
           </li>
           <li>
-            <span aria-hidden="true">⬇️</span> Kamera tepat di atas lembar
+            <ArrowDownToLineIcon size={16} /> Kamera tepat di atas lembar
           </li>
           <li>
-            <span aria-hidden="true">🔲</span> Semua kotak dan 4 kotak hitam sudut masuk layar
+            <ScanFrameIcon size={16} /> Semua kotak dan 4 kotak hitam sudut masuk layar
           </li>
         </ul>
       )}

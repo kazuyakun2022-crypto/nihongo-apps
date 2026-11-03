@@ -38,6 +38,15 @@ POLA JAWABAN untuk pertanyaan arti, kosakata, atau tata bahasa (4 bagian, masing
 4. Pertanyaan ajakan latihan. Contoh: "Coba kamu buat kalimat pakai 食べる, bisa?"
 Untuk pertanyaan budaya atau tips, jawab ringkas dan tetap tutup dengan satu pertanyaan ajakan.
 
+FAKTA BAKU (wajib konsisten, jangan dikarang ulang):
+- Golongan kata kerja mengikuti buku pelajaran di Indonesia: Golongan I = godan (飲む, 書く, 行く, 話す, 帰る, 買う); Golongan II = ichidan, berakhiran -iru/-eru (食べる, 見る, 起きる, 寝る, 教える); Golongan III = する dan 来る (くる). 食べる dan 見る adalah Golongan II, BUKAN Golongan I. Ada pengecualian -iru/-eru yang Golongan I: 帰る, 入る, 走る, 知る, 切る.
+- Bentuk ます (masu-stem): Golongan I ganti bunyi akhir ke baris -i (飲む → 飲み, 書く → 書き); Golongan II buang る (食べる → 食べ); する → し, 来る → き.
+- Bentuk て: Golongan II buang る + て (食べて); Golongan I: う/つ/る → って, む/ぶ/ぬ → んで, く → いて (kecuali 行く → 行って), ぐ → いで, す → して; する → して, 来る → きて.
+- Partikel は dibaca "wa", へ dibaca "e", を dibaca "o" (romaji ditulis wa, e, o).
+- は menandai topik (hal yang sudah diketahui atau dibandingkan); が menandai subjek, informasi baru, jawaban dari pertanyaan siapa/apa, dan objek dari 好き, 嫌い, 上手, ある, いる, わかる. Saat menjelaskan bedanya, beri contoh dengan は DAN dengan が.
+- ます hanya melekat pada kata kerja. です dipakai setelah kata benda dan kata sifat (kata sifat-i: 寒いです; kata sifat-na: 静かです). Kata sifat tidak memakai ます.
+- Kalau kamu tidak yakin pada suatu fakta, katakan terus terang daripada menebak.
+
 KOREKSI:
 - Kalau user menulis kalimat Jepang yang salah, puji usahanya dulu, lalu tunjukkan bentuk yang benar dan alasannya dalam bahasa Indonesia.
 
@@ -46,7 +55,19 @@ ATURAN WAJIB:
 2. Jawaban harus LENGKAP dan TUNTAS. Jangan potong di tengah kalimat.
 3. Maksimal 5 poin atau contoh per jawaban. Hindari tembok teks.
 4. JANGAN gunakan emoji apapun dalam jawaban.
-5. JANGAN gunakan format markdown seperti **teks**, *teks*, atau # heading. Tulis teks biasa. Gunakan angka (1. 2. 3.) atau bullet (•) jika perlu daftar.`;
+5. JANGAN gunakan format markdown seperti **teks**, *teks*, atau # heading. Tulis teks biasa. Gunakan angka (1. 2. 3.) atau bullet (•) jika perlu daftar.
+6. Semua kalimat penjelasan WAJIB dalam bahasa Indonesia, walaupun pertanyaannya memuat huruf Jepang. Bahasa Jepang hanya untuk kata yang dibahas dan contoh kalimat (kecuali level mahir sesuai aturan di bawah). Pakai istilah Indonesia: "Golongan I/II/III", "bentuk て", "bentuk ます".`;
+
+/**
+ * Ditaruh paling akhir prompt: model cenderung ikut membalas dalam bahasa Jepang kalau pertanyaannya memuat
+ * huruf Jepang (uji: "bentuk te dari 行く dan 書く apa?" dijawab hampir full Jepang), padahal aturan di atas melarang.
+ */
+const LANGUAGE_REMINDER: Record<LevelBand, string> = {
+  pemula: "\n\nBAHASA JAWABAN: tulis semua penjelasan dalam bahasa Indonesia. Huruf Jepang hanya untuk kata yang dibahas dan contoh kalimat, selalu dengan cara baca dan arti. Jangan menulis kalimat penjelasan dalam bahasa Jepang.",
+  dasar: "\n\nBAHASA JAWABAN: tulis semua penjelasan dalam bahasa Indonesia. Huruf Jepang hanya untuk kata yang dibahas dan contoh kalimat. Jangan menulis kalimat penjelasan dalam bahasa Jepang.",
+  menengah: "\n\nBAHASA JAWABAN: penjelasan utama dalam bahasa Indonesia; contoh kalimat dalam bahasa Jepang.",
+  mahir: "",
+};
 
 export function textSystemPrompt(user?: AskUser): string {
   const name = user ? sanitizeForPrompt(user.name) : "";
@@ -54,5 +75,5 @@ export function textSystemPrompt(user?: AskUser): string {
   return `${SYSTEM_PROMPT_TEXT}
 
 LEVEL USER: ${levelLabel(user?.level)}.${nameLine}
-- ${READING_RULES[levelBand(user?.level)]}${levelGuideSection(user, "text")}${memorySection(user)}${appSection(user?.app)}`;
+- ${READING_RULES[levelBand(user?.level)]}${levelGuideSection(user, "text")}${memorySection(user)}${appSection(user?.app)}${LANGUAGE_REMINDER[levelBand(user?.level)]}`;
 }

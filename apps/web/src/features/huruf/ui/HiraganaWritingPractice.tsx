@@ -7,6 +7,7 @@ import { HIRAGANA_STROKE_DATA } from "../data/hiraganaStrokes";
 import { useSpeech } from "@/shared/lib/useSpeech";
 import { Button } from "@/shared/ui/Button";
 import styles from "./writingPractice.module.css";
+import { CheckIcon } from "@/shared/ui/icons";
 
 interface Point {
   x: number;
@@ -206,7 +207,6 @@ export function HiraganaWritingPractice({
 }) {
   const { speak } = useSpeech();
   const [selectedChar, setSelectedChar] = useState<string>(initialChar);
-  useScreenContext("tulis-huruf", `Latihan menulis huruf ${selectedChar} di kanvas`);
   const [showGuide, setShowGuide] = useState<boolean>(true);
   const [selectedColor, setSelectedColor] = useState<string>("#1f1a1c");
   const [brushWidth, setBrushWidth] = useState<number>(14);
@@ -233,6 +233,11 @@ export function HiraganaWritingPractice({
       }
     );
   }, [selectedChar, charData.romaji]);
+
+  useScreenContext(
+    "tulis-huruf",
+    `Latihan menulis huruf hiragana ${selectedChar} (dibaca ${charData.romaji}) di kanvas, ${strokeInfo.strokeCount} goresan resmi. Petunjuk goresan dari aplikasi: ${strokeInfo.strokeTips.join(" ")}`,
+  );
 
   // Current index in Hiragana basic list for Next/Prev
   const currentIndex = useMemo(() => {
@@ -683,7 +688,13 @@ export function HiraganaWritingPractice({
                 <div className={styles.evalMetricItem}>
                   <span className={styles.evalMetricLabel}>Goresan Dibuat</span>
                   <span className={styles.evalMetricValue}>
-                    {evaluation.actualStrokes} dari {evaluation.expectedStrokes} {evaluation.strokeMatch ? "✓ Tepat" : ""}
+                    {evaluation.actualStrokes} dari {evaluation.expectedStrokes}
+                    {evaluation.strokeMatch && (
+                      <>
+                        {" "}
+                        <CheckIcon size={12} strokeWidth={3} /> Tepat
+                      </>
+                    )}
                   </span>
                 </div>
                 <div className={styles.evalMetricItem}>

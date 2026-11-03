@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ASSET_BASE, POSES } from "./neko/nekoRig";
 import { Button } from "./Button";
 import styles from "./confirmModal.module.css";
+import { AlertIcon, InfoIcon } from "@/shared/ui/icons";
 
 export interface ConfirmModalProps {
   isOpen: boolean;
@@ -71,7 +72,7 @@ export function ConfirmModal({
   if (!isOpen) return null;
 
   const iconClass = iconType === "info" ? styles.iconInfo : styles.iconWarning;
-  const iconSymbol = iconType === "info" ? "ℹ️" : "⚠️";
+  const iconSymbol = iconType === "info" ? <InfoIcon size={22} /> : <AlertIcon size={22} />;
 
   return (
     <div

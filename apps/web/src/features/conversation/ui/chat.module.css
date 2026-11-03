@@ -223,7 +223,8 @@
 }
 
 .feedbackChevron {
-  font-size: 0.65rem;
+  display: inline-grid;
+  place-items: center;
   color: var(--color-text-muted);
   transition: transform var(--motion-fast) var(--ease-spring);
 }

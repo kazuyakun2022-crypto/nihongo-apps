@@ -8,6 +8,7 @@ import { hasKana, toRomaji } from "@/shared/lib/kana";
 import { Field } from "./FormModal";
 import { ImageField } from "./ImageField";
 import styles from "./content.module.css";
+import { SkillIcon } from "@/shared/ui/SkillIcon";
 
 /** Isian form; diterjemahkan ke bentuk API (options/correctAnswer) oleh toInput. */
 interface Draft {
@@ -168,7 +169,7 @@ export function ExerciseForm({
             return (
               <div key={skill} className={styles.typeGroup}>
                 <span className={styles.typeGroupLabel}>
-                  {SKILLS[skill].icon} {SKILLS[skill].label}
+                  <SkillIcon skill={skill} /> {SKILLS[skill].label}
                 </span>
                 <div className={styles.typeOptions}>
                   {types.map((t) => (

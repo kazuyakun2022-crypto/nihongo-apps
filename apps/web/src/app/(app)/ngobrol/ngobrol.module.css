@@ -54,18 +54,6 @@
   filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.12));
 }
 
-.onlineDot {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #22c55e;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
-}
-
 .senseiMeta {
   display: flex;
   flex-direction: column;
@@ -154,18 +142,33 @@
   transform: translateY(-0.5px);
 }
 
-.liveIndicator {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ef4444;
-  animation: livePulse 1.8s ease-in-out infinite;
-  display: inline-block;
-}
+/* Mobile: tab pindah ke baris sendiri di bawah nama supaya nama & status tidak terhimpit */
+@media (max-width: 599px) {
+  .topHeader {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 8px 12px 10px;
+  }
 
-@keyframes livePulse {
-  0%, 100% { transform: scale(0.9); opacity: 0.6; }
-  50%      { transform: scale(1.35); opacity: 1; }
+  .headerLeft {
+    flex: 1 1 100%;
+  }
+
+  .senseiStatus {
+    max-width: none;
+  }
+
+  .segmentedControl {
+    display: flex;
+    flex: 1 1 100%;
+  }
+
+  .segmentBtn {
+    flex: 1;
+    justify-content: center;
+    min-height: 40px;
+    padding: 6px 8px;
+  }
 }
 
 /* ── Area Konten ── */

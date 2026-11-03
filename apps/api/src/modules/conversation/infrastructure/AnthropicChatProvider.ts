@@ -1,5 +1,6 @@
 import { CONVERSATION_EMOTIONS, VOICE_SPEEDS, type ChatMessage, type ConversationEmotion, type VoiceSpeed } from "../domain/Conversation";
 import type { AiChatProvider, AiReply } from "../domain/ports";
+import { stripEmoji } from "../../../shared/domain/emoji";
 
 /** Adapter ke Anthropic Messages API. Model diatur lewat AI_MODEL di .env. */
 export class AnthropicChatProvider implements AiChatProvider {
@@ -49,7 +50,9 @@ function toVoiceSpeed(value: unknown): VoiceSpeed | undefined {
 }
 
 /** Mengurai balasan AI: memisahkan teks percakapan dan tag <correction_data> sesuai PRD. */
-export function parseAiReply(text: string): AiReply {
+export function parseAiReply(rawText: string): AiReply {
+  // Balasan role-play tampil & dibacakan tanpa emoji
+  const text = stripEmoji(rawText);
   const correctionMatch = text.match(/<correction_data>([\s\S]*?)<\/correction_data>/i);
   if (correctionMatch) {
     const reply = text.replace(/<correction_data>[\s\S]*?<\/correction_data>/i, "").trim();

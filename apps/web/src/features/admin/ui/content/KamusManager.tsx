@@ -17,13 +17,15 @@ import { Pagination, usePaged } from "../Pagination";
 import { FormModal, type FieldDef, type FormValues } from "./FormModal";
 import { useFlash } from "./ContentShell";
 import styles from "./content.module.css";
+import { BookOpenIcon, ImageIcon, MessageIcon, PuzzleIcon } from "@/shared/ui/icons";
+import type { ReactNode } from "react";
 
-const TYPES: { key: KamusType; label: string; icon: string }[] = [
-  { key: "gambar", label: "Bergambar", icon: "🖼️" },
-  { key: "kosakata", label: "Kosakata", icon: "📖" },
+const TYPES: { key: KamusType; label: string; icon: ReactNode }[] = [
+  { key: "gambar", label: "Bergambar", icon: <ImageIcon size={14} /> },
+  { key: "kosakata", label: "Kosakata", icon: <BookOpenIcon size={14} /> },
   { key: "kanji", label: "Kanji", icon: "漢" },
-  { key: "tata_bahasa", label: "Tata Bahasa", icon: "🧩" },
-  { key: "ungkapan", label: "Ungkapan & Sebutan", icon: "💬" },
+  { key: "tata_bahasa", label: "Tata Bahasa", icon: <PuzzleIcon size={14} /> },
+  { key: "ungkapan", label: "Ungkapan & Sebutan", icon: <MessageIcon size={14} /> },
 ];
 
 const hasCategories = (t: KamusType): t is KamusCategoryType => t === "gambar" || t === "ungkapan";
@@ -391,7 +393,7 @@ function CategoryBrowser({
                     aria-label={`Buka isi kategori ${c.title}`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {cover ? <img src={cover} alt="" loading="lazy" /> : <span className={styles.catCoverEmpty}>{type === "ungkapan" ? "💬" : "🖼️"}</span>}
+                    {cover ? <img src={cover} alt="" loading="lazy" /> : <span className={styles.catCoverEmpty}>{type === "ungkapan" ? <MessageIcon size={28} strokeWidth={1.5} /> : <ImageIcon size={28} strokeWidth={1.5} />}</span>}
                   </button>
                   <div className={styles.catBody}>
                     <h3 className={styles.catTitle}>

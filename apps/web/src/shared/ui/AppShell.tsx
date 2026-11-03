@@ -6,6 +6,7 @@ import { useAuth } from "@/features/auth/application/AuthProvider";
 import { NavigatorProvider } from "@/features/navigator/application/NavigatorProvider";
 import { MascotNavigator } from "@/features/navigator/ui/MascotNavigator";
 import { SpotlightOverlay } from "@/features/navigator/ui/SpotlightOverlay";
+import { MiuStage } from "@/features/navigator/ui/MiuStage";
 import { InstallPrompt } from "./InstallPrompt";
 import styles from "./shell.module.css";
 
@@ -104,6 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
         {/* Miu-chan pemandu: widget melayang + sorotan (disembunyikan otomatis saat ujian) */}
         <MascotNavigator />
+        <MiuStage />
         <SpotlightOverlay />
       </div>
     </NavigatorProvider>

@@ -13,7 +13,7 @@ import { useAuth } from "@/features/auth/application/AuthProvider";
 import { useAssessment, useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import { isPracticeQuestion, useChapterLesson, type StudyCard } from "../application/useChapterLesson";
 import type { ChapterQuizQuestion } from "../domain/types";
-import { LessonBlockView } from "./LessonBlockView";
+import { LessonBlockView, parseKana } from "./LessonBlockView";
 import { HandwritingExercise } from "./exercises/HandwritingExercise";
 import { SpeakingExercise } from "./exercises/SpeakingExercise";
 import { TileExercise } from "./exercises/TileExercise";
@@ -21,6 +21,8 @@ import { ScoreScreen, useCountUp } from "./ScoreScreen";
 import { WarmupDeck } from "./WarmupDeck";
 import { JUST_COMPLETED_KEY } from "./WorldMap";
 import styles from "./chapter.module.css";
+import { CheckIcon, CloseIcon, MessageIcon, MinusIcon, VolumeIcon } from "@/shared/ui/icons";
+import { SkillIcon } from "@/shared/ui/SkillIcon";
 
 const LABELS = ["A", "B", "C", "D", "E", "F"];
 
@@ -86,8 +88,15 @@ function lessonContext(
         return `${head}, materi kanji: ${card.data.character}, onyomi ${card.data.onyomi ?? "-"}, kunyomi ${card.data.kunyomi ?? "-"}, arti ${cut(card.data.meaningId, 60)}`;
       case "grammar":
         return `${head}, materi tata bahasa: pola ${cut(card.data.pattern, 60)}; penjelasan: ${cut(card.data.explanation, 220)}${card.data.exampleSentence ? `; contoh: ${cut(card.data.exampleSentence, 80)}` : ""}`;
-      case "block":
-        return `${head}, materi ${BLOCK_LABEL[card.data.type] ?? "teks"}${card.data.title ? ` "${cut(card.data.title, 60)}"` : ""}: ${cut(card.data.body ?? card.data.caption, 300)}`;
+      case "block": {
+        const title = card.data.title ? ` "${cut(card.data.title, 60)}"` : "";
+        // Blok huruf disimpan sebagai baris "あ|a|…": kirim sebagai daftar huruf + bacaan supaya tidak salah tafsir
+        if (card.data.type === "huruf" && card.data.body) {
+          const kana = parseKana(card.data.body).map((k) => `${k.char} (${k.romaji})`).join(", ");
+          return `${head}, materi huruf${title}. Huruf yang sedang tampil HANYA: ${kana}`;
+        }
+        return `${head}, materi ${BLOCK_LABEL[card.data.type] ?? "teks"}${title}: ${cut(card.data.body ?? card.data.caption, 300)}`;
+      }
     }
   }
   return `${head}, tahap ${PHASE_LABEL[phase] ?? phase}`;
@@ -161,7 +170,7 @@ function LessonShell({
         <ol className={styles.stageList}>
           {STAGES.map((s, i) => (
             <li key={s.key} className={styles.stageItem} data-state={i < stageIndex ? "done" : i === stageIndex ? "current" : "todo"}>
-              <span className={styles.stageNum} aria-hidden>{i < stageIndex ? "✓" : i + 1}</span>
+              <span className={styles.stageNum} aria-hidden>{i < stageIndex ? <CheckIcon size={12} strokeWidth={3} /> : i + 1}</span>
               {s.label}
             </li>
           ))}
@@ -259,7 +268,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
         mood="berpikir"
       >
         <div className={styles.progressRow}>
-          <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup pelajaran">✕</Link>
+          <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup pelajaran"><CloseIcon size={20} /></Link>
         </div>
         <WarmupDeck cards={lesson.warmupCards} chapterTitle={chapterTitle} onDone={lesson.finishWarmup} />
       </LessonShell>
@@ -301,7 +310,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
     return (
       <LessonShell title={chapterTitle} moduleTitle={moduleTitle} stage="study" steps={steps} tip={studyTip(card)}>
         <div className={styles.progressRow}>
-          <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup pelajaran">✕</Link>
+          <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup pelajaran"><CloseIcon size={20} /></Link>
           <div className={styles.progressBar} role="progressbar" aria-valuenow={lesson.studyIndex + 1} aria-valuemax={lesson.studyCards.length}>
             <div className={styles.progressFill} style={{ width: `${progress}%` }} />
           </div>
@@ -333,7 +342,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
               <p className={styles.cardMeaning}>{card.data.meaningId}</p>
               {card.data.exampleSentence && (
                 <button type="button" className={`${styles.exampleBtn} ${styles.cardExample}`} onClick={() => speak(stripFurigana(card.data.exampleSentence ?? ""))} aria-label="Putar contoh kalimat">
-                  「<FuriganaText text={card.data.exampleSentence} />」 <span aria-hidden>🔊</span>
+                  「<FuriganaText text={card.data.exampleSentence} />」 <VolumeIcon size={16} />
                 </button>
               )}
               {card.data.exampleTranslation && <p className={styles.cardTranslation}>{card.data.exampleTranslation}</p>}
@@ -366,7 +375,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
               )}
               {card.data.exampleSentence && (
                 <button type="button" className={styles.exampleBtn} onClick={() => speak(stripFurigana(card.data.exampleSentence ?? ""))} aria-label="Putar contoh kalimat">
-                  「<FuriganaText text={card.data.exampleSentence} />」 <span aria-hidden>🔊</span>
+                  「<FuriganaText text={card.data.exampleSentence} />」 <VolumeIcon size={16} />
                 </button>
               )}
               {card.data.exampleTranslation && <p className={styles.cardTranslation}>{card.data.exampleTranslation}</p>}
@@ -376,7 +385,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
 
         <div className={styles.dotNav}>
           {lesson.studyCards.map((_, i) => (
-            <span key={i} className={i === lesson.studyIndex ? `${styles.dot} ${styles.dotActive}` : styles.dot} />
+            <span key={i} className={i === lesson.studyIndex ? `${styles.dot} ${styles.dotActive}` : styles.dot} data-done={i < lesson.studyIndex || undefined} />
           ))}
         </div>
 
@@ -412,7 +421,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
             <ul className={styles.skillList} aria-label="Keterampilan yang dilatih">
               {countBySkill(lesson.quizQuestions.map((q) => q.type)).map(({ skill, count }) => (
                 <li key={skill} className={styles.skillChip}>
-                  <span aria-hidden>{SKILLS[skill].icon}</span> {SKILLS[skill].label} <strong>{count}</strong>
+                  <SkillIcon skill={skill} /> {SKILLS[skill].label} <strong>{count}</strong>
                 </li>
               ))}
             </ul>
@@ -468,7 +477,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
         mood="berpikir"
       >
         <div className={styles.progressRow}>
-          <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup kuis">✕</Link>
+          <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup kuis"><CloseIcon size={20} /></Link>
           <div className={styles.progressBar} role="progressbar" aria-valuenow={lesson.quizIndex + 1} aria-valuemax={lesson.quizQuestions.length}>
             <div className={styles.progressFill} style={{ width: `${progress}%` }} />
           </div>
@@ -477,7 +486,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
 
         <div className={styles.dotNav}>
           {lesson.quizQuestions.map((_, i) => (
-            <span key={i} className={i === lesson.quizIndex ? `${styles.dot} ${styles.dotActive}` : styles.dot} />
+            <span key={i} className={i === lesson.quizIndex ? `${styles.dot} ${styles.dotActive}` : styles.dot} data-done={i < lesson.quizIndex || undefined} />
           ))}
         </div>
 
@@ -485,7 +494,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           <QuestionHeader q={q} />
           {q.audioUrl && (
             <button type="button" className={styles.audioBtn} onClick={() => playAudio(q.audioUrl ?? "")}>
-              <span aria-hidden>🔊</span> Putar audio
+              <VolumeIcon size={16} /> Putar audio
             </button>
           )}
           {(q.type === "susun_huruf" || q.type === "susun_kalimat") && (
@@ -646,7 +655,7 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
 
       {lesson.chapter?.scenario && (
         <Link href={`/ngobrol/skenario/${lesson.chapter.scenario.id}`} className={styles.scenarioCta}>
-          <span aria-hidden>💬</span>
+          <MessageIcon size={22} />
           <span>
             <strong>Latihan ngobrol: {lesson.chapter.scenario.title}</strong>
             <small>Praktikkan pola bab ini langsung bersama Miu-chan.</small>
@@ -687,10 +696,10 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
           if (!q) return null;
           return (
             <div key={r.questionId} className={styles.reviewItem} data-correct={r.correct || r.skipped}>
-              <span className={styles.reviewIcon}>{r.skipped ? "–" : r.correct ? "✓" : "✕"}</span>
+              <span className={styles.reviewIcon}>{r.skipped ? <MinusIcon size={18} strokeWidth={3} /> : r.correct ? <CheckIcon size={18} strokeWidth={3} /> : <CloseIcon size={18} strokeWidth={3} />}</span>
               <div>
                 <p className={styles.reviewSkill}>
-                  {SKILLS[EXERCISES[q.type].skill].icon} {EXERCISES[q.type].label}
+                  <SkillIcon skill={EXERCISES[q.type].skill} /> {EXERCISES[q.type].label}
                 </p>
                 <p className={styles.reviewQ} lang="ja">{q.type === "berbicara" ? q.speakText : q.question}</p>
                 {r.skipped ? (
@@ -721,7 +730,7 @@ export function QuestionHeader({ q }: { q: ChapterQuizQuestion }) {
   return (
     <>
       <span className={styles.skillBadge}>
-        <span aria-hidden>{skill.icon}</span> {skill.label} · {meta.label}
+        <SkillIcon skill={meta.skill} /> {skill.label} · {meta.label}
       </span>
       <p className={styles.instruction}>{instruction}</p>
       {q.imageUrl && (

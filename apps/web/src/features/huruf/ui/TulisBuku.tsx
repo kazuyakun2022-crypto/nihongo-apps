@@ -10,6 +10,7 @@ import { periksaTulisan, type CheckResult } from "../data/tulisApi";
 import { SheetScanner, type ScanResult } from "./SheetScanner";
 import { TulisHasil, type CheckedPhoto } from "./TulisHasil";
 import styles from "./tulisBuku.module.css";
+import { CameraIcon, CheckIcon, PencilIcon, PrinterIcon, StarIcon } from "@/shared/ui/icons";
 
 /**
  * Latihan menulis di buku fisik: pilih lembar → cetak/salin ke buku → foto → periksa.
@@ -150,7 +151,7 @@ function Stepper({ index }: { index: number }) {
         <li key={label} data-state={i < index ? "done" : i === index ? "active" : "todo"} aria-current={i === index ? "step" : undefined}>
           <span className={styles.stepBar} />
           <span className={styles.stepLabel}>
-            <b>{i < index ? "✓" : i + 1}</b> {label}
+            <b>{i < index ? <CheckIcon size={11} strokeWidth={3.2} /> : i + 1}</b> {label}
           </span>
         </li>
       ))}
@@ -224,7 +225,7 @@ function PrintWorksheet({ sheet, exam }: { sheet: Sheet; exam?: ExamPrint }) {
             <b>3</b> Dari ingatan, tanpa melihat contoh
           </li>
           <li>
-            <b>☆</b> Foto lembar ini di aplikasi
+            <b><StarIcon size={11} strokeWidth={1.8} /></b> Foto lembar ini di aplikasi
           </li>
         </ol>
       ) : (
@@ -239,7 +240,7 @@ function PrintWorksheet({ sheet, exam }: { sheet: Sheet; exam?: ExamPrint }) {
             <b>3</b> Tulis sendiri di kotak kosong
           </li>
           <li>
-            <b>☆</b> Warnai bintang kalau rapi
+            <b><StarIcon size={11} strokeWidth={1.8} /></b> Warnai bintang kalau rapi
           </li>
         </ol>
       )}
@@ -272,7 +273,11 @@ function PrintWorksheet({ sheet, exam }: { sheet: Sheet; exam?: ExamPrint }) {
                 </div>
               ))}
               <div className={styles.pRate}>
-                <span aria-hidden="true">☆☆☆</span>
+                <span aria-hidden="true" className={styles.pStars}>
+                  <StarIcon size={13} strokeWidth={1.6} />
+                  <StarIcon size={13} strokeWidth={1.6} />
+                  <StarIcon size={13} strokeWidth={1.6} />
+                </span>
                 {c.strokes && !exam ? <small>{c.strokes} goresan</small> : null}
               </div>
             </div>
@@ -475,28 +480,28 @@ export function TulisBuku() {
 
             <div className={styles.actions} data-spotlight="tulis-buku-aksi">
               <button type="button" className={styles.btnPrimary} onClick={() => setStep("pindai")}>
-                📷 Sudah menulis, foto sekarang
+                <CameraIcon size={18} /> Sudah menulis, foto sekarang
               </button>
               <button type="button" className={styles.btnGhost} onClick={() => window.print()}>
-                🖨️ Cetak lembar
+                <PrinterIcon size={18} /> Cetak lembar
               </button>
             </div>
 
             <ul className={styles.howto} data-spotlight="tulis-buku-cara">
               <li>
-                <span aria-hidden="true">🖨️</span>
+                <PrinterIcon size={18} />
                 <span>
                   <b>Cetak lembar ini.</b> Kotak hitam kecil di sudutnya membantu kamera menemukan setiap kotak.
                 </span>
               </li>
               <li>
-                <span aria-hidden="true">✏️</span>
+                <PencilIcon size={18} />
                 <span>
                   <b>Tulis dengan pensil 2B atau pulpen hitam</b>, di tengah kotak, mengikuti urutan goresan.
                 </span>
               </li>
               <li>
-                <span aria-hidden="true">📷</span>
+                <CameraIcon size={18} />
                 <span>
                   <b>Foto dari atas</b> dengan cahaya terang. Kamera memotret dan memeriksa otomatis.
                 </span>
@@ -542,7 +547,7 @@ export function TulisBuku() {
             <ol className={styles.stages}>
               {CHECK_STAGES.map((label, i) => (
                 <li key={label} data-state={i < stage ? "done" : i === stage ? "active" : "todo"}>
-                  <span aria-hidden="true">{i < stage ? "✓" : ""}</span>
+                  <span aria-hidden="true">{i < stage ? <CheckIcon size={12} strokeWidth={3} /> : null}</span>
                   {label}
                 </li>
               ))}
@@ -581,7 +586,7 @@ export function TulisBuku() {
               </button>
             ) : (
               <button type="button" className={styles.btnPrimary} onClick={() => restart("pindai")}>
-                📷 {result?.photoOk === false ? "Foto ulang" : "Tulis ulang & foto lagi"}
+                <CameraIcon size={18} /> {result?.photoOk === false ? "Foto ulang" : "Tulis ulang & foto lagi"}
               </button>
             )}
             <button type="button" className={styles.btnGhost} onClick={() => restart("pilih")}>

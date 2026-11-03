@@ -10,6 +10,7 @@ import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { examApi, type ExamKind, type ExamQuestion, type ExamStatus, type SubmitExamResponse } from "../data/examApi";
 import styles from "./levelUpTest.module.css";
 import { versionedAudioUrl } from "@/shared/lib/useSpeech";
+import { AlertIcon, FrownIcon, HourglassIcon, TimerIcon, TrophyIcon, VolumeIcon } from "@/shared/ui/icons";
 
 type Phase = "loading" | "error" | "ready" | "testing" | "submitting" | "result";
 
@@ -217,11 +218,11 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
           </ul>
 
           {consecutiveFails >= 3 && (
-            <p className={styles.warnBox}>⚠️ Sudah {consecutiveFails}× gagal berturut-turut. Pastikan kamu sudah mengulang materi yang lemah.</p>
+            <p className={styles.warnBox}><AlertIcon size={16} /> Sudah {consecutiveFails}× gagal berturut-turut. Pastikan kamu sudah mengulang materi yang lemah.</p>
           )}
 
           {!canTake && cooldownLabel ? (
-            <p className={styles.cooldownBox}>⏳ Bisa ikut tes lagi dalam {cooldownLabel}</p>
+            <p className={styles.cooldownBox}><HourglassIcon size={16} /> Bisa ikut tes lagi dalam {cooldownLabel}</p>
           ) : (
             <button className={styles.startBtn} onClick={startTest}>Mulai Tes →</button>
           )}
@@ -249,7 +250,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
             <span className={styles.progressLabel}>{index + 1}/{questions.length}</span>
           </div>
           <div className={`${styles.timer} ${timerDanger ? styles.timerDanger : ""}`}>
-            ⏱ {pad(min)}:{pad(sec)}
+            <TimerIcon size={16} /> {pad(min)}:{pad(sec)}
           </div>
         </div>
 
@@ -258,7 +259,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
         {isChoice ? <p className={styles.question} lang="ja">{q.question}</p> : <QuestionHeader q={q} />}
         {q.audioUrl && (
           <button type="button" className={styles.audioBtn} onClick={() => playAudio(q.audioUrl ?? "")}>
-            <span aria-hidden>🔊</span> Putar audio
+            <VolumeIcon size={16} /> Putar audio
           </button>
         )}
 
@@ -331,7 +332,9 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
         <div className={styles.resultCard}>
           {passed && <div className={styles.confetti} aria-hidden="true" />}
 
-          <div className={styles.resultEmoji}>{passed ? "🎉" : "😔"}</div>
+          <div className={styles.resultEmoji} data-passed={passed || undefined} aria-hidden="true">
+            {passed ? <TrophyIcon size={44} strokeWidth={1.6} /> : <FrownIcon size={44} strokeWidth={1.6} />}
+          </div>
           <h1 className={styles.resultTitle}>
             {passed ? copy.passedTitle : "Belum Lulus"}
           </h1>
@@ -373,7 +376,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
           </div>
 
           {!passed && cooldownLabel && (
-            <p className={styles.cooldownBox}>⏳ Bisa ikut tes lagi dalam {cooldownLabel}</p>
+            <p className={styles.cooldownBox}><HourglassIcon size={16} /> Bisa ikut tes lagi dalam {cooldownLabel}</p>
           )}
 
           <div className={styles.resultActions}>

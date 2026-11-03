@@ -124,23 +124,23 @@ export default function AdminDashboardPage() {
         <div className={styles.panel}>
           <h2 className={styles.panelTitle}>Distribusi Peran Akun</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--surface-subtle, #f8fafc)", borderRadius: "8px", border: "1px solid var(--border, #e2e8f0)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
               <span className={`${styles.badge} ${styles.role_super_admin}`}>Super Admin</span>
               <strong>{stats?.roleBreakdown.super_admin ?? 0} akun</strong>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--surface-subtle, #f8fafc)", borderRadius: "8px", border: "1px solid var(--border, #e2e8f0)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
               <span className={`${styles.badge} ${styles.role_admin}`}>Admin</span>
               <strong>{stats?.roleBreakdown.admin ?? 0} akun</strong>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--surface-subtle, #f8fafc)", borderRadius: "8px", border: "1px solid var(--border, #e2e8f0)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
               <span className={`${styles.badge} ${styles.role_teacher}`}>Guru / Sensei</span>
               <strong>{stats?.roleBreakdown.teacher ?? 0} akun</strong>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--surface-subtle, #f8fafc)", borderRadius: "8px", border: "1px solid var(--border, #e2e8f0)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
               <span className={`${styles.badge} ${styles.role_premium}`}>Pelajar Premium</span>
               <strong>{stats?.roleBreakdown.premium ?? 0} akun</strong>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--surface-subtle, #f8fafc)", borderRadius: "8px", border: "1px solid var(--border, #e2e8f0)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
               <span className={`${styles.badge} ${styles.role_student}`}>Siswa Reguler</span>
               <strong>{stats?.roleBreakdown.student ?? 0} akun</strong>
             </div>
@@ -158,21 +158,21 @@ export default function AdminDashboardPage() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "14px 16px",
-                background: "var(--surface-subtle, #f8fafc)",
-                border: "1px solid var(--border, #e2e8f0)",
+                background: "var(--color-surface-muted)",
+                border: "1px solid var(--color-border)",
                 borderRadius: "10px",
                 textDecoration: "none",
-                color: "var(--text-main, #0f172a)",
+                color: "var(--color-text)",
                 transition: "border-color 0.15s, transform 0.15s",
               }}
             >
               <div>
                 <strong style={{ display: "block", fontSize: "0.95rem" }}>Kelola Pengguna</strong>
-                <span style={{ fontSize: "0.82rem", color: "var(--text-muted, #64748b)" }}>
+                <span style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
                   Cari akun, moderasi suspend, ubah peran, dan beri premium
                 </span>
               </div>
-              <span style={{ fontSize: "1.1rem", color: "var(--primary, #6366f1)" }}>→</span>
+              <span style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>→</span>
             </Link>
 
             <Link
@@ -182,21 +182,21 @@ export default function AdminDashboardPage() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "14px 16px",
-                background: "var(--surface-subtle, #f8fafc)",
-                border: "1px solid var(--border, #e2e8f0)",
+                background: "var(--color-surface-muted)",
+                border: "1px solid var(--color-border)",
                 borderRadius: "10px",
                 textDecoration: "none",
-                color: "var(--text-main, #0f172a)",
+                color: "var(--color-text)",
                 transition: "border-color 0.15s, transform 0.15s",
               }}
             >
               <div>
                 <strong style={{ display: "block", fontSize: "0.95rem" }}>Konfigurasi AI</strong>
-                <span style={{ fontSize: "0.82rem", color: "var(--text-muted, #64748b)" }}>
+                <span style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
                   Instruksi sistem per tingkat JLPT, batasan kata, dan kecepatan TTS
                 </span>
               </div>
-              <span style={{ fontSize: "1.1rem", color: "var(--primary, #6366f1)" }}>→</span>
+              <span style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>→</span>
             </Link>
 
             {isSuperAdmin && (
@@ -207,21 +207,21 @@ export default function AdminDashboardPage() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   padding: "14px 16px",
-                  background: "var(--surface-subtle, #f8fafc)",
-                  border: "1px solid var(--border, #e2e8f0)",
+                  background: "var(--color-surface-muted)",
+                  border: "1px solid var(--color-border)",
                   borderRadius: "10px",
                   textDecoration: "none",
-                  color: "var(--text-main, #0f172a)",
+                  color: "var(--color-text)",
                   transition: "border-color 0.15s, transform 0.15s",
                 }}
               >
                 <div>
                   <strong style={{ display: "block", fontSize: "0.95rem" }}>Pantau Belajar</strong>
-                  <span style={{ fontSize: "0.82rem", color: "var(--text-muted, #64748b)" }}>
+                  <span style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
                     Level, progres bab, ujian, percakapan, dan pencapaian setiap pelajar
                   </span>
                 </div>
-                <span style={{ fontSize: "1.1rem", color: "var(--primary, #6366f1)" }}>→</span>
+                <span style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>→</span>
               </Link>
             )}
 
@@ -232,21 +232,21 @@ export default function AdminDashboardPage() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "14px 16px",
-                background: "var(--surface-subtle, #f8fafc)",
-                border: "1px solid var(--border, #e2e8f0)",
+                background: "var(--color-surface-muted)",
+                border: "1px solid var(--color-border)",
                 borderRadius: "10px",
                 textDecoration: "none",
-                color: "var(--text-main, #0f172a)",
+                color: "var(--color-text)",
                 transition: "border-color 0.15s, transform 0.15s",
               }}
             >
               <div>
                 <strong style={{ display: "block", fontSize: "0.95rem" }}>Playground Uji AI</strong>
-                <span style={{ fontSize: "0.82rem", color: "var(--text-muted, #64748b)" }}>
+                <span style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
                   Uji dialog respons, TTS suara, dan deteksi kanji dengan maskot
                 </span>
               </div>
-              <span style={{ fontSize: "1.1rem", color: "var(--primary, #6366f1)" }}>→</span>
+              <span style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>→</span>
             </Link>
           </div>
         </div>

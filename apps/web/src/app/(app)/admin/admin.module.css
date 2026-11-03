@@ -28,14 +28,14 @@
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--primary, #6366f1);
+  color: var(--color-primary);
   text-transform: uppercase;
 }
 
 .title {
   font-size: 1.85rem;
   font-weight: 800;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
   margin: 0;
   letter-spacing: -0.02em;
 }
@@ -59,45 +59,25 @@
   align-items: center;
   gap: 6px;
   padding: 4px 12px;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-strong) 100%);
   color: #fff;
   border-radius: 9999px;
   font-size: 0.8rem;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 35%, transparent);
 }
 
 .subtitle {
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
   font-size: 0.95rem;
   margin: 0;
-}
-
-.systemStatusBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #15803d;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  padding: 4px 10px;
-  border-radius: 9999px;
-}
-
-.systemStatusDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #22c55e;
 }
 
 /* Tab Navigation */
 .tabs {
   display: flex;
   gap: 8px;
-  background: var(--surface-subtle, #f1f5f9);
+  background: var(--color-surface-muted);
   padding: 4px;
   border-radius: 12px;
   overflow-x: auto;
@@ -115,7 +95,7 @@
   padding: 10px 18px;
   border: none;
   background: transparent;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   font-weight: 600;
   border-radius: 8px;
@@ -125,12 +105,12 @@
 }
 
 .tabBtn:hover {
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
 }
 
 .tabBtnActive {
-  background: var(--surface, #ffffff);
-  color: var(--primary, #6366f1);
+  background: var(--color-surface);
+  color: var(--color-primary);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
@@ -142,8 +122,8 @@
 }
 
 .statCard {
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--border, #e2e8f0);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 20px;
   display: flex;
@@ -156,7 +136,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
   font-size: 0.85rem;
   font-weight: 600;
 }
@@ -168,19 +148,19 @@
 .statValue {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
   line-height: 1.1;
 }
 
 .statFoot {
   font-size: 0.8rem;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
 }
 
 /* Card Sections */
 .panel {
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--border, #e2e8f0);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
@@ -192,7 +172,7 @@
 .panelTitle {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
   margin: 0;
   display: flex;
   align-items: center;
@@ -217,8 +197,8 @@
 }
 
 .adminNotice {
-  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-  border: 1px solid #818cf8;
+  background: linear-gradient(135deg, var(--color-primary-soft) 0%, #c7d2fe 100%);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 60%, #fff);
   color: #3730a3;
 }
 
@@ -237,23 +217,23 @@
   border-radius: 9999px;
   font-size: 0.8rem;
   font-weight: 600;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface, #ffffff);
-  color: var(--text-muted, #64748b);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .rolePill:hover {
-  background: var(--surface-subtle, #f8fafc);
-  color: var(--text-main, #0f172a);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
 }
 
 .rolePillActive {
-  background: var(--primary, #6366f1);
+  background: var(--color-primary);
   color: #ffffff;
-  border-color: var(--primary, #6366f1);
-  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
 /* Filter bar */
@@ -268,32 +248,31 @@
   flex: 1 1 240px;
   padding: 10px 14px;
   border-radius: 10px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface-subtle, #f8fafc);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
   font-size: 0.9rem;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
 }
 
-.searchInput:focus {
-  outline: none;
-  border-color: var(--primary, #6366f1);
+.searchInput:focus {
+  border-color: var(--color-primary);
   background: #fff;
 }
 
 .selectInput {
   padding: 10px 14px;
   border-radius: 10px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface-subtle, #f8fafc);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
   font-size: 0.9rem;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
 }
 
 /* Responsive Table */
 .tableWrap {
   overflow-x: auto;
   border-radius: 12px;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
 }
 
 .table {
@@ -304,18 +283,18 @@
 }
 
 .table th {
-  background: var(--surface-subtle, #f8fafc);
+  background: var(--color-surface-muted);
   padding: 12px 16px;
   font-weight: 700;
-  color: var(--text-muted, #64748b);
-  border-bottom: 1px solid var(--border, #e2e8f0);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
   white-space: nowrap;
 }
 
 .table td {
   padding: 14px 16px;
-  border-bottom: 1px solid var(--border, #f1f5f9);
-  color: var(--text-main, #0f172a);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
   vertical-align: middle;
 }
 
@@ -324,7 +303,7 @@
 }
 
 .table tr:hover td {
-  background: rgba(99, 102, 241, 0.02);
+  background: color-mix(in srgb, var(--color-primary) 2%, transparent);
 }
 
 /* Role Badges */
@@ -344,8 +323,8 @@
 }
 
 .role_admin {
-  background: #e0e7ff;
-  color: #4338ca;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
   border: 1px solid #c7d2fe;
 }
 
@@ -369,12 +348,12 @@
 
 .role_guest {
   background: #f8fafc;
-  color: #94a3b8;
+  color: var(--color-text-muted);
   border: 1px solid #cbd5e1;
 }
 
 .status_active {
-  color: #16a34a;
+  color: var(--color-success);
   font-weight: 600;
 }
 
@@ -401,18 +380,18 @@
 }
 
 .btnPrimary {
-  background: var(--primary, #6366f1);
+  background: var(--color-primary);
   color: #fff;
 }
 
 .btnPrimary:hover {
-  background: #4f46e5;
+  background: var(--color-primary-strong);
 }
 
 .btnSecondary {
-  background: var(--surface-subtle, #f1f5f9);
-  color: var(--text-main, #334155);
-  border-color: var(--border, #cbd5e1);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  border-color: var(--color-border);
 }
 
 .btnSecondary:hover {
@@ -441,13 +420,13 @@
 
 /* AI Prompt Card */
 .promptCard {
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: var(--surface-subtle, #fafafa);
+  background: var(--color-surface-muted);
 }
 
 .promptHead {
@@ -459,7 +438,7 @@
 .levelTag {
   font-weight: 800;
   font-size: 1.1rem;
-  color: var(--primary, #6366f1);
+  color: var(--color-primary);
 }
 
 .promptTextarea {
@@ -467,7 +446,7 @@
   min-height: 80px;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid var(--border, #e2e8f0);
+  border: 1px solid var(--color-border);
   font-family: inherit;
   font-size: 0.9rem;
   line-height: 1.4;
@@ -489,7 +468,7 @@
 .fieldLabel {
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--text-muted, #64748b);
+  color: var(--color-text-muted);
   text-transform: uppercase;
 }
 
@@ -521,7 +500,7 @@
 .modalTitle {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--text-main, #0f172a);
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -535,7 +514,7 @@
 .emptyState {
   text-align: center;
   padding: 40px;
-  color: var(--text-muted, #94a3b8);
+  color: var(--color-text-muted);
 }
 
 @media (max-width: 640px) {

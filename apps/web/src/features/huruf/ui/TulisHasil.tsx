@@ -2,6 +2,7 @@
 
 import type { Box, CharResult, CheckMark, CheckResult, Dimension, DimensionScores, NekoFeedback, Quadrant } from "../data/tulisApi";
 import styles from "./tulisHasil.module.css";
+import { LightbulbIcon } from "@/shared/ui/icons";
 
 /** Foto yang diperiksa beserta ukuran aslinya (untuk mengubah koordinat 0–1000 ke piksel). */
 export interface CheckedPhoto {
@@ -92,9 +93,12 @@ function MarkedPhoto({ photo, view, marks, best, label }: { photo: CheckedPhoto;
           <g key={`b${i}`} className={styles.markBest}>
             <rect x={p.x} y={p.y} width={p.w} height={p.h} rx={r * 0.4} vectorEffect="non-scaling-stroke" />
             <circle cx={p.x + p.w} cy={p.y} r={r} />
-            <text x={p.x + p.w} y={p.y} fontSize={r * 1.25}>
-              ✓
-            </text>
+            {/* Tanda centang digambar sebagai garis (bukan karakter teks) supaya tajam di semua perangkat */}
+            <path
+              className={styles.markCheck}
+              d={`M${p.x + p.w - r * 0.45} ${p.y + r * 0.02} L${p.x + p.w - r * 0.1} ${p.y + r * 0.36} L${p.x + p.w + r * 0.48} ${p.y - r * 0.34}`}
+              strokeWidth={r * 0.24}
+            />
           </g>
         );
       })}
@@ -130,7 +134,7 @@ function Neko({ feedback }: { feedback: NekoFeedback }) {
         <p className={styles.nekoHeadline}>{feedback.headlineText}</p>
         <p className={styles.nekoText}>{feedback.detailedExplanation}</p>
         <p className={styles.nekoTip}>
-          <span aria-hidden="true">💡</span> {feedback.actionableTip}
+          <LightbulbIcon size={16} /> {feedback.actionableTip}
         </p>
         {feedback.attempt > 1 && (
           <p className={styles.nekoAngle}>
@@ -262,7 +266,7 @@ export function TulisHasil({ result, photo }: { result: CheckResult; photo: Chec
           <p className={styles.reportLine}>{line}</p>
           <p className={styles.scoreRule}>
             Nilai dari 5 aspek: kelengkapan goresan 30%, proporsi 25%, akhiran goresan 20%, posisi di tengah 15%, kerapian 10%. Huruf salah atau
-            kotak kosong bernilai 0. {result.isPass ? "Lulus (≥ 70) ✓" : "Belum lulus (perlu ≥ 70)"}
+            kotak kosong bernilai 0. {result.isPass ? "Lulus (≥ 70)" : "Belum lulus (perlu ≥ 70)"}
           </p>
           <ul className={styles.chips}>
             <li>

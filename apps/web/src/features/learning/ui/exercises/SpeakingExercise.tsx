@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSpeech } from "@/shared/lib/useSpeech";
 import { hasKana, toRomaji } from "@/shared/lib/kana";
 import styles from "./exercises.module.css";
+import { MicIcon, StopIcon, VolumeIcon } from "@/shared/ui/icons";
 
 const MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"];
 const MAX_RECORDING_MS = 15000;
@@ -94,7 +95,7 @@ export function SpeakingExercise({
         <p className={styles.speakText} lang="ja">{text}</p>
         {hasKana(text) && <p className={styles.romaji}>{toRomaji(text)}</p>}
         <button type="button" className={styles.linkBtn} onClick={() => speak(text)}>
-          <span aria-hidden>🔊</span> Dengarkan contoh
+          <VolumeIcon size={16} /> Dengarkan contoh
         </button>
       </div>
 
@@ -107,7 +108,7 @@ export function SpeakingExercise({
           disabled={status === "processing"}
           aria-label={status === "recording" ? "Berhenti merekam" : "Mulai merekam"}
         >
-          <span aria-hidden className={styles.micIcon}>{status === "recording" ? "■" : "🎤"}</span>
+          <span aria-hidden className={styles.micIcon}>{status === "recording" ? <StopIcon size={18} /> : <MicIcon size={18} />}</span>
           {status === "recording" ? "Selesai bicara" : status === "processing" ? "Mendengarkan…" : answer ? "Rekam ulang" : "Tekan lalu bicara"}
         </button>
       )}
