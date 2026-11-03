@@ -65,7 +65,7 @@ export function ReadinessCard({ levelId, levelCode, final = false }: Props) {
   const barMod = pct >= 80 ? styles.statBarFillSuccess : styles.statBarFillPrimary;
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} data-spotlight="beranda-siap">
       <div className={styles.header}>
         <span className={styles.label}>{final ? "Kesiapan Ujian Kelulusan" : "Kesiapan Naik Tahap"}</span>
         <span className={styles.levelBadge}>{final ? `${levelCode} → Lulus Kurikulum` : `${levelCode} → Level Berikutnya`}</span>

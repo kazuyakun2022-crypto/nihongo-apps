@@ -6,6 +6,8 @@ import { Button } from "@/shared/ui/Button";
 import { NekoAvatar, stillFor } from "@/shared/ui/neko/NekoAvatar";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import type { Gender } from "@/features/auth/domain/types";
+import { useOptionalNavigator } from "@/features/navigator/application/NavigatorProvider";
+import { isTourKey } from "@/features/navigator/domain/tours";
 import { useVoiceChat, type VoiceState } from "../application/useVoiceChat";
 import { FormattedChatMessage } from "./FormattedChatMessage";
 import { SpeechSubtitle } from "./SpeechSubtitle";
@@ -67,6 +69,7 @@ export interface VoiceChatScreenProps {
 }
 
 export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: VoiceChatScreenProps = {}) {
+  const navigator_ = useOptionalNavigator();
   const {
     state,
     emotion,
@@ -84,7 +87,14 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
     greet,
     stop,
     clear,
-  } = useVoiceChat();
+  } = useVoiceChat({
+    // "Aku mau latihan menulis" di layar suara: Miu-chan menjawab, lalu menunjukkan jalannya langkah demi langkah
+    onGuide: (destination) => {
+      if (!navigator_?.startTour || !isTourKey(destination)) return;
+      stop();
+      navigator_.startTour(destination);
+    },
+  });
   const { status, user } = useAuth();
   const hasGreeted = useRef(false);
   // Sapaan dipilih sekali, supaya audio hasil prefetch cocok dengan teks yang diputar
@@ -175,6 +185,8 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code !== "Space" || isTypingTarget(e.target)) return;
+      // Sedang tur Miu-chan: Spasi tidak memicu rekaman
+      if (document.querySelector("[data-tour]")) return;
       // Cegah scroll halaman & aktivasi tombol yang sedang fokus
       e.preventDefault();
       if (e.repeat || isHolding.current) return;

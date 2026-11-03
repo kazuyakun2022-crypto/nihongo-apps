@@ -19,6 +19,8 @@ export function sanitizeForPrompt(text: string, max = 40): string {
   return text.replace(/[\r\n\[\]{}<`"]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
 }
 
+import type { AppContext } from "../domain/navigationGuide";
+
 export interface AskUser {
   name: string;
   gender?: "male" | "female" | "other" | null;
@@ -34,6 +36,8 @@ export interface AskUser {
   lesson?: { title: string; grammar: string[] } | null;
   /** Tujuan belajar dari pendaftaran (mis. "Kerja atau magang di Jepang"). */
   goal?: string | null;
+  /** Layar yang sedang dibuka & peran pemandu (widget/layar suara). */
+  app?: AppContext | null;
 }
 
 export type LevelBand = "pemula" | "dasar" | "menengah" | "mahir";

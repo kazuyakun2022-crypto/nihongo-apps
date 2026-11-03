@@ -86,7 +86,7 @@ export function LearningPath() {
           <p className={`${styles.eyebrow} ${scenery.ink}`} lang="ja">べんきょう</p>
           <h1 className={`${styles.title} ${scenery.ink}`}>Belajar</h1>
         </div>
-        <div className={styles.levelTabs} role="tablist" aria-label="Pilih level">
+        <div className={styles.levelTabs} role="tablist" aria-label="Pilih level" data-spotlight="belajar-level">
           {!levels &&
             [0, 1, 2, 3].map((i) => <Skeleton key={i} width="3.5rem" height="2.25rem" radius="var(--radius-pill)" />)}
           {(levels ?? []).map((l) => (

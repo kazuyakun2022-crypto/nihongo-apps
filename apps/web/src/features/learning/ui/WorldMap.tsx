@@ -341,6 +341,7 @@ export function WorldMap({ units, nextId, level }: { units: MapUnit[]; nextId: s
                       className={styles.node}
                       data-state={state}
                       data-node-id={c.id}
+                      data-spotlight={state === "active" ? "peta-bab-aktif" : undefined}
                       data-just={justState}
                       onClick={() => setSelected({ kind: "chapter", chapter: c, index, state })}
                       aria-label={`Bab ${index + 1}: ${c.title}, ${STATE_LABEL[state]}${stars ? `, ${stars} bintang` : ""}`}
@@ -366,6 +367,7 @@ export function WorldMap({ units, nextId, level }: { units: MapUnit[]; nextId: s
           type="button"
           className={styles.gate}
           data-state={gateState}
+          data-spotlight="peta-gerbang"
           onClick={() => setSelected({ kind: "gate" })}
           aria-haspopup="dialog"
           aria-label={`Gerbang Tulis ${level.code}, ${STATE_LABEL[gateState]}`}

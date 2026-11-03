@@ -10,6 +10,7 @@ import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { useSpeech, versionedAudioUrl } from "@/shared/lib/useSpeech";
 import { EXERCISES, SKILLS, countBySkill, type SkillId } from "@/shared/lib/exercises";
 import { useAuth } from "@/features/auth/application/AuthProvider";
+import { useExamLock, useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import { isPracticeQuestion, useChapterLesson, type StudyCard } from "../application/useChapterLesson";
 import type { ChapterQuizQuestion } from "../domain/types";
 import { LessonBlockView } from "./LessonBlockView";
@@ -141,6 +142,16 @@ function isTypingTarget(target: EventTarget | null): boolean {
 
 export function ChapterLesson({ chapterId }: { chapterId: string }) {
   const lesson = useChapterLesson(chapterId);
+  // Kuis bab dihitung ujian: Miu-chan pemandu dibekukan total supaya tidak membocorkan jawaban
+  useExamLock("kuis-bab", lesson.phase === "quiz" || lesson.phase === "submitting");
+  // Konteks untuk Miu-chan: bab, langkah, dan materi yang sedang dibuka (supaya "aku bingung di sini" nyambung)
+  const studyStep = lesson.phase === "study" && lesson.currentStudyCard ? stepInfo(lesson.currentStudyCard) : null;
+  useScreenContext(
+    "bab",
+    lesson.chapter
+      ? `Bab "${lesson.chapter.title}", tahap ${lesson.phase}${studyStep ? `, sedang membaca ${studyStep.kind}: ${studyStep.text}` : ""}`
+      : null,
+  );
   const { speak } = useSpeech();
   const chapterKanji = useMemo(() => lesson.chapter?.kanji.map((k) => k.character) ?? [], [lesson.chapter]);
 

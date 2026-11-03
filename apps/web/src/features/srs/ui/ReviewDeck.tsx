@@ -1,5 +1,6 @@
 "use client";
 
+import { useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import Link from "next/link";
 import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
@@ -17,6 +18,8 @@ const grades: { value: ReviewGrade; label: string }[] = [
 
 export function ReviewDeck() {
   const { loading, current, remaining, revealed, reveal, grade } = useReview();
+  // Jawaban kartu baru diberikan ke Miu-chan setelah dibuka, supaya ia tidak membocorkannya
+  useScreenContext("kartu", current ? `Kartu review: ${current.front}${revealed ? ` (${current.reading ?? ""} = ${current.meaning})` : " (jawaban belum dibuka; jangan beri tahu artinya, beri petunjuk saja)"}` : null);
 
   if (loading) {
     return (
@@ -32,7 +35,7 @@ export function ReviewDeck() {
   }
   if (!current) {
     return (
-      <section className={styles.empty}>
+      <section className={styles.empty} data-spotlight="review-kosong">
         <Mascot mood="senang" size={96} />
         <h1 className={styles.heading}>Semua kartu hari ini selesai</h1>
         <p className={styles.muted}>Selesaikan bab baru untuk menambah kosakata ke review.</p>
@@ -44,7 +47,7 @@ export function ReviewDeck() {
   return (
     <section className={styles.deck}>
       <p className={styles.muted}>{remaining} kartu tersisa</p>
-      <div className={styles.card}>
+      <div className={styles.card} data-spotlight="review-kartu-depan">
         <p lang="ja" className={styles.front}>
           {current.front}
         </p>
@@ -56,7 +59,7 @@ export function ReviewDeck() {
         )}
       </div>
       {revealed ? (
-        <div className={styles.grades}>
+        <div className={styles.grades} data-spotlight="review-nilai">
           {grades.map((g) => (
             <Button key={g.value} variant={g.value === "bisa" ? "primary" : "secondary"} onClick={() => grade(g.value)}>
               {g.label}
@@ -64,7 +67,7 @@ export function ReviewDeck() {
           ))}
         </div>
       ) : (
-        <Button block onClick={reveal}>
+        <Button block onClick={reveal} data-spotlight="review-kartu">
           Lihat jawaban
         </Button>
       )}

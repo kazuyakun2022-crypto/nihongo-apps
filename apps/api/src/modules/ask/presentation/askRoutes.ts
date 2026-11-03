@@ -20,18 +20,21 @@ export function askRoutes(
 
   // POST /api/ask — tidak perlu auth agar guest bisa coba; kalau login, nama, level, dan memori akun ikut dipakai
   r.post("/", optionalAuth, asyncHandler(async (req, res) => {
-    const { question, history, mode, transcriptAlt } = parseBody(
+    const { question, history, mode, transcriptAlt, app } = parseBody(
       z.object({
         question: z.string().trim().min(1, "Pertanyaan tidak boleh kosong.").max(2000),
         history: z.array(messageSchema).max(20).default([]),
         mode: z.enum(["text", "voice"]).default("text"),
         transcriptAlt: z.string().trim().max(500).optional(),
+        app: z
+          .object({ screen: z.string().trim().max(300).optional(), guide: z.boolean().optional(), widget: z.boolean().optional() })
+          .optional(),
       }),
       req.body,
     );
 
-    const { answer, emotion, correction, speechRate, speech } = await uc.ask.execute(question, history, mode, req.user?.id, transcriptAlt);
-    res.json({ answer, emotion, correction, speechRate, speech });
+    const { answer, emotion, correction, speechRate, speech, guide } = await uc.ask.execute(question, history, mode, req.user?.id, transcriptAlt, app);
+    res.json({ answer, emotion, correction, speechRate, speech, guide });
   }));
 
   // POST /api/ask/transcribe — body: audio mentah (webm/ogg/mp4), bahasa dideteksi otomatis (?lang=ja untuk memaksa Jepang)

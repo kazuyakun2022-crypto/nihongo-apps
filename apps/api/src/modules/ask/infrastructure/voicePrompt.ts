@@ -1,3 +1,4 @@
+import { appSection } from "../domain/navigationGuide";
 import {
   japaneseRatio,
   levelBand,
@@ -82,6 +83,7 @@ export function voiceSystemPrompt(question: string, user?: AskUser, transcriptAl
     levelGuideSection(user, "voice") +
     memorySection(user) +
     transcriptSection(transcriptAlt) +
+    appSection(user?.app) +
     replyHint(question, band)
   );
 }

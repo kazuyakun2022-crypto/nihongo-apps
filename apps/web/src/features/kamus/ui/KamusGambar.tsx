@@ -105,6 +105,7 @@ export function KamusGambar({ tabs }: { tabs?: ReactNode } = {}) {
         </div>
         <div className={styles.toolbar}>
           <input
+            data-spotlight="kamus-cari"
             type="search"
             className={styles.search}
             placeholder="Cari: kucing, neko, ねこ, 猫…"
