@@ -9,12 +9,16 @@ import { Mascot, type MascotMood } from "@/shared/ui/Mascot";
 import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { useSpeech, versionedAudioUrl } from "@/shared/lib/useSpeech";
 import { EXERCISES, SKILLS, countBySkill, type SkillId } from "@/shared/lib/exercises";
-import { useChapterLesson, type StudyCard } from "../application/useChapterLesson";
+import { useAuth } from "@/features/auth/application/AuthProvider";
+import { isPracticeQuestion, useChapterLesson, type StudyCard } from "../application/useChapterLesson";
 import type { ChapterQuizQuestion } from "../domain/types";
 import { LessonBlockView } from "./LessonBlockView";
 import { HandwritingExercise } from "./exercises/HandwritingExercise";
 import { SpeakingExercise } from "./exercises/SpeakingExercise";
 import { TileExercise } from "./exercises/TileExercise";
+import { ScoreScreen, useCountUp } from "./ScoreScreen";
+import { WarmupDeck } from "./WarmupDeck";
+import { JUST_COMPLETED_KEY } from "./WorldMap";
 import styles from "./chapter.module.css";
 
 const LABELS = ["A", "B", "C", "D", "E", "F"];
@@ -59,27 +63,6 @@ function studyTip(card: StudyCard): string {
   }
 }
 
-/** Skor hasil dihitung naik dari 0 supaya momen hasil terasa. */
-function useCountUp(target: number, durationMs = 900) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setValue(target);
-      return;
-    }
-    let frame = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / durationMs);
-      setValue(Math.round(target * (1 - Math.pow(1 - t, 3))));
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [target, durationMs]);
-  return value;
-}
-
 /** Saran Miu-chan saat kuis, sesuai keterampilan yang sedang dilatih. */
 const QUIZ_TIP: Record<SkillId, string> = {
   pemahaman: "Baca seluruh pilihan dulu. Pilihan yang mirip biasanya berbeda di partikel atau nuansanya.",
@@ -89,10 +72,13 @@ const QUIZ_TIP: Record<SkillId, string> = {
   berbicara: "Ucapkan dengan tempo biasa dan jelas. Kalau mikrofon tidak bisa dipakai, soal ini boleh dilewati.",
 };
 
-type Stage = "study" | "quiz" | "result";
+/** Siklus 5 langkah tiap bab. Langkah tanpa isi (tak ada kartu jatuh tempo / soal praktik) terlewati otomatis. */
+type Stage = "warmup" | "study" | "practice" | "quiz" | "result";
 const STAGES: { key: Stage; label: string }[] = [
+  { key: "warmup", label: "Pemanasan" },
   { key: "study", label: "Materi" },
-  { key: "quiz", label: "Latihan" },
+  { key: "practice", label: "Praktik" },
+  { key: "quiz", label: "Kuis" },
   { key: "result", label: "Hasil" },
 ];
 
@@ -210,6 +196,24 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
 
   const chapterTitle = lesson.chapter?.title ?? "Pelajaran";
   const moduleTitle = lesson.chapter?.moduleTitle;
+
+  // ── Pemanasan SRS ──
+  if (lesson.phase === "warmup") {
+    return (
+      <LessonShell
+        title={chapterTitle}
+        moduleTitle={moduleTitle}
+        stage="warmup"
+        tip="Jujur saja saat menilai. Kartu yang kamu tandai Lupa akan muncul lagi lebih cepat."
+        mood="berpikir"
+      >
+        <div className={styles.progressRow}>
+          <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup pelajaran">✕</Link>
+        </div>
+        <WarmupDeck cards={lesson.warmupCards} chapterTitle={chapterTitle} onDone={lesson.finishWarmup} />
+      </LessonShell>
+    );
+  }
 
   // ── Study cards ──
   if (lesson.phase === "study" && lesson.currentStudyCard) {
@@ -337,7 +341,11 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
   // ── Quiz intro ──
   if (lesson.phase === "quiz-intro") {
     return (
-      <LessonShell title={chapterTitle} moduleTitle={moduleTitle} stage="quiz" tip="Tidak perlu terburu-buru. Kamu bisa kembali ke soal sebelumnya sebelum mengumpulkan." mood="semangat">
+      <LessonShell
+        title={chapterTitle}
+        moduleTitle={moduleTitle}
+        stage={lesson.quizQuestions[0] && isPracticeQuestion(lesson.quizQuestions[0]) ? "practice" : "quiz"}
+        tip="Tidak perlu terburu-buru. Kamu bisa kembali ke soal sebelumnya sebelum mengumpulkan." mood="semangat">
         <div className={styles.intro}>
           <div className={styles.introMascot}>
             <Mascot mood="semangat" size={112} />
@@ -345,9 +353,11 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           <div className={styles.introBody}>
             <h2 className={styles.introHeading}>Siap berlatih?</h2>
             {lesson.chapter && <p className={styles.introChapter}>{lesson.chapter.title}</p>}
-            <p className={styles.muted}>
-              {lesson.quizQuestions.length} latihan · Nilai lulus {lesson.chapter?.passScore ?? 70}%
-            </p>
+            <p className={styles.muted}>{lesson.quizQuestions.length} latihan</p>
+            <Alert tone="info">
+              Butuh nilai minimal <strong>{lesson.chapter?.passScore ?? 70}%</strong> untuk menyelesaikan bab ini dan membuka bab
+              berikutnya. Kalau belum tercapai, kamu bisa langsung mengulang kuisnya.
+            </Alert>
             <ul className={styles.skillList} aria-label="Keterampilan yang dilatih">
               {countBySkill(lesson.quizQuestions.map((q) => q.type)).map(({ skill, count }) => (
                 <li key={skill} className={styles.skillChip}>
@@ -401,7 +411,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
       <LessonShell
         title={chapterTitle}
         moduleTitle={moduleTitle}
-        stage="quiz"
+        stage={isPracticeQuestion(q) ? "practice" : "quiz"}
         steps={steps}
         tip={QUIZ_TIP[(EXERCISES[q.type] ?? EXERCISES.pilihan_ganda).skill]}
         mood="berpikir"
@@ -516,9 +526,42 @@ function SpeakButton({ onClick }: { onClick: () => void }) {
 function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof useChapterLesson>; title: string; moduleTitle?: string | null }) {
   const { score, passed, xpEarned, passingScore, results } = lesson.result!;
   const shownScore = useCountUp(score);
+  const { updateUser, user } = useAuth();
+  // Layar nilai penuh tampil dulu; pembahasan soal dibuka dari sana
+  const [showReview, setShowReview] = useState(false);
+
+  // Sekali per hasil: tambah XP di header dan beri tahu peta agar memutar animasi node terbuka
+  useEffect(() => {
+    if (xpEarned > 0 && user) updateUser({ xpTotal: user.xpTotal + xpEarned });
+    if (passed && lesson.chapter) {
+      try {
+        sessionStorage.setItem(JUST_COMPLETED_KEY, lesson.chapter.id);
+      } catch {
+        /* penyimpanan sesi tidak tersedia */
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lesson.result]);
   const questionMap = new Map(lesson.quizQuestions.map((q) => [q.id, q]));
   const correct = results.filter((r) => r.correct).length;
   const graded = results.filter((r) => !r.skipped).length;
+
+  if (!showReview) {
+    return (
+      <ScoreScreen
+        score={score}
+        passed={passed}
+        passingScore={passingScore}
+        xpEarned={xpEarned}
+        correct={correct}
+        graded={graded}
+        chapterTitle={title}
+        onRestartStudy={lesson.restartStudy}
+        onRetryQuiz={lesson.retryQuiz}
+        onShowReview={() => setShowReview(true)}
+      />
+    );
+  }
 
   return (
     <LessonShell
@@ -535,13 +578,20 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
           </div>
         )}
         <Mascot mood={passed ? "senang" : "berpikir"} size={88} />
-        <h2 className={styles.resultHeading}>{passed ? "Bab Selesai!" : "Belum Lulus, Ayo Coba Lagi!"}</h2>
+        <h2 className={styles.resultHeading}>{passed ? "Bab Selesai!" : `Belum Lulus: butuh ${passingScore}%`}</h2>
         <div className={styles.resultScore} aria-label={`Nilai ${score} persen`}>{shownScore}%</div>
         <p className={styles.resultSub}>
           {correct} dari {graded} benar · Nilai lulus {passingScore}%
         </p>
         <span className={styles.xpBadge}>+{xpEarned} XP</span>
       </div>
+
+      {!passed && (
+        <Alert tone="info">
+          Nilaimu <strong>{score}%</strong>, kurang <strong>{passingScore - score} poin</strong> dari batas lulus {passingScore}%. Bab
+          berikutnya <strong>masih terkunci</strong>. Kerjakan kuisnya sekali lagi; materinya tidak perlu diulang.
+        </Alert>
+      )}
 
       {lesson.chapter?.scenario && (
         <Link href={`/ngobrol/skenario/${lesson.chapter.scenario.id}`} className={styles.scenarioCta}>
@@ -555,12 +605,25 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
       )}
 
       <div className={styles.resultActions}>
-        <Link href="/belajar">
-          <Button block>{passed ? "Lanjut ke bab berikutnya →" : "Kembali ke daftar bab"}</Button>
-        </Link>
-        <Button block variant="secondary" onClick={lesson.retryQuiz}>
-          {passed ? "Ulangi Latihan Kuis" : "Coba latihan lagi"}
-        </Button>
+        {passed ? (
+          <>
+            <Link href="/belajar">
+              <Button block>Lanjut ke bab berikutnya →</Button>
+            </Link>
+            <Button block variant="secondary" onClick={lesson.retryQuiz}>
+              Ulangi Latihan Kuis
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button block onClick={lesson.retryQuiz}>
+              Coba kuis lagi
+            </Button>
+            <Link href="/belajar">
+              <Button block variant="secondary">Kembali ke peta</Button>
+            </Link>
+          </>
+        )}
         {lesson.studyCards.length > 0 && (
           <Button block variant="ghost" onClick={lesson.restartStudy}>Pelajari Ulang Materi Bab</Button>
         )}

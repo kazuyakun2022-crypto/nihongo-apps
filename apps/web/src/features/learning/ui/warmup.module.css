@@ -1,0 +1,232 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.skip {
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.lead {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Kartu balik 3D */
+.scene {
+  perspective: 1200px;
+  animation: cardIn var(--motion-sheet) var(--ease-sheet) both;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+.card {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 16rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform var(--motion-flip) var(--ease-flip);
+}
+
+.card[data-flipped] {
+  transform: rotateY(180deg);
+}
+
+.card:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+  border-radius: var(--radius-lg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: 0 6px 0 var(--color-border);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+  border-color: var(--color-primary-soft);
+}
+
+.kind {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.word {
+  font-family: var(--font-japanese);
+  font-size: clamp(2.25rem, 10vw, 3.25rem);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.reading {
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+}
+
+.meaning {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+}
+
+.tap {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.revealBtn {
+  min-height: 3rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  box-shadow: 0 4px 0 var(--color-primary-strong);
+  cursor: pointer;
+  transition: transform var(--motion-tap) var(--ease-spring);
+}
+
+.revealBtn:active {
+  transform: translateY(3px);
+}
+
+.grades {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+@media (max-width: 359px) {
+  .grades {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.grade {
+  --g: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 3.5rem;
+  padding: var(--space-2) var(--space-1);
+  border: 2px solid color-mix(in srgb, var(--g) 45%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--g) 8%, var(--color-surface));
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  animation: gradeIn var(--motion-tap) var(--ease-spring) both;
+  transition: transform var(--motion-tap) var(--ease-spring);
+}
+
+.grade:nth-child(2) { animation-delay: 40ms; }
+.grade:nth-child(3) { animation-delay: 80ms; }
+.grade:nth-child(4) { animation-delay: 120ms; }
+
+@keyframes gradeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.grade:active {
+  transform: scale(0.95);
+}
+
+.grade:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.grade small {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.grade[data-grade="lupa"] { --g: var(--color-danger); }
+.grade[data-grade="sulit"] { --g: var(--color-accent); }
+.grade[data-grade="bisa"] { --g: var(--color-success); }
+.grade[data-grade="mudah"] { --g: #2f7fc1; }
+
+.revealBtn:focus-visible,
+.grade:focus-visible,
+.skip:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .grade {
+    animation: none;
+  }
+
+  .card {
+    transition: none;
+  }
+}

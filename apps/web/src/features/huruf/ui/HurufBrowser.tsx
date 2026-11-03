@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/shared/ui/Button";
+import uiStyles from "@/shared/ui/ui.module.css";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { preloadSpeech, useSpeech } from "@/shared/lib/useSpeech";
 import {
@@ -821,6 +823,18 @@ export function HurufBrowser({ kanjiLevel }: { kanjiLevel: JlptLevel }) {
                 </svg>
                 Latihan Menulis
               </Button>
+              <Link
+                href="/belajar/tulis-buku"
+                className={`${uiStyles.button} ${uiStyles.secondary}`}
+                style={{ textDecoration: "none" }}
+                title="Cetak lembar, tulis dengan pensil, foto untuk dikoreksi"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ marginRight: 6, display: "inline-block", verticalAlign: "middle" }}>
+                  <path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z" />
+                  <path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z" />
+                </svg>
+                Tulis di Buku
+              </Link>
               <Button onClick={() => setMode("quiz")} variant="secondary" disabled={quizCards.length === 0}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ marginRight: 6, display: "inline-block", verticalAlign: "middle" }}>
                   <polyline points="9 11 12 14 22 4" />

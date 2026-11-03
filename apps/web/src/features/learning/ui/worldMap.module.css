@@ -1,0 +1,775 @@
+/* Peta belajar: node bab di jalur meliuk, node aktif berdenyut, gerbang tulis di ujung level. */
+
+.map {
+  --node: 64px;
+  --node-active: 76px;
+  --lip: 6px;
+  --mascot: 56px;
+  --path-w: 8px;
+  --map-gap: var(--space-5);
+  --c-done: var(--color-success);
+  --c-done-lip: color-mix(in srgb, var(--color-success) 70%, #000);
+  --c-active: var(--color-primary);
+  --c-active-lip: var(--color-primary-strong);
+  --c-locked: color-mix(in srgb, var(--color-border) 70%, var(--color-text-muted));
+  --c-gold: var(--color-accent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-gap);
+  width: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+/* ── Kepala unit ── */
+.unit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.unitHead {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 4px 0 var(--color-primary-strong);
+}
+
+.unitHead[data-locked] {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  box-shadow: 0 4px 0 var(--color-border);
+}
+
+.unitNo {
+  grid-column: 1;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.unitTitle {
+  grid-column: 1;
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.unitMeta {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+/* ── Jalur ── */
+.track {
+  position: relative;
+  list-style: none;
+  /* ruang untuk maskot bila node aktif ada di baris pertama unit */
+  margin: var(--space-6) 0 0;
+  padding: 0;
+}
+
+.pathSvg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.pathTrack,
+.pathDone {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.pathTrack {
+  /* --path-color diatur panel pemandangan (scenery.module.css) supaya kontras di tiap langit */
+  stroke: var(--path-color, var(--color-border));
+  stroke-width: var(--path-w);
+  stroke-dasharray: 2 14;
+}
+
+.pathDone {
+  stroke: color-mix(in srgb, var(--c-done) 55%, transparent);
+  stroke-width: var(--path-w);
+}
+
+.nodeSlot {
+  position: absolute;
+  top: var(--y);
+  left: calc(50% + var(--x));
+  width: 0;
+  height: 0;
+}
+
+/* ── Node ── */
+.node {
+  position: absolute;
+  top: calc(var(--node) / -2);
+  left: calc(var(--node) / -2);
+  display: grid;
+  place-items: center;
+  width: var(--node);
+  height: var(--node);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--motion-tap) var(--ease-spring),
+    box-shadow var(--motion-tap) var(--ease-spring);
+}
+
+.node:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+.node:active {
+  transform: translateY(var(--lip)) scale(0.96);
+}
+
+.node[data-state="completed"] {
+  background: var(--c-done);
+  color: #fff;
+  box-shadow: 0 var(--lip) 0 var(--c-done-lip);
+}
+
+.node[data-state="completed"]:active,
+.node[data-state="open"]:active,
+.node[data-state="active"]:active {
+  box-shadow: 0 0 0 transparent;
+}
+
+.node[data-state="open"] {
+  background: var(--color-surface);
+  color: var(--c-active);
+  border: 3px solid var(--c-active);
+  box-shadow: 0 var(--lip) 0 var(--c-active-lip);
+}
+
+.node[data-state="active"] {
+  --node: var(--node-active);
+  background: var(--c-active);
+  color: var(--color-on-primary);
+  box-shadow: 0 var(--lip) 0 var(--c-active-lip);
+}
+
+/* Cincin cahaya yang membesar dan memudar */
+.node[data-state="active"]::before,
+.node[data-state="active"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4px solid var(--c-active);
+  animation: pulseGlow var(--motion-pulse) ease-in-out infinite;
+  pointer-events: none;
+}
+
+.node[data-state="active"]::after {
+  animation-delay: calc(var(--motion-pulse) / 2);
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}
+
+/* Pudar tapi padat (bukan opacity) supaya garis jalur di belakangnya tidak tembus */
+.node[data-state="locked"] {
+  background: color-mix(in srgb, var(--c-locked) 45%, var(--color-surface));
+  color: var(--color-surface);
+  box-shadow: 0 var(--lip) 0 color-mix(in srgb, var(--c-locked) 60%, var(--color-surface));
+}
+
+/* Ikon ikut ukuran node */
+.node svg {
+  width: 46%;
+  height: 46%;
+}
+
+.node[data-state="locked"] svg {
+  width: 38%;
+  height: 38%;
+}
+
+.gate svg {
+  width: 50%;
+  height: 50%;
+}
+
+.nodeNum {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+}
+
+.checkPath {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 0;
+}
+
+/* Bab yang baru saja lulus: node memantul dan centang tergores */
+.node[data-just="done"] {
+  animation: justDone 700ms var(--ease-spring) 300ms both;
+}
+
+.node[data-just="done"] .checkPath {
+  animation: drawCheck 450ms var(--ease-out) 700ms both;
+}
+
+@keyframes justDone {
+  0% {
+    transform: scale(0.7);
+  }
+  60% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes drawCheck {
+  from {
+    stroke-dashoffset: 24;
+  }
+}
+
+/* Node berikutnya terbuka setelah node sebelumnya selesai */
+.node[data-just="unlock"] {
+  /* Tepat saat Miu-chan mendarat (lompatan mulai 900ms, mendarat ±1850ms) */
+  animation: justUnlock 900ms var(--ease-spring) 1750ms both;
+}
+
+@keyframes justUnlock {
+  0% {
+    transform: scale(1);
+    filter: grayscale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: rotate(-8deg) scale(0.92);
+  }
+  45% {
+    transform: rotate(8deg) scale(0.92);
+  }
+  70% {
+    transform: scale(1.2);
+    filter: none;
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Maskot berdiri di samping node aktif, bernapas pelan */
+.nodeMascot {
+  position: absolute;
+  /* Berdiri utuh di atas node aktif, di atas cincin denyutnya */
+  z-index: 2;
+  top: calc(var(--node-active) / -2 - var(--mascot) - 2px);
+  left: calc(var(--mascot) / -2);
+  pointer-events: none;
+  /* Transform elemen ini dipakai animasi lompat antar-node (WorldMap.tsx); napas di elemen dalam */
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.15));
+}
+
+.mascotBody {
+  display: block;
+  transform-origin: 50% 100%;
+  animation: idleBreath 3s ease-in-out infinite;
+}
+
+@keyframes idleBreath {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-3px) scaleY(1.02);
+  }
+}
+
+/* ── Label di samping node ── */
+.nodeLabel {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: min(10.5rem, 38vw);
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-50%);
+}
+
+.nodeSlot[data-side="right"] .nodeLabel {
+  left: calc(var(--node) / 2 + var(--space-3));
+}
+
+.nodeSlot[data-side="left"] .nodeLabel {
+  right: calc(var(--node) / 2 + var(--space-3));
+  align-items: flex-end;
+  text-align: right;
+}
+
+.nodeLabel[data-state="active"] {
+  --node: var(--node-active);
+}
+
+.nodeTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.3;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.nodeLabel[data-state="locked"] .nodeTitle {
+  color: var(--color-text-muted);
+}
+
+.nodeNow {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--c-active);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 1px;
+  font-size: var(--font-size-sm);
+  line-height: 1;
+}
+
+.starOn {
+  color: var(--c-gold);
+  animation: starPop 400ms var(--ease-spring) both;
+  animation-delay: calc(var(--si) * 90ms);
+}
+
+.starOff {
+  color: var(--color-border);
+}
+
+@keyframes starPop {
+  from {
+    transform: scale(0);
+  }
+}
+
+/* ── Gerbang Tulis (node boss) ── */
+/* Menempel ke ujung jalur unit terakhir (jarak antar-bagian peta dibatalkan) */
+.gateWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: calc(var(--map-gap) * -1);
+  padding-bottom: var(--space-4);
+}
+
+.gate {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 88px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--motion-tap) var(--ease-spring),
+    box-shadow var(--motion-tap) var(--ease-spring);
+}
+
+.gate:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+.gate:active {
+  transform: translateY(var(--lip)) scale(0.96);
+  box-shadow: 0 0 0 transparent;
+}
+
+.gate[data-state="active"] {
+  background: var(--c-gold);
+  color: var(--color-primary-strong);
+  box-shadow: 0 var(--lip) 0 color-mix(in srgb, var(--c-gold) 65%, #000);
+  animation: gateGlow var(--motion-pulse) ease-in-out infinite;
+}
+
+@keyframes gateGlow {
+  50% {
+    filter: drop-shadow(0 0 14px color-mix(in srgb, var(--c-gold) 70%, transparent));
+  }
+}
+
+.gate[data-state="completed"] {
+  background: var(--c-done);
+  color: #fff;
+  box-shadow: 0 var(--lip) 0 var(--c-done-lip);
+}
+
+.gate[data-state="locked"] {
+  background: color-mix(in srgb, var(--c-locked) 45%, var(--color-surface));
+  color: var(--color-surface);
+  box-shadow: 0 var(--lip) 0 color-mix(in srgb, var(--c-locked) 60%, var(--color-surface));
+}
+
+.gateLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Hiasan pemandangan di samping node, sisi berlawanan dengan label; dasar sejajar dasar node */
+.nodeProp {
+  --prop: 48px;
+  position: absolute;
+  bottom: calc(var(--node) / -2 - var(--lip));
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.nodeSlot[data-side="right"] .nodeProp {
+  right: calc(var(--node) / 2 + 4px);
+  justify-content: flex-end;
+}
+
+.nodeSlot[data-side="left"] .nodeProp {
+  left: calc(var(--node) / 2 + 4px);
+}
+
+.gateLabel strong {
+  font-size: var(--font-size-md);
+}
+
+.gateLabel small {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Panel bawah ── */
+.sheetScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(20 10 10 / 0.4);
+  animation: scrimIn var(--motion-sheet) var(--ease-sheet) both;
+}
+
+.sheetScrim[data-closing] {
+  animation: scrimOut 220ms ease-in both;
+}
+
+.sheetScrim[data-closing] .sheet {
+  animation: sheetOut 220ms ease-in both;
+}
+
+@keyframes scrimIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes scrimOut {
+  to {
+    opacity: 0;
+  }
+}
+
+.sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 30rem;
+  max-height: 85dvh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: var(--space-5) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-surface);
+  box-shadow: 0 -8px 32px rgb(0 0 0 / 0.18);
+  animation: sheetIn var(--motion-sheet) var(--ease-sheet) both;
+}
+
+@keyframes sheetIn {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes sheetOut {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@media (min-width: 640px) {
+  .sheetScrim {
+    align-items: center;
+  }
+
+  .sheet {
+    border-radius: var(--radius-lg);
+  }
+}
+
+.sheetHandle {
+  align-self: center;
+  width: 40px;
+  height: 4px;
+  margin-top: calc(var(--space-2) * -1);
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+}
+
+.sheetEyebrow {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.sheetTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  line-height: 1.3;
+}
+
+.sheetMeta,
+.sheetNote {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.sheetScore {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.loop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: var(--space-2) 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: loop;
+}
+
+.loop li {
+  counter-increment: loop;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.loop li::before {
+  content: counter(loop) ". ";
+  color: var(--color-primary);
+}
+
+.sheetBtn,
+.sheetBtnGhost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  margin-top: var(--space-2);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--motion-tap) var(--ease-spring);
+}
+
+.sheetBtn {
+  border: 0;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 4px 0 var(--color-primary-strong);
+}
+
+.sheetBtnGhost {
+  border: 2px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.sheetBtn:active,
+.sheetBtnGhost:active {
+  transform: translateY(3px);
+}
+
+.sheetBtn:focus-visible,
+.sheetBtnGhost:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ── Muncul saat digulir (semua node, kepala unit, gerbang) ──
+   Hanya skala + opasitas dari titik tengah: tanpa geser, supaya posisi tidak keluar-masuk layar dan berkedip. */
+.map [data-reveal] {
+  transition:
+    opacity 450ms var(--ease-out),
+    transform 550ms var(--ease-spring),
+    filter 450ms var(--ease-out);
+}
+
+.map [data-reveal]:not([data-inview="true"]) {
+  opacity: 0;
+  transform: scale(0.55);
+  filter: blur(4px);
+  transition-timing-function: ease-in;
+  transition-duration: 300ms;
+}
+
+.unitHead[data-reveal]:not([data-inview="true"]) {
+  transform: scale(0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nodeSlot,
+  .node,
+  .node::before,
+  .node::after,
+  .mascotBody,
+  .starOn,
+  .checkPath,
+  .gate,
+  .sheet,
+  .sheetScrim {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .map [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .node[data-state="active"]::after {
+    display: none;
+  }
+
+  .node[data-state="active"]::before {
+    transform: scale(1.25);
+    opacity: 0.35;
+  }
+}
+
+/* Desktop: peta lebih lebar dan node lebih besar. Selaraskan dengan DIMS.wide di WorldMap.tsx. */
+@media (min-width: 900px) {
+  .map {
+    --node: 84px;
+    --node-active: 100px;
+    --lip: 8px;
+    --mascot: 80px;
+    --path-w: 11px;
+    max-width: 48rem;
+    --map-gap: var(--space-7);
+  }
+
+  .unitHead {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .unitTitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .nodeNum {
+    font-size: var(--font-size-xl);
+  }
+
+  .nodeLabel {
+    max-width: 16rem;
+  }
+
+  .nodeTitle {
+    font-size: var(--font-size-md);
+  }
+
+  .stars {
+    font-size: var(--font-size-md);
+  }
+
+  .gate {
+    width: 128px;
+    height: 116px;
+  }
+
+  .gateLabel strong {
+    font-size: var(--font-size-lg);
+  }
+
+  .nodeProp {
+    --prop: 92px;
+  }
+
+  .nodeSlot[data-side="right"] .nodeProp {
+    right: calc(var(--node) / 2 + 12px);
+  }
+
+  .nodeSlot[data-side="left"] .nodeProp {
+    left: calc(var(--node) / 2 + 12px);
+  }
+}

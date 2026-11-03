@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { srsApi } from "@/features/srs/data/srsApi";
+import type { DueCard } from "@/features/srs/domain/types";
 import { learningApi } from "../data/learningApi";
 import type { ChapterDetail, ChapterKanji, ChapterVocab, ChapterGrammar, ChapterQuizQuestion, LessonBlock, QuizAnswer, QuizResult } from "../domain/types";
 
-export type LessonPhase = "loading" | "error" | "study" | "quiz-intro" | "quiz" | "submitting" | "result";
+export type LessonPhase = "loading" | "error" | "warmup" | "study" | "quiz-intro" | "quiz" | "submitting" | "result";
 
 export type StudyCard =
   | { kind: "block"; data: LessonBlock }
@@ -12,10 +14,17 @@ export type StudyCard =
   | { kind: "kanji"; data: ChapterKanji }
   | { kind: "grammar"; data: ChapterGrammar };
 
+/** Jumlah kartu SRS jatuh tempo yang diulang di awal sesi. */
+const WARMUP_SIZE = 5;
+
+/** Soal menulis & berbicara = langkah Praktik; dikerjakan sebelum soal kuis lain. */
+export const isPracticeQuestion = (q: ChapterQuizQuestion) => q.type === "menulis" || q.type === "berbicara";
+
 export function useChapterLesson(chapterId: string) {
   const [phase, setPhase] = useState<LessonPhase>("loading");
   const [chapter, setChapter] = useState<ChapterDetail | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [warmupCards, setWarmupCards] = useState<DueCard[]>([]);
 
   // Study state
   const [studyCards, setStudyCards] = useState<StudyCard[]>([]);
@@ -31,9 +40,9 @@ export function useChapterLesson(chapterId: string) {
   const [result, setResult] = useState<QuizResult | null>(null);
 
   useEffect(() => {
-    learningApi
-      .getChapter(chapterId)
-      .then((c) => {
+    // Pemanasan bersifat tambahan: gagal memuat kartu SRS tidak menghalangi pelajaran
+    Promise.all([learningApi.getChapter(chapterId), srsApi.due().catch(() => null)])
+      .then(([c, due]) => {
         setChapter(c);
         const cards: StudyCard[] = [
           ...(c.lessonBlocks ?? []).map((b) => ({ kind: "block" as const, data: b })),
@@ -42,19 +51,24 @@ export function useChapterLesson(chapterId: string) {
           ...c.grammarPoints.map((g) => ({ kind: "grammar" as const, data: g })),
         ];
         setStudyCards(cards);
-        setQuizQuestions(
-          c.quizQuestions.map((q) => ({
-            ...q,
-            options: Array.isArray(q.options) ? (q.options as string[]) : [],
-          })),
-        );
-        setPhase(cards.length > 0 ? "study" : "quiz-intro");
+        const questions = c.quizQuestions.map((q) => ({
+          ...q,
+          options: Array.isArray(q.options) ? (q.options as string[]) : [],
+        }));
+        setQuizQuestions([...questions.filter(isPracticeQuestion), ...questions.filter((q) => !isPracticeQuestion(q))]);
+        const warmup = due?.cards.slice(0, WARMUP_SIZE) ?? [];
+        setWarmupCards(warmup);
+        setPhase(warmup.length > 0 ? "warmup" : cards.length > 0 ? "study" : "quiz-intro");
       })
       .catch(() => {
         setErrorMsg("Bab tidak bisa dimuat. Coba lagi.");
         setPhase("error");
       });
   }, [chapterId]);
+
+  function finishWarmup() {
+    setPhase(studyCards.length > 0 ? "study" : "quiz-intro");
+  }
 
   function nextStudy() {
     setDirection(1);
@@ -173,6 +187,8 @@ export function useChapterLesson(chapterId: string) {
     phase,
     chapter,
     errorMsg,
+    warmupCards,
+    finishWarmup,
     studyCards,
     studyIndex,
     currentStudyCard,
