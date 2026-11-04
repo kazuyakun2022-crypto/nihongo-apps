@@ -1,5 +1,6 @@
 "use client";
 
+import { QuestionAudio } from "@/features/learning/ui/exercises/QuestionAudio";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Button } from "@/shared/ui/Button";
@@ -10,8 +11,7 @@ import { TileExercise } from "@/features/learning/ui/exercises/TileExercise";
 import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { examApi, type ExamKind, type ExamQuestion, type ExamStatus, type SubmitExamResponse } from "../data/examApi";
 import styles from "./levelUpTest.module.css";
-import { versionedAudioUrl } from "@/shared/lib/useSpeech";
-import { AlertIcon, FrownIcon, HourglassIcon, TimerIcon, TrophyIcon, VolumeIcon } from "@/shared/ui/icons";
+import { AlertIcon, FrownIcon, HourglassIcon, TimerIcon, TrophyIcon } from "@/shared/ui/icons";
 
 type Phase = "loading" | "error" | "ready" | "testing" | "submitting" | "submit_failed" | "result";
 
@@ -30,13 +30,6 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-let questionAudio: HTMLAudioElement | null = null;
-/** Audio soal bagian mendengar: URL file biasa, atau /api/tts?text=… untuk suara buatan. */
-function playAudio(url: string) {
-  questionAudio?.pause();
-  questionAudio = new Audio(versionedAudioUrl(url));
-  void questionAudio.play().catch(() => {});
-}
 
 export interface ExamRunnerProps {
   kind: ExamKind;
@@ -283,9 +276,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
 
         {isChoice ? <p className={styles.question} lang="ja">{q.question}</p> : <QuestionHeader q={q} />}
         {q.audioUrl && (
-          <button type="button" className={styles.audioBtn} onClick={() => playAudio(q.audioUrl ?? "")}>
-            <VolumeIcon size={16} /> Putar audio
-          </button>
+          <QuestionAudio key={q.id} url={q.audioUrl} className={styles.audioBtn} />
         )}
 
         <div key={q.id}>
@@ -310,6 +301,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
           {q.type === "berbicara" && (
             <SpeakingExercise
               text={q.speakText ?? ""}
+              feedback={false}
               answer={current?.answer ?? null}
               onAnswer={(a) => setExerciseAnswer(q, a)}
               onSkip={() => setExerciseAnswer(q, "", true)}

@@ -71,8 +71,9 @@ export interface ChapterQuizQuestion {
   /** Soal menulis: jumlah kotak huruf dan aksara yang diminta. */
   slots?: number;
   script?: "hiragana" | "katakana" | "campuran";
-  /** Soal berbicara: kalimat yang harus diucapkan. */
+  /** Soal berbicara: kalimat yang harus diucapkan, dan variasi tulisan lain yang juga diterima. */
   speakText?: string;
+  speakVariants?: string[];
 }
 
 export interface ChapterDetail {

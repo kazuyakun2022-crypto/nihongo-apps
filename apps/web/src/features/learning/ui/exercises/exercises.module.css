@@ -261,3 +261,43 @@
 @media (prefers-reduced-motion: reduce) {
   .micBtn[data-recording="true"], .slot[data-filled="true"] { animation: none; }
 }
+
+/* Indikator volume saat merekam: bilah yang memanjang mengikuti suara */
+.micLevel {
+  --level: 0;
+  display: inline-block;
+  width: 2.5rem;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, #fff 30%, transparent);
+  overflow: hidden;
+  position: relative;
+}
+.micLevel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  border-radius: inherit;
+  transform-origin: left center;
+  transform: scaleX(var(--level));
+  transition: transform 60ms linear;
+}
+
+.speakVerdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+  color: var(--color-text);
+  animation: popIn var(--motion-base) var(--ease-spring) backwards;
+}
+.speakVerdict[data-ok="true"] {
+  background: color-mix(in srgb, var(--color-success) 14%, var(--color-surface));
+  color: var(--color-success);
+}

@@ -65,6 +65,8 @@ export interface ChapterExercise {
   script?: "hiragana" | "katakana" | "campuran";
   /** Kalimat yang harus diucapkan pada soal berbicara. */
   speakText?: string;
+  /** Variasi tulisan lain yang juga diterima (mis. versi kanji); bukan rahasia, dipakai untuk umpan balik langsung. */
+  speakVariants?: string[];
 }
 
 export interface QuizAnswer {

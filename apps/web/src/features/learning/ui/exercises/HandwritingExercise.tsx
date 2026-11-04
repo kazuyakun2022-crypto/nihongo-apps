@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  AUTO_ACCEPT_MARGIN,
   AUTO_ACCEPT_SCORE,
   prepareRecognizer,
   recognize,
@@ -102,7 +103,7 @@ export function HandwritingExercise({
     const found = recognize(list, { script, kanji: script === "campuran" ? kanji : [], padSize: PAD, preferScript: before });
     setCandidates(found);
     clearTimeout(timerRef.current);
-    if (found[0] && found[0].score >= AUTO_ACCEPT_SCORE) {
+    if (found[0] && found[0].score >= AUTO_ACCEPT_SCORE && found[0].score - (found[1]?.score ?? 0) >= AUTO_ACCEPT_MARGIN) {
       timerRef.current = setTimeout(() => commit(found[0].char, found), AUTO_COMMIT_MS);
     }
   }
