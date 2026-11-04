@@ -65,6 +65,7 @@ export function Pagination({ page, pageSize, total, onPage, onPageSize, pageSize
                   className={styles.btn}
                   aria-current={p === page ? "page" : undefined}
                   aria-label={`Halaman ${p}`}
+                  disabled={p === page}
                   onClick={() => onPage(p)}
                 >
                   {p}

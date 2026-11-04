@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { contentApi, type ContentLevel } from "@/features/admin/data/contentApi";
 import {
@@ -19,6 +19,7 @@ import { useFlash } from "./ContentShell";
 import styles from "./content.module.css";
 import { BookOpenIcon, ImageIcon, MessageIcon, PuzzleIcon } from "@/shared/ui/icons";
 import type { ReactNode } from "react";
+import { askConfirm } from "@/shared/ui/confirmDialog";
 
 const TYPES: { key: KamusType; label: string; icon: ReactNode }[] = [
   { key: "gambar", label: "Bergambar", icon: <ImageIcon size={14} /> },
@@ -215,7 +216,7 @@ export function KamusManager() {
   }
 
   async function removeCategory(c: KamusAdminCategory) {
-    if (!confirm(`Hapus kategori "${c.title}"?`)) return;
+    if (!(await askConfirm({ title: `Hapus kategori "${c.title}"?`, description: "Kategori ini akan dihapus dari kamus." }))) return;
     try {
       await kamusAdminApi.deleteCategory(c.id);
       if (scope && typeof scope === "object" && scope.id === c.id) setScope(null);
@@ -492,19 +493,29 @@ function EntryList({
     return () => clearTimeout(t);
   }, [search]);
 
-  const loadEntries = useCallback(
-    () =>
-      kamusAdminApi
-        .entries({ type, ...filter, categoryId: fixedCategory ?? filter.categoryId, q: debounced || undefined })
-        .then((r) => setList(r))
-        .catch(flash.fail),
-    [type, filter, fixedCategory, debounced, flash.fail],
-  );
+  const requestRef = useRef(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const loadEntries = useCallback(() => {
+    // Hanya respons terakhir yang dipakai (ketik cepat / ganti halaman tidak saling menimpa)
+    const req = ++requestRef.current;
+    setRefreshing(true);
+    return kamusAdminApi
+      .entries({ type, ...filter, categoryId: fixedCategory ?? filter.categoryId, q: debounced || undefined })
+      .then((r) => req === requestRef.current && setList(r))
+      .catch((err) => req === requestRef.current && flash.fail(err))
+      .finally(() => req === requestRef.current && setRefreshing(false));
+  }, [type, filter, fixedCategory, debounced, flash.fail]);
 
+  // Ganti jenis kamus: tabel lama tidak relevan, tampilkan kerangka. Ganti halaman/filter: baris lama tetap
+  // tampil redup sampai data baru datang, supaya tabel & paginasi tidak melompat.
+  const listTypeRef = useRef(type);
   useEffect(() => {
-    setList(null);
+    if (listTypeRef.current !== type) {
+      listTypeRef.current = type;
+      setList(null);
+    }
     void loadEntries();
-  }, [loadEntries]);
+  }, [loadEntries, type]);
 
   async function refresh() {
     await Promise.all([loadEntries(), onChanged()]);
@@ -521,7 +532,7 @@ function EntryList({
   }
 
   async function remove(e: KamusAdminEntry) {
-    if (!confirm(`Hapus "${e.term}" dari kamus?`)) return;
+    if (!(await askConfirm({ title: `Hapus "${e.term}"?`, description: "Entri ini akan dihapus dari kamus." }))) return;
     try {
       await kamusAdminApi.deleteEntry(e.id);
       await refresh();
@@ -612,7 +623,7 @@ function EntryList({
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setFilter((f) => ({ ...f, page: 1 }));
+            setFilter((f) => (f.page === 1 ? f : { ...f, page: 1 }));
           }}
           aria-label="Cari entri"
         />
@@ -670,7 +681,7 @@ function EntryList({
           {debounced ? `Tidak ada entri untuk "${debounced}".` : "Belum ada entri di sini. Tambahkan entri baru untuk melengkapi kamus."}
         </p>
       ) : (
-        <div className={adminStyles.tableWrap}>
+        <div className={adminStyles.tableWrap} aria-busy={refreshing} style={{ opacity: refreshing ? 0.55 : 1, transition: "opacity var(--motion-fast) ease" }}>
           <table className={adminStyles.table}>
             <thead>
               <tr>

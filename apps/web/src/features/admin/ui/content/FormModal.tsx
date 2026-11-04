@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useModalBehavior } from "@/shared/ui/useModalBehavior";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { ImageField } from "./ImageField";
 import styles from "./content.module.css";
@@ -34,6 +35,8 @@ export function FormModal({
 }) {
   const [values, setValues] = useState<FormValues>(initial);
   const [saving, setSaving] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  useModalBehavior(formRef, onClose, saving);
   const [error, setError] = useState<string | null>(null);
   const set = (name: string, value: unknown) => setValues((v) => ({ ...v, [name]: value }));
 
@@ -55,8 +58,8 @@ export function FormModal({
   }
 
   return (
-    <div className={adminStyles.modalBackdrop} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form className={`${adminStyles.modalContent} ${styles.modalWide}`} onSubmit={submit} role="dialog" aria-modal="true" aria-label={title}>
+    <div className={adminStyles.modalBackdrop} onMouseDown={(e) => e.target === e.currentTarget && !saving && onClose()}>
+      <form ref={formRef} className={`${adminStyles.modalContent} ${styles.modalWide}`} onSubmit={submit} role="dialog" aria-modal="true" aria-label={title}>
         <h2 className={adminStyles.modalTitle}>{title}</h2>
         <div className={styles.formGrid}>
           {fields.map((f) => (
@@ -65,7 +68,7 @@ export function FormModal({
         </div>
         {error && <div className={`${styles.message} ${styles.messageError}`}>{error}</div>}
         <div className={adminStyles.modalButtons}>
-          <button type="button" className={`${styles.btn} ${adminStyles.btnSecondary}`} onClick={onClose}>
+          <button type="button" className={`${styles.btn} ${adminStyles.btnSecondary}`} onClick={onClose} disabled={saving}>
             Batal
           </button>
           <button type="submit" className={`${styles.btn} ${adminStyles.btnPrimary}`} disabled={saving}>

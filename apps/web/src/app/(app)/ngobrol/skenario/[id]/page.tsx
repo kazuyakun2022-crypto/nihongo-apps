@@ -30,7 +30,8 @@ export default function SkenarioPage() {
     );
   }
   return (
-    <div style={{ maxWidth: "48rem", margin: "0 auto", width: "100%", padding: "var(--space-3) var(--space-3) 0", boxSizing: "border-box" }}>
+    // Wadah bisa digulir: halaman chat tingginya dikunci (overflow hidden), laporan akhir yang panjang tetap terbaca
+    <div style={{ maxWidth: "48rem", margin: "0 auto", width: "100%", padding: "var(--space-3) var(--space-3) 0", boxSizing: "border-box", flex: 1, minHeight: 0, overflowY: "auto" }}>
       <ChatScreen scenario={scenario} />
     </div>
   );

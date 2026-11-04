@@ -199,7 +199,7 @@ function shuffled<T>(items: T[]): T[] {
 export function toChapterExercise(q: { id: string; type: ExerciseType; question: string; hint: string | null; options: unknown; correctAnswer: string; audioUrl: string | null; imageUrl?: string | null }): ChapterExercise {
   const base = { id: q.id, type: q.type, question: q.question, hint: q.hint, audioUrl: q.audioUrl, imageUrl: q.imageUrl ?? null };
   if (q.type === "menulis") return { ...base, options: [], slots: [...q.correctAnswer].length, script: scriptOf(q.correctAnswer) };
-  if (q.type === "berbicara") return { ...base, options: [], speakText: q.correctAnswer };
+  if (q.type === "berbicara") return { ...base, options: [], speakText: q.correctAnswer, speakVariants: stringList(q.options) };
   const options = stringList(q.options);
   return { ...base, options: TILE_TYPES.includes(q.type) ? shuffled(options) : options };
 }

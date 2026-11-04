@@ -242,7 +242,7 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
   }
 
   /** Ambil gambar, cari kisi, pastikan lembarnya sesuai, lalu langsung periksa. */
-  const takeShot = useCallback(
+  const takeShotInner = useCallback(
     async (source: CanvasImageSource | string, width: number, height: number, hint: Quad | null, force = false) => {
       // Salin bingkai kamera dulu; setelah kamera dimatikan videonya hitam
       const canvas = await loadCanvas(source, width, height, SEND_MAX);
@@ -297,6 +297,28 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
       setMode("adjust");
     },
     [charCount, onDone, sheetId, sheets, stopCamera],
+  );
+
+  /** Satu pemeriksaan dalam satu waktu (ketukan ganda = dua kali kuota AI), dan galat tidak membuat pemindai macet. */
+  const shotBusy = useRef(false);
+  const [shotError, setShotError] = useState<string | null>(null);
+  const takeShot = useCallback(
+    async (...args: Parameters<typeof takeShotInner>) => {
+      if (shotBusy.current) return;
+      shotBusy.current = true;
+      setShotError(null);
+      try {
+        await takeShotInner(...args);
+      } catch {
+        stopCamera();
+        setMode("idle");
+        setShotError("Foto belum bisa diproses. Coba foto ulang atau pilih gambar lain.");
+      } finally {
+        shotBusy.current = false;
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [takeShotInner],
   );
 
   /** Pengguna memilih memeriksa foto sebagai lembar yang terdeteksi. */
@@ -373,7 +395,12 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
     reader.onload = async () => {
       const img = new Image();
       img.src = String(reader.result);
-      await img.decode();
+      try {
+        await img.decode();
+      } catch {
+        setShotError("Gambar tidak bisa dibuka. Pilih foto lain (JPG atau PNG).");
+        return;
+      }
       await takeShot(img, img.naturalWidth, img.naturalHeight, null);
     };
     reader.readAsDataURL(file);
@@ -487,6 +514,12 @@ export function SheetScanner({ charCount, sheetId, sheets, onDone }: { charCount
             <ImageIcon size={18} /> Unggah dari galeri
           </button>
         </div>
+      )}
+
+      {mode === "idle" && shotError && (
+        <p className={styles.callout} data-tone="warn" role="alert">
+          {shotError}
+        </p>
       )}
 
       {mode === "idle" && (

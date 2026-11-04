@@ -38,7 +38,8 @@ export default function BerandaPage() {
       router.replace("/admin");
       return;
     }
-    srsApi.due().then((r) => setDue(r.total)).catch(() => setDue(0));
+    // -1 = gagal dimuat (berbeda dari 0 kartu)
+    srsApi.due().then((r) => setDue(r.total)).catch(() => setDue(-1));
     learningApi.nextChapter().then(setNextChapter).catch(() => setNextChapter(null));
   }, [isAdmin, router]);
 
@@ -221,7 +222,7 @@ export default function BerandaPage() {
         <h2 id="practice-title" className={styles.panelTitle}>Latihan lain</h2>
         <ul className={styles.practiceList}>
           <li>
-            <Link href="/review" className={styles.practice} data-highlight={!!due} data-spotlight="beranda-review">
+            <Link href="/review" className={styles.practice} data-highlight={(due ?? 0) > 0} data-spotlight="beranda-review">
               <span className={styles.practiceIcon} aria-hidden="true">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="5" width="14" height="16" rx="2" />
@@ -231,10 +232,10 @@ export default function BerandaPage() {
               <span className={styles.practiceText}>
                 <strong>Review kosakata</strong>
                 <span>
-                  {due === null ? <Skeleton width="80%" style={{ marginTop: 4 }} /> : due === 0 ? "Tidak ada kartu jatuh tempo. Kartu baru muncul setelah kamu menyelesaikan bab." : "Ulangi sebelum lupa."}
+                  {due === null ? <Skeleton width="80%" style={{ marginTop: 4 }} /> : due < 0 ? "Jumlah kartu belum bisa dimuat. Buka Review untuk melihatnya." : due === 0 ? "Tidak ada kartu jatuh tempo. Kartu baru muncul setelah kamu menyelesaikan bab." : "Ulangi sebelum lupa."}
                 </span>
               </span>
-              {!!due && <span className={styles.count}>{due} kartu</span>}
+              {(due ?? 0) > 0 && <span className={styles.count}>{due} kartu</span>}
             </Link>
           </li>
           <li>

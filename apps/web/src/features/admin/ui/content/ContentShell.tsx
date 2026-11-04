@@ -7,6 +7,7 @@ import { useAuth } from "@/features/auth/application/AuthProvider";
 import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import styles from "./content.module.css";
+import { CloseIcon } from "@/shared/ui/icons";
 
 /** Kerangka halaman konten admin: cek akses, judul, dan tab Pelajaran / Ujian / Kamus / Pendaftaran. */
 export function ContentShell({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
@@ -41,9 +42,14 @@ export function ContentShell({ title, subtitle, children }: { title: string; sub
   return (
     <div className={adminStyles.container}>
       <AdminHeaderNav title={title} subtitle={subtitle} />
-      <nav className={adminStyles.tabs} aria-label="Jenis konten">
+      <nav className={`${adminStyles.tabs} ${styles.wrapTabs}`} aria-label="Jenis konten">
         {tabs.map((t) => (
-          <Link key={t.href} href={t.href} className={`${adminStyles.tabBtn} ${t.active ? adminStyles.tabBtnActive : ""}`}>
+          <Link
+            key={t.href}
+            href={t.href}
+            className={`${adminStyles.tabBtn} ${t.active ? adminStyles.tabBtnActive : ""}`}
+            aria-current={t.active ? "page" : undefined}
+          >
             {t.label}
           </Link>
         ))}
@@ -53,17 +59,25 @@ export function ContentShell({ title, subtitle, children }: { title: string; sub
   );
 }
 
-/** Pesan sukses/gagal yang hilang sendiri. */
+/**
+ * Pesan sukses (hilang sendiri setelah 4 detik) dan galat (menetap sampai ditutup, supaya galat pemuatan
+ * tidak lenyap lalu berganti kerangka yang berputar selamanya).
+ */
 export function useFlash() {
   const [flash, setFlash] = useState<{ text: string; error?: boolean } | null>(null);
   useEffect(() => {
-    if (!flash) return;
+    if (!flash || flash.error) return;
     const t = setTimeout(() => setFlash(null), 4000);
     return () => clearTimeout(t);
   }, [flash]);
   const node = flash ? (
-    <div role="status" className={`${styles.message} ${flash.error ? styles.messageError : ""}`}>
-      {flash.text}
+    <div role={flash.error ? "alert" : "status"} className={`${styles.message} ${flash.error ? styles.messageError : ""}`}>
+      <span>{flash.text}</span>
+      {flash.error && (
+        <button type="button" className={styles.messageClose} onClick={() => setFlash(null)} aria-label="Tutup pesan">
+          <CloseIcon size={14} strokeWidth={2.6} />
+        </button>
+      )}
     </div>
   ) : null;
   // Stabil antar-render supaya aman dipakai sebagai dependency useCallback/useEffect

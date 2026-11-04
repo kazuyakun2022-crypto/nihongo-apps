@@ -185,7 +185,7 @@ export function LearnerDetailView({ userId }: { userId: string }) {
         </section>
       </div>
 
-      <ChapterSection userId={userId} journey={data.journey} initial={data.currentChapters} initialLevelId={p.currentLevel?.id ?? null} />
+      <ChapterSection key={p.currentLevel?.id ?? "none"} userId={userId} journey={data.journey} initial={data.currentChapters} initialLevelId={p.currentLevel?.id ?? null} />
 
       <section className={styles.card}>
         <h2 className={styles.sectionTitle}>Riwayat ujian</h2>

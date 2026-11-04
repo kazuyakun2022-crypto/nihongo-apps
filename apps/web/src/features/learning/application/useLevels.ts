@@ -17,8 +17,16 @@ export function useChapters(levelId: number | null) {
   const [chapters, setChapters] = useState<ChapterSummary[] | null>(null);
   useEffect(() => {
     if (levelId === null) return;
+    // Ganti level cepat: daftar bab level sebelumnya yang datang terlambat tidak boleh menimpa level baru
+    let alive = true;
     setChapters(null);
-    learningApi.chapters(levelId).then(setChapters).catch(() => setChapters([]));
+    learningApi
+      .chapters(levelId)
+      .then((c) => alive && setChapters(c))
+      .catch(() => alive && setChapters([]));
+    return () => {
+      alive = false;
+    };
   }, [levelId]);
   return chapters;
 }

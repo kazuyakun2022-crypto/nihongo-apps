@@ -492,7 +492,7 @@
 .sheetScrim {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 990;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -772,4 +772,115 @@
   .nodeSlot[data-side="left"] .nodeProp {
     left: calc(var(--node) / 2 + 12px);
   }
+}
+
+/* ── Rombakan tampilan: Peta belajar (nuansa Jepang hangat) ── */
+/* Kepala unit: papan merah tua bermotif ombak dengan bingkai emas tipis */
+.unitHead {
+  position: relative;
+  border-radius: 16px;
+  background-color: var(--color-primary-strong);
+  background-image:
+    radial-gradient(120% 120% at 0% 0%, color-mix(in srgb, var(--color-primary) 90%, transparent), transparent 70%),
+    var(--pattern-seigaiha-light);
+  background-size: 100% 100%, 40px 20px;
+  box-shadow: 0 12px 26px -16px rgba(107, 21, 32, 0.8);
+}
+.unitHead::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--color-gold) 50%, transparent);
+  pointer-events: none;
+}
+.unitHead[data-locked] {
+  background-color: var(--color-paper-deep);
+  background-image: var(--pattern-seigaiha);
+  box-shadow: var(--shadow-paper);
+}
+.unitHead[data-locked]::before {
+  border-color: color-mix(in srgb, var(--color-gold) 30%, transparent);
+}
+.unitNo {
+  color: var(--color-gold-soft);
+  opacity: 1;
+}
+.unitHead[data-locked] .unitNo {
+  color: var(--color-gold);
+}
+.unitTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.unitMeta {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, #fff 16%, transparent);
+}
+.unitHead[data-locked] .unitMeta {
+  background: var(--color-surface);
+}
+
+/* Lembar detail bab: kertas washi dengan garis emas di atas */
+.sheet {
+  border-radius: 22px 22px 0 0;
+  background-color: var(--color-surface);
+  background-image: linear-gradient(to bottom, transparent, var(--color-surface) 5rem), var(--pattern-seigaiha);
+  background-size: 100% 100%, 40px 20px;
+  background-repeat: no-repeat, repeat;
+  box-shadow: 0 -10px 36px -8px rgba(107, 21, 32, 0.28), inset 0 2px 0 color-mix(in srgb, var(--color-gold) 60%, transparent);
+}
+.sheetEyebrow {
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: none;
+}
+.sheetTitle {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+.sheetBtn {
+  box-shadow: 0 4px 0 var(--color-primary-strong), 0 6px 14px -8px color-mix(in srgb, var(--color-primary) 80%, transparent);
+}
+.sheetBtnGhost {
+  border-color: color-mix(in srgb, var(--color-gold) 40%, var(--color-border));
+}
+
+/* ── Tema susu stroberi: papan unit permen dengan bingkai jahitan ── */
+.unitHead {
+  border-radius: 22px;
+  background-color: var(--color-primary);
+  background-image:
+    radial-gradient(70% 90% at 100% 0%, color-mix(in srgb, var(--palette-butter) 50%, transparent), transparent 65%),
+    radial-gradient(70% 90% at 0% 100%, color-mix(in srgb, #e8505e 85%, transparent), transparent 70%),
+    var(--pattern-seigaiha-light);
+  background-size: 100% 100%, 100% 100%, 40px 20px;
+  box-shadow: 0 5px 0 var(--color-primary-strong), 0 16px 28px -18px rgba(177, 42, 58, 0.8);
+}
+.unitHead::before {
+  inset: 6px;
+  border-radius: 17px;
+  border: 2px dashed color-mix(in srgb, #fff 45%, transparent);
+}
+.unitNo {
+  color: #fff4d6;
+}
+.unitHead[data-locked] {
+  background-color: var(--color-paper-deep);
+  background-image: var(--pattern-seigaiha);
+  background-size: 40px 20px;
+  box-shadow: 0 5px 0 #f0d2d6;
+}
+.unitHead[data-locked]::before {
+  border-color: color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+.unitHead[data-locked] .unitNo {
+  color: var(--color-primary);
+}
+.sheet {
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -10px 36px -8px rgba(177, 42, 58, 0.3), inset 0 3px 0 var(--color-primary-soft);
 }

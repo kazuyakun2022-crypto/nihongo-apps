@@ -5,7 +5,7 @@
   padding: var(--space-4) var(--space-4) var(--space-8);
   display: grid;
   gap: var(--space-5);
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 .titleSection {
@@ -103,7 +103,7 @@
   place-items: center;
   font-size: 2.35rem;
   font-weight: var(--font-weight-heavy);
-  box-shadow: 0 4px 16px rgba(179, 27, 40, 0.22);
+  box-shadow: 0 4px 16px rgba(177, 42, 58, 0.22);
   border: 3px solid var(--color-surface);
   outline: 2px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
   position: relative;
@@ -116,7 +116,7 @@
 
 .avatar:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(179, 27, 40, 0.35);
+  box-shadow: 0 8px 24px rgba(177, 42, 58, 0.35);
   outline-color: var(--color-primary);
 }
 
@@ -177,8 +177,8 @@
 }
 
 .roleAdmin {
-  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-  color: #3730a3;
+  background: linear-gradient(135deg, #e0e7ff, color-mix(in srgb, var(--color-primary) 30%, var(--color-border)));
+  color: var(--color-primary-strong);
   border: 1px solid #a5b4fc;
 }
 
@@ -190,7 +190,7 @@
 
 .rolePremium {
   background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-  color: #15803d;
+  color: var(--color-success);
   border: 1px solid #86efac;
 }
 
@@ -334,7 +334,7 @@
   background: linear-gradient(135deg, var(--color-primary), #ea580c);
   display: grid;
   place-items: center;
-  box-shadow: 0 8px 24px rgba(179, 27, 40, 0.22);
+  box-shadow: 0 8px 24px rgba(177, 42, 58, 0.22);
   border: 3.5px solid var(--color-surface);
   outline: 2px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
 }
@@ -380,13 +380,13 @@
 
 .modalStatusSuccess {
   background: rgba(22, 163, 74, 0.1);
-  color: #16a34a;
+  color: var(--color-success);
   border: 1px solid rgba(22, 163, 74, 0.25);
 }
 
 .modalStatusError {
   background: rgba(220, 38, 38, 0.1);
-  color: #dc2626;
+  color: var(--color-danger);
   border: 1px solid rgba(220, 38, 38, 0.25);
 }
 
@@ -428,7 +428,7 @@
   padding: 0.6rem 1rem;
   border-radius: var(--radius-md);
   background: transparent;
-  color: #dc2626;
+  color: var(--color-danger);
   border: 1px solid rgba(220, 38, 38, 0.3);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
@@ -438,7 +438,7 @@
 
 .modalBtnDanger:hover:not(:disabled) {
   background: rgba(220, 38, 38, 0.08);
-  border-color: #dc2626;
+  border-color: var(--color-danger);
 }
 
 .modalBtnSecondary {
@@ -576,7 +576,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #16a34a;
+  color: var(--color-success);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
 }
@@ -796,7 +796,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  background: var(--color-primary-soft);
+  background: var(--color-surface-muted);
   color: var(--color-primary);
   font-family: var(--font-japanese);
   font-size: 1.15rem;
@@ -816,13 +816,13 @@
   font-size: var(--font-size-sm);
   color: #fff;
   background: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(179, 27, 40, 0.25);
+  box-shadow: 0 2px 8px rgba(177, 42, 58, 0.25);
   transition: all var(--motion-fast);
 }
 
 .portalCtaBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(179, 27, 40, 0.35);
+  box-shadow: 0 4px 12px rgba(177, 42, 58, 0.35);
 }
 
 /* ── Modal & Tombol Edit Data Profil ── */
@@ -947,4 +947,70 @@
   gap: var(--space-2);
   justify-content: flex-end;
   margin-top: var(--space-2);
+}
+
+/* Modal bisa digulir saat keyboard ponsel terbuka (sebelumnya tombol Simpan tidak terjangkau) */
+.modalBox,
+.editModalBox {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Area ketuk tombol tutup minimal 40px */
+.modalCloseBtn {
+  width: 40px;
+  height: 40px;
+}
+
+/* ── Rombakan tampilan: Profil (nuansa Jepang hangat) ── */
+.profileCard,
+.infoCard,
+.statCard,
+.actionsCard,
+.rolePrivilegeCard,
+.shortcutsCard,
+.editGenderCard,
+.guestBanner {
+  border: 0;
+  border-radius: 18px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-paper);
+}
+/* Kartu identitas: pita seigaiha di atas avatar */
+.profileCard {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-surface);
+  background-image: linear-gradient(to bottom, transparent, var(--color-surface) 7.5rem), var(--pattern-seigaiha);
+  background-size: 100% 100%, 40px 20px;
+}
+.avatar {
+  box-shadow: 0 0 0 4px var(--color-surface), 0 0 0 6px color-mix(in srgb, var(--color-gold) 55%, transparent);
+}
+.displayName,
+.cardHeaderTitle,
+.roleCardTitle,
+.shortcutTitle,
+.statVal {
+  font-family: var(--font-display);
+}
+.cardHeaderTitle,
+.shortcutTitle {
+  position: relative;
+  padding-bottom: var(--space-2);
+}
+.cardHeaderTitle::after,
+.shortcutTitle::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--hairline-gold);
+}
+.statIcon {
+  background: var(--color-gold-soft);
+  color: var(--color-gold);
 }

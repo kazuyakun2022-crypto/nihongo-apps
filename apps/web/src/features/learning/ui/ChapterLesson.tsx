@@ -1,5 +1,6 @@
 "use client";
 
+import { QuestionAudio } from "./exercises/QuestionAudio";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { FuriganaText, stripFurigana } from "@/features/conversation/ui/FuriganaText";
@@ -7,7 +8,7 @@ import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { Mascot, type MascotMood } from "@/shared/ui/Mascot";
 import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
-import { useSpeech, versionedAudioUrl } from "@/shared/lib/useSpeech";
+import { useSpeech } from "@/shared/lib/useSpeech";
 import { EXERCISES, SKILLS, countBySkill, type SkillId } from "@/shared/lib/exercises";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { useAssessment, useScreenContext } from "@/features/navigator/application/NavigatorProvider";
@@ -26,13 +27,6 @@ import { SkillIcon } from "@/shared/ui/SkillIcon";
 
 const LABELS = ["A", "B", "C", "D", "E", "F"];
 
-let quizAudio: HTMLAudioElement | null = null;
-/** Audio soal mendengar: URL file biasa, atau /api/tts?text=… untuk suara buatan. */
-function playAudio(url: string) {
-  quizAudio?.pause();
-  quizAudio = new Audio(versionedAudioUrl(url));
-  void quizAudio.play().catch(() => {});
-}
 
 const BLOCK_LABEL: Record<string, string> = { teks: "Materi", gambar: "Gambar", dialog: "Dialog", tips: "Tips", huruf: "Huruf" };
 
@@ -183,7 +177,14 @@ function LessonShell({
           </div>
         )}
       </aside>
-      <div className={styles.stage}>{children}</div>
+      <div className={styles.stage}>
+        {/* Di bawah 1280px panel samping (dan judulnya) tersembunyi: judul bab ringkas di atas pelajaran */}
+        <h1 className={styles.stageTitle}>
+          {moduleTitle && <span className={styles.stageModule}>{moduleTitle}</span>}
+          {title}
+        </h1>
+        {children}
+      </div>
     </div>
   );
 }
@@ -206,6 +207,10 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
 
   // Pintasan ← → untuk pindah kartu/soal (berguna di desktop)
   const { phase, studyIndex, quizIndex, currentAnswer, currentSkipped, isLastQuiz } = lesson;
+  // Kartu/soal/tahap baru selalu dibuka dari atas (audio soal berhenti sendiri lewat QuestionAudio)
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [phase, studyIndex, quizIndex]);
   useEffect(() => {
     if (phase !== "study" && phase !== "quiz") return;
     function onKey(e: KeyboardEvent) {
@@ -426,7 +431,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
               ))}
             </ul>
             <div className={styles.introActions}>
-              <Button block onClick={lesson.startQuiz}>Mulai Latihan</Button>
+              <Button block onClick={lesson.startQuiz} disabled={lesson.quizQuestions.length === 0}>Mulai Latihan</Button>
               {lesson.studyCards.length > 0 && (
                 <Button block variant="secondary" onClick={lesson.backToStudy}>← Ulang materi</Button>
               )}
@@ -493,9 +498,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
         <div className={styles.quizCard} key={q.id} data-dir={lesson.direction}>
           <QuestionHeader q={q} />
           {q.audioUrl && (
-            <button type="button" className={styles.audioBtn} onClick={() => playAudio(q.audioUrl ?? "")}>
-              <VolumeIcon size={16} /> Putar audio
-            </button>
+            <QuestionAudio key={q.id} url={q.audioUrl} className={styles.audioBtn} />
           )}
           {(q.type === "susun_huruf" || q.type === "susun_kalimat") && (
             <TileExercise
@@ -518,6 +521,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           {q.type === "berbicara" && (
             <SpeakingExercise
               text={q.speakText ?? ""}
+              variants={q.speakVariants}
               answer={lesson.currentAnswer}
               onAnswer={(a) => lesson.selectAnswer(q.id, a)}
               onSkip={() => lesson.skipQuestion(q.id)}
@@ -542,6 +546,9 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           )}
         </div>
 
+        {/* Gagal mengirim jawaban: sebelumnya diam saja dan kembali ke soal tanpa penjelasan */}
+        {lesson.errorMsg && <Alert>{lesson.errorMsg}</Alert>}
+
         <div className={styles.nav}>
           <Button variant="secondary" onClick={lesson.prevQuiz} disabled={lesson.quizIndex === 0} aria-label="Soal sebelumnya">←</Button>
           {lesson.isLastQuiz ? (
@@ -555,9 +562,10 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           )}
         </div>
 
-        {lesson.isLastQuiz && !lesson.allAnswered && (
+        {/* Sebelumnya muncul juga hanya karena soal terakhir ini sendiri belum dijawab */}
+        {lesson.isLastQuiz && lesson.unansweredOthers > 0 && (
           <p className={styles.muted} style={{ textAlign: "center" }}>
-            Ada soal yang belum dijawab. Periksa kembali soal sebelumnya.
+            Masih ada {lesson.unansweredOthers} soal lain yang belum dijawab. Periksa kembali soal sebelumnya.
           </p>
         )}
       </LessonShell>
@@ -569,7 +577,16 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
     return <ResultView lesson={lesson} title={chapterTitle} moduleTitle={moduleTitle} />;
   }
 
-  return null;
+  // Keadaan yang tidak punya isi untuk ditampilkan (mis. bab tanpa soal): jangan biarkan layar kosong
+  return (
+    <section className={styles.emptyState} role="status">
+      <h1 className={styles.emptyTitle}>{chapterTitle}</h1>
+      <p className={styles.muted}>Bagian ini belum punya isi. Bab ini sedang disiapkan, coba bab lain dulu ya.</p>
+      <Link href="/belajar" className={styles.scenarioCta}>
+        Kembali ke peta belajar
+      </Link>
+    </section>
+  );
 }
 
 function SpeakButton({ onClick }: { onClick: () => void }) {

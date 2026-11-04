@@ -304,6 +304,8 @@
 /* ── Interactive Canvas Square Wrapper ── */
 .canvasWrapper {
   position: relative;
+  /* Ukuran bayangan huruf diukur dari lebar kotak ini (cqw) */
+  container-type: inline-size;
   width: 100%;
   max-width: 320px;
   aspect-ratio: 1 / 1;
@@ -328,11 +330,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(8rem, 40vw, 12rem);
-  font-weight: 400;
+  /* Sama persis dengan cetakan penilai (HiraganaWritingPractice: 70% kotak, tebal 600, Noto Sans JP);
+     sebelumnya ±49% kotak & tebal 400, sehingga menebalkan bayangan dengan sempurna malah dinilai rendah */
+  font-size: 70cqw;
+  font-weight: 600;
   line-height: 1;
   color: rgba(15, 23, 42, 0.14);
-  font-family: var(--font-japanese, sans-serif);
+  font-family: "Noto Sans JP", var(--font-japanese, sans-serif);
   pointer-events: none;
   user-select: none;
   z-index: 1;

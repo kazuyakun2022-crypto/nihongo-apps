@@ -9,7 +9,7 @@ import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { masteryGateApi, type MasteryGateItem, type MasteryGateResult, type MasteryGateRules, type MasteryGateStatus } from "../data/masteryGateApi";
 import styles from "./masteryGate.module.css";
 
-type Phase = "loading" | "intro" | "countdown" | "running" | "submitting" | "result" | "error";
+type Phase = "loading" | "intro" | "countdown" | "running" | "submitting" | "submit_failed" | "result" | "error";
 
 /** Jeda singkat antar soal agar pergantian terasa, tidak dihitung ke waktu jawab. */
 const GAP_MS = 180;
@@ -79,8 +79,9 @@ export function MasteryGate() {
       setResult(await masteryGateApi.submit(attemptId, answers.current));
       setPhase("result");
     } catch (err) {
+      // Jawaban tetap di perangkat; bisa dikirim ulang tanpa mengulang tes
       setError(err instanceof Error ? err.message : "Hasil tidak bisa dikirim.");
-      setPhase("error");
+      setPhase("submit_failed");
     }
   }, [attemptId]);
 
@@ -127,6 +128,15 @@ export function MasteryGate() {
       <SkeletonRegion label="Memuat Mastery Gate…" className={styles.wrap}>
         <Skeleton height="14rem" radius="var(--radius-lg)" />
       </SkeletonRegion>
+    );
+  }
+
+  if (phase === "submit_failed") {
+    return (
+      <div className={styles.wrap}>
+        <Alert>{error} Jawabanmu masih tersimpan, coba kirim ulang.</Alert>
+        <Button onClick={() => void finish()}>Kirim ulang</Button>
+      </div>
     );
   }
 

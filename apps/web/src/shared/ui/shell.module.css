@@ -19,7 +19,7 @@
   gap: var(--space-3);
   /* backwards, bukan both: transform yang tertinggal setelah animasi menjadikan <main> containing block,
      sehingga modal & elemen position:fixed di dalam halaman ikut tergeser/terpotong (bukan menempel ke layar) */
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) backwards;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 /* Halaman data lebar: tanpa batas --content-max dan dengan tepi samping lebih tipis */
@@ -41,8 +41,8 @@
   gap: 0 !important;
   padding: 0 !important;
   max-width: 100% !important;
-  height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px));
-  max-height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px));
+  height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px));
+  max-height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px));
   overflow: hidden;
   overscroll-behavior: none;
   animation: none;
@@ -62,8 +62,8 @@
     display: flex !important;
     flex-direction: column !important;
     gap: 0 !important;
-    height: 100dvh;
-    max-height: 100dvh;
+    height: calc(100dvh - env(safe-area-inset-top, 0px));
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px));
     padding: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -169,7 +169,7 @@
     border-right: var(--border-width) solid var(--color-border);
     padding: var(--space-5) var(--space-3);
     backdrop-filter: none;
-    animation: slideInLeft var(--motion-entrance) var(--ease-entrance) both;
+    animation: var(--kf-slideInLeft) var(--motion-entrance) var(--ease-entrance) backwards;
   }
 
   .brand {
@@ -259,3 +259,160 @@
   }
 }
 
+/* Label pendek hanya di navigasi bawah; sidebar desktop memakai label lengkap */
+.navLabelFull {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .navLabelFull {
+    display: inline;
+  }
+
+  .navLabelShort {
+    display: none;
+  }
+}
+
+/* ══ Rombakan tampilan: navigasi bernuansa Jepang hangat ══ */
+
+/* Ponsel: bilah bawah dari kertas washi, garis rambut emas di atasnya */
+.nav {
+  background: color-mix(in srgb, var(--color-surface) 92%, var(--color-gold-soft));
+  border-top: 0;
+  box-shadow: 0 -8px 24px -16px rgba(107, 21, 32, 0.35);
+}
+
+.nav::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold) 30%, var(--color-gold) 70%, transparent);
+  opacity: 0.55;
+}
+
+.navLink {
+  position: relative;
+}
+
+/* Penanda menu aktif di ponsel: garis pendek di atas ikon (bukan titik) */
+.navLink[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 24px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--color-primary);
+  transform: translateX(-50%);
+}
+
+.navLink[aria-current="page"] svg {
+  stroke-width: 2.4;
+}
+
+/* Merek: cap hanko + nama mincho (hanya tampil di sidebar desktop) */
+.brandSeal {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 7px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, #fff 22%, transparent), 0 6px 14px -6px rgba(107, 21, 32, 0.6);
+  transform: rotate(-4deg);
+}
+
+.brandText {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-text);
+  letter-spacing: 0.04em;
+}
+
+.brandTag {
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 900px) {
+  /* Sidebar: washi lebih dalam, motif seigaiha memudar di bawah */
+  .nav {
+    background-color: var(--color-paper-deep);
+    background-image: linear-gradient(to bottom, var(--color-paper-deep) 55%, transparent), var(--pattern-seigaiha);
+    background-size: 100% 100%, 40px 20px;
+    background-repeat: no-repeat, repeat;
+    border-right: 0;
+    box-shadow: inset -1px 0 0 color-mix(in srgb, var(--color-gold) 30%, var(--color-border));
+  }
+
+  .nav::before {
+    display: none;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0 var(--space-2) var(--space-5);
+    margin-bottom: var(--space-3);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
+  }
+
+  .navLink {
+    color: color-mix(in srgb, var(--color-text) 72%, transparent);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .navLink:hover {
+    background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+    color: var(--color-text);
+  }
+
+  /* Menu aktif: kartu kertas putih, teks beni, garis emas di kiri */
+  .navLink[aria-current="page"] {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+    box-shadow: var(--shadow-paper);
+  }
+
+  .navLink[aria-current="page"]::before {
+    top: 22%;
+    bottom: 22%;
+    background: var(--color-gold);
+  }
+
+  .navLink[aria-current="page"]::after {
+    display: none;
+  }
+}
+
+/* ── Tema susu stroberi: logo stiker ── */
+.brandSeal {
+  border-radius: 50%;
+  background: linear-gradient(145deg, #e0606c, var(--color-primary));
+  color: #fff;
+  font-family: var(--font-display);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--color-primary-soft), 0 5px 12px -5px rgba(177, 42, 58, 0.7);
+  transform: rotate(-8deg);
+}

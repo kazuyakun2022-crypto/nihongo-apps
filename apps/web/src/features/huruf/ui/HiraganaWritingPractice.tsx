@@ -206,10 +206,13 @@ export function HiraganaWritingPractice({
   onBack: () => void;
 }) {
   const { speak } = useSpeech();
-  const [selectedChar, setSelectedChar] = useState<string>(initialChar);
+  const [selectedChar, setSelectedChar] = useState<string>(() =>
+    // Latihan ini khusus hiragana dasar; katakana/kanji dari tabel tidak punya data goresan di sini
+    HIRAGANA_BASIC.some((h) => h.char === initialChar) ? initialChar : "あ",
+  );
   const [showGuide, setShowGuide] = useState<boolean>(true);
   const [selectedColor, setSelectedColor] = useState<string>("#1f1a1c");
-  const [brushWidth, setBrushWidth] = useState<number>(14);
+  const [brushWidth, setBrushWidth] = useState<number>(10); // salah satu pilihan yang ada (10 / 18), supaya tombol aktif terlihat
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [showTips, setShowTips] = useState<boolean>(false);

@@ -17,15 +17,16 @@ const JAPANESE_CHAR = /[　-〿぀-ゟ゠-ヿ一-鿿！-｠]/;
 const LETTER = /\p{L}/u;
 const SINGLE_KANA = /^[ぁ-ゖァ-ヺ][ゃゅょャュョぁぃぅぇぉァィゥェォ]?$/;
 
-function getTts(voice: string): Promise<MsEdgeTTS> {
-  let instance = instances.get(voice);
+function getTts(voice: string, format = OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3): Promise<MsEdgeTTS> {
+  const key = `${voice}|${format}`;
+  let instance = instances.get(key);
   if (!instance) {
     instance = (async () => {
       const tts = new MsEdgeTTS();
-      await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
+      await tts.setMetadata(voice, format);
       return tts;
     })();
-    instances.set(voice, instance);
+    instances.set(key, instance);
   }
   return instance;
 }
@@ -104,11 +105,11 @@ async function synthesizeSegment(segment: Segment, voiceType: "nanami" | "keita"
     return await streamToBuffer(await getTts(voice), segment.text, prosody);
   } catch {
     // Koneksi websocket bisa putus saat idle: buang instance lama lalu coba sekali lagi.
-    instances.delete(voice);
+    instances.delete(`${voice}|${OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3}`);
     try {
       return await streamToBuffer(await getTts(voice), segment.text, prosody);
     } catch {
-      instances.delete(voice);
+      instances.delete(`${voice}|${OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3}`);
       const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${segment.lang}&client=tw-ob&q=${encodeURIComponent(segment.text.slice(0, 200))}`;
       const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
       if (!res.ok) throw new Error("Fallback TTS failed");
@@ -148,22 +149,28 @@ export async function synthesizeChildVoice(
 }
 
 /**
- * Suara contoh pelafalan (huruf, kosakata) dengan Nanami bernada sedikit tinggi supaya terdengar imut,
- * dan sedikit diperlambat supaya bunyi tiap mora jelas untuk ditirukan. Di atas ±16% Edge makin sering salah
- * ucap (きって → しって, にょ → にゃ). Menaikkan nada sesudahnya (pitchShift) mengaburkan konsonan k, jadi
- * jangan dipakai di sini.
+ * Suara contoh pelafalan (huruf, kosakata): Nanami, 96 kbps supaya konsonan (s/sh/ts, h/f) tidak pecah.
+ * Huruf tunggal memakai nada alami dan tempo lambat: nada yang dinaikkan membuat vokal tipis dan konsonan
+ * kabur saat diputar dari speaker ponsel. Kata hanya dinaikkan sedikit. Di atas ±16% Edge makin sering salah
+ * ucap (きって → しって, にょ → にゃ); menaikkan nada sesudahnya (pitchShift) juga mengaburkan konsonan k.
  */
+const PRON_VOICE = "ja-JP-NanamiNeural";
+const PRON_FORMAT = OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3;
+
 export async function synthesizePronunciation(text: string): Promise<Buffer> {
   const trimmed = text.slice(0, 200).trim();
+  const single = SINGLE_KANA.test(trimmed);
   // Huruf tunggal dibacakan sebagai 「katakana」: dalam hiragana Edge membacanya seperti partikel/potongan kata
   // (へ → "ha", ふ → "furu"), dan tanpa tanda kutip ujungnya terpotong kasar (イ → "ii", ハ → "hat")
-  const clean = SINGLE_KANA.test(trimmed) ? `「${trimmed.replace(/[ぁ-ゖ]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60))}」` : trimmed;
+  const clean = single ? `「${trimmed.replace(/[ぁ-ゖ]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60))}」` : trimmed;
   if (!clean) throw new Error("Teks tidak bisa dibacakan");
-  const prosody: Prosody = { pitch: "+16%", rate: "-5%" };
+  const prosody: Prosody = single
+    ? { pitch: "+4%", rate: "-18%", volume: "+20%" }
+    : { pitch: "+8%", rate: "-10%", volume: "+15%" };
   try {
-    return await streamToBuffer(await getTts("ja-JP-NanamiNeural"), clean, prosody);
+    return await streamToBuffer(await getTts(PRON_VOICE, PRON_FORMAT), clean, prosody);
   } catch {
-    instances.delete("ja-JP-NanamiNeural");
-    return streamToBuffer(await getTts("ja-JP-NanamiNeural"), clean, prosody);
+    instances.delete(`${PRON_VOICE}|${PRON_FORMAT}`);
+    return streamToBuffer(await getTts(PRON_VOICE, PRON_FORMAT), clean, prosody);
   }
 }

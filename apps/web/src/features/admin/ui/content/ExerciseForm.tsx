@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
+import { useModalBehavior } from "@/shared/ui/useModalBehavior";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import type { QuizInput, QuizItem } from "@/features/admin/data/contentApi";
 import { EXERCISES, EXERCISE_ORDER, SKILLS, SKILL_ORDER, type ExerciseType } from "@/shared/lib/exercises";
@@ -115,6 +116,8 @@ export function ExerciseForm({
 }) {
   const [d, setD] = useState<Draft>(() => fromItem(item));
   const [saving, setSaving] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  useModalBehavior(formRef, onClose, saving);
   const [error, setError] = useState<string | null>(null);
   const meta = EXERCISES[d.type];
   const set = (patch: Partial<Draft>) => setD((prev) => ({ ...prev, ...patch }));
@@ -156,8 +159,8 @@ export function ExerciseForm({
   };
 
   return (
-    <div className={adminStyles.modalBackdrop} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form className={`${adminStyles.modalContent} ${styles.modalWide}`} onSubmit={submit} role="dialog" aria-modal="true" aria-label={`${item ? "Ubah" : "Tambah"} ${noun}`}>
+    <div className={adminStyles.modalBackdrop} onMouseDown={(e) => e.target === e.currentTarget && !saving && onClose()}>
+      <form ref={formRef} className={`${adminStyles.modalContent} ${styles.modalWide}`} onSubmit={submit} role="dialog" aria-modal="true" aria-label={`${item ? "Ubah" : "Tambah"} ${noun}`}>
         <h2 className={adminStyles.modalTitle}>{item ? "Ubah" : "Tambah"} {noun}</h2>
 
         {children && <div className={styles.formGrid}>{children}</div>}

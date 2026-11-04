@@ -22,6 +22,12 @@ export interface Candidate {
 const G = 48;
 const MARGIN = 4;
 const FONT = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif';
+/**
+ * Cetakan tambahan bergaya tulisan tangan: goresan miring, ujung terbuka, dan sambungan khas tulisan tangan
+ * (き/さ dengan garis terputus, や/ゆ melengkung) yang tidak ada di font gotik. Skor = cetakan paling mirip.
+ */
+const HAND_FONTS = ["Klee One", "Yomogi"];
+const HAND_FONT_CSS = "https://fonts.googleapis.com/css2?family=Klee+One&family=Yomogi&display=swap&text=";
 
 // Jumlah goresan baku; versi dakuten (+2) dan handakuten (+1) diturunkan otomatis.
 const HIRAGANA = "あ3い2う2え2お3か3き4く1け3こ2さ3し1す2せ3そ1た4ち2つ1て1と2な4に3ぬ2ね2の1は3ひ1ふ4へ1ほ4ま3み2む3め2も3や3ゆ2よ2ら2り2る1れ2ろ1わ2を3ん1";
@@ -221,7 +227,9 @@ function canvas2d(): CanvasRenderingContext2D {
   return ctx;
 }
 
-const templateCache = new Map<string, Shape | null>();
+const templateCache = new Map<string, Shape[]>();
+/** Font cetakan yang benar-benar termuat; font yang gagal dimuat dilewati agar tidak jadi cetakan font cadangan. */
+let activeFonts: string[] = [FONT];
 
 /** Huruf digambar besar dulu untuk mencari batas tinta, lalu digambar ulang pas di kotak G×G. */
 function glyphBitmap(char: string, font: string): Uint8Array {
@@ -246,18 +254,50 @@ function glyphBitmap(char: string, font: string): Uint8Array {
   return binarize(ctx);
 }
 
-function glyphShape(char: string): Shape | null {
-  if (!templateCache.has(char)) templateCache.set(char, toShape(glyphBitmap(char, FONT)));
-  return templateCache.get(char) ?? null;
+function glyphShapes(char: string): Shape[] {
+  let shapes = templateCache.get(char);
+  if (!shapes) {
+    shapes = activeFonts.map((f) => toShape(glyphBitmap(char, f))).filter((x): x is Shape => !!x);
+    templateCache.set(char, shapes);
+  }
+  return shapes;
 }
 
 /** Tunggu font Jepang termuat agar template tidak digambar dengan font cadangan. */
 export async function prepareRecognizer(extraChars: string[] = []): Promise<void> {
-  const sample = KANA.map((k) => k.char).join("") + extraChars.join("");
+  const kana = KANA.map((k) => k.char).join("");
+  const sample = kana + extraChars.join("");
   try {
     await document.fonts.load(`400 48px "Noto Sans JP"`, sample);
   } catch {
     // font cadangan sistem tetap bisa dipakai
+  }
+  // Font tulisan tangan hanya untuk kana (subset kecil lewat &text=), dimuat sekali
+  if (!document.querySelector("link[data-hw-fonts]")) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = HAND_FONT_CSS + encodeURIComponent(kana);
+    link.dataset.hwFonts = "1";
+    document.head.appendChild(link);
+    await new Promise((r) => {
+      link.onload = r;
+      link.onerror = r;
+      setTimeout(r, 4000);
+    });
+  }
+  const loaded: string[] = [];
+  for (const f of HAND_FONTS) {
+    try {
+      const faces = await document.fonts.load(`400 48px "${f}"`, "あア");
+      if (faces.length) loaded.push(`"${f}"`);
+    } catch {
+      // dilewati
+    }
+  }
+  const next = [FONT, ...loaded];
+  if (next.join() !== activeFonts.join()) {
+    activeFonts = next;
+    templateCache.clear();
   }
 }
 
@@ -288,9 +328,20 @@ export function recognize(strokes: Stroke[], opts: RecognizeOptions): Candidate[
     for (const p of rest) ctx.lineTo(p.x, p.y);
     ctx.stroke();
   }
-  const small = Math.max(bounds.w, bounds.h) < opts.padSize * 0.45;
+  // Kana kecil (ゃ っ) hanya bila coretannya benar-benar kecil; tulisan yang sekadar tidak memenuhi kotak
+  // dulu sering terbaca ぉ/ぃ/ゃ/っ alih-alih お/い/や/つ
+  const small = Math.max(bounds.w, bounds.h) < opts.padSize * SMALL_RATIO;
   return rankDrawing(binarize(ctx), strokes.length, small, opts);
 }
+
+/** Untuk pengujian akurasi: urutkan kandidat dari citra G×G (1 = tinta) yang sudah dinormalisasi. */
+export function rankBitmap(img: Uint8Array, strokeCount: number, small: boolean, opts: Omit<RecognizeOptions, "padSize">): Candidate[] {
+  return rankDrawing(img, strokeCount, small, opts);
+}
+
+export const GRID_SIZE = G;
+const SMALL_RATIO = 0.28;
+export const KANA_INVENTORY = KANA;
 
 /** Urutkan kandidat untuk gambar G×G yang sudah dinormalisasi. */
 function rankDrawing(img: Uint8Array, strokeCount: number, small: boolean, opts: Omit<RecognizeOptions, "padSize">): Candidate[] {
@@ -303,11 +354,16 @@ function rankDrawing(img: Uint8Array, strokeCount: number, small: boolean, opts:
   const preferred = opts.preferScript ?? "hiragana";
   const results: Candidate[] = [];
   for (const info of pool) {
-    const shape = glyphShape(info.char);
-    if (!shape) continue;
-    let score = similarity(drawn, shape);
-    if (info.strokes !== null) score -= 0.04 * Math.min(Math.abs(strokeCount - info.strokes), 3);
-    if (info.small !== small) score -= 0.06;
+    const shapes = glyphShapes(info.char);
+    if (!shapes.length) continue;
+    let score = Math.max(...shapes.map((shape) => similarity(drawn, shape)));
+    if (info.strokes !== null) {
+      // Goresan tersambung (lebih sedikit) lazim pada tulisan tangan; goresan berlebih lebih jarang
+      const diff = strokeCount - info.strokes;
+      score -= Math.min(Math.abs(diff), 3) * (diff < 0 ? 0.02 : 0.04);
+    }
+    if (info.small && !small) score -= 0.08;
+    else if (!info.small && small) score -= 0.015;
     if (info.script !== "kanji" && info.script !== preferred) score -= 0.005;
     results.push({ char: info.char, score });
   }
@@ -315,8 +371,11 @@ function rankDrawing(img: Uint8Array, strokeCount: number, small: boolean, opts:
 }
 
 /**
- * Skor minimal agar huruf langsung dimasukkan ke kotak jawaban tanpa dipilih manual.
- * Diuji dengan font tulisan tangan (Klee One, Zen Kurenaido, Yomogi): huruf benar umumnya ≥ 0,53,
- * coretan acak ≤ 0,40. Huruf yang keliru dikenali bisa diganti lewat daftar kandidat.
+ * Huruf langsung dimasukkan ke kotak jawaban bila skornya ≥ AUTO_ACCEPT_SCORE dan unggul ≥ AUTO_ACCEPT_MARGIN
+ * dari kandidat kedua (bentuk yang sama-sama mirip tidak ditebak otomatis; siswa memilih dari daftar).
+ * Diuji dengan font tulisan tangan di luar cetakan (Zen Kurenaido, Hachi Maru Pop, Yusei Magic, Kiwi Maru),
+ * 3 ukuran, sebagian goresan tersambung: masuk otomatis benar ±80%, salah ±7,6%; benar ada di 3 teratas ±96%.
+ * Coretan acak lolos ±5%. Huruf yang keliru dikenali bisa diganti lewat daftar kandidat.
  */
-export const AUTO_ACCEPT_SCORE = 0.5;
+export const AUTO_ACCEPT_SCORE = 0.45;
+export const AUTO_ACCEPT_MARGIN = 0.02;

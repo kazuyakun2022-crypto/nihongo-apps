@@ -98,12 +98,12 @@
 
 .status_published {
   background: #dcfce7;
-  color: #15803d;
+  color: var(--color-success);
 }
 
 .status_draft {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
 }
 
 .status_review {
@@ -207,12 +207,12 @@
 .choiceRow input[type="radio"] {
   width: 18px;
   height: 18px;
-  accent-color: #16a34a;
+  accent-color: var(--color-success);
   flex-shrink: 0;
 }
 
 .choiceCorrect {
-  border-color: #16a34a;
+  border-color: var(--color-success);
   background: #f0fdf4;
 }
 
@@ -222,12 +222,12 @@
   font-size: 0.88rem;
   font-weight: 600;
   background: #dcfce7;
-  color: #166534;
+  color: var(--color-success);
 }
 
 .messageError {
   background: #fee2e2;
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
 .breadcrumb {
@@ -250,7 +250,7 @@
 }
 
 .correct {
-  color: #15803d;
+  color: var(--color-success);
   font-weight: 700;
 }
 
@@ -579,12 +579,12 @@
 }
 
 .btnSmallDanger:hover:not(:disabled) {
-  border-color: #dc2626;
-  color: #dc2626;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .hintError {
-  color: #b91c1c;
+  color: var(--color-danger);
   font-weight: 600;
 }
 
@@ -761,4 +761,52 @@
   border-radius: 10px;
   background: #fff;
   border: 1px solid var(--color-border);
+}
+
+/* Pesan galat bisa ditutup */
+.messageClose {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.messageClose:hover {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: var(--kf-fadeIn) var(--motion-fast) ease backwards;
+}
+
+/* Kartu kategori memotong luapan (overflow:hidden), jadi cincin fokus digambar di dalam tepinya */
+.catCover:focus-visible {
+  outline-offset: -3px;
+}
+
+/* ── Rombakan tampilan: Kelola konten (nuansa Jepang hangat) ── */
+.catCard,
+.startCard {
+  border: 0;
+  border-radius: 18px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-paper);
+}
+.catTitle,
+.chapterTitle {
+  font-family: var(--font-display);
+}
+.levelPillActive {
+  box-shadow: 0 6px 14px -8px color-mix(in srgb, var(--color-primary) 80%, transparent);
 }

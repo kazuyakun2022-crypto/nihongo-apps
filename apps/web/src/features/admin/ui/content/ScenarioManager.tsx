@@ -9,6 +9,7 @@ import { LevelPicker, useLevelParam } from "./ChapterManager";
 import { STATUS_LABEL, useFlash } from "./ContentShell";
 import { FormModal, type FieldDef, type FormValues } from "./FormModal";
 import styles from "./content.module.css";
+import { askConfirm } from "@/shared/ui/confirmDialog";
 
 function fields(chapters: ChapterRow[]): FieldDef[] {
   return [
@@ -95,7 +96,7 @@ export function ScenarioManager() {
   }, [load]);
 
   async function remove(s: ScenarioRow) {
-    if (!confirm(`Hapus skenario "${s.title}"?`)) return;
+    if (!(await askConfirm({ title: `Hapus skenario "${s.title}"?`, description: "Skenario ini tidak akan bisa dipilih pelajar lagi." }))) return;
     try {
       const res = await contentApi.deleteScenario(s.id);
       await load();

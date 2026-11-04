@@ -304,7 +304,10 @@ export const POSES: Record<PoseId, PoseRig> = {
     },
   },  dielus: {
     id: "dielus",
-    file: "base-dielus.webp",
+    // Gambar utuh (bukan base-dielus.webp): base-dielus sudah dihapus mulutnya, padahal pose ini tidak
+    // menggambar mulut sendiri (mouth: null), sehingga Miu tampil tanpa mulut saat dielus. Selain mulut,
+    // kedua gambar identik piksel demi piksel.
+    file: "maskot-dielus.webp",
     still: "maskot-dielus.webp",
     // Mata terpejam senang dan mulut ":3" sudah ada di gambar
     eyes: null,

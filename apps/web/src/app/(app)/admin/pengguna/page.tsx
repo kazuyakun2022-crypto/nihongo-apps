@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import {
@@ -13,6 +13,21 @@ import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
 import { SkeletonTableRows } from "@/shared/ui/Skeleton";
 import { Pagination } from "@/features/admin/ui/Pagination";
 import styles from "@/app/(app)/admin/admin.module.css";
+
+const ROLE_LABEL: Record<string, string> = {
+  student: "Pelajar",
+  premium: "Premium",
+  teacher: "Guru",
+  admin: "Admin",
+  super_admin: "Super Admin",
+  guest: "Tamu",
+};
+
+const STATUS: Record<string, { label: string; cls: "status_active" | "status_suspended" | "status_pending" }> = {
+  active: { label: "Aktif", cls: "status_active" },
+  suspended: { label: "Ditangguhkan", cls: "status_suspended" },
+  pending_deletion: { label: "Menunggu dihapus", cls: "status_pending" },
+};
 
 export default function AdminPenggunaPage() {
   const { user } = useAuth();
@@ -36,6 +51,12 @@ export default function AdminPenggunaPage() {
   const [grantModalUser, setGrantModalUser] = useState<AdminUserItem | null>(null);
   const [grantDays, setGrantDays] = useState(30);
   const [grantReason, setGrantReason] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [usersError, setUsersError] = useState<string | null>(null);
+  /** Kata kunci yang benar-benar dicari (bukan yang sedang diketik). */
+  const [appliedQuery, setAppliedQuery] = useState("");
+  const requestRef = useRef(0);
+  const msgTimer = useRef<number | undefined>(undefined);
 
   const isSuperAdmin = user?.role === "super_admin";
   const isAdmin = user?.role === "admin" || isSuperAdmin;
@@ -53,17 +74,22 @@ export default function AdminPenggunaPage() {
   useEffect(() => {
     if (isAdmin) loadUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin, selectedRoleFilter, page, pageSize]);
+  }, [isAdmin, selectedRoleFilter, page, pageSize, appliedQuery]);
 
   /** Pencarian & ganti filter selalu mulai dari halaman pertama. */
   function searchFromStart() {
-    if (page === 1) loadUsers();
-    else setPage(1);
+    const q = userQuery.trim();
+    if (q !== appliedQuery) {
+      setAppliedQuery(q);
+      setPage(1);
+    } else if (page !== 1) setPage(1);
+    else loadUsers();
   }
 
   const showMsg = (text: string, error = false) => {
+    window.clearTimeout(msgTimer.current);
     setActionMessage({ text, error });
-    setTimeout(() => setActionMessage(null), 4000);
+    msgTimer.current = window.setTimeout(() => setActionMessage(null), 4000);
   };
 
   async function loadStats() {
@@ -76,73 +102,101 @@ export default function AdminPenggunaPage() {
   }
 
   async function loadUsers() {
+    // Hanya respons permintaan terakhir yang dipakai (ganti filter cepat tidak menimpa hasil baru dengan yang lama)
+    const req = ++requestRef.current;
     setLoading(true);
+    setUsersError(null);
     try {
       const res = await adminApi.searchUsers({
-        q: userQuery || undefined,
+        q: appliedQuery || undefined,
         role: (selectedRoleFilter as Role) || undefined,
         page,
         pageSize,
       });
+      if (req !== requestRef.current) return;
+      // Baris terakhir di halaman ini hilang (mis. setelah ganti peran): mundur ke halaman terakhir yang ada
+      const lastPage = Math.max(1, Math.ceil(res.total / pageSize));
+      if (page > lastPage) {
+        setPage(lastPage);
+        return;
+      }
       setUsers(res.items);
       setUsersTotal(res.total);
     } catch (e: any) {
-      showMsg(e.message || "Gagal memuat pengguna", true);
+      if (req === requestRef.current) setUsersError(e.message || "Gagal memuat pengguna.");
     } finally {
-      setLoading(false);
+      if (req === requestRef.current) setLoading(false);
     }
   }
 
-  async function handleRoleChange() {
-    if (!roleModalUser) return;
+  /** Satu aksi berjalan dalam satu waktu: tombol dikunci supaya klik ganda tidak mengirim dua kali (mis. Premium ganda). */
+  async function runAction(action: () => Promise<void>, failText: string) {
+    if (busy) return;
+    setBusy(true);
     try {
-      await adminApi.changeRole(roleModalUser.id, newRole);
-      showMsg(`Role ${roleModalUser.displayName} berhasil diubah menjadi ${newRole}`);
+      await action();
+      loadUsers();
+      loadStats();
+    } catch (e: any) {
+      showMsg(e.message || failText, true);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function closeModals() {
+    if (busy) return;
+    setRoleModalUser(null);
+    setSuspendModalUser(null);
+    setGrantModalUser(null);
+  }
+
+  // Esc menutup modal (kecuali sedang menyimpan)
+  useEffect(() => {
+    if (!roleModalUser && !suspendModalUser && !grantModalUser) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeModals();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roleModalUser, suspendModalUser, grantModalUser, busy]);
+
+  function handleRoleChange() {
+    const target = roleModalUser;
+    if (!target) return;
+    void runAction(async () => {
+      await adminApi.changeRole(target.id, newRole);
+      showMsg(`Peran ${target.displayName} diubah menjadi ${ROLE_LABEL[newRole] ?? newRole}.`);
       setRoleModalUser(null);
-      loadUsers();
-      loadStats();
-    } catch (e: any) {
-      showMsg(e.message || "Gagal mengubah role", true);
-    }
+    }, "Gagal mengubah peran");
   }
 
-  async function handleSuspend() {
-    if (!suspendModalUser) return;
-    try {
-      await adminApi.suspendUser(suspendModalUser.id, suspendReason || "Ditangguhkan oleh administrator");
-      showMsg(`Pengguna ${suspendModalUser.displayName} berhasil ditangguhkan.`);
+  function handleSuspend() {
+    const target = suspendModalUser;
+    if (!target) return;
+    void runAction(async () => {
+      await adminApi.suspendUser(target.id, suspendReason.trim() || "Ditangguhkan oleh administrator");
+      showMsg(`Pengguna ${target.displayName} berhasil ditangguhkan.`);
       setSuspendModalUser(null);
-      setSuspendReason("");
-      loadUsers();
-      loadStats();
-    } catch (e: any) {
-      showMsg(e.message || "Gagal suspend pengguna", true);
-    }
+    }, "Gagal menangguhkan pengguna");
   }
 
-  async function handleUnsuspend(target: AdminUserItem) {
-    try {
+  function handleUnsuspend(target: AdminUserItem) {
+    void runAction(async () => {
       await adminApi.unsuspendUser(target.id);
       showMsg(`Pengguna ${target.displayName} telah diaktifkan kembali.`);
-      loadUsers();
-      loadStats();
-    } catch (e: any) {
-      showMsg(e.message || "Gagal mengaktifkan pengguna", true);
-    }
+    }, "Gagal mengaktifkan pengguna");
   }
 
-  async function handleGrantSubscription() {
-    if (!grantModalUser) return;
-    try {
-      await adminApi.grantSubscription(grantModalUser.id, grantDays, grantReason || "Diberikan oleh Super Admin");
-      showMsg(`Akses Premium ${grantDays} hari berhasil diberikan kepada ${grantModalUser.displayName}`);
+  const grantDaysValid = Number.isInteger(grantDays) && grantDays >= 1 && grantDays <= 3650;
+
+  function handleGrantSubscription() {
+    const target = grantModalUser;
+    if (!target || !grantDaysValid) return;
+    void runAction(async () => {
+      await adminApi.grantSubscription(target.id, grantDays, grantReason.trim() || "Diberikan oleh Super Admin");
+      showMsg(`Akses Premium ${grantDays} hari diberikan kepada ${target.displayName}.`);
       setGrantModalUser(null);
-      setGrantReason("");
-      loadUsers();
-      loadStats();
-    } catch (e: any) {
-      showMsg(e.message || "Gagal memberikan langganan", true);
-    }
+    }, "Gagal memberikan langganan");
   }
 
   if (!isAdmin) {
@@ -191,6 +245,7 @@ export default function AdminPenggunaPage() {
               key={p.id}
               type="button"
               className={`${styles.rolePill} ${selectedRoleFilter === p.id ? styles.rolePillActive : ""}`}
+              aria-pressed={selectedRoleFilter === p.id}
               onClick={() => {
                 setSelectedRoleFilter(p.id);
                 setPage(1);
@@ -202,34 +257,27 @@ export default function AdminPenggunaPage() {
           ))}
         </div>
 
-        <div className={styles.filterBar}>
+        {/* Filter peran cukup lewat tombol di atas (sebelumnya dobel dengan dropdown berbahasa Inggris) */}
+        <form
+          className={styles.filterBar}
+          role="search"
+          onSubmit={(e) => {
+            e.preventDefault();
+            searchFromStart();
+          }}
+        >
           <input
-            type="text"
+            type="search"
             placeholder="Cari nama atau email..."
+            aria-label="Cari nama atau email pengguna"
             className={styles.searchInput}
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && searchFromStart()}
           />
-          <select
-            className={styles.selectInput}
-            value={selectedRoleFilter}
-            onChange={(e) => {
-              setSelectedRoleFilter(e.target.value);
-              setPage(1);
-            }}
-          >
-            <option value="">Semua Role</option>
-            <option value="student">Student</option>
-            <option value="premium">Premium</option>
-            <option value="teacher">Teacher</option>
-            <option value="admin">Admin</option>
-            <option value="super_admin">Super Admin</option>
-          </select>
-          <button type="button" className={`${styles.btnSm} ${styles.btnPrimary}`} onClick={searchFromStart}>
-            Cari ({usersTotal})
+          <button type="submit" className={`${styles.btnSm} ${styles.btnPrimary}`}>
+            Cari
           </button>
-        </div>
+        </form>
 
         <div className={styles.tableWrap}>
           <table className={styles.table}>
@@ -243,12 +291,21 @@ export default function AdminPenggunaPage() {
               </tr>
             </thead>
             <tbody>
-              {loading && users.length === 0 ? (
+              {usersError ? (
+                <tr>
+                  <td colSpan={5} className={styles.emptyState} role="alert">
+                    {usersError}{" "}
+                    <button type="button" className={`${styles.btnSm} ${styles.btnSecondary}`} onClick={loadUsers}>
+                      Coba lagi
+                    </button>
+                  </td>
+                </tr>
+              ) : loading && users.length === 0 ? (
                 <SkeletonTableRows rows={8} columns={5} />
               ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={5} className={styles.emptyState}>
-                    Tidak ada pengguna ditemukan.
+                    {appliedQuery ? `Tidak ada pengguna yang cocok dengan "${appliedQuery}".` : "Tidak ada pengguna ditemukan."}
                   </td>
                 </tr>
               ) : (
@@ -259,25 +316,25 @@ export default function AdminPenggunaPage() {
                     <tr key={u.id}>
                       <td>
                         <strong>{u.displayName}</strong>
-                        {isSelf && <small style={{ marginLeft: "6px", color: "#6366f1" }}>(Anda)</small>}
+                        {isSelf && <small style={{ marginLeft: "6px", color: "var(--color-primary)" }}>(Anda)</small>}
                       </td>
                       <td>{u.email ?? "-"}</td>
                       <td>
-                        <span className={`${styles.badge} ${styles[`role_${u.role}`] || ""}`}>{u.role}</span>
+                        <span className={`${styles.badge} ${styles[`role_${u.role}`] || ""}`}>{ROLE_LABEL[u.role] ?? u.role}</span>
                       </td>
                       <td>
-                        <span className={u.status === "active" ? styles.status_active : styles.status_suspended}>
-                          {u.status === "active" ? "Aktif" : "Ditangguhkan"}
+                        <span className={styles[(STATUS[u.status] ?? STATUS.suspended).cls]}>
+                          {(STATUS[u.status] ?? { label: u.status }).label}
                         </span>
                       </td>
                       <td>
                         {isSelf && (
-                          <span style={{ fontSize: "0.75rem", color: "#6366f1", fontStyle: "italic", fontWeight: 600 }}>
+                          <span style={{ fontSize: "0.75rem", color: "var(--color-primary)", fontStyle: "italic", fontWeight: 600 }}>
                             (Akun Anda)
                           </span>
                         )}
                         {!isSelf && !canEdit && (
-                          <span style={{ fontSize: "0.75rem", color: "#64748b", fontStyle: "italic", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                          <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", fontStyle: "italic", display: "inline-flex", alignItems: "center", gap: "4px" }}>
                             Terproteksi (Super Admin)
                           </span>
                         )}
@@ -286,6 +343,7 @@ export default function AdminPenggunaPage() {
                             <button
                               type="button"
                               className={`${styles.btnSm} ${styles.btnSecondary}`}
+                              disabled={busy}
                               onClick={() => {
                                 setRoleModalUser(u);
                                 setNewRole(u.role);
@@ -298,7 +356,13 @@ export default function AdminPenggunaPage() {
                               <button
                                 type="button"
                                 className={`${styles.btnSm} ${styles.btnSuccess}`}
-                                onClick={() => setGrantModalUser(u)}
+                                disabled={busy}
+                                onClick={() => {
+                                  // Modal selalu mulai bersih, tidak membawa isian pengguna sebelumnya
+                                  setGrantDays(30);
+                                  setGrantReason("");
+                                  setGrantModalUser(u);
+                                }}
                               >
                                 + Premium
                               </button>
@@ -308,7 +372,11 @@ export default function AdminPenggunaPage() {
                               <button
                                 type="button"
                                 className={`${styles.btnSm} ${styles.btnDanger}`}
-                                onClick={() => setSuspendModalUser(u)}
+                                disabled={busy}
+                                onClick={() => {
+                                  setSuspendReason("");
+                                  setSuspendModalUser(u);
+                                }}
                               >
                                 Suspend
                               </button>
@@ -318,6 +386,7 @@ export default function AdminPenggunaPage() {
                               <button
                                 type="button"
                                 className={`${styles.btnSm} ${styles.btnSuccess}`}
+                                disabled={busy}
                                 onClick={() => handleUnsuspend(u)}
                               >
                                 Aktifkan
@@ -348,14 +417,15 @@ export default function AdminPenggunaPage() {
 
       {/* MODAL: UBAH ROLE */}
       {roleModalUser && (
-        <div className={styles.modalBackdrop}>
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Ubah Peran Pengguna</h3>
-            <p style={{ margin: 0, color: "#64748b" }}>
+        <div className={styles.modalBackdrop} onMouseDown={(e) => e.target === e.currentTarget && closeModals()}>
+          <div className={styles.modalContent} role="dialog" aria-modal="true" aria-labelledby="modal-role-title">
+            <h3 id="modal-role-title" className={styles.modalTitle}>Ubah Peran Pengguna</h3>
+            <p style={{ margin: 0, color: "var(--color-text-muted)" }}>
               Pilih peran baru untuk <strong>{roleModalUser.displayName}</strong>:
             </p>
             <select
               className={styles.selectInput}
+              aria-label="Peran baru"
               value={newRole}
               onChange={(e) => setNewRole(e.target.value as Role)}
             >
@@ -369,12 +439,18 @@ export default function AdminPenggunaPage() {
               <button
                 type="button"
                 className={`${styles.btnSm} ${styles.btnSecondary}`}
-                onClick={() => setRoleModalUser(null)}
+                onClick={closeModals}
+                disabled={busy}
               >
                 Batal
               </button>
-              <button type="button" className={`${styles.btnSm} ${styles.btnPrimary}`} onClick={handleRoleChange}>
-                Simpan Perubahan
+              <button
+                type="button"
+                className={`${styles.btnSm} ${styles.btnPrimary}`}
+                onClick={handleRoleChange}
+                disabled={busy || newRole === roleModalUser.role}
+              >
+                {busy ? "Menyimpan…" : "Simpan Perubahan"}
               </button>
             </div>
           </div>
@@ -383,16 +459,19 @@ export default function AdminPenggunaPage() {
 
       {/* MODAL: SUSPEND PENGGUNA */}
       {suspendModalUser && (
-        <div className={styles.modalBackdrop}>
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Tangguhkan / Blokir Akun</h3>
-            <p style={{ margin: 0, color: "#dc2626" }}>
+        <div className={styles.modalBackdrop} onMouseDown={(e) => e.target === e.currentTarget && closeModals()}>
+          <div className={styles.modalContent} role="dialog" aria-modal="true" aria-labelledby="modal-suspend-title">
+            <h3 id="modal-suspend-title" className={styles.modalTitle}>Tangguhkan / Blokir Akun</h3>
+            <p style={{ margin: 0, color: "var(--color-danger)" }}>
               Anda akan menangguhkan akun <strong>{suspendModalUser.displayName}</strong>. Semua sesi login pengguna ini akan
               segera dicabut.
             </p>
             <div className={styles.controlField}>
-              <label className={styles.fieldLabel}>Alasan Penangguhan</label>
+              <label className={styles.fieldLabel} htmlFor="suspend-reason">
+                Alasan Penangguhan
+              </label>
               <input
+                id="suspend-reason"
                 type="text"
                 className={styles.selectInput}
                 placeholder="Contoh: Pelanggaran ketentuan atau aktivitas mencurigakan"
@@ -404,12 +483,13 @@ export default function AdminPenggunaPage() {
               <button
                 type="button"
                 className={`${styles.btnSm} ${styles.btnSecondary}`}
-                onClick={() => setSuspendModalUser(null)}
+                onClick={closeModals}
+                disabled={busy}
               >
                 Batal
               </button>
-              <button type="button" className={`${styles.btnSm} ${styles.btnDanger}`} onClick={handleSuspend}>
-                Ya, Tangguhkan
+              <button type="button" className={`${styles.btnSm} ${styles.btnDanger}`} onClick={handleSuspend} disabled={busy}>
+                {busy ? "Memproses…" : "Ya, Tangguhkan"}
               </button>
             </div>
           </div>
@@ -418,26 +498,35 @@ export default function AdminPenggunaPage() {
 
       {/* MODAL: GRANT PREMIUM */}
       {grantModalUser && (
-        <div className={styles.modalBackdrop}>
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Beri Akses Premium Manual</h3>
-            <p style={{ margin: 0, color: "#64748b" }}>
+        <div className={styles.modalBackdrop} onMouseDown={(e) => e.target === e.currentTarget && closeModals()}>
+          <div className={styles.modalContent} role="dialog" aria-modal="true" aria-labelledby="modal-grant-title">
+            <h3 id="modal-grant-title" className={styles.modalTitle}>Beri Akses Premium Manual</h3>
+            <p style={{ margin: 0, color: "var(--color-text-muted)" }}>
               Berikan status Premium langsung kepada <strong>{grantModalUser.displayName}</strong>:
             </p>
             <div className={styles.controlField}>
-              <label className={styles.fieldLabel}>Durasi Hari</label>
+              <label className={styles.fieldLabel} htmlFor="grant-days">
+                Durasi Hari (1–3650)
+              </label>
               <input
+                id="grant-days"
                 type="number"
                 min="1"
                 max="3650"
+                inputMode="numeric"
                 className={styles.selectInput}
-                value={grantDays}
-                onChange={(e) => setGrantDays(parseInt(e.target.value, 10) || 30)}
+                value={Number.isNaN(grantDays) ? "" : grantDays}
+                onChange={(e) => setGrantDays(e.target.value === "" ? NaN : parseInt(e.target.value, 10))}
+                aria-invalid={!grantDaysValid}
               />
+              {!grantDaysValid && <small style={{ color: "var(--color-danger)" }}>Isi angka 1 sampai 3650.</small>}
             </div>
             <div className={styles.controlField}>
-              <label className={styles.fieldLabel}>Alasan Pemberian</label>
+              <label className={styles.fieldLabel} htmlFor="grant-reason">
+                Alasan Pemberian
+              </label>
               <input
+                id="grant-reason"
                 type="text"
                 className={styles.selectInput}
                 placeholder="Contoh: Reward kontribusi atau kompensasi"
@@ -449,12 +538,18 @@ export default function AdminPenggunaPage() {
               <button
                 type="button"
                 className={`${styles.btnSm} ${styles.btnSecondary}`}
-                onClick={() => setGrantModalUser(null)}
+                onClick={closeModals}
+                disabled={busy}
               >
                 Batal
               </button>
-              <button type="button" className={`${styles.btnSm} ${styles.btnSuccess}`} onClick={handleGrantSubscription}>
-                Beri Akses Premium
+              <button
+                type="button"
+                className={`${styles.btnSm} ${styles.btnSuccess}`}
+                onClick={handleGrantSubscription}
+                disabled={busy || !grantDaysValid}
+              >
+                {busy ? "Memproses…" : "Beri Akses Premium"}
               </button>
             </div>
           </div>

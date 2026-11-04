@@ -135,10 +135,10 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
 
       <form
         className={styles.composer}
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          send(draft);
-          setDraft("");
+          const text = draft;
+          if (await send(text)) setDraft((d) => (d === text ? "" : d));
         }}
       >
         <label htmlFor="chat-input" className="visually-hidden">
@@ -150,11 +150,11 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
           className={styles.input}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Tulis dalam bahasa Jepang…"
+          placeholder={turnsLeft === 0 ? "Giliran habis, akhiri percakapan untuk melihat laporan" : "Tulis dalam bahasa Jepang…"}
           autoComplete="off"
-          disabled={phase === "waiting"}
+          disabled={phase === "waiting" || turnsLeft === 0}
         />
-        <Button type="submit" disabled={phase === "waiting" || !draft.trim()}>
+        <Button type="submit" disabled={phase === "waiting" || !draft.trim() || turnsLeft === 0}>
           Kirim
         </Button>
       </form>

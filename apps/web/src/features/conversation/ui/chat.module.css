@@ -4,7 +4,7 @@
   text-align: center;
   gap: var(--space-4);
   padding: var(--space-6) var(--space-4);
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 .introTitle {
@@ -32,7 +32,7 @@
   grid-template-rows: auto 1fr auto auto;
   gap: var(--space-3);
   height: calc(100dvh - var(--nav-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--space-5));
-  animation: fadeIn var(--motion-base) var(--ease-entrance) both;
+  animation: var(--kf-fadeIn) var(--motion-base) var(--ease-entrance) backwards;
 }
 
 @media (min-width: 900px) {
@@ -75,7 +75,7 @@
   display: grid;
   gap: var(--space-1);
   max-width: 85%;
-  animation: fadeInUp var(--motion-fast) var(--ease-spring) both;
+  animation: var(--kf-fadeInUp) var(--motion-fast) var(--ease-spring) backwards;
 }
 
 .userRow {
@@ -164,7 +164,7 @@
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   transition: all var(--motion-fast) var(--ease-spring);
-  animation: fadeInUp var(--motion-fast) var(--ease-spring) both;
+  animation: var(--kf-fadeInUp) var(--motion-fast) var(--ease-spring) backwards;
 }
 
 .microFeedbackCard:hover {
@@ -239,7 +239,7 @@
   display: grid;
   gap: var(--space-2);
   background: var(--color-background-soft, var(--color-surface));
-  animation: fadeIn var(--motion-fast) var(--ease-entrance) both;
+  animation: var(--kf-fadeIn) var(--motion-fast) var(--ease-entrance) backwards;
 }
 
 .feedbackComparison {
@@ -338,4 +338,11 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
+}
+
+/* Keyframe yang dirujuk di atas tetapi belum pernah didefinisikan */
+@keyframes pulseSoft {
+  50% {
+    opacity: 0.55;
+  }
 }

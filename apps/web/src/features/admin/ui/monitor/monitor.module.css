@@ -768,7 +768,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  z-index: 50;
+  z-index: 1000;
 }
 
 .modal {
@@ -813,4 +813,30 @@
   .columnFill {
     transition: none;
   }
+}
+
+/* Disamakan dengan halaman admin lain (.container di admin.module.css): jarak antarbagian & tepi ponsel */
+.page {
+  gap: var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 12px;
+  }
+}
+
+/* ── Rombakan tampilan: Pemantauan (nuansa Jepang hangat) ── */
+.card,
+.kpi {
+  border: 0;
+  border-radius: 18px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-paper);
+}
+.sectionTitle,
+.miniTitle,
+.profileName,
+.kpiValue {
+  font-family: var(--font-display);
 }

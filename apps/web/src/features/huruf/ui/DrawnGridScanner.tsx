@@ -216,7 +216,7 @@ export function DrawnGridScanner({ cols, rows, onDone }: { cols: number; rows: n
   }
 
   /** Ambil gambar, periksa kualitas, cari kisi di resolusi lebih tinggi, lalu kirim (atau geser sudut manual). */
-  const takeShot = useCallback(
+  const takeShotInner = useCallback(
     async (source: CanvasImageSource | string, width: number, height: number, hint: Quad | null, force = false) => {
       const canvas = await loadCanvas(source, width, height, SEND_MAX);
       stopCamera();
@@ -250,6 +250,28 @@ export function DrawnGridScanner({ cols, rows, onDone }: { cols: number; rows: n
       setMode("adjust");
     },
     [cols, rows, onDone, stopCamera],
+  );
+
+  /** Satu pemeriksaan dalam satu waktu (ketukan ganda = dua kali kuota AI), dan galat tidak membuat pemindai macet. */
+  const shotBusy = useRef(false);
+  const [shotError, setShotError] = useState<string | null>(null);
+  const takeShot = useCallback(
+    async (...args: Parameters<typeof takeShotInner>) => {
+      if (shotBusy.current) return;
+      shotBusy.current = true;
+      setShotError(null);
+      try {
+        await takeShotInner(...args);
+      } catch {
+        stopCamera();
+        setMode("idle");
+        setShotError("Foto belum bisa diproses. Coba foto ulang atau pilih gambar lain.");
+      } finally {
+        shotBusy.current = false;
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [takeShotInner],
   );
 
   // Gambar kamera + kisi, cari kisi berkala, ambil foto otomatis saat kisi stabil dan foto cukup jelas
@@ -308,7 +330,12 @@ export function DrawnGridScanner({ cols, rows, onDone }: { cols: number; rows: n
     reader.onload = async () => {
       const img = new Image();
       img.src = String(reader.result);
-      await img.decode();
+      try {
+        await img.decode();
+      } catch {
+        setShotError("Gambar tidak bisa dibuka. Pilih foto lain (JPG atau PNG).");
+        return;
+      }
       await takeShot(img, img.naturalWidth, img.naturalHeight, null);
     };
     reader.readAsDataURL(file);
@@ -388,6 +415,12 @@ export function DrawnGridScanner({ cols, rows, onDone }: { cols: number; rows: n
             <ImageIcon size={18} /> Unggah dari galeri
           </button>
         </div>
+      )}
+
+      {mode === "idle" && shotError && (
+        <p className={styles.callout} data-tone="warn" role="alert">
+          {shotError}
+        </p>
       )}
 
       {mode === "idle" && (

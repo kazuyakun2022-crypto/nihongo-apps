@@ -101,7 +101,7 @@
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition: background-color var(--motion-fast) ease, color var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .tabBtn:hover {
@@ -117,7 +117,8 @@
 /* Stat Cards Grid */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  /* min(100%, …): kartu tidak meluber di ponsel 320–360px; dua kolom di ponsel lebar */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
   gap: 16px;
 }
 
@@ -197,9 +198,9 @@
 }
 
 .adminNotice {
-  background: linear-gradient(135deg, var(--color-primary-soft) 0%, #c7d2fe 100%);
+  background: var(--color-surface-muted);
   border: 1px solid color-mix(in srgb, var(--color-primary) 60%, #fff);
-  color: #3730a3;
+  color: var(--color-primary-strong);
 }
 
 .rolePillsRow {
@@ -221,7 +222,7 @@
   background: var(--color-surface);
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color var(--motion-fast) ease, color var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .rolePill:hover {
@@ -254,7 +255,7 @@
   color: var(--color-text);
 }
 
-.searchInput:focus {
+.searchInput:focus {
   border-color: var(--color-primary);
   background: #fff;
 }
@@ -323,9 +324,9 @@
 }
 
 .role_admin {
-  background: var(--color-primary-soft);
+  background: var(--color-surface-muted);
   color: var(--color-primary-strong);
-  border: 1px solid #c7d2fe;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
 }
 
 .role_teacher {
@@ -336,20 +337,20 @@
 
 .role_premium {
   background: #dcfce7;
-  color: #15803d;
+  color: var(--color-success);
   border: 1px solid #bbf7d0;
 }
 
 .role_student {
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .role_guest {
-  background: #f8fafc;
+  background: var(--color-bg);
   color: var(--color-text-muted);
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border);
 }
 
 .status_active {
@@ -357,8 +358,13 @@
   font-weight: 600;
 }
 
+.status_pending {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
 .status_suspended {
-  color: #dc2626;
+  color: var(--color-danger);
   font-weight: 600;
 }
 
@@ -376,7 +382,7 @@
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all 0.15s ease;
+  transition: background-color var(--motion-fast) ease, color var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .btnPrimary {
@@ -395,12 +401,12 @@
 }
 
 .btnSecondary:hover {
-  background: #e2e8f0;
+  background: var(--color-border);
 }
 
 .btnDanger {
   background: #fee2e2;
-  color: #b91c1c;
+  color: var(--color-danger);
   border-color: #fca5a5;
 }
 
@@ -410,7 +416,7 @@
 
 .btnSuccess {
   background: #dcfce7;
-  color: #15803d;
+  color: var(--color-success);
   border-color: #86efac;
 }
 
@@ -431,8 +437,10 @@
 
 .promptHead {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 4px 12px;
 }
 
 .levelTag {
@@ -527,4 +535,209 @@
   .panel {
     padding: 16px;
   }
+}
+
+/* ── Dashboard ── */
+.dashGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
+}
+
+.errorBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.roleList,
+.navCards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.roleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+}
+
+.navCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  text-decoration: none;
+  transition:
+    border-color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease,
+    transform var(--motion-fast) var(--ease-spring);
+}
+
+.navCard strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.navCardDesc {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.navCardArrow {
+  flex: none;
+  color: var(--color-primary);
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.navCard:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+  background: var(--color-surface);
+}
+
+.navCard:hover .navCardArrow {
+  transform: translateX(3px);
+}
+
+.navCard:active {
+  transform: scale(0.99);
+}
+
+/* ── Konfigurasi AI ── */
+.readOnlyTag {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+}
+
+.mutedSmall {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.promptFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.noticeOk,
+.noticeError {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  animation: var(--kf-fadeIn) var(--motion-fast) ease backwards;
+}
+
+.noticeOk {
+  color: var(--color-success);
+}
+
+.noticeError {
+  color: var(--color-danger);
+}
+
+/* Teks hanya-baca tetap terbaca jelas dan bisa disalin (bukan abu-abu seperti disabled) */
+.promptTextarea:read-only {
+  background: var(--color-surface-muted);
+  cursor: text;
+}
+
+/* Modal admin: muncul halus, dan isi panjang bisa digulir di layar pendek */
+.modalBackdrop {
+  animation: var(--kf-fadeIn) var(--motion-fast) ease backwards;
+}
+
+.modalContent {
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation: var(--kf-scaleIn) var(--motion-base) var(--ease-spring) backwards;
+}
+
+/* ── Rombakan tampilan: Panel admin (nuansa Jepang hangat) ── */
+.panel,
+.statCard,
+.navCard,
+.promptCard,
+.tableWrap,
+.filterBar {
+  border: 0;
+  border-radius: 18px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-paper);
+}
+.panelTitle,
+.modalTitle,
+.statValue,
+.superBadge,
+.adminBadge {
+  font-family: var(--font-display);
+}
+.panelTitle {
+  position: relative;
+  padding-bottom: var(--space-2);
+}
+.panelTitle::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--hairline-gold);
+}
+.statIcon {
+  background: var(--color-gold-soft);
+  color: var(--color-gold);
+}
+.navCard:hover {
+  box-shadow: var(--shadow-paper), inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 45%, transparent);
+}
+.table thead th {
+  background: var(--color-paper-deep);
+  color: var(--color-text);
+}
+.tabs {
+  gap: var(--space-2);
+  border-bottom: 0;
+}
+.tabBtn {
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-deep);
+  border: 0;
+}
+.tabBtnActive,
+.tabBtnActive:hover {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 6px 14px -8px color-mix(in srgb, var(--color-primary) 80%, transparent);
 }

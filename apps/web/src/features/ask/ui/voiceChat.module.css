@@ -11,7 +11,7 @@
   overscroll-behavior: none;
   padding: var(--space-3) var(--space-4) var(--space-6);
   background: radial-gradient(circle at 50% 26%, #fff5f5 0%, #fafafa 55%, #f1f5f9 100%);
-  animation: fadeIn var(--motion-base) var(--ease-entrance) both;
+  animation: var(--kf-fadeIn) var(--motion-base) var(--ease-entrance) backwards;
 }
 
 /* ── Floating actions (ketika header atas digabung) ── */
@@ -22,7 +22,7 @@
   display: flex;
   gap: 8px;
   z-index: 10;
-  animation: fadeIn 0.25s ease-out both;
+  animation: var(--kf-fadeIn) 0.25s ease-out backwards;
 }
 
 .floatingActionBtn {
@@ -47,7 +47,7 @@
   border-color: var(--color-primary, #b31b28);
   background: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(179, 27, 40, 0.12);
+  box-shadow: 0 3px 10px rgba(177, 42, 58, 0.12);
 }
 
 /* ── Top bar (mode mandiri) ── */
@@ -122,7 +122,8 @@
 .mascotContainer {
   position: relative;
   z-index: 2;
-  width: clamp(230px, 64vw, 340px);
+  /* Juga dibatasi tinggi layar: di HP pendek (375×667) tombol mikrofon sebelumnya terdorong keluar layar */
+  width: max(180px, min(64vw, 340px, 34dvh));
   user-select: none;
 }
 
@@ -216,7 +217,7 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  animation: fadeIn var(--motion-fast) both;
+  animation: var(--kf-fadeIn) var(--motion-fast) backwards;
 }
 
 /* ── Floating Error Alert (posisi melayang tanpa menggeser layout) ── */
@@ -264,7 +265,7 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #b31b28 0%, #dc2626 50%, #f43f5e 100%);
-  box-shadow: 0 8px 26px rgba(179, 27, 40, 0.35), 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 26px rgba(177, 42, 58, 0.35), 0 2px 6px rgba(0, 0, 0, 0.1);
   color: #fff;
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, background 0.15s ease;
   touch-action: none;
@@ -292,13 +293,13 @@
 
 .holdBtn:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(179, 27, 40, 0.45);
+  box-shadow: 0 12px 30px rgba(177, 42, 58, 0.45);
 }
 
 .holdBtn:active,
 .holdBtnActive {
   transform: scale(0.92);
-  box-shadow: 0 2px 10px rgba(179, 27, 40, 0.4), 0 0 0 10px rgba(220, 38, 38, 0.2);
+  box-shadow: 0 2px 10px rgba(177, 42, 58, 0.4), 0 0 0 10px rgba(220, 38, 38, 0.2);
   background: linear-gradient(135deg, #991b1b 0%, #b31b28 100%);
 }
 

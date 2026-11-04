@@ -7,7 +7,7 @@
 .heading {
   font-size: clamp(var(--font-size-lg), 5vw, var(--font-size-xl));
   font-weight: var(--font-weight-heavy);
-  animation: fadeInUp var(--motion-fast) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-fast) var(--ease-entrance) backwards;
   margin: 0;
 }
 
@@ -17,13 +17,13 @@
   text-align: center;
   gap: var(--space-3);
   padding: var(--space-8) var(--space-4);
-  animation: scaleIn var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-scaleIn) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 .deck {
   display: grid;
   gap: var(--space-4);
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
   max-width: 32rem;
   margin: 0 auto;
   width: 100%;
@@ -53,7 +53,7 @@
 .card:hover {
   transform: translateY(-2px);
   border-color: var(--color-primary);
-  box-shadow: 0 12px 28px rgba(179, 27, 40, 0.08);
+  box-shadow: 0 12px 28px rgba(177, 42, 58, 0.08);
 }
 
 .front {
@@ -63,13 +63,13 @@
   color: var(--color-text);
   line-height: 1.15;
   word-break: break-word;
-  animation: popIn var(--motion-fast) var(--ease-spring) both;
+  animation: var(--kf-popIn) var(--motion-fast) var(--ease-spring) backwards;
 }
 
 .back {
   display: grid;
   gap: var(--space-1);
-  animation: fadeInUp var(--motion-fast) var(--ease-spring) both;
+  animation: var(--kf-fadeInUp) var(--motion-fast) var(--ease-spring) backwards;
 }
 
 .back p {
