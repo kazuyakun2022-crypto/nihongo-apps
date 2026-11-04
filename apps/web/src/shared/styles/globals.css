@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap");
 @import "./tokens.css";
 
 *,
@@ -64,6 +64,16 @@ select {
   color: inherit;
   /* Minimum 16px agar iOS tidak memperbesar otomatis saat fokus */
   font-size: max(1rem, var(--font-size-md));
+}
+
+/* Kelas modul (mis. kolom cari admin 0.9rem/14px) menimpa aturan di atas dan membuat iPhone memperbesar
+   halaman saat kolom diketuk. Di perangkat sentuh, kolom isian dikunci minimal 16px. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
 }
 
 :focus-visible {
@@ -299,4 +309,41 @@ ruby rt {
   body:has(> [data-print-sheet]) > :not([data-print-sheet]) {
     display: none !important;
   }
+}
+
+/* Pengaman global "kurangi gerak": animasi/transisi dengan durasi tertulis langsung (tidak lewat token motion)
+   dan animasi tanpa batas ikut berhenti. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Batang hasil (progres, nilai) tumbuh dari kiri saat pertama tampil; lebarnya tetap diatur inline */
+@keyframes barGrow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ── Nuansa Jepang hangat: dasar kertas washi & judul mincho ── */
+body {
+  background:
+    radial-gradient(60% 40% at 100% 0%, color-mix(in srgb, var(--palette-butter) 30%, transparent), transparent 70%),
+    radial-gradient(55% 40% at 0% 35%, color-mix(in srgb, var(--palette-sakura) 16%, transparent), transparent 70%),
+    radial-gradient(60% 45% at 100% 100%, color-mix(in srgb, var(--palette-mint) 26%, transparent), transparent 70%),
+    var(--color-bg);
+  background-attachment: fixed;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0;
 }

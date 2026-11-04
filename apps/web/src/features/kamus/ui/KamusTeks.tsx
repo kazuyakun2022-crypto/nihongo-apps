@@ -116,7 +116,8 @@ function GrammarCard({ g }: { g: KamusEntry }) {
         <span className={styles.level}>{g.level}</span>
       </div>
       <p className={`${styles.explanation} ${open ? "" : styles.clamp}`}>{explanation}</p>
-      {explanation.length > 160 && (
+      {/* Tombol juga muncul kalau ada gambar, supaya gambar penjelasan tidak tersembunyi selamanya */}
+      {(explanation.length > 160 || !!g.imageUrl) && (
         <button type="button" className={styles.more} onClick={() => setOpen((o) => !o)} aria-expanded={open}>
           {open ? "Ringkas" : "Selengkapnya"}
         </button>
@@ -187,6 +188,8 @@ export function KamusTeks({ tab, tabs }: { tab: KamusTab; tabs?: ReactNode }) {
     setKategori("");
   }, [tab]);
 
+  const [reloadKey, setReloadKey] = useState(0);
+
   useEffect(() => {
     const id = ++request.current;
     setLoading(true);
@@ -198,23 +201,34 @@ export function KamusTeks({ tab, tabs }: { tab: KamusTab; tabs?: ReactNode }) {
         setData(res);
         setItems(res.items);
       })
-      .catch((err: Error) => id === request.current && setError(err.message))
+      .catch((err: Error) => {
+        if (id !== request.current) return;
+        // Daftar lama (bisa dari tab lain) tidak boleh tetap tampil di bawah pesan galat
+        setData(null);
+        setItems([]);
+        setError(err.message || "Kamus belum bisa dimuat.");
+      })
       .finally(() => id === request.current && setLoading(false));
-  }, [tab, debounced, level, kategori]);
+  }, [tab, debounced, level, kategori, reloadKey]);
 
   async function loadMore() {
-    if (!data) return;
+    if (!data || loadingMore) return;
+    // Halaman tambahan dari pencarian lama tidak boleh ditempel ke hasil pencarian baru
+    const id = request.current;
     setLoadingMore(true);
     try {
       const res = await kamusApi.search(tab, { q: debounced || undefined, level: level || undefined, kategori: kategori || undefined, page: data.page + 1 });
+      if (id !== request.current) return;
       setData(res);
       setItems((prev) => [...prev, ...res.items]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal memuat.");
+      if (id === request.current) setError(err instanceof Error ? err.message : "Gagal memuat.");
     } finally {
       setLoadingMore(false);
     }
   }
+
+  const retry = () => setReloadKey((k) => k + 1);
 
   return (
     <div className={styles.wrap}>
@@ -262,7 +276,14 @@ export function KamusTeks({ tab, tabs }: { tab: KamusTab; tabs?: ReactNode }) {
         )}
       </header>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}{" "}
+          <button type="button" className={styles.more} onClick={retry}>
+            Coba lagi
+          </button>
+        </p>
+      )}
 
       {loading ? (
         <SkeletonRegion label="Memuat kamus…" className={styles.grid}>

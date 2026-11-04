@@ -6,7 +6,7 @@
   justify-items: stretch;
   gap: var(--space-4);
   width: 100%;
-  animation: onboardingFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: onboardingFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes onboardingFadeIn {
@@ -117,7 +117,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  background: var(--color-primary-soft);
+  background: var(--color-surface-muted);
   color: var(--color-primary);
   font-family: var(--font-japanese);
   font-size: 1.15rem;
@@ -239,7 +239,7 @@
 .browser {
   display: grid;
   gap: var(--space-4);
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 .levelTabs {
@@ -307,7 +307,7 @@
     background var(--motion-fast),
     transform var(--motion-fast) var(--ease-spring),
     box-shadow var(--motion-base) var(--ease-out);
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 a.chapter:hover {

@@ -5,9 +5,9 @@
   padding: var(--space-2) var(--space-1) var(--space-8);
   display: grid;
   gap: var(--space-4);
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 @media (min-width: 480px) {
@@ -89,7 +89,6 @@
 }
 
 .searchInput:focus {
-  outline: none;
   border-color: var(--color-primary);
 }
 
@@ -587,7 +586,7 @@
   position: sticky;
   top: var(--space-5);
   box-shadow: var(--shadow-card);
-  animation: scaleIn var(--motion-base) var(--ease-spring) both;
+  animation: var(--kf-scaleIn) var(--motion-base) var(--ease-spring) backwards;
 }
 
 .inspectorHero {
@@ -691,7 +690,7 @@
   backdrop-filter: blur(2px);
   display: grid;
   place-items: center;
-  z-index: 100;
+  z-index: 1000;
   padding: var(--space-3);
   box-sizing: border-box;
 }
@@ -878,4 +877,96 @@
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   margin: 0;
+}
+
+/* ── Rombakan tampilan: Huruf (nuansa Jepang hangat) ── */
+.header {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.headerTitles {
+  flex: 1 1 100%;
+}
+.badgeCount {
+  display: inline-block;
+  margin-right: var(--space-2);
+  border: 0;
+  background: var(--color-gold-soft);
+  color: var(--color-gold);
+  vertical-align: 1px;
+}
+.tabs {
+  gap: var(--space-2);
+}
+.tab {
+  border-color: transparent;
+  background: var(--color-paper-deep);
+}
+.tab:hover {
+  border-color: color-mix(in srgb, var(--color-gold) 45%, transparent);
+}
+.tabActive,
+.tabActive:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 6px 14px -8px color-mix(in srgb, var(--color-primary) 80%, transparent);
+}
+.inspectorCard,
+.gojuonBlock,
+.dakutenCard,
+.yoonCard,
+.quizWrap {
+  border: 0;
+  border-radius: 18px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-paper);
+}
+.blockTitle,
+.yoonCardTitle,
+.inspectorSectionTitle,
+.sectionLabel,
+.inspectorChar,
+.quizChar,
+.modalChar {
+  font-family: var(--font-display);
+}
+.inspectorHero {
+  background-color: var(--color-paper-deep);
+  background-image: linear-gradient(to bottom, transparent 40%, var(--color-paper-deep)), var(--pattern-seigaiha);
+  background-size: 100% 100%, 40px 20px;
+}
+
+/* Kolom cari: satu baris penuh di ponsel (tidak terhimpit tombol), tinggi 48px, teks selalu terlihat */
+.searchInput {
+  flex: 1 1 100%;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--space-4) 0 2.75rem;
+  border: 1.5px solid color-mix(in srgb, var(--color-gold) 35%, var(--color-border));
+  background-color: var(--color-surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%237a6b6e' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 1rem center;
+  color: var(--color-text);
+  -webkit-text-fill-color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+.searchInput::placeholder {
+  color: var(--color-text-muted);
+  -webkit-text-fill-color: var(--color-text-muted);
+  opacity: 1;
+}
+.searchInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+@media (min-width: 720px) {
+  .searchInput {
+    flex: 1 1 18rem;
+    width: auto;
+    min-width: 16rem;
+  }
 }

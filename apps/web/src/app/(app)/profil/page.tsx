@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/shared/ui/PageHeader";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,8 @@ import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 import type { Gender } from "@/features/auth/domain/types";
 import styles from "./profil.module.css";
 import { BookOpenIcon, CheckIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
+import { learningApi } from "@/features/learning/data/learningApi";
+import { askConfirm } from "@/shared/ui/confirmDialog";
 
 const roleLabel = {
   guest: "Tamu",
@@ -68,6 +71,25 @@ export default function ProfilPage() {
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  /** Pesan berhasil simpan profil di halaman (sebelumnya hanya dipasang di modal foto yang sedang tertutup). */
+  const [pageNotice, setPageNotice] = useState<string | null>(null);
+  const [levelCode, setLevelCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!pageNotice) return;
+    const id = window.setTimeout(() => setPageNotice(null), 4000);
+    return () => window.clearTimeout(id);
+  }, [pageNotice]);
+
+  // Nama level (N5, N4, …) alih-alih id database ("Level 2")
+  useEffect(() => {
+    const id = user?.currentLevelId;
+    if (!id) return;
+    learningApi
+      .levels()
+      .then((all) => setLevelCode(all.find((l) => l.id === id)?.code ?? null))
+      .catch(() => setLevelCode(null));
+  }, [user?.currentLevelId]);
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [editDisplayName, setEditDisplayName] = useState("");
@@ -121,7 +143,7 @@ export default function ProfilPage() {
         gender: isGenderLocked ? undefined : editGender,
       });
       setIsEditProfileOpen(false);
-      setFeedback({ type: "success", text: "Data profil berhasil diperbarui!" });
+      setPageNotice("Data profil berhasil diperbarui.");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Gagal memperbarui profil";
       setProfileError(msg);
@@ -189,7 +211,7 @@ export default function ProfilPage() {
 
   async function handleDeletePhoto() {
     if (!user?.avatarUrl) return;
-    const confirmDelete = window.confirm("Hapus foto profil dan gunakan inisial huruf?");
+    const confirmDelete = await askConfirm({ title: "Hapus foto profil?", description: "Foto akan diganti inisial namamu. Kamu bisa mengunggah foto baru kapan saja.", confirmText: "Hapus foto" });
     if (!confirmDelete) return;
 
     try {
@@ -223,13 +245,14 @@ export default function ProfilPage() {
   return (
     <section className={styles.wrap} aria-label="Profil Pengguna">
       {/* Header */}
-      <div className={styles.titleSection}>
-        <span className={styles.titleJa} lang="ja">
-          プロフィール
-        </span>
-        <h1 className={styles.title}>Profil Pengguna</h1>
-        <p className={styles.titleSub}>Kelola identitas, foto profil, dan status kemajuan belajarmu.</p>
-      </div>
+      <PageHeader
+        seal="人"
+        jp="プロフィール"
+        title="Profil Pengguna"
+        subtitle="Kelola identitas, foto profil, dan status kemajuan belajarmu."
+      />
+
+      {pageNotice && <Alert tone="success">{pageNotice}</Alert>}
 
       <div className={styles.contentGrid}>
         {/* Kolom Kiri: Hero Kartu Profil, Avatar, dan Privilese */}
@@ -311,7 +334,7 @@ export default function ProfilPage() {
                 <h3 className={styles.roleCardTitle}>
                   Otoritas Super Admin
                 </h3>
-                <span className={styles.roleBadge} style={{ background: "#f59e0b", color: "#fff" }}>Akses Penuh</span>
+                <span className={styles.roleBadge} style={{ background: "#b45309", color: "#fff" }}>Akses Penuh</span>
               </div>
               <ul className={styles.perksList}>
                 <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Kontrol penuh seluruh pengguna: angkat & turunkan Admin/Guru</li>
@@ -319,7 +342,7 @@ export default function ProfilPage() {
                 <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Pemberian langganan status Premium manual tanpa batas</li>
                 <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Pemantauan progres belajar & level seluruh pelajar</li>
               </ul>
-              <Link href="/admin" className={styles.portalCtaBtn} style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)" }}>
+              <Link href="/admin" className={styles.portalCtaBtn} style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}>
                 Buka Dashboard Super Admin →
               </Link>
             </div>
@@ -331,7 +354,7 @@ export default function ProfilPage() {
                 <h3 className={styles.roleCardTitle}>
                   Panel Administrator Sistem
                 </h3>
-                <span className={styles.roleBadge} style={{ background: "#6366f1", color: "#fff" }}>Pengelola Platform</span>
+                <span className={styles.roleBadge} style={{ background: "var(--color-primary)", color: "#fff" }}>Pengelola Platform</span>
               </div>
               <ul className={styles.perksList}>
                 <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Moderasi akun siswa, pencarian cepat & penangguhan (suspend)</li>
@@ -339,7 +362,7 @@ export default function ProfilPage() {
                 <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Akses penuh seluruh materi pembelajaran level N5–N1</li>
                 <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Mode pantau konfigurasi prompt AI maskot Miu-chan</li>
               </ul>
-              <Link href="/admin" className={styles.portalCtaBtn} style={{ background: "linear-gradient(135deg, #6366f1, #4f46e5)" }}>
+              <Link href="/admin" className={styles.portalCtaBtn} style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-strong))" }}>
                 Buka Dashboard Administrator →
               </Link>
             </div>
@@ -351,7 +374,7 @@ export default function ProfilPage() {
                 <h3 className={styles.roleCardTitle}>
                   Hak Akses Pengajar / Sensei
                 </h3>
-                <span className={styles.roleBadge} style={{ background: "#0284c7", color: "#fff" }}>Sensei Pendidik</span>
+                <span className={styles.roleBadge} style={{ background: "#0369a1", color: "#fff" }}>Sensei Pendidik</span>
               </div>
               <ul className={styles.perksList}>
                 <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Akses bebas tanpa batas ke seluruh kurikulum JLPT N5 s/d N1</li>
@@ -367,7 +390,7 @@ export default function ProfilPage() {
                 <h3 className={styles.roleCardTitle}>
                   Keanggotaan Pelajar VIP Premium
                 </h3>
-                <span className={styles.roleBadge} style={{ background: "#16a34a", color: "#fff" }}>VIP Aktif</span>
+                <span className={styles.roleBadge} style={{ background: "var(--color-success)", color: "#fff" }}>VIP Aktif</span>
               </div>
               <ul className={styles.perksList}>
                 <li className={styles.perkItem}><span className={styles.perkCheck}><CheckIcon size={13} strokeWidth={3} /></span> Seluruh level JLPT (N5, N4, N3, N2, N1) terbuka penuh</li>
@@ -455,7 +478,7 @@ export default function ProfilPage() {
             {user.currentLevelId && (
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>Level JLPT</span>
-                <span className={styles.infoValue}>Level {user.currentLevelId}</span>
+                <span className={styles.infoValue}>{levelCode ? (levelCode === "PEMULA" ? "Pemula" : `JLPT ${levelCode}`) : "…"}</span>
               </div>
             )}
           </div>
@@ -484,7 +507,7 @@ export default function ProfilPage() {
                   href="/admin"
                   className={styles.shortcutBtn}
                   style={{
-                    background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+                    background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-strong) 100%)",
                     color: "#ffffff",
                     fontWeight: 700,
                   }}

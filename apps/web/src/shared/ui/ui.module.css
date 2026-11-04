@@ -95,7 +95,7 @@
 .field {
   display: grid;
   gap: var(--space-1);
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 .label {
@@ -179,7 +179,7 @@
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   border: var(--border-width) solid currentColor;
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 .alert_danger {

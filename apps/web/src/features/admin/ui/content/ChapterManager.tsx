@@ -10,6 +10,7 @@ import { Pagination, usePaged } from "../Pagination";
 import { FormModal } from "./FormModal";
 import { STATUS_LABEL, useFlash } from "./ContentShell";
 import styles from "./content.module.css";
+import { askConfirm } from "@/shared/ui/confirmDialog";
 
 /** Pilih level dari ?level= supaya tombol kembali dari editor bab membuka level yang sama. */
 export function useLevelParam(levels: ContentLevel[]) {
@@ -57,7 +58,18 @@ export function ChapterManager() {
   const [statusFilter, setStatusFilter] = useState<"" | ContentStatus>("");
   const [creating, setCreating] = useState(false);
 
-  const loadLevels = useCallback(() => contentApi.levels().then((r) => setLevels(r.levels)).catch(flash.fail), [flash.fail]);
+  const loadLevels = useCallback(
+    () =>
+      contentApi
+        .levels()
+        .then((r) => setLevels(r.levels))
+        .catch((err) => {
+          // Tanpa daftar level, daftar bab tidak akan pernah dimuat: hentikan kerangka dan tampilkan galatnya
+          setLoading(false);
+          flash.fail(err);
+        }),
+    [flash.fail],
+  );
   const loadChapters = useCallback(
     (id: number) => {
       setLoading(true);
@@ -110,7 +122,7 @@ export function ChapterManager() {
   }
 
   async function remove(c: ChapterRow) {
-    if (!confirm(`Hapus bab "${c.title}" beserta seluruh materi dan latihannya? Tindakan ini tidak bisa dibatalkan.`)) return;
+    if (!(await askConfirm({ title: `Hapus bab "${c.title}"?`, description: "Seluruh materi dan latihannya ikut terhapus. Tindakan ini tidak bisa dibatalkan.", confirmText: "Hapus bab" }))) return;
     try {
       await contentApi.deleteChapter(c.id);
       setChapters((list) => list.filter((x) => x.id !== c.id));

@@ -282,13 +282,16 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
   }, [playVoice]);
 
   const processQuestion = useCallback(async (question: string, transcriptAlt: string | null = null) => {
+    // Giliran ini dibatalkan kalau pengguna menekan berhenti / menyela / pindah tab selama menunggu
+    const turn = turnRef.current;
     setState("processing");
     setTranscript(question);
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", text: question }]);
 
     try {
-      const turn = turnRef.current;
       const { answer, emotion: mood, correction, speechRate, speech, guide } = await fetchAnswer(question, historyRef.current, transcriptAlt);
+      // Jawaban yang datang setelah dihentikan tidak ditampilkan maupun diputar
+      if (turnRef.current !== turn) return;
       if (speechRate) rateRef.current = speechRate;
       const spokenText = speech ? withPaceTags(speech) : answer;
       historyRef.current = [
@@ -302,6 +305,10 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
       // Kalimat pertama dibuat lebih dulu dan langsung diputar; sisanya dibuat sambil kalimat pertama berbunyi
       const [firstText, restText] = splitForSpeech(spokenText);
       const first = await fetchVoice(firstText, mood, rateRef.current);
+      if (turnRef.current !== turn) {
+        URL.revokeObjectURL(first.url);
+        return;
+      }
       const parts = [{ voice: Promise.resolve(first), weight: plainLength(firstText) }];
       if (restText) {
         const rest = fetchVoice(restText, mood, rateRef.current, first.isFallback ? "edge" : "auto");
@@ -314,6 +321,7 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
       // Hanya bila user tidak menyela selama Miu-chan bicara
       if (guide && turnRef.current === turn) onGuideRef.current?.(guide);
     } catch (err) {
+      if (turnRef.current !== turn) return;
       setError(err instanceof Error ? err.message : "Gagal mendapat jawaban.");
       setTranscript("");
       setState("idle");
@@ -321,9 +329,11 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
   }, [playVoice]);
 
   const handleRecording = useCallback(async (audio: Blob) => {
+    const turn = turnRef.current;
     setState("processing");
     try {
       const { text, alt } = await transcribe(audio);
+      if (turnRef.current !== turn) return;
       if (!text) {
         setError("Miu-chan tidak menangkap suaramu, coba bicara lagi ya.");
         setState("idle");
@@ -331,6 +341,7 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
       }
       await processQuestion(text, alt);
     } catch (err) {
+      if (turnRef.current !== turn) return;
       setError(err instanceof Error ? err.message : "Gagal mengenali suara.");
       setState("idle");
     }
@@ -396,6 +407,9 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
     }
     turnRef.current++;
     stopAudio();
+    // Lepas mikrofon (indikator mikrofon di HP ikut mati); dibuka lagi saat tombol ditahan berikutnya
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
     setState("idle");
     setTranscript("");
   }, [stopAudio]);

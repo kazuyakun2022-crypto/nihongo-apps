@@ -347,7 +347,7 @@
 
 .featuredCardActive:hover {
   border-color: var(--color-primary, #b31b28);
-  box-shadow: 0 14px 36px rgba(179, 27, 40, 0.1);
+  box-shadow: 0 14px 36px rgba(177, 42, 58, 0.1);
 }
 
 /* Card Tema yang Terkunci: Gelap & Tegas dengan Gembok Besar */
@@ -558,7 +558,7 @@
 .stageMiniActive {
   border-color: var(--color-primary, #b31b28);
   background: #ffffff;
-  box-shadow: 0 2px 8px rgba(179, 27, 40, 0.08);
+  box-shadow: 0 2px 8px rgba(177, 42, 58, 0.08);
 }
 
 .stageMiniLocked {
@@ -799,11 +799,11 @@
 .enterThemeBtnActive {
   background: var(--color-primary, #b31b28);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(179, 27, 40, 0.25);
+  box-shadow: 0 4px 14px rgba(177, 42, 58, 0.25);
 }
 
 .enterThemeBtnActive:hover {
-  background: #991522;
+  background: var(--color-primary-strong);
   transform: translateY(-1px);
 }
 
@@ -967,7 +967,7 @@
 .stageCardActive {
   border-color: var(--color-primary, #b31b28);
   background: #ffffff;
-  box-shadow: 0 4px 12px rgba(179, 27, 40, 0.08);
+  box-shadow: 0 4px 12px rgba(177, 42, 58, 0.08);
 }
 
 .stageCardLocked {
@@ -1083,7 +1083,7 @@
 }
 
 .actionBtnPrimary:hover {
-  background: #991522;
+  background: var(--color-primary-strong);
 }
 
 .actionBtnSecondary {
@@ -1355,7 +1355,7 @@
 .stageMiniActive {
   border-color: #fca5a5;
   background: #fff5f5;
-  box-shadow: 0 2px 8px rgba(179, 27, 40, 0.08);
+  box-shadow: 0 2px 8px rgba(177, 42, 58, 0.08);
 }
 
 .stageMiniLocked {
@@ -1806,7 +1806,7 @@
   font-weight: 800;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(179, 27, 40, 0.3);
+  box-shadow: 0 4px 16px rgba(177, 42, 58, 0.3);
   transition: all 0.2s ease;
   width: 100%;
 }
@@ -1821,7 +1821,7 @@
 
 .celebrateBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(179, 27, 40, 0.4);
+  box-shadow: 0 6px 20px rgba(177, 42, 58, 0.4);
 }
 
 /* ── Matriks Standar Kemampuan (Target Dashboard) Banner ── */

@@ -7,7 +7,7 @@
   overflow: hidden;
   overscroll-behavior: none;
   background: var(--color-bg, #f8fafc);
-  animation: fadeIn var(--motion-base) var(--ease-entrance) both;
+  animation: var(--kf-fadeIn) var(--motion-base) var(--ease-entrance) backwards;
 }
 
 @media (min-width: 900px) {
@@ -89,7 +89,7 @@
   padding: 2px 7px;
   border-radius: 9999px;
   background: #fef2f2;
-  color: #b91c1c;
+  color: var(--color-danger);
   border: 1px solid #fecaca;
 }
 
@@ -145,7 +145,7 @@
   gap: 12px;
   padding: 32px 16px;
   margin: auto 0;
-  animation: fadeInUp var(--motion-entrance) var(--ease-entrance) both;
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
 }
 
 .emptyIllustrationImg {
@@ -221,7 +221,7 @@
   border-color: var(--color-primary, #b31b28);
   color: var(--color-primary, #b31b28);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(179, 27, 40, 0.12);
+  box-shadow: 0 4px 10px rgba(177, 42, 58, 0.12);
 }
 
 .chip:active {
@@ -319,8 +319,8 @@
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 9999px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
 }
 
 .userBubble,
@@ -338,7 +338,7 @@
   background: linear-gradient(135deg, var(--color-primary, #b31b28) 0%, #d9381e 100%);
   color: #ffffff;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 14px rgba(179, 27, 40, 0.22);
+  box-shadow: 0 4px 14px rgba(177, 42, 58, 0.22);
   transform-origin: bottom right;
   animation: userWaterWave 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -576,7 +576,7 @@
 .composer:focus-within {
   border-color: var(--color-primary, #b31b28);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(179, 27, 40, 0.12);
+  box-shadow: 0 0 0 3px rgba(177, 42, 58, 0.12);
 }
 
 .textarea {
@@ -652,7 +652,7 @@
 }
 
 .sendBtn:hover:not(:disabled) {
-  background: #991522;
+  background: var(--color-primary-strong);
   transform: scale(1.06);
 }
 
@@ -690,7 +690,7 @@
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
-  animation: fadeIn 0.2s ease-out both;
+  animation: var(--kf-fadeIn) 0.2s ease-out backwards;
 }
 
 @media (min-width: 900px) {
@@ -725,7 +725,13 @@
 .inlineClearBtn:hover {
   background: #fef2f2;
   border-color: #fecaca;
-  color: #b91c1c;
+  color: var(--color-danger);
   transform: translateY(-1px);
 }
 
+
+/* Tombol kirim: area ketuk 40px (sebelumnya 32px) */
+.sendBtn {
+  width: 40px;
+  height: 40px;
+}

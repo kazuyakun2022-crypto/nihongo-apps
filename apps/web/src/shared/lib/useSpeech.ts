@@ -8,7 +8,7 @@ const audioCache = new Map<string, string>();
 
 const STATIC_AUDIO: Record<string, string> = pronunciation.files;
 /** Naikkan bila suara /api/tts diganti, supaya cache browser lama tidak dipakai. */
-const TTS_VERSION = "12";
+const TTS_VERSION = "13";
 
 function cleanText(text: string): string {
   return text.replace(/[（(【[《〈<][^）)】\]》〉>]*[）)】\]》〉>]/g, "").trim();

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { contentApi, type ContentLevel, type ExamConfig, type ExamQuestionItem, type ExamSection, type ExamType } from "@/features/admin/data/contentApi";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { Skeleton, SkeletonRegion, SkeletonTableRows } from "@/shared/ui/Skeleton";
@@ -13,6 +13,8 @@ import { LevelPicker, useLevelParam } from "./ChapterManager";
 import { STATUS_LABEL, useFlash } from "./ContentShell";
 import { Pagination } from "../Pagination";
 import styles from "./content.module.css";
+import { askConfirm } from "@/shared/ui/confirmDialog";
+import { useUnsavedWarning } from "@/shared/ui/useUnsavedWarning";
 
 const SECTIONS: { value: ExamSection; label: string }[] = [
   { value: "kosakata", label: "Kosakata" },
@@ -62,6 +64,7 @@ const EXAM_FIELDS: FieldDef[] = [
 
 export function ExamManager() {
   const flash = useFlash();
+  const unsaved = useUnsavedWarning();
   const params = useSearchParams();
   const router = useRouter();
   const jenis = params.get("jenis");
@@ -77,6 +80,12 @@ export function ExamManager() {
   const [filter, setFilter] = useState<{ section?: ExamSection; search: string; page: number }>({ search: "", page: 1 });
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<ExamQuestionItem | "new" | null>(null);
+  const requestRef = useRef(0);
+  /** Level & jenis tes milik konfigurasi yang sedang tampil; simpan ditolak kalau berbeda dari pilihan aktif. */
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const currentKey = `${levelId}:${examType}`;
 
   useEffect(() => {
     contentApi.levels().then((r) => setLevels(r.levels)).catch(flash.fail);
@@ -84,16 +93,23 @@ export function ExamManager() {
 
   const load = useCallback(async () => {
     if (!levelId) return;
+    // Ganti level/jenis cepat: respons lama yang datang terlambat tidak boleh menimpa (dan lalu tersimpan ke) level baru
+    const req = ++requestRef.current;
     try {
       const r = await contentApi.exam(levelId, examType, filter);
+      if (req !== requestRef.current) return;
+      setLoadedKey(`${levelId}:${examType}`);
       setConfig(r.config ?? DEFAULT_CONFIG[examType]);
       setSavedConfig(r.config);
       setQuestions(r.questions.map((q) => ({ ...q, options: q.options as string[] })));
       setPerSection(r.publishedPerSection);
       setTotal(r.total);
       setPageSize(r.pageSize);
+      // Soal terakhir di halaman ini dihapus: mundur ke halaman terakhir yang masih ada
+      const lastPage = Math.max(1, Math.ceil(r.total / r.pageSize));
+      if (filter.page > lastPage) setFilter((f) => ({ ...f, page: lastPage }));
     } catch (err) {
-      flash.fail(err);
+      if (req === requestRef.current) flash.fail(err);
     }
   }, [levelId, examType, filter, flash.fail]);
   useEffect(() => {
@@ -113,6 +129,7 @@ export function ExamManager() {
   const isTopLevel = examType === "level_up" && !!level && level.id === Math.max(...levels.map((l) => l.id));
   const configFields = isWorkbook ? WORKBOOK_FIELDS : isPlacement ? CONFIG_FIELDS.filter((f) => f.key !== "minChapterCompletion") : CONFIG_FIELDS;
   const configDirty = JSON.stringify(config) !== JSON.stringify(savedConfig);
+  unsaved.current = configDirty;
   const rules = config?.sectionRules ?? null;
   const neededFor = (s: ExamSection) => (rules ? rules[s]?.count ?? 0 : config ? Math.floor(config.questionCount / SECTIONS.length) : 0);
   const rulesTotal = rules ? Object.values(rules).reduce((n, r) => n + (r?.count ?? 0), 0) : 0;
@@ -133,24 +150,30 @@ export function ExamManager() {
   }
 
   async function saveConfig() {
-    if (!levelId || !config) return;
+    if (!levelId || !config || saving || loadedKey !== currentKey) return;
+    setSaving(true);
     try {
       await contentApi.saveExamConfig(levelId, examType, config);
       setSavedConfig(config);
       flash.ok("Pengaturan ujian disimpan.");
     } catch (err) {
       flash.fail(err);
+    } finally {
+      setSaving(false);
     }
   }
 
   async function remove(q: ExamQuestionItem) {
-    if (!confirm("Hapus soal ini?")) return;
+    if (removingId || !(await askConfirm({ title: "Hapus soal ini?", description: "Soal yang pernah dijawab siswa tidak dihapus, melainkan diubah ke draft." }))) return;
+    setRemovingId(q.id);
     try {
       const res = await contentApi.deleteExamQuestion(q.id);
       flash.ok(res?.archived ? "Soal ini sudah pernah dijawab siswa, jadi diubah ke draft (tidak dipakai lagi)." : "Soal dihapus.");
       await load();
     } catch (err) {
       flash.fail(err);
+    } finally {
+      setRemovingId(null);
     }
   }
 
@@ -166,7 +189,7 @@ export function ExamManager() {
 
   return (
     <>
-      <div className={adminStyles.tabs} role="tablist" aria-label="Jenis tes">
+      <div className={`${adminStyles.tabs} ${styles.wrapTabs}`} role="tablist" aria-label="Jenis tes">
         {EXAM_TYPES.map((t) => (
           <button
             key={t.value}
@@ -262,6 +285,7 @@ export function ExamManager() {
                 </label>
                 {rules && (
                   <>
+                    <div className={adminStyles.tableWrap}>
                     <table className={adminStyles.table}>
                       <thead>
                         <tr>
@@ -300,6 +324,7 @@ export function ExamManager() {
                         ))}
                       </tbody>
                     </table>
+                    </div>
                     <span className={styles.hint}>Total {rulesTotal} soal per ujian. Siswa gagal jika satu bagian di bawah nilai minimalnya.</span>
                   </>
                 )}
@@ -307,8 +332,8 @@ export function ExamManager() {
             )}
             <div className={styles.toolbar}>
               <span />
-              <button type="button" className={`${styles.btn} ${adminStyles.btnPrimary}`} onClick={saveConfig} disabled={!configDirty}>
-                Simpan aturan
+              <button type="button" className={`${styles.btn} ${adminStyles.btnPrimary}`} onClick={saveConfig} disabled={!configDirty || saving || loadedKey !== currentKey}>
+                {saving ? "Menyimpan…" : "Simpan aturan"}
               </button>
             </div>
           </section>
@@ -342,7 +367,7 @@ export function ExamManager() {
         </>
       )}
 
-      {!isWorkbook && (
+      {!isWorkbook && !isTopLevel && (
       <section className={adminStyles.panel}>
         <div className={styles.toolbar}>
           <h2 className={adminStyles.panelTitle}>
@@ -398,7 +423,7 @@ export function ExamManager() {
                     <td style={{ width: 1 }}>
                       <div className={adminStyles.actionGroup} style={{ flexWrap: "nowrap" }}>
                         <button type="button" className={`${adminStyles.btnSm} ${adminStyles.btnSecondary}`} onClick={() => setEditing(q)}>Edit</button>
-                        <button type="button" className={`${adminStyles.btnSm} ${adminStyles.btnDanger}`} onClick={() => remove(q)}>Hapus</button>
+                        <button type="button" className={`${adminStyles.btnSm} ${adminStyles.btnDanger}`} disabled={removingId !== null} onClick={() => remove(q)}>{removingId === q.id ? "Menghapus…" : "Hapus"}</button>
                       </div>
                     </td>
                   </tr>

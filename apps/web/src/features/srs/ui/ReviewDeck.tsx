@@ -17,7 +17,7 @@ const grades: { value: ReviewGrade; label: string }[] = [
 ];
 
 export function ReviewDeck() {
-  const { loading, current, remaining, revealed, reveal, grade } = useReview();
+  const { loading, error, retry, pending, current, remaining, revealed, reveal, grade } = useReview();
   // Jawaban kartu baru diberikan ke Miu-chan setelah dibuka, supaya ia tidak membocorkannya
   // Sebelum jawaban dibuka, kartu ini latihan mengingat: Miu-chan memberi petunjuk, bukan arti
   useAssessment("review", current && !revealed ? "latihan" : null);
@@ -33,6 +33,16 @@ export function ReviewDeck() {
         </div>
         <Skeleton height="3rem" radius="var(--radius-pill)" />
       </SkeletonRegion>
+    );
+  }
+  if (error) {
+    return (
+      <section className={styles.empty} role="alert">
+        <Mascot mood="berpikir" size={96} />
+        <h1 className={styles.heading}>Kartu belum bisa dimuat</h1>
+        <p className={styles.muted}>{error}</p>
+        <Button onClick={retry}>Coba lagi</Button>
+      </section>
     );
   }
   if (!current) {
@@ -63,7 +73,7 @@ export function ReviewDeck() {
       {revealed ? (
         <div className={styles.grades} data-spotlight="review-nilai">
           {grades.map((g) => (
-            <Button key={g.value} variant={g.value === "bisa" ? "primary" : "secondary"} onClick={() => grade(g.value)}>
+            <Button key={g.value} variant={g.value === "bisa" ? "primary" : "secondary"} onClick={() => grade(g.value)} disabled={pending}>
               {g.label}
             </Button>
           ))}

@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/shared/ui/PageHeader";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import styles from "@/app/(app)/admin/admin.module.css";
 
@@ -13,22 +14,14 @@ export function AdminHeaderNav({ title, subtitle }: AdminPageHeaderProps) {
   const isSuperAdmin = user?.role === "super_admin";
 
   return (
-    <header className={styles.header}>
-      <div className={styles.titleRow}>
-        <div>
-          <span className={styles.titleJa} lang="ja">
-            管理パネル
-          </span>
-          <h1 className={styles.title}>{title}</h1>
-        </div>
-        {/* Peran saja; status "Sistem Operasional" dihapus karena tidak pernah memeriksa apa pun */}
-        {isSuperAdmin ? (
-          <span className={styles.superBadge}>Super Admin</span>
-        ) : (
-          <span className={styles.adminBadge}>Admin</span>
-        )}
-      </div>
-      <p className={styles.subtitle}>{subtitle}</p>
-    </header>
+    <PageHeader
+      seal="管"
+      jp="管理パネル"
+      title={title}
+      subtitle={subtitle}
+      actions={
+        isSuperAdmin ? <span className={styles.superBadge}>Super Admin</span> : <span className={styles.adminBadge}>Admin</span>
+      }
+    />
   );
 }

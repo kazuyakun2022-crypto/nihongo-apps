@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { Mascot } from "@/shared/ui/Mascot";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
@@ -61,6 +61,11 @@ export function LearningPath() {
   const { user } = useAuth();
   const { levels, error } = useLevels();
   const [levelId, setLevelId] = useState<number | null>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  // Tab level aktif selalu terlihat di baris tab yang bisa digeser (ponsel sempit)
+  useEffect(() => {
+    tabsRef.current?.querySelector<HTMLElement>('[aria-selected="true"]')?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }, [levelId]);
   const chapters = useChapters(levelId);
 
   // Level awal: level akun siswa, kalau tidak ada pakai level pertama yang terbuka
@@ -86,7 +91,7 @@ export function LearningPath() {
           <p className={`${styles.eyebrow} ${scenery.ink}`} lang="ja">べんきょう</p>
           <h1 className={`${styles.title} ${scenery.ink}`}>Belajar</h1>
         </div>
-        <div className={styles.levelTabs} role="tablist" aria-label="Pilih level" data-spotlight="belajar-level">
+        <div ref={tabsRef} className={styles.levelTabs} role="tablist" aria-label="Pilih level" data-spotlight="belajar-level">
           {!levels &&
             [0, 1, 2, 3].map((i) => <Skeleton key={i} width="3.5rem" height="2.25rem" radius="var(--radius-pill)" />)}
           {(levels ?? []).map((l) => (

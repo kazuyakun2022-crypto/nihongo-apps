@@ -27,7 +27,9 @@
   height: 100%;
   border-radius: inherit;
   background: var(--bar, var(--color-primary));
-  transition: width 0.8s ease-out;
+  transition: width var(--motion-fill) var(--ease-fill);
+  transform-origin: left center;
+  animation: var(--kf-barGrow) var(--motion-fill) var(--ease-fill) backwards;
 }
 
 /* ── Rapor ── */

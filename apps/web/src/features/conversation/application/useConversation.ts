@@ -42,9 +42,11 @@ export function useConversation(repo: ConversationRepository = conversationApi) 
   );
 
   const send = useCallback(
-    async (text: string) => {
-      if (!session || !text.trim()) return;
-      setMessages((m) => [...m, { id: nextId(), sender: "user", text }]);
+    /** true = terkirim; false = gagal (draf di kolom ketik dipertahankan). */
+    async (text: string): Promise<boolean> => {
+      if (!session || !text.trim()) return false;
+      const userMsgId = nextId();
+      setMessages((m) => [...m, { id: userMsgId, sender: "user", text }]);
       setPhase("waiting");
       setError(null);
       try {
@@ -53,9 +55,13 @@ export function useConversation(repo: ConversationRepository = conversationApi) 
         setEmotion(res.emotion ?? "playful");
         setTurnsLeft(res.turnsLeft);
         setPhase("chatting");
+        return true;
       } catch (err) {
         fail(err);
+        // Pesan yang gagal terkirim dikeluarkan dari daftar; teksnya tetap ada di kolom ketik
+        setMessages((m) => m.filter((x) => x.id !== userMsgId));
         setPhase("chatting");
+        return false;
       }
     },
     [repo, session],

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { Button } from "@/shared/ui/Button";
 import { QuestionHeader } from "@/features/learning/ui/ChapterLesson";
 import { HandwritingExercise } from "@/features/learning/ui/exercises/HandwritingExercise";
 import { SpeakingExercise } from "@/features/learning/ui/exercises/SpeakingExercise";
@@ -12,7 +13,7 @@ import styles from "./levelUpTest.module.css";
 import { versionedAudioUrl } from "@/shared/lib/useSpeech";
 import { AlertIcon, FrownIcon, HourglassIcon, TimerIcon, TrophyIcon, VolumeIcon } from "@/shared/ui/icons";
 
-type Phase = "loading" | "error" | "ready" | "testing" | "submitting" | "result";
+type Phase = "loading" | "error" | "ready" | "testing" | "submitting" | "submit_failed" | "result";
 
 const SECTION_LABELS: Record<string, string> = {
   kosakata: "Kosakata",
@@ -63,6 +64,9 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
   const [chosen, setChosen] = useState<string | null>(null);
   const [result, setResult] = useState<SubmitExamResponse | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  /** Waktu berakhir tes (ms). Sisa waktu dihitung dari sini, bukan dikurangi per detik: HP memperlambat
+   *  setInterval saat tab di latar belakang, sehingga hitungan mundur dulu meleset dari waktu server. */
+  const deadlineRef = useRef(0);
 
   // Load status on mount
   useEffect(() => {
@@ -74,18 +78,24 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
   // Timer tick
   useEffect(() => {
     if (phase !== "testing") return;
-    timerRef.current = setInterval(() => {
-      setRemaining(r => {
-        if (r <= 1) {
-          clearInterval(timerRef.current!);
-          // Pakai handleSubmit terbaru agar jawaban yang sudah diisi ikut terkirim
-          void submitRef.current(true);
-          return 0;
-        }
-        return r - 1;
-      });
-    }, 1000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    let done = false;
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000));
+      setRemaining(left);
+      if (left === 0 && !done) {
+        done = true;
+        if (timerRef.current) clearInterval(timerRef.current);
+        // Pakai handleSubmit terbaru agar jawaban yang sudah diisi ikut terkirim
+        void submitRef.current(true);
+      }
+    };
+    timerRef.current = setInterval(tick, 1000);
+    // Kembali dari latar belakang: sisa waktu langsung disesuaikan
+    document.addEventListener("visibilitychange", tick);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      document.removeEventListener("visibilitychange", tick);
+    };
   }, [phase]);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const startTest = async () => {
@@ -97,6 +107,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
       setKanji(res.kanji ?? []);
       const secs = res.timeLimitMin * 60;
       setTimeLimitSec(secs);
+      deadlineRef.current = Date.now() + secs * 1000;
       setRemaining(secs);
       setIndex(0);
       setAnswers({});
@@ -122,8 +133,9 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
       setResult(res);
       setPhase("result");
     } catch {
-      setError("Gagal mengirim jawaban. Coba lagi.");
-      setPhase("error");
+      // Jawaban tetap disimpan di layar supaya bisa dikirim ulang (sebelumnya seluruh percobaan hilang)
+      setError("Jawabanmu belum terkirim. Periksa koneksi internet, lalu kirim ulang.");
+      setPhase("submit_failed");
     }
   }, [phase, answers, attemptId, kind, levelId]);
 
@@ -173,6 +185,19 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
           <Skeleton height="3rem" radius="var(--radius-pill)" />
         </div>
       </SkeletonRegion>
+    );
+  }
+
+  // ── GAGAL MENGIRIM: jawaban masih ada, bisa dikirim ulang ──
+  if (phase === "submit_failed") {
+    return (
+      <div className={styles.wrap}>
+        <div className={styles.errorBox} role="alert">
+          <p>{error}</p>
+          <p>{Object.keys(answers).length} jawaban masih tersimpan di perangkat ini.</p>
+          <Button onClick={() => void handleSubmit()}>Kirim ulang</Button>
+        </div>
+      </div>
     );
   }
 

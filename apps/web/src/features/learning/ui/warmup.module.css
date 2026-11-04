@@ -233,3 +233,16 @@
     transition: none;
   }
 }
+
+/* Kedua sisi kartu ditumpuk di sel grid yang sama (bukan absolut), jadi kartu ikut memanjang mengikuti
+   teks terpanjang dan tidak lagi meluber menutupi tombol nilai di bawahnya */
+.card {
+  display: grid;
+}
+
+.face {
+  position: relative;
+  inset: auto;
+  grid-area: 1 / 1;
+  min-height: 16rem;
+}

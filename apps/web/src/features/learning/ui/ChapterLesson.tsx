@@ -183,7 +183,14 @@ function LessonShell({
           </div>
         )}
       </aside>
-      <div className={styles.stage}>{children}</div>
+      <div className={styles.stage}>
+        {/* Di bawah 1280px panel samping (dan judulnya) tersembunyi: judul bab ringkas di atas pelajaran */}
+        <h1 className={styles.stageTitle}>
+          {moduleTitle && <span className={styles.stageModule}>{moduleTitle}</span>}
+          {title}
+        </h1>
+        {children}
+      </div>
     </div>
   );
 }
@@ -206,6 +213,11 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
 
   // Pintasan ← → untuk pindah kartu/soal (berguna di desktop)
   const { phase, studyIndex, quizIndex, currentAnswer, currentSkipped, isLastQuiz } = lesson;
+  // Kartu/soal/tahap baru selalu dibuka dari atas, dan audio soal sebelumnya berhenti (juga saat keluar)
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+    return () => quizAudio?.pause();
+  }, [phase, studyIndex, quizIndex]);
   useEffect(() => {
     if (phase !== "study" && phase !== "quiz") return;
     function onKey(e: KeyboardEvent) {
@@ -426,7 +438,7 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
               ))}
             </ul>
             <div className={styles.introActions}>
-              <Button block onClick={lesson.startQuiz}>Mulai Latihan</Button>
+              <Button block onClick={lesson.startQuiz} disabled={lesson.quizQuestions.length === 0}>Mulai Latihan</Button>
               {lesson.studyCards.length > 0 && (
                 <Button block variant="secondary" onClick={lesson.backToStudy}>← Ulang materi</Button>
               )}
@@ -542,6 +554,9 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           )}
         </div>
 
+        {/* Gagal mengirim jawaban: sebelumnya diam saja dan kembali ke soal tanpa penjelasan */}
+        {lesson.errorMsg && <Alert>{lesson.errorMsg}</Alert>}
+
         <div className={styles.nav}>
           <Button variant="secondary" onClick={lesson.prevQuiz} disabled={lesson.quizIndex === 0} aria-label="Soal sebelumnya">←</Button>
           {lesson.isLastQuiz ? (
@@ -555,9 +570,10 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           )}
         </div>
 
-        {lesson.isLastQuiz && !lesson.allAnswered && (
+        {/* Sebelumnya muncul juga hanya karena soal terakhir ini sendiri belum dijawab */}
+        {lesson.isLastQuiz && lesson.unansweredOthers > 0 && (
           <p className={styles.muted} style={{ textAlign: "center" }}>
-            Ada soal yang belum dijawab. Periksa kembali soal sebelumnya.
+            Masih ada {lesson.unansweredOthers} soal lain yang belum dijawab. Periksa kembali soal sebelumnya.
           </p>
         )}
       </LessonShell>
@@ -569,7 +585,16 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
     return <ResultView lesson={lesson} title={chapterTitle} moduleTitle={moduleTitle} />;
   }
 
-  return null;
+  // Keadaan yang tidak punya isi untuk ditampilkan (mis. bab tanpa soal): jangan biarkan layar kosong
+  return (
+    <section className={styles.emptyState} role="status">
+      <h1 className={styles.emptyTitle}>{chapterTitle}</h1>
+      <p className={styles.muted}>Bagian ini belum punya isi. Bab ini sedang disiapkan, coba bab lain dulu ya.</p>
+      <Link href="/belajar" className={styles.scenarioCta}>
+        Kembali ke peta belajar
+      </Link>
+    </section>
+  );
 }
 
 function SpeakButton({ onClick }: { onClick: () => void }) {

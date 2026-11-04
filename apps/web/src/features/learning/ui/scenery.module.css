@@ -348,3 +348,8 @@
     animation: none;
   }
 }
+
+/* Bintang malam diam, tidak berkelip */
+.stars circle {
+  animation: none;
+}

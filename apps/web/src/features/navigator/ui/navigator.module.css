@@ -1062,3 +1062,8 @@
     0 0 0 3px color-mix(in srgb, #facc15 70%, #fff),
     0 8px 22px rgb(80 20 40 / 0.28);
 }
+
+/* Bintang kilau di sekitar Miu saat bicara dimatikan: mengganggu */
+.sparkles {
+  display: none;
+}

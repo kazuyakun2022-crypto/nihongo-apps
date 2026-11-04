@@ -1,7 +1,7 @@
 .container {
   display: grid;
   gap: var(--space-4);
-  animation: fadeInUp var(--motion-normal) var(--ease-spring);
+  animation: var(--kf-fadeInUp) var(--motion-normal) var(--ease-spring);
 }
 
 .header {

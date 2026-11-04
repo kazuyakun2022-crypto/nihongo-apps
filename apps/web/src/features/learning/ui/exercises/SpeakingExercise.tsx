@@ -43,6 +43,8 @@ export function SpeakingExercise({
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  /** Ketukan ganda saat izin mikrofon diminta tidak boleh membuka dua aliran mikrofon. */
+  const startingRef = useRef(false);
 
   useEffect(() => {
     if (typeof window !== "undefined" && (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined")) setStatus("unavailable");
@@ -54,19 +56,26 @@ export function SpeakingExercise({
   }, []);
 
   async function start() {
+    if (startingRef.current || recorderRef.current?.state === "recording") return;
+    startingRef.current = true;
     setError(null);
     try {
-      streamRef.current ??= await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      streamRef.current ??= await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
     } catch {
       setError("Izin mikrofon ditolak. Aktifkan mikrofon di pengaturan browser.");
       setStatus("unavailable");
       return;
+    } finally {
+      startingRef.current = false;
     }
     const mimeType = MIME_CANDIDATES.find((t) => MediaRecorder.isTypeSupported(t));
     const recorder = new MediaRecorder(streamRef.current, mimeType ? { mimeType } : undefined);
     const chunks: Blob[] = [];
     recorder.ondataavailable = (e) => e.data.size > 0 && chunks.push(e.data);
     recorder.onstop = async () => {
+      // Lepas mikrofon begitu selesai merekam (indikator mikrofon di HP ikut mati)
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
       setStatus("processing");
       try {
         const transcript = await transcribeJapanese(new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" }));

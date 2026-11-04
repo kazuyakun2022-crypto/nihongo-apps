@@ -370,7 +370,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  animation: fadeInUp 400ms var(--ease-out) both;
+  animation: var(--kf-fadeInUp) 400ms var(--ease-out) backwards;
 }
 
 @media (min-width: 960px) {
@@ -1105,3 +1105,9 @@
 
 .genderHint { color: var(--color-text-muted); }
 .genderError { color: var(--color-danger); }
+
+/* Kilau lewat di tombol dimatikan: mengganggu */
+.submitBtn::after {
+  content: none;
+  animation: none;
+}

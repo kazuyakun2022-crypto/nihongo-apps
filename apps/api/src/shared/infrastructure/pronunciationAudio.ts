@@ -3,7 +3,7 @@ import type { Db } from "./prisma";
 import { synthesizeChildVoice, synthesizePronunciation } from "./edgeTts";
 
 /** Suara pelafalan teks Jepang (Nanami bernada imut); teks campuran memakai suara Miu-chan per bahasa. */
-export const EDGE_PRONUNCIATION_VOICE = "edge-pron-v6:nanami-imut";
+export const EDGE_PRONUNCIATION_VOICE = "edge-pron-v7:nanami-jelas";
 const LATIN = /[A-Za-z]/;
 const memory = new Map<string, Buffer>();
 

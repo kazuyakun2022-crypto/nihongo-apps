@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState, type TouchEvent } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AskScreen } from "@/features/ask/ui/AskScreen";
 import { VoiceChatScreen } from "@/features/ask/ui/VoiceChatScreen";
 import { ScenarioList } from "@/features/conversation/ui/ScenarioList";
@@ -33,10 +33,13 @@ function Ngobrol() {
   const [slide, setSlide] = useState<{ dir: 1 | -1; n: number } | null>(null);
   const touch = useRef<{ x: number; y: number; t: number } | null>(null);
 
+  const router = useRouter();
   const setTab = (next: Tab) => {
     if (next === tab) return;
     setSlide((s) => ({ dir: ORDER.indexOf(next) > ORDER.indexOf(tab) ? 1 : -1, n: (s?.n ?? 0) + 1 }));
     setTabState(next);
+    // Tab disimpan di URL: kembali dari skenario mendarat di tab yang sama, bukan selalu Tanya
+    router.replace(next === "tanya" ? "/ngobrol" : `/ngobrol?tab=${next}`, { scroll: false });
   };
 
   // Geser kiri = tab berikutnya, geser kanan = tab sebelumnya

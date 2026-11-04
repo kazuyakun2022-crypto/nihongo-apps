@@ -717,8 +717,8 @@
    di globals.css. Warna aksen tetap terbaca bila dicetak hitam-putih. */
 @media print {
   .printSheet {
-    --p-accent: #b12a3a;
-    --p-soft: #fce8ea;
+    --p-accent: var(--color-primary);
+    --p-soft: var(--color-surface-muted);
     --p-ink: #1f1a1b;
     --p-box: 15mm;
     display: flex;

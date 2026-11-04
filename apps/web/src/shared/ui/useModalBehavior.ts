@@ -1,0 +1,54 @@
+"use client";
+
+import { useEffect, useRef, type RefObject } from "react";
+
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/**
+ * Perilaku standar modal: Esc menutup (kecuali `locked`, mis. sedang menyimpan), fokus awal ke isian pertama,
+ * Tab berputar di dalam modal, halaman di belakang tidak ikut tergulir, dan fokus kembali ke pembuka saat ditutup.
+ */
+export function useModalBehavior(containerRef: RefObject<HTMLElement>, onClose: () => void, locked = false) {
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  const lockedRef = useRef(locked);
+  lockedRef.current = locked;
+
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const box = containerRef.current;
+    const first = box?.querySelector<HTMLElement>("input, select, textarea") ?? box?.querySelector<HTMLElement>(FOCUSABLE);
+    first?.focus({ preventScroll: true });
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !lockedRef.current) {
+        e.stopPropagation();
+        closeRef.current();
+        return;
+      }
+      if (e.key !== "Tab" || !containerRef.current) return;
+      const items = [...containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.offsetParent !== null);
+      if (items.length === 0) return;
+      const firstEl = items[0];
+      const lastEl = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+      opener?.focus?.({ preventScroll: true });
+    };
+    // Dipasang sekali selama modal terbuka
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}

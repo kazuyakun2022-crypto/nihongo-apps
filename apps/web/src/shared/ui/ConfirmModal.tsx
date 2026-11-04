@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ASSET_BASE, POSES } from "./neko/nekoRig";
 import { Button } from "./Button";
 import styles from "./confirmModal.module.css";
@@ -69,12 +70,13 @@ export function ConfirmModal({
     return () => window.clearInterval(timer);
   }, [isOpen, isLogout, speech]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
   const iconClass = iconType === "info" ? styles.iconInfo : styles.iconWarning;
   const iconSymbol = iconType === "info" ? <InfoIcon size={22} /> : <AlertIcon size={22} />;
 
-  return (
+  // Portal ke body: leluhur yang sedang beranimasi (transform) tidak lagi mengurung dialog di dalam kolomnya
+  return createPortal(
     <div
       className={styles.backdrop}
       onClick={() => {
@@ -134,6 +136,7 @@ export function ConfirmModal({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

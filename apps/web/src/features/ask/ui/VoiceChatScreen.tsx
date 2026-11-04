@@ -173,6 +173,10 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
   const stopRef = useRef(stopListening);
   stopRef.current = stopListening;
 
+  /** Spasi tahan-bicara hanya aktif saat tab Suara sedang dibuka (sebelumnya tetap merekam dari tab Tanya). */
+  const activeRef = useRef(isActiveTab);
+  activeRef.current = isActiveTab;
+
   useEffect(() => {
     const isTypingTarget = (t: EventTarget | null) =>
       t instanceof HTMLElement &&
@@ -185,7 +189,7 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code !== "Space" || isTypingTarget(e.target)) return;
+      if (e.code !== "Space" || isTypingTarget(e.target) || !activeRef.current) return;
       // Sedang tur Miu-chan: Spasi tidak memicu rekaman
       if (document.querySelector("[data-tour]")) return;
       // Cegah scroll halaman & aktivasi tombol yang sedang fokus
@@ -344,6 +348,7 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
           style={{ touchAction: "none", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" }}
           disabled={state === "processing"}
           aria-pressed={isActive}
+          aria-label={isActive ? "Lepas untuk mengirim" : "Tahan untuk bicara dengan Miu-chan"}
         >
           <MicIcon />
         </button>

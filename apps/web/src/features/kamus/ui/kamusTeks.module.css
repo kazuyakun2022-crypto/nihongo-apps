@@ -97,7 +97,6 @@
 }
 
 .search:focus {
-  outline: none;
   border-color: var(--color-primary);
 }
 
@@ -425,4 +424,106 @@
 .lockIcon {
   display: inline-grid;
   place-items: center;
+}
+
+/* Area ketuk minimal 40px di ponsel */
+.speak {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.more {
+  min-height: 40px;
+}
+
+/* ── Rombakan tampilan: Kamus teks (nuansa Jepang hangat) ── */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 0;
+  border-radius: 18px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-paper);
+  background-color: var(--color-surface);
+  background-image: linear-gradient(105deg, var(--color-surface) 55%, transparent), var(--pattern-seigaiha);
+  background-size: 100% 100%, 40px 20px;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  left: var(--space-5);
+  right: var(--space-5);
+  bottom: 0;
+  height: 2px;
+  background: var(--hairline-gold);
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+}
+/* Cap hanko di depan label Jepang */
+.eyebrow::before {
+  content: "辞";
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 5px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, #fff 22%, transparent);
+  transform: rotate(-4deg);
+}
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 5.5vw, 2.25rem);
+  font-weight: 800;
+}
+.search {
+  background: var(--color-bg);
+  border-color: color-mix(in srgb, var(--color-gold) 30%, var(--color-border));
+}
+.search:focus {
+  background: var(--color-surface);
+}
+
+.tabs {
+  background: var(--color-paper-deep);
+}
+.tab[aria-current="page"] {
+  box-shadow: 0 6px 14px -8px color-mix(in srgb, var(--color-primary) 80%, transparent);
+}
+.card {
+  border: 0;
+  border-radius: 18px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-paper);
+  transition: transform var(--motion-base) var(--ease-entrance), box-shadow var(--motion-base);
+}
+.card:hover {
+  transform: translateY(-2px);
+}
+.word,
+.pattern,
+.kanjiChar {
+  font-family: var(--font-display);
+}
+
+/* ── Tema susu stroberi: cap jadi stiker bulat ── */
+.eyebrow::before {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #e0606c, var(--color-primary));
+  color: #fff;
+  font-family: var(--font-display);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--color-primary-soft), 0 5px 12px -5px rgba(177, 42, 58, 0.7);
+  transform: rotate(-8deg);
 }

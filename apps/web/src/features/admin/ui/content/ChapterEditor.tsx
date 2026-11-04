@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { contentApi, type ChapterDetail, type ContentStatus, type ItemKind, type QuizItem } from "@/features/admin/data/contentApi";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { Skeleton, SkeletonRegion, SkeletonTableRows } from "@/shared/ui/Skeleton";
@@ -14,6 +14,8 @@ import styles from "./content.module.css";
 import { SkillIcon } from "@/shared/ui/SkillIcon";
 import { CheckIcon, FileTextIcon, ImageIcon, LightbulbIcon, MessageIcon } from "@/shared/ui/icons";
 import type { ReactNode } from "react";
+import { askConfirm } from "@/shared/ui/confirmDialog";
+import { useUnsavedWarning } from "@/shared/ui/useUnsavedWarning";
 
 /** Definisi tiap jenis materi: field form, nilai awal, dan cara menampilkannya di daftar. */
 const BLOCK_TYPES = [
@@ -203,7 +205,10 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
   const router = useRouter();
   const level = useSearchParams().get("level");
   const flash = useFlash();
+  const unsaved = useUnsavedWarning();
   const [chapter, setChapter] = useState<ChapterDetail | null>(null);
+  /** Satu pemindahan blok dalam satu waktu: klik cepat beruntun tidak lagi menukar dari urutan yang sudah usang. */
+  const movingRef = useRef(false);
   const [meta, setMeta] = useState({ title: "", explanation: "", moduleTitle: "", passScore: "", status: "draft" as ContentStatus });
   const [tab, setTab] = useState<ItemKind>("block");
   const [skill, setSkill] = useState<SkillId | "semua">("semua");
@@ -233,7 +238,7 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
 
   const backHref = `/admin/konten?level=${level ?? chapter?.levelId ?? ""}`;
 
-  if (!chapter && flash.node) return <p className={adminStyles.emptyState}>{flash.node}</p>;
+  if (!chapter && flash.node) return <div className={adminStyles.emptyState}>{flash.node}</div>;
   if (!chapter) {
     return (
       <SkeletonRegion label="Memuat bab…" style={{ display: "contents" }}>
@@ -272,6 +277,7 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
     meta.moduleTitle !== (chapter.moduleTitle ?? "") ||
     meta.passScore !== (chapter.passScore == null ? "" : String(chapter.passScore)) ||
     meta.status !== chapter.status;
+  unsaved.current = dirty;
 
   async function saveMeta() {
     setSavingMeta(true);
@@ -293,7 +299,7 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
   }
 
   async function removeChapter() {
-    if (!chapter || !confirm(`Hapus bab "${chapter.title}" beserta seluruh isinya?`)) return;
+    if (!chapter || !(await askConfirm({ title: `Hapus bab "${chapter.title}"?`, description: "Seluruh materi, kosakata, kanji, tata bahasa, dan latihan di bab ini ikut terhapus. Tindakan ini tidak bisa dibatalkan.", confirmText: "Hapus bab" }))) return;
     try {
       await contentApi.deleteChapter(chapterId);
       router.push(backHref);
@@ -303,21 +309,27 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
   }
 
   async function moveBlock(index: number, delta: -1 | 1) {
-    if (!chapter) return;
+    if (!chapter || movingRef.current) return;
     const ids = chapter.lessonBlocks.map((b) => b.id);
     const j = index + delta;
     if (j < 0 || j >= ids.length) return;
     [ids[index], ids[j]] = [ids[j], ids[index]];
+    movingRef.current = true;
+    // Urutan baru langsung tampil (tanpa memuat ulang seluruh bab); kalau gagal, data dari server dimuat lagi
+    const byId = new Map(chapter.lessonBlocks.map((b) => [b.id, b]));
+    setChapter({ ...chapter, lessonBlocks: ids.map((id) => byId.get(id)!) });
     try {
       await contentApi.reorderBlocks(chapterId, ids);
-      await load();
     } catch (err) {
       flash.fail(err);
+      await load();
+    } finally {
+      movingRef.current = false;
     }
   }
 
   async function removeItem(kind: ItemKind, item: AnyItem) {
-    if (!confirm(`Hapus ${KINDS[kind].label} ini?`)) return;
+    if (!(await askConfirm({ title: `Hapus ${KINDS[kind].label} ini?`, description: "Item ini akan dihapus dari bab." }))) return;
     try {
       await contentApi.deleteItem(kind, item.id);
       await load();
@@ -401,7 +413,7 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
       </section>
 
       <section className={adminStyles.panel}>
-        <div className={adminStyles.tabs} role="tablist" aria-label="Isi bab">
+        <div className={`${adminStyles.tabs} ${styles.wrapTabs}`} role="tablist" aria-label="Isi bab">
           {KIND_ORDER.map((k) => (
             <button key={k} type="button" role="tab" aria-selected={tab === k} className={`${adminStyles.tabBtn} ${tab === k ? adminStyles.tabBtnActive : ""}`} onClick={() => setTab(k)}>
               {KINDS[k].tab} <span className={styles.muted}>({(chapter[KINDS[k].listKey] as unknown[]).length})</span>
@@ -423,7 +435,7 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
           ) : (
             <span className={styles.muted}>
               {tab === "quiz"
-                ? "Siswa harus mendapat nilai minimal 70 untuk menyelesaikan bab."
+                ? `Siswa harus mendapat nilai minimal ${chapter?.passScore ?? 70} untuk menyelesaikan bab.`
                 : tab === "block"
                   ? "Blok materi tampil paling awal saat siswa membuka bab, sesuai urutan di bawah."
                   : `Urutan tampil sesuai urutan dibuat.`}

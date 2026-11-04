@@ -209,6 +209,8 @@ export function AskScreen({ hideHeader = false }: AskScreenProps = {}) {
                 e.target.style.height = `${Math.min(e.target.scrollHeight, 110)}px`;
               }}
               onKeyDown={(e) => {
+                // Enter saat memilih kanji di keyboard Jepang (IME) jangan mengirim pesan yang belum selesai
+                if (e.nativeEvent.isComposing || e.keyCode === 229) return;
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   submit();

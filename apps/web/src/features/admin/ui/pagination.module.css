@@ -68,3 +68,9 @@
   padding: 0 4px;
   color: var(--color-text-muted);
 }
+
+/* Halaman aktif tidak bisa diklik ulang, tapi tetap tampil penuh (bukan pudar seperti tombol nonaktif) */
+.btn[aria-current]:disabled {
+  opacity: 1;
+  cursor: default;
+}

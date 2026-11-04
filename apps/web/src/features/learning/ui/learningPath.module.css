@@ -5,10 +5,11 @@
   width: 100%;
   max-width: min(var(--content-max), 100%);
   margin: 0 auto;
-  padding: var(--space-4) var(--space-3) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-7));
+  /* Ruang navigasi bawah sudah disediakan .main (AppShell); di sini cukup jarak biasa */
+  padding: var(--space-4) var(--space-3) var(--space-6);
   box-sizing: border-box;
   min-width: 0;
-  animation: pageEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pageEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes pageEntrance {
@@ -150,4 +151,69 @@
     transition: none !important;
     transform: none !important;
   }
+}
+
+/* Ponsel sempit: tepi kanan memudar sebagai tanda tab level bisa digeser */
+@media (max-width: 479px) {
+  .levelTabs {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    padding-right: 28px;
+  }
+}
+
+/* ── Rombakan tampilan: Belajar (nuansa Jepang hangat) ── */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+/* Cap hanko 学 di depan べんきょう */
+.eyebrow::before {
+  content: "学";
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 5px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, #fff 22%, transparent);
+  transform: rotate(-4deg);
+}
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 6vw, 2.4rem);
+  font-weight: 800;
+}
+.levelTabs {
+  background: color-mix(in srgb, var(--color-paper-deep) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
+  box-shadow: var(--shadow-paper);
+}
+.levelTab {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+.levelTabActive {
+  background: var(--color-primary);
+  box-shadow: 0 6px 14px -8px color-mix(in srgb, var(--color-primary) 80%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 55%, transparent);
+}
+
+/* ── Tema susu stroberi: cap jadi stiker bulat ── */
+.eyebrow::before {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #e0606c, var(--color-primary));
+  color: #fff;
+  font-family: var(--font-display);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--color-primary-soft), 0 5px 12px -5px rgba(177, 42, 58, 0.7);
+  transform: rotate(-8deg);
 }

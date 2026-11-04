@@ -92,17 +92,19 @@ export function useChapterLesson(chapterId: string) {
     setPhase("study");
   }
 
+  // Bab tanpa kartu materi: "Ulang pembelajaran" kembali ke pengantar kuis (sebelumnya layar kosong)
   function restartStudy() {
     setStudyIndex(0);
-    setPhase("study");
+    setPhase(studyCards.length > 0 ? "study" : "quiz-intro");
   }
 
   function backToStudy() {
     setStudyIndex(Math.max(0, studyCards.length - 1));
-    setPhase("study");
+    setPhase(studyCards.length > 0 ? "study" : "quiz-intro");
   }
 
   function startQuiz() {
+    if (quizQuestions.length === 0) return;
     setQuizIndex(0);
     setAnswers(new Map());
     setSkipped(new Set());
@@ -151,6 +153,7 @@ export function useChapterLesson(chapterId: string) {
   const isDone = (questionId: string) => answers.has(questionId) || skipped.has(questionId);
 
   async function submitQuiz() {
+    setErrorMsg(null);
     const payload: QuizAnswer[] = quizQuestions.map((q) => ({
       questionId: q.id,
       answer: answers.get(q.id) ?? "",
@@ -180,6 +183,8 @@ export function useChapterLesson(chapterId: string) {
   const currentAnswer = currentQuestion ? (answers.get(currentQuestion.id) ?? null) : null;
   const currentSkipped = currentQuestion ? skipped.has(currentQuestion.id) : false;
   const allAnswered = quizQuestions.length > 0 && quizQuestions.every((q) => answers.has(q.id) || skipped.has(q.id));
+  /** Soal LAIN (selain yang sedang dibuka) yang belum dijawab/dilewati, untuk peringatan di soal terakhir. */
+  const unansweredOthers = quizQuestions.filter((q, i) => i !== quizIndex && !answers.has(q.id) && !skipped.has(q.id)).length;
   const isLastStudy = studyIndex === studyCards.length - 1;
   const isLastQuiz = quizIndex === quizQuestions.length - 1;
 
@@ -200,6 +205,7 @@ export function useChapterLesson(chapterId: string) {
     currentAnswer,
     currentSkipped,
     allAnswered,
+    unansweredOthers,
     isLastQuiz,
     result,
     direction,

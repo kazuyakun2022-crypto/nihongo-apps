@@ -8,6 +8,7 @@ import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { useFlash } from "./ContentShell";
 import styles from "./content.module.css";
 import { CloseIcon } from "@/shared/ui/icons";
+import { useUnsavedWarning } from "@/shared/ui/useUnsavedWarning";
 
 type Start = OnboardingConfig["starts"][number];
 
@@ -35,6 +36,7 @@ function goalKey(label: string, taken: string[]): string {
 /** Pengaturan layar pendaftaran awal (/mulai): teks, tujuan belajar, menit harian, dan titik mulai per level. */
 export function OnboardingEditor() {
   const flash = useFlash();
+  const unsaved = useUnsavedWarning();
   const [levels, setLevels] = useState<ContentLevel[]>([]);
   const [config, setConfig] = useState<OnboardingConfig | null>(null);
   const [saved, setSaved] = useState<OnboardingConfig | null>(null);
@@ -51,6 +53,8 @@ export function OnboardingEditor() {
   }, [flash.fail]);
 
   if (!config) {
+    // Galat pemuatan ditampilkan (sebelumnya kerangka saja yang muncul, tanpa pesan apa pun)
+    if (flash.node) return flash.node;
     return (
       <SkeletonRegion label="Memuat pengaturan pendaftaran…" style={{ display: "contents" }}>
         {[0, 1, 2].map((i) => (
@@ -64,6 +68,7 @@ export function OnboardingEditor() {
   }
 
   const dirty = JSON.stringify(config) !== JSON.stringify(saved);
+  unsaved.current = dirty;
   const update = (patch: Partial<OnboardingConfig>) => setConfig({ ...config, ...patch });
   const updateStart = (levelId: number, patch: Partial<Start>) =>
     update({ starts: config.starts.map((s) => (s.levelId === levelId ? { ...s, ...patch } : s)) });

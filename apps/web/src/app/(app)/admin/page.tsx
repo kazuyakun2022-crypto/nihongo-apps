@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { adminApi, type SystemStats } from "@/features/admin/data/adminApi";
 import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
+import { ArrowRightIcon, BookOpenIcon, MessageIcon, StarIcon, UsersIcon } from "@/shared/ui/icons";
 import { PageSkeleton, Skeleton } from "@/shared/ui/Skeleton";
 import styles from "./admin.module.css";
+
+const ROLE_ROWS: { key: keyof SystemStats["roleBreakdown"]; label: string; cls: string }[] = [
+  { key: "super_admin", label: "Super Admin", cls: "role_super_admin" },
+  { key: "admin", label: "Admin", cls: "role_admin" },
+  { key: "teacher", label: "Guru / Sensei", cls: "role_teacher" },
+  { key: "premium", label: "Pelajar Premium", cls: "role_premium" },
+  { key: "student", label: "Pelajar Reguler", cls: "role_student" },
+];
 
 export default function AdminDashboardPage() {
   const { user } = useAuth();
@@ -15,6 +24,7 @@ export default function AdminDashboardPage() {
 
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const isSuperAdmin = user?.role === "super_admin";
   const isAdmin = user?.role === "admin" || isSuperAdmin;
@@ -25,15 +35,19 @@ export default function AdminDashboardPage() {
     }
   }, [user, isAdmin, router]);
 
+  const load = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    adminApi
+      .getStats()
+      .then(setStats)
+      .catch((e: Error) => setError(e.message || "Statistik belum bisa dimuat."))
+      .finally(() => setLoading(false));
+  }, []);
+
   useEffect(() => {
-    if (isAdmin) {
-      adminApi
-        .getStats()
-        .then(setStats)
-        .catch(() => setStats(null))
-        .finally(() => setLoading(false));
-    }
-  }, [isAdmin]);
+    if (isAdmin) load();
+  }, [isAdmin, load]);
 
   if (!isAdmin) {
     return (
@@ -43,213 +57,124 @@ export default function AdminDashboardPage() {
     );
   }
 
+  // Saat memuat: kerangka; saat gagal: tanda pisah. Tidak menampilkan "0" palsu.
+  const value = (n: number | undefined) =>
+    loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : error || n === undefined ? "–" : n.toLocaleString("id");
+
+  const nav = [
+    { href: "/admin/pengguna", title: "Kelola Pengguna", desc: "Cari akun, moderasi penangguhan, ubah peran, dan beri premium" },
+    { href: "/admin/konten", title: "Kelola Konten", desc: "Bab, kamus, skenario percakapan, ujian, dan pendaftaran" },
+    { href: "/admin/ai", title: "Konfigurasi AI", desc: "Instruksi sistem per tingkat JLPT, batas kata, dan kecepatan suara" },
+    ...(isSuperAdmin ? [{ href: "/admin/pantau", title: "Pantau Belajar", desc: "Level, progres bab, ujian, percakapan, dan pencapaian setiap pelajar" }] : []),
+    { href: "/ngobrol", title: "Uji Miu-chan", desc: "Coba jawaban, suara, dan percakapan maskot seperti yang dilihat pelajar" },
+  ];
+
   return (
     <div className={styles.container}>
       <AdminHeaderNav
         title={isSuperAdmin ? "Dashboard Super Admin" : "Dashboard Administrator"}
-        subtitle="Ringkasan performa platform, aktivitas pengguna, dan operasional sistem NihonGo."
+        subtitle="Ringkasan pengguna, aktivitas, dan materi platform NihonGo."
       />
 
-      {/* Role Notice Banner (Tanpa Emoji) */}
       {isSuperAdmin ? (
         <div className={`${styles.roleNoticeBanner} ${styles.superAdminNotice}`}>
           <span>
-            <strong>Otoritas Super Admin:</strong> Anda memiliki kontrol penuh tata kelola seluruh pengguna,
-            promosi/demosi akun Admin, konfigurasi instruksi AI dan kecepatan TTS, pemberian status premium, serta pemantauan progres belajar seluruh pelajar.
+            <strong>Otoritas Super Admin:</strong> kontrol penuh atas seluruh pengguna, pengangkatan akun Admin, konfigurasi instruksi AI dan
+            kecepatan suara, pemberian status premium, serta pemantauan progres belajar seluruh pelajar.
           </span>
         </div>
       ) : (
         <div className={`${styles.roleNoticeBanner} ${styles.adminNotice}`}>
           <span>
-            <strong>Otoritas Administrator:</strong> Anda dapat mengelola akun murid & guru, memantau metrik performa, dan menangguhkan akun pelanggar.
-            Konfigurasi model AI dan pengangkatan akun Admin dikunci sesuai hierarki keamanan.
+            <strong>Otoritas Administrator:</strong> kelola akun pelajar dan guru, pantau metrik, dan tangguhkan akun pelanggar. Konfigurasi AI dan
+            pengangkatan Admin hanya untuk Super Admin.
           </span>
         </div>
       )}
 
-      {/* KPI Cards Grid (Modern, Clean SVG, Tanpa Emoji) */}
+      {error && (
+        <div className={styles.errorBanner} role="alert">
+          <span>Statistik belum bisa dimuat: {error}</span>
+          <button type="button" className={`${styles.btnSm} ${styles.btnSecondary}`} onClick={load}>
+            Coba lagi
+          </button>
+        </div>
+      )}
+
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div className={styles.statHeader}>
             <span>TOTAL PENGGUNA</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
+            <UsersIcon size={20} />
           </div>
-          <span className={styles.statValue}>{loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.totalUsers ?? 0}</span>
-          <span className={styles.statFoot}>{stats?.activeUsers ?? 0} akun aktif</span>
+          <span className={styles.statValue}>{value(stats?.totalUsers)}</span>
+          <span className={styles.statFoot}>{stats && !loading ? `${stats.activeUsers.toLocaleString("id")} akun aktif` : "Akun terdaftar"}</span>
         </div>
 
         <div className={styles.statCard}>
           <div className={styles.statHeader}>
             <span>PELAJAR PREMIUM</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
+            <StarIcon size={20} />
           </div>
-          <span className={styles.statValue}>{loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.roleBreakdown.premium ?? 0}</span>
-          <span className={styles.statFoot}>Langganan VIP aktif</span>
+          <span className={styles.statValue}>{value(stats?.roleBreakdown.premium)}</span>
+          <span className={styles.statFoot}>Langganan aktif</span>
         </div>
 
         <div className={styles.statCard}>
           <div className={styles.statHeader}>
             <span>SESI PERCAKAPAN</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
+            <MessageIcon size={20} />
           </div>
-          <span className={styles.statValue}>{loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.totalConversations ?? 0}</span>
-          <span className={styles.statFoot}>Dialog dengan maskot AI</span>
+          <span className={styles.statValue}>{value(stats?.totalConversations)}</span>
+          <span className={styles.statFoot}>Dialog dengan Miu-chan</span>
         </div>
 
         <div className={styles.statCard}>
           <div className={styles.statHeader}>
             <span>MATERI KURIKULUM</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
+            <BookOpenIcon size={20} />
           </div>
-          <span className={styles.statValue}>{loading ? <Skeleton width="4rem" height="2rem" style={{ margin: "2px 0" }} /> : stats?.totalChapters ?? 0}</span>
-          <span className={styles.statFoot}>Bab tersedia (N5–N1)</span>
+          <span className={styles.statValue}>{value(stats?.totalChapters)}</span>
+          {/* Angka dari server menghitung semua bab (termasuk draf & Pemula), jadi labelnya disebut apa adanya */}
+          <span className={styles.statFoot}>Total bab, semua level & status</span>
         </div>
       </div>
 
-      {/* Panel Utama: Distribusi Peran & Navigasi Operasional */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" }}>
-        {/* Distribusi Akun */}
-        <div className={styles.panel}>
-          <h2 className={styles.panelTitle}>Distribusi Peran Akun</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
-              <span className={`${styles.badge} ${styles.role_super_admin}`}>Super Admin</span>
-              <strong>{stats?.roleBreakdown.super_admin ?? 0} akun</strong>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
-              <span className={`${styles.badge} ${styles.role_admin}`}>Admin</span>
-              <strong>{stats?.roleBreakdown.admin ?? 0} akun</strong>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
-              <span className={`${styles.badge} ${styles.role_teacher}`}>Guru / Sensei</span>
-              <strong>{stats?.roleBreakdown.teacher ?? 0} akun</strong>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
-              <span className={`${styles.badge} ${styles.role_premium}`}>Pelajar Premium</span>
-              <strong>{stats?.roleBreakdown.premium ?? 0} akun</strong>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "var(--color-surface-muted)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
-              <span className={`${styles.badge} ${styles.role_student}`}>Siswa Reguler</span>
-              <strong>{stats?.roleBreakdown.student ?? 0} akun</strong>
-            </div>
-          </div>
-        </div>
+      <div className={styles.dashGrid}>
+        <section className={styles.panel} aria-labelledby="dist-title">
+          <h2 id="dist-title" className={styles.panelTitle}>
+            Distribusi Peran Akun
+          </h2>
+          <ul className={styles.roleList}>
+            {ROLE_ROWS.map((r) => (
+              <li key={r.key} className={styles.roleRow}>
+                <span className={`${styles.badge} ${styles[r.cls]}`}>{r.label}</span>
+                <strong>
+                  {loading ? <Skeleton width="3rem" /> : error || !stats ? "–" : `${stats.roleBreakdown[r.key].toLocaleString("id")} akun`}
+                </strong>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-        {/* Menu Operasional Cepat */}
-        <div className={styles.panel}>
-          <h2 className={styles.panelTitle}>Navigasi Operasional</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <Link
-              href="/admin/pengguna"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "14px 16px",
-                background: "var(--color-surface-muted)",
-                border: "1px solid var(--color-border)",
-                borderRadius: "10px",
-                textDecoration: "none",
-                color: "var(--color-text)",
-                transition: "border-color 0.15s, transform 0.15s",
-              }}
-            >
-              <div>
-                <strong style={{ display: "block", fontSize: "0.95rem" }}>Kelola Pengguna</strong>
-                <span style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
-                  Cari akun, moderasi suspend, ubah peran, dan beri premium
-                </span>
-              </div>
-              <span style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>→</span>
-            </Link>
-
-            <Link
-              href="/admin/ai"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "14px 16px",
-                background: "var(--color-surface-muted)",
-                border: "1px solid var(--color-border)",
-                borderRadius: "10px",
-                textDecoration: "none",
-                color: "var(--color-text)",
-                transition: "border-color 0.15s, transform 0.15s",
-              }}
-            >
-              <div>
-                <strong style={{ display: "block", fontSize: "0.95rem" }}>Konfigurasi AI</strong>
-                <span style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
-                  Instruksi sistem per tingkat JLPT, batasan kata, dan kecepatan TTS
-                </span>
-              </div>
-              <span style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>→</span>
-            </Link>
-
-            {isSuperAdmin && (
-              <Link
-                href="/admin/pantau"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "14px 16px",
-                  background: "var(--color-surface-muted)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "10px",
-                  textDecoration: "none",
-                  color: "var(--color-text)",
-                  transition: "border-color 0.15s, transform 0.15s",
-                }}
-              >
-                <div>
-                  <strong style={{ display: "block", fontSize: "0.95rem" }}>Pantau Belajar</strong>
-                  <span style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
-                    Level, progres bab, ujian, percakapan, dan pencapaian setiap pelajar
+        <section className={styles.panel} aria-labelledby="nav-title">
+          <h2 id="nav-title" className={styles.panelTitle}>
+            Navigasi Cepat
+          </h2>
+          <ul className={styles.navCards}>
+            {nav.map((n) => (
+              <li key={n.href}>
+                <Link href={n.href} className={styles.navCard}>
+                  <span>
+                    <strong>{n.title}</strong>
+                    <span className={styles.navCardDesc}>{n.desc}</span>
                   </span>
-                </div>
-                <span style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>→</span>
-              </Link>
-            )}
-
-            <Link
-              href="/ngobrol"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "14px 16px",
-                background: "var(--color-surface-muted)",
-                border: "1px solid var(--color-border)",
-                borderRadius: "10px",
-                textDecoration: "none",
-                color: "var(--color-text)",
-                transition: "border-color 0.15s, transform 0.15s",
-              }}
-            >
-              <div>
-                <strong style={{ display: "block", fontSize: "0.95rem" }}>Playground Uji AI</strong>
-                <span style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
-                  Uji dialog respons, TTS suara, dan deteksi kanji dengan maskot
-                </span>
-              </div>
-              <span style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>→</span>
-            </Link>
-          </div>
-        </div>
+                  <ArrowRightIcon size={18} className={styles.navCardArrow} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </div>
   );

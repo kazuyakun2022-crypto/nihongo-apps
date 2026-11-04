@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/shared/ui/PageHeader";
 import { useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import Link from "next/link";
 import { useState, useCallback, useMemo, useEffect } from "react";
@@ -704,10 +705,11 @@ function QuizView({ cards, onBack }: { cards: CharCard[]; onBack: () => void }) 
 
 // ── TABS CONFIG ──
 const TABS: Array<{ id: Tab; label: string; count: number }> = [
-  { id: "hiragana", label: "Hiragana", count: 46 },
-  { id: "katakana", label: "Katakana", count: 46 },
-  { id: "dakuten", label: "Dakuten & ゜", count: 25 },
-  { id: "yoon", label: "Yoon", count: 36 },
+  { id: "hiragana", label: "Hiragana", count: HIRAGANA_BASIC.length },
+  { id: "katakana", label: "Katakana", count: KATAKANA_BASIC.length },
+  { id: "dakuten", label: "Dakuten & ゜", count: DAKUTEN_CHARS.length },
+  // Dihitung dari data (sebelumnya Yoon tertulis 36 padahal 33)
+  { id: "yoon", label: "Yoon", count: YOON_CHARS.length },
   { id: "kanji", label: "Kanji", count: 0 },
 ];
 
@@ -804,27 +806,36 @@ export function HurufBrowser({ kanjiLevel }: { kanjiLevel: JlptLevel }) {
     <div className={styles.wrap}>
       {/* Top Header */}
       <header className={styles.header}>
-        <div className={styles.headerTitles}>
-          <div className={styles.headingRow}>
-            <h1 className={styles.heading}>Tabel Huruf</h1>
-            <span className={styles.badgeCount}>{currentTabInfo?.count} karakter</span>
-          </div>
-          <p className={styles.subheading}>
-            Eksplorasi huruf bahasa Jepang dengan tabel rapi, audio pelafalan, latihan menulis hiragana, dan kuis interaktif.
-          </p>
-        </div>
+        {/* Saat latihan menulis/kuis, judul & deskripsi disembunyikan supaya kanvas muat di layar ponsel */}
+        {mode === "table" && (
+          <PageHeader
+            className={styles.headerTitles}
+            seal="字"
+            jp="もじ"
+            title="Tabel Huruf"
+            subtitle={
+              <>
+                <span className={styles.badgeCount}>{currentTabInfo?.count} karakter</span> Dengarkan pelafalan, latihan
+                menulis, dan uji hafalanmu dengan kuis.
+              </>
+            }
+          />
+        )}
 
         <div className={styles.headerControls}>
           {mode === "table" ? (
             <>
-              <input
-                type="search"
-                className={styles.searchInput}
-                placeholder="Cari romaji, huruf, arti..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Cari huruf atau romaji"
-              />
+              {/* Pencarian hanya di tab yang mendukungnya (Dakuten & Yoon belum punya penanda hasil) */}
+              {tab !== "dakuten" && tab !== "yoon" && (
+                <input
+                  type="search"
+                  className={styles.searchInput}
+                  placeholder="Cari romaji, huruf, arti..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Cari huruf atau romaji"
+                />
+              )}
               <Button onClick={() => handleStartWriting(selected?.char || "あ")} variant="primary" data-spotlight="huruf-tulis">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ marginRight: 6, display: "inline-block", verticalAlign: "middle" }}>
                   <path d="M12 20h9" />
