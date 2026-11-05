@@ -91,8 +91,11 @@ enum ExamType {
 enum ExamSection {
   kosakata
   tata_bahasa
+  /// Bank naik tahap: soal cara baca kanji. Simulasi JLPT: Kanji Yomi (bagian Moji-Goi).
   membaca
   mendengar
+  /// Pemahaman bacaan (Dokkai) simulasi JLPT: soal disertai teks bacaan di kolom passage
+  dokkai
 }
 
 enum FuriganaRule {
@@ -599,6 +602,10 @@ model ExamQuestion {
   difficulty    Int                 @default(1) @db.SmallInt
   status        String              @default("published")
   explanation   String?
+  /// Tipe soal resmi JLPT (Daimon), mis. kanji_yomi, bunpou_narabikae, dokkai_tanbun, choukai_kadai
+  category      String?             @db.VarChar(40)
+  /// Dokkai: teks bacaan yang ditampilkan di atas soal. Choukai: skrip percakapan, hanya tampil di pembahasan.
+  passage       String?
   sourceKey     String?             @unique @map("source_key") @db.VarChar(100)
   level         Level               @relation(fields: [levelId], references: [id])
   answers       ExamAttemptAnswer[]

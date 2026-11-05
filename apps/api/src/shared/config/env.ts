@@ -16,6 +16,9 @@ const schema = z.object({
   FREE_DAILY_AI_SESSIONS: z.coerce.number().default(5),
   GOOGLE_CLIENT_ID: z.string().optional().default(""),
   GOOGLE_CLIENT_SECRET: z.string().optional().default(""),
+  // Email production lewat Resend. Kosong = link dicetak ke log (development)
+  RESEND_API_KEY: z.string().optional().default(""),
+  EMAIL_FROM: z.string().optional().default("Nihongo <onboarding@resend.dev>"),
 });
 
 export type Env = z.infer<typeof schema>;

@@ -2,12 +2,14 @@ import { apiRequest } from "@/core/http/apiClient";
 import type { ExerciseType } from "@/shared/lib/exercises";
 
 export type ContentStatus = "draft" | "review" | "published";
-export type ExamSection = "kosakata" | "tata_bahasa" | "membaca" | "mendengar";
+/** dokkai hanya dipakai bank Simulasi JLPT. */
+export type ExamSection = "kosakata" | "tata_bahasa" | "membaca" | "mendengar" | "dokkai";
 export type ItemKind = "block" | "vocab" | "kanji" | "grammar" | "quiz";
 export type LessonBlockType = "teks" | "gambar" | "dialog" | "tips" | "huruf";
 /** Tes naik tahap atau tes penempatan saat daftar; masing-masing punya aturan dan bank soal sendiri. */
 /** workbook = Gerbang Tulis (tulisan tangan): hanya aturan, tanpa bank soal. */
-export type ExamType = "level_up" | "placement" | "workbook";
+/** jlpt_sim = Simulasi JLPT N5-N1: bank soal sendiri, kekurangannya ditutup bank tes naik tahap. */
+export type ExamType = "level_up" | "placement" | "workbook" | "jlpt_sim";
 
 export interface ContentLevel {
   id: number;
@@ -20,6 +22,11 @@ export interface ContentLevel {
   hasExam: boolean;
   hasPlacement: boolean;
   hasWorkbook: boolean;
+  jlptSimQuestions: number;
+  /** Level N5-N1 (punya simulasi JLPT). */
+  hasJlptSim: boolean;
+  /** Admin sudah menyimpan aturan simulasi sendiri. */
+  jlptSimCustom: boolean;
 }
 
 export interface ChapterRow {
@@ -128,6 +135,10 @@ export interface ExamQuestionItem extends Omit<QuizItem, "options"> {
   section: ExamSection;
   difficulty: number;
   status: ContentStatus;
+  /** Simulasi JLPT: tipe soal resmi (Daimon). */
+  category?: string | null;
+  /** Simulasi JLPT: teks bacaan Dokkai atau skrip Choukai. */
+  passage?: string | null;
 }
 
 /** Skenario latihan ngobrol AI (role-play) per level. */
@@ -187,15 +198,24 @@ export const contentApi = {
     if (params.page) sp.set("page", String(params.page));
     return apiRequest<{
       config: ExamConfig | null;
+      /** Aturan bawaan bila admin belum menyimpan (simulasi JLPT: rasio JLPT asli). */
+      defaultConfig: ExamConfig | null;
       questions: ExamQuestionItem[];
       total: number;
       page: number;
       pageSize: number;
       publishedPerSection: Partial<Record<ExamSection, number>>;
+      /** Simulasi JLPT: soal terbit tes naik tahap yang ikut dipakai bila bank simulasi kurang. */
+      borrowedPerSection: Partial<Record<ExamSection, number>>;
     }>(`${base}/levels/${levelId}/exam?${sp.toString()}`);
   },
   saveExamConfig: (levelId: number, type: ExamType, data: ExamConfig) =>
     apiRequest(`${base}/levels/${levelId}/exam?type=${type}`, json("PUT", data)),
+  /** Impor paket soal Simulasi JLPT (format JSON data ingestion). */
+  importJlptPackage: (levelId: number, pkg: unknown) =>
+    apiRequest<{ created: number; updated: number; examSlug: string }>(`${base}/levels/${levelId}/exam/import?type=jlpt_sim`, json("POST", pkg)),
+  resetExamConfig: (levelId: number, type: ExamType) =>
+    apiRequest(`${base}/levels/${levelId}/exam?type=${type}`, json("DELETE")),
   createExamQuestion: (levelId: number, type: ExamType, data: Omit<ExamQuestionItem, "id">) =>
     apiRequest(`${base}/levels/${levelId}/exam/questions?type=${type}`, json("POST", data)),
   updateExamQuestion: (id: string, data: Partial<Omit<ExamQuestionItem, "id">>) => apiRequest(`${base}/exam/questions/${id}`, json("PATCH", data)),

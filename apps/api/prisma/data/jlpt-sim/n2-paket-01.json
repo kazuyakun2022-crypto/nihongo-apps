@@ -1,0 +1,72 @@
+{
+  "examSlug": "jlpt-n2-mock-01",
+  "levelCode": "N2",
+  "title": "Simulasi Ujian Penuh JLPT N2 - Paket 1",
+  "durationMinutes": 155,
+  "passingScore": 90,
+  "sectionalMinimums": { "languageKnowledge": 19, "reading": 19, "listening": 19 },
+  "sections": [
+    {
+      "sectionType": "MOJI_GOI",
+      "title": "Language Knowledge (Vocabulary)",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "WORD_FORMATION",
+          "promptText": "今回のシステム障害は、（　）合理的な設計が原因であった。",
+          "options": [
+            { "index": 1, "text": "無" },
+            { "index": 2, "text": "非" },
+            { "index": 3, "text": "未" },
+            { "index": 4, "text": "不" }
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "非合理的 (higouriteki) = tidak rasional. Prefiks 非 dipakai bersama kata sifat abstrak berakhiran 〜的 (非現実的, 非効率的). 不合理 juga ada, tapi dipakai tanpa 〜的 (不合理な設計).",
+          "tags": ["N2", "Goi", "Gokeisei"]
+        }
+      ]
+    },
+    {
+      "sectionType": "DOKKAI",
+      "title": "Reading",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SHORT_PASSAGE",
+          "passage": "在宅勤務が広がり、通勤時間がなくなったことを歓迎する声は多い。しかし一方で、仕事と私生活の境目があいまいになり、かえって働く時間が長くなったという人も少なくない。大切なのは、場所の自由を得た分、時間の使い方を自分で管理する意識を持つことだろう。",
+          "promptText": "筆者の考えに最も近いものはどれか。",
+          "options": [
+            { "index": 1, "text": "在宅勤務はやめたほうがいい。" },
+            { "index": 2, "text": "通勤時間は働く人にとって必要だ。" },
+            { "index": 3, "text": "在宅勤務では、自分で時間を管理することが大切だ。" },
+            { "index": 4, "text": "在宅勤務をすれば、働く時間は必ず短くなる。" }
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Kalimat terakhir menyatakan pendapat penulis: 大切なのは…時間の使い方を自分で管理する意識を持つことだろう (yang penting adalah kesadaran untuk mengatur waktu sendiri).",
+          "tags": ["N2", "Dokkai"]
+        }
+      ]
+    },
+    {
+      "sectionType": "CHOUKAI",
+      "title": "Listening Comprehension",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "TASK_BASED",
+          "promptText": "女の人はこのあとまず何をしますか。",
+          "audioScript": "会社で男の人と女の人が話しています。女の人は、このあとまず何をしますか。来週の出張の件だけど、ホテルはもう予約した？いえ、まだです。先に新幹線の切符を取ろうと思っていたんですが。切符は総務がまとめて取ってくれるから大丈夫。それより、先方に訪問の時間を確認してもらえる？ホテルはそのあとでいいよ。わかりました。すぐに連絡します。",
+          "options": [
+            { "index": 1, "text": "ホテルを予約する" },
+            { "index": 2, "text": "新幹線の切符を取る" },
+            { "index": 3, "text": "訪問先に時間を確認する" },
+            { "index": 4, "text": "総務に連絡する" }
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Tiket diurus bagian umum (総務がまとめて取ってくれる), hotel boleh belakangan (ホテルはそのあとでいい). Yang diminta lebih dulu: 先方に訪問の時間を確認してもらえる？",
+          "tags": ["N2", "Choukai", "Task-Based"]
+        }
+      ]
+    }
+  ]
+}

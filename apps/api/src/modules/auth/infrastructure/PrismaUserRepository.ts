@@ -16,6 +16,7 @@ const select = {
   avatarUrl: true,
   dailyTargetMin: true,
   streakCount: true,
+  lastActiveDate: true,
   xpTotal: true,
   emailVerifiedAt: true,
   failedLoginCount: true,

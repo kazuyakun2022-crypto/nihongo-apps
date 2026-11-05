@@ -129,6 +129,5 @@ export interface LearningRepository {
   gradeQuizAnswers(chapterId: string, answers: QuizAnswer[]): Promise<QuizGradeResult>;
   saveQuizResult(userId: string, chapterId: string, score: number, passed: boolean, now: Date): Promise<void>;
   enqueueChapterItemsToSrs(userId: string, chapterId: string, dueDate: Date): Promise<void>;
-  addXp(userId: string, xp: number): Promise<void>;
   getLevelProgress(userId: string, levelId: number): Promise<LevelProgress>;
 }

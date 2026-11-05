@@ -68,6 +68,10 @@ echo "== 4/5 Kamus (gambar, ungkapan, kosakata, kanji, tata bahasa) =="
 npm run content:kamus
 
 echo
+echo "== 4b/5 Paket soal Simulasi JLPT (prisma/data/jlpt-sim) =="
+npm run content:jlpt-sim
+
+echo
 echo "== 5/5 Verifikasi isi kamus per level =="
 cat > prisma/scripts/_cek_kamus.ts <<'EOF'
 import { PrismaClient } from "@prisma/client";

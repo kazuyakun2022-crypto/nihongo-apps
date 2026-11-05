@@ -4,15 +4,16 @@
  */
 export const EXAM_SECTIONS = ["kosakata", "tata_bahasa", "membaca", "mendengar"] as const;
 export type ExamSectionKey = (typeof EXAM_SECTIONS)[number];
-export type SectionRules = Partial<Record<ExamSectionKey, { count: number; minScore: number }>>;
+/** Kunci bagian berupa string supaya simulasi JLPT bisa memakai bagian tambahan (dokkai). */
+export type SectionRules = Partial<Record<string, { count: number; minScore: number }>>;
 
 /** Batas lewat waktu yang masih ditoleransi (jaringan lambat saat mengirim). */
 export const LATE_GRACE_MS = 2 * 60_000;
 
-export function parseSectionRules(value: unknown): SectionRules | null {
+export function parseSectionRules(value: unknown, sections: readonly string[] = EXAM_SECTIONS): SectionRules | null {
   if (!value || typeof value !== "object") return null;
   const rules: SectionRules = {};
-  for (const s of EXAM_SECTIONS) {
+  for (const s of sections) {
     const r = (value as Record<string, unknown>)[s] as { count?: unknown; minScore?: unknown } | undefined;
     if (r && Number.isInteger(r.count) && Number.isInteger(r.minScore) && (r.count as number) > 0) {
       rules[s] = { count: r.count as number, minScore: r.minScore as number };
@@ -27,7 +28,7 @@ export function examTotal(questionCount: number, rules: SectionRules | null): nu
 }
 
 export function sectionMin(rules: SectionRules | null, section: string, fallback: number): number {
-  return rules?.[section as ExamSectionKey]?.minScore ?? fallback;
+  return rules?.[section]?.minScore ?? fallback;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -43,10 +44,34 @@ function shuffle<T>(arr: T[]): T[] {
  * Ambil soal per bagian sesuai aturan (atau dibagi rata). Kekurangan di satu bagian ditutup soal acak
  * dari bagian lain supaya jumlah total tetap terpenuhi.
  */
-export function pickQuestions<T extends { section: string }>(pool: T[], questionCount: number, rules: SectionRules | null): T[] {
+export function pickQuestions<T extends { section: string }>(
+  pool: T[],
+  questionCount: number,
+  rules: SectionRules | null,
+  sections: readonly string[] = EXAM_SECTIONS,
+): T[] {
   const total = examTotal(questionCount, rules);
-  const perSection = (s: ExamSectionKey) => (rules ? rules[s]?.count ?? 0 : Math.floor(total / EXAM_SECTIONS.length));
-  const picked = EXAM_SECTIONS.flatMap((s) => shuffle(pool.filter((q) => q.section === s)).slice(0, perSection(s)));
+  const perSection = (s: string) => (rules ? rules[s]?.count ?? 0 : Math.floor(total / sections.length));
+  const picked = sections.flatMap((s) => shuffle(pool.filter((q) => q.section === s)).slice(0, perSection(s)));
   const rest = shuffle(pool.filter((q) => !picked.includes(q)));
   return [...picked, ...rest].slice(0, total);
+}
+
+export interface SubmittedAnswer {
+  questionId: string;
+  answer: string;
+  section?: string;
+  skipped?: boolean;
+}
+
+/**
+ * Cocokkan jawaban dengan soal yang benar-benar dibagikan di percobaan ini: jawaban untuk soal lain dibuang,
+ * dan soal yang tidak sempat dijawab (misalnya waktu habis) ditambahkan sebagai jawaban kosong supaya dihitung salah.
+ * Percobaan lama tanpa daftar soal (details.questions) dinilai seperti dulu.
+ */
+export function withUnanswered(answers: SubmittedAnswer[], details: unknown): SubmittedAnswer[] {
+  const issued = (details as { questions?: { id: string }[] } | null)?.questions;
+  if (!Array.isArray(issued)) return answers;
+  const byId = new Map(answers.map((a) => [a.questionId, a]));
+  return issued.map((q) => byId.get(q.id) ?? { questionId: q.id, answer: "" });
 }

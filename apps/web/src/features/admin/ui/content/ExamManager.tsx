@@ -22,7 +22,37 @@ const SECTIONS: { value: ExamSection; label: string }[] = [
   { value: "membaca", label: "Membaca" },
   { value: "mendengar", label: "Mendengar" },
 ];
-const sectionLabel = (s: ExamSection) => SECTIONS.find((x) => x.value === s)?.label ?? s;
+/** Simulasi JLPT memakai lima bagian dengan istilah kertas ujian resmi. */
+const SIM_SECTIONS: { value: ExamSection; label: string }[] = [
+  { value: "membaca", label: "Moji-Goi: Kanji Yomi" },
+  { value: "kosakata", label: "Moji-Goi: Kosakata" },
+  { value: "tata_bahasa", label: "Bunpou" },
+  { value: "dokkai", label: "Dokkai (bacaan)" },
+  { value: "mendengar", label: "Choukai" },
+];
+
+/** Tipe soal resmi JLPT (Daimon) per bagian; sama dengan JLPT_CATEGORIES di server. */
+const JLPT_CATEGORIES: { value: string; label: string; section: ExamSection }[] = [
+  { value: "kanji_yomi", label: "漢字読み Kanji Yomi", section: "membaca" },
+  { value: "hyouki", label: "表記 Hyouki (penulisan)", section: "kosakata" },
+  { value: "gokeisei", label: "語形成 Gokeisei (imbuhan, N2)", section: "kosakata" },
+  { value: "bunmyaku", label: "文脈規定 Bunmyaku Kitei (konteks)", section: "kosakata" },
+  { value: "iikae", label: "言い換え類義 Iikae Ruigi (padanan)", section: "kosakata" },
+  { value: "youhou", label: "用法 Youhou (penggunaan)", section: "kosakata" },
+  { value: "bunpou_keishiki", label: "文の文法1 (pola tata bahasa)", section: "tata_bahasa" },
+  { value: "narabikae", label: "文の文法2 ★ (menyusun kalimat)", section: "tata_bahasa" },
+  { value: "bunshou_bunpou", label: "文章の文法 (tata bahasa wacana)", section: "tata_bahasa" },
+  { value: "dokkai_tanbun", label: "内容理解 短文 (wacana pendek)", section: "dokkai" },
+  { value: "dokkai_chuubun", label: "内容理解 中文 (wacana menengah)", section: "dokkai" },
+  { value: "dokkai_choubun", label: "内容理解 長文 (wacana panjang)", section: "dokkai" },
+  { value: "dokkai_tougou", label: "統合理解 (bandingkan dua teks)", section: "dokkai" },
+  { value: "dokkai_jouhou", label: "情報検索 (cari informasi)", section: "dokkai" },
+  { value: "choukai_kadai", label: "課題理解 (tugas berikutnya)", section: "mendengar" },
+  { value: "choukai_point", label: "ポイント理解 (poin tertentu)", section: "mendengar" },
+  { value: "choukai_gaiyou", label: "概要理解 (ide utama)", section: "mendengar" },
+  { value: "choukai_sokuji", label: "即時応答 (respons cepat)", section: "mendengar" },
+  { value: "choukai_tougou", label: "統合理解 (percakapan panjang)", section: "mendengar" },
+];
 
 /** Aturan awal di formulir sebelum admin menyimpan; aturan penempatan sama dengan bawaan server. */
 const DEFAULT_CONFIG: Record<ExamType, ExamConfig> = {
@@ -30,13 +60,27 @@ const DEFAULT_CONFIG: Record<ExamType, ExamConfig> = {
   placement: { questionCount: 20, timeLimitMin: 20, passScore: 70, sectionMinScore: 0, cooldownHours: 0, minChapterCompletion: 0 },
   // Sama dengan WORKBOOK_DEFAULTS di server; batas waktu & nilai per bagian tidak dipakai
   workbook: { questionCount: 20, timeLimitMin: 60, passScore: 75, sectionMinScore: 0, cooldownHours: 12, minChapterCompletion: 80 },
+  // Cadangan saja; server mengirim aturan bawaan per level (rasio JLPT asli) lewat defaultConfig
+  jlpt_sim: { questionCount: 62, timeLimitMin: 90, passScore: 80, sectionMinScore: 0, cooldownHours: 0, minChapterCompletion: 0 },
 };
 
 const EXAM_TYPES: { value: ExamType; param: string; label: string }[] = [
   { value: "level_up", param: "naik-tahap", label: "Tes naik tahap" },
   { value: "placement", param: "penempatan", label: "Tes penempatan (saat daftar)" },
   { value: "workbook", param: "gerbang-tulis", label: "Gerbang Tulis (tulisan tangan)" },
+  { value: "jlpt_sim", param: "simulasi-jlpt", label: "Simulasi JLPT" },
 ];
+
+/** Batas lulus JLPT asli (skala 0-180), untuk keterangan di formulir simulasi. */
+const JLPT_PASS: Record<string, number> = { N5: 80, N4: 90, N3: 95, N2: 90, N1: 100 };
+/** Kelompok skor dan ambang resmi JLPT (tidak bisa diubah admin). */
+const JLPT_GROUPS: Record<string, string> = {
+  N5: "Pengetahuan Bahasa & Membaca minimal 38/120, Choukai minimal 19/60",
+  N4: "Pengetahuan Bahasa & Membaca minimal 38/120, Choukai minimal 19/60",
+  N3: "Moji-Goi, Bunpou & Dokkai, dan Choukai masing-masing minimal 19/60",
+  N2: "Pengetahuan Bahasa, Dokkai, dan Choukai masing-masing minimal 19/60",
+  N1: "Pengetahuan Bahasa, Dokkai, dan Choukai masing-masing minimal 19/60",
+};
 
 /** Isian Gerbang Tulis: jumlah huruf acak, nilai lulus, jeda, dan syarat bab. */
 const WORKBOOK_FIELDS: typeof CONFIG_FIELDS = [
@@ -55,7 +99,40 @@ const CONFIG_FIELDS: { key: Exclude<keyof ExamConfig, "sectionRules">; label: st
   { key: "minChapterCompletion", label: "Syarat bab selesai (%)", hint: "Persentase bab level ini yang harus selesai.", min: 0, max: 100 },
 ];
 
+/** Isian Simulasi JLPT: jumlah soal diatur per bagian, ambang per kelompok mengikuti JLPT resmi. */
+const SIM_FIELDS: typeof CONFIG_FIELDS = [
+  { key: "timeLimitMin", label: "Total waktu (menit)", hint: "Dibagi ke tiap sesi sesuai proporsi resmi.", min: 10, max: 300 },
+  { key: "passScore", label: "Nilai lulus total (0–180)", hint: "Skala skor JLPT.", min: 1, max: 180 },
+  { key: "cooldownHours", label: "Jeda ulang setelah gagal (jam)", hint: "0 = boleh langsung mengulang.", min: 0, max: 720 },
+];
+
 /** Isian khusus ujian; isi soalnya (jenis, pertanyaan, jawaban) diatur ExerciseForm. */
+function examFields(sim: boolean, section: string): FieldDef[] {
+  if (!sim) return EXAM_FIELDS;
+  return [
+    { name: "section", label: "Bagian", type: "select", options: SIM_SECTIONS },
+    {
+      name: "category",
+      label: "Tipe soal JLPT",
+      type: "select",
+      options: [{ value: "", label: "Tidak ditentukan" }, ...JLPT_CATEGORIES.filter((c) => c.section === section)],
+    },
+    ...EXAM_FIELDS.slice(1),
+    {
+      name: "passage",
+      label: section === "mendengar" ? "Skrip percakapan" : "Teks bacaan",
+      type: "textarea",
+      jp: true,
+      hint:
+        section === "mendengar"
+          ? "Hanya tampil di pembahasan setelah ujian. Audio diisi di kolom audio soal."
+          : section === "dokkai"
+            ? "Ditampilkan di atas soal selama ujian."
+            : "Opsional.",
+    },
+  ];
+}
+
 const EXAM_FIELDS: FieldDef[] = [
   { name: "section", label: "Bagian", type: "select", options: SECTIONS },
   { name: "status", label: "Status", type: "select", options: [{ value: "published", label: "Terbit (dipakai di ujian)" }, { value: "draft", label: "Draft (tidak dipakai)" }] },
@@ -68,13 +145,16 @@ export function ExamManager() {
   const params = useSearchParams();
   const router = useRouter();
   const jenis = params.get("jenis");
-  const examType: ExamType = jenis === "penempatan" ? "placement" : jenis === "gerbang-tulis" ? "workbook" : "level_up";
+  const examType: ExamType = EXAM_TYPES.find((t) => t.param === jenis)?.value ?? "level_up";
   const [levels, setLevels] = useState<ContentLevel[]>([]);
   const [levelId, selectLevel] = useLevelParam(levels);
   const [config, setConfig] = useState<ExamConfig | null>(null);
   const [savedConfig, setSavedConfig] = useState<ExamConfig | null>(null);
   const [questions, setQuestions] = useState<ExamQuestionItem[]>([]);
   const [perSection, setPerSection] = useState<Partial<Record<ExamSection, number>>>({});
+  const [borrowed, setBorrowed] = useState<Partial<Record<ExamSection, number>>>({});
+  const [defaultConfig, setDefaultConfig] = useState<ExamConfig | null>(null);
+  const [resetting, setResetting] = useState(false);
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(25);
   const [filter, setFilter] = useState<{ section?: ExamSection; search: string; page: number }>({ search: "", page: 1 });
@@ -99,8 +179,10 @@ export function ExamManager() {
       const r = await contentApi.exam(levelId, examType, filter);
       if (req !== requestRef.current) return;
       setLoadedKey(`${levelId}:${examType}`);
-      setConfig(r.config ?? DEFAULT_CONFIG[examType]);
+      setConfig(r.config ?? r.defaultConfig ?? DEFAULT_CONFIG[examType]);
       setSavedConfig(r.config);
+      setDefaultConfig(r.defaultConfig ?? null);
+      setBorrowed(r.borrowedPerSection ?? {});
       setQuestions(r.questions.map((q) => ({ ...q, options: q.options as string[] })));
       setPerSection(r.publishedPerSection);
       setTotal(r.total);
@@ -125,21 +207,35 @@ export function ExamManager() {
   const level = levels.find((l) => l.id === levelId);
   const isPlacement = examType === "placement";
   const isWorkbook = examType === "workbook";
+  const isJlptSim = examType === "jlpt_sim";
+  // Simulasi JLPT hanya ada di N5-N1
+  const noJlptSim = isJlptSim && !!level && !level.hasJlptSim;
+  const sections = isJlptSim ? SIM_SECTIONS : SECTIONS;
+  const sectionLabel = (s: ExamSection) => sections.find((x) => x.value === s)?.label ?? s;
+  const [importing, setImporting] = useState(false);
+  const importRef = useRef<HTMLInputElement>(null);
   // Level tertinggi tidak punya ujian naik level; tes penempatan & Gerbang Tulis tetap bisa diatur untuk semua level
   const isTopLevel = examType === "level_up" && !!level && level.id === Math.max(...levels.map((l) => l.id));
-  const configFields = isWorkbook ? WORKBOOK_FIELDS : isPlacement ? CONFIG_FIELDS.filter((f) => f.key !== "minChapterCompletion") : CONFIG_FIELDS;
-  const configDirty = JSON.stringify(config) !== JSON.stringify(savedConfig);
+  const configFields = isWorkbook
+    ? WORKBOOK_FIELDS
+    : isJlptSim
+      ? SIM_FIELDS
+      : isPlacement
+        ? CONFIG_FIELDS.filter((f) => f.key !== "minChapterCompletion")
+        : CONFIG_FIELDS;
+  // Aturan bawaan yang belum disimpan tidak dianggap perubahan
+  const configDirty = JSON.stringify(config) !== JSON.stringify(savedConfig ?? defaultConfig);
   unsaved.current = configDirty;
   const rules = config?.sectionRules ?? null;
-  const neededFor = (s: ExamSection) => (rules ? rules[s]?.count ?? 0 : config ? Math.floor(config.questionCount / SECTIONS.length) : 0);
+  const neededFor = (s: ExamSection) => (rules ? rules[s]?.count ?? 0 : config ? Math.floor(config.questionCount / sections.length) : 0);
   const rulesTotal = rules ? Object.values(rules).reduce((n, r) => n + (r?.count ?? 0), 0) : 0;
 
   function toggleRules(on: boolean) {
     if (!config) return;
-    const even = Math.floor(config.questionCount / SECTIONS.length);
+    const even = Math.floor(config.questionCount / sections.length);
     setConfig({
       ...config,
-      sectionRules: on ? Object.fromEntries(SECTIONS.map((s) => [s.value, { count: even, minScore: config.sectionMinScore }])) : null,
+      sectionRules: on ? Object.fromEntries(sections.map((s) => [s.value, { count: even, minScore: config.sectionMinScore }])) : null,
     });
   }
 
@@ -153,13 +249,60 @@ export function ExamManager() {
     if (!levelId || !config || saving || loadedKey !== currentKey) return;
     setSaving(true);
     try {
-      await contentApi.saveExamConfig(levelId, examType, config);
-      setSavedConfig(config);
+      // Simulasi: jumlah soal = jumlah per bagian; ambang per bagian tidak dipakai (kelompok skor resmi)
+      const toSave = isJlptSim && config.sectionRules
+        ? { ...config, sectionMinScore: 0, questionCount: Math.max(4, rulesTotal) }
+        : config;
+      await contentApi.saveExamConfig(levelId, examType, toSave);
+      setConfig(toSave);
+      setSavedConfig(toSave);
       flash.ok("Pengaturan ujian disimpan.");
     } catch (err) {
       flash.fail(err);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function resetConfig() {
+    if (!levelId || resetting) return;
+    const ok = await askConfirm({
+      title: "Kembalikan ke aturan bawaan?",
+      description: isJlptSim
+        ? "Jumlah soal, waktu, dan batas lulus kembali mengikuti rasio JLPT asli untuk level ini."
+        : "Aturan tes kembali ke bawaan server.",
+    });
+    if (!ok) return;
+    setResetting(true);
+    try {
+      await contentApi.resetExamConfig(levelId, examType);
+      flash.ok("Aturan dikembalikan ke bawaan.");
+      await load();
+    } catch (err) {
+      flash.fail(err);
+    } finally {
+      setResetting(false);
+    }
+  }
+
+  async function importPackage(file: File) {
+    if (!levelId || importing) return;
+    setImporting(true);
+    try {
+      let pkg: unknown;
+      try {
+        pkg = JSON.parse(await file.text());
+      } catch {
+        throw new Error("File ini bukan JSON yang valid.");
+      }
+      const r = await contentApi.importJlptPackage(levelId, pkg);
+      flash.ok(`Paket ${r.examSlug} diimpor: ${r.created} soal baru, ${r.updated} soal diperbarui.`);
+      await load();
+    } catch (err) {
+      flash.fail(err);
+    } finally {
+      setImporting(false);
+      if (importRef.current) importRef.current.value = "";
     }
   }
 
@@ -182,6 +325,8 @@ export function ExamManager() {
     sp.set("jenis", EXAM_TYPES.find((t) => t.value === type)!.param);
     setConfig(null);
     setSavedConfig(null);
+    setDefaultConfig(null);
+    setBorrowed({});
     setFilter({ search: "", page: 1 });
     setSearch("");
     router.replace(`?${sp}`, { scroll: false });
@@ -207,13 +352,23 @@ export function ExamManager() {
         levels={levels}
         value={levelId}
         onChange={(id) => { selectLevel(id); setConfig(null); setFilter({ search: "", page: 1 }); setSearch(""); }}
-        meta={(l) => (isWorkbook ? (l.hasWorkbook ? "diatur" : "bawaan") : `${isPlacement ? l.placementQuestions : l.examQuestions} soal`)}
+        meta={(l) =>
+          isWorkbook
+            ? l.hasWorkbook ? "diatur" : "bawaan"
+            : isJlptSim
+              ? l.hasJlptSim ? `${l.jlptSimQuestions} soal${l.jlptSimCustom ? " · diatur" : ""}` : "tidak ada"
+              : `${isPlacement ? l.placementQuestions : l.examQuestions} soal`
+        }
       />
       {flash.node}
 
-      {isTopLevel ? (
+      {isTopLevel || noJlptSim ? (
         <section className={adminStyles.panel}>
-          <p className={adminStyles.emptyState}>{level?.name} adalah level tertinggi, jadi tidak ada ujian naik level.</p>
+          <p className={adminStyles.emptyState}>
+            {noJlptSim
+              ? "Simulasi JLPT hanya tersedia untuk level N5 sampai N1. Pilih salah satu level JLPT di atas."
+              : `${level?.name} adalah level tertinggi, jadi tidak ada ujian naik level.`}
+          </p>
         </section>
       ) : (
         <>
@@ -222,13 +377,19 @@ export function ExamManager() {
               <h2 className={adminStyles.panelTitle}>
                 {isWorkbook
                   ? `Aturan Gerbang Tulis ${level?.code ?? ""}`
-                  : isPlacement
+                  : isJlptSim
+                    ? `Aturan Simulasi JLPT ${level?.code ?? ""}`
+                    : isPlacement
                     ? `Aturan tes penempatan untuk mulai di ${level?.code ?? ""}`
                     : `Aturan ujian ${level?.code ?? ""} → level berikutnya`}
               </h2>
               {config && !savedConfig && (
                 <span className={styles.warn}>
-                  {isPlacement || isWorkbook ? "Belum diatur, memakai aturan bawaan di bawah." : "Belum diatur, siswa belum bisa ujian."}
+                  {isJlptSim
+                    ? "Memakai aturan bawaan (rasio JLPT asli)."
+                    : isPlacement || isWorkbook
+                      ? "Belum diatur, memakai aturan bawaan di bawah."
+                      : "Belum diatur, siswa belum bisa ujian."}
                 </span>
               )}
             </div>
@@ -236,6 +397,13 @@ export function ExamManager() {
               <p className={styles.muted}>
                 Syarat menulis tangan sebelum tes naik tahap (atau Mastery Gate untuk Pemula). Siswa menulis huruf acak dari ingatan di kertas (difoto,
                 dinilai AI) atau di layar (urutan goresan ikut dinilai). Tidak memakai bank soal.
+              </p>
+            )}
+            {isJlptSim && (
+              <p className={styles.muted}>
+                Latihan ujian penuh yang bisa diulang siswa kapan saja; hasilnya tidak mengubah level. Susunannya mengikuti JLPT resmi: sesi
+                berwaktu sendiri-sendiri (total waktu di bawah dibagi ke sesi sesuai proporsi resmi), skor 0–180, dan kelompok skor dengan nilai
+                minimal tetap: {JLPT_GROUPS[level?.code ?? ""] ?? "19/60 per kelompok"}. Bawaan nilai lulus total {JLPT_PASS[level?.code ?? ""] ?? 90}/180.
               </p>
             )}
             {isPlacement && (
@@ -270,7 +438,7 @@ export function ExamManager() {
                     />
                     {f.hint && (
                       <span className={styles.hint}>
-                        {rules && (f.key === "questionCount" || f.key === "sectionMinScore") ? "Diganti aturan per bagian di bawah." : f.hint}
+                        {!isJlptSim && rules && (f.key === "questionCount" || f.key === "sectionMinScore") ? "Diganti aturan per bagian di bawah." : f.hint}
                       </span>
                     )}
                   </div>
@@ -279,10 +447,14 @@ export function ExamManager() {
             )}
             {config && !isWorkbook && (
               <div className={styles.rulesBox}>
-                <label className={styles.rulesToggle}>
-                  <input type="checkbox" checked={!!rules} onChange={(e) => toggleRules(e.target.checked)} />
-                  Atur jumlah soal & nilai minimal per bagian
-                </label>
+                {isJlptSim ? (
+                  <span className={styles.rulesToggle}>Jumlah soal per bagian</span>
+                ) : (
+                  <label className={styles.rulesToggle}>
+                    <input type="checkbox" checked={!!rules} onChange={(e) => toggleRules(e.target.checked)} />
+                    Atur jumlah soal & nilai minimal per bagian
+                  </label>
+                )}
                 {rules && (
                   <>
                     <div className={adminStyles.tableWrap}>
@@ -291,11 +463,11 @@ export function ExamManager() {
                         <tr>
                           <th>Bagian</th>
                           <th>Jumlah soal</th>
-                          <th>Nilai minimal (%)</th>
+                          {!isJlptSim && <th>Nilai minimal (%)</th>}
                         </tr>
                       </thead>
                       <tbody>
-                        {SECTIONS.map((s) => (
+                        {sections.map((s) => (
                           <tr key={s.value}>
                             <td>{s.label}</td>
                             <td>
@@ -309,6 +481,7 @@ export function ExamManager() {
                                 onChange={(e) => setRule(s.value, "count", Number(e.target.value))}
                               />
                             </td>
+                            {!isJlptSim && (
                             <td>
                               <input
                                 type="number"
@@ -320,18 +493,29 @@ export function ExamManager() {
                                 onChange={(e) => setRule(s.value, "minScore", Number(e.target.value))}
                               />
                             </td>
+                            )}
                           </tr>
                         ))}
                       </tbody>
                     </table>
                     </div>
-                    <span className={styles.hint}>Total {rulesTotal} soal per ujian. Siswa gagal jika satu bagian di bawah nilai minimalnya.</span>
+                    <span className={styles.hint}>
+                      {isJlptSim
+                        ? `Total ${rulesTotal} soal per simulasi. Soal tampil per sesi: Moji-Goi, lalu Bunpou & Dokkai, lalu Choukai.`
+                        : `Total ${rulesTotal} soal per ujian. Siswa gagal jika satu bagian di bawah nilai minimalnya.`}
+                    </span>
                   </>
                 )}
               </div>
             )}
             <div className={styles.toolbar}>
-              <span />
+              {(isJlptSim || isPlacement) && savedConfig ? (
+                <button type="button" className={`${styles.btn} ${adminStyles.btnSecondary}`} onClick={resetConfig} disabled={resetting}>
+                  {resetting ? "Mengembalikan…" : "Kembalikan ke bawaan"}
+                </button>
+              ) : (
+                <span />
+              )}
               <button type="button" className={`${styles.btn} ${adminStyles.btnPrimary}`} onClick={saveConfig} disabled={!configDirty || saving || loadedKey !== currentKey}>
                 {saving ? "Menyimpan…" : "Simpan aturan"}
               </button>
@@ -342,14 +526,16 @@ export function ExamManager() {
           <section className={adminStyles.panel}>
             <h2 className={adminStyles.panelTitle}>Bank soal terbit per bagian</h2>
             <div className={styles.sectionStats}>
-              {SECTIONS.map((s) => {
+              {sections.map((s) => {
                 const count = perSection[s.value] ?? 0;
+                const extra = isJlptSim ? borrowed[s.value] ?? 0 : 0;
                 const needed = neededFor(s.value);
                 return (
                   <div key={s.value} className={styles.sectionStat}>
                     <span className={styles.muted}>{s.label}</span>
                     <strong>{count}</strong>
-                    {count < needed && <span className={styles.warn}>Kurang dari {needed} soal per ujian</span>}
+                    {isJlptSim && <span className={styles.muted}>+{extra} dari tes naik tahap</span>}
+                    {count + extra < needed && <span className={styles.warn}>Kurang dari {needed} soal per ujian</span>}
                   </div>
                 );
               })}
@@ -358,24 +544,50 @@ export function ExamManager() {
               {rules
                 ? "Setiap tes mengambil soal acak sesuai jumlah per bagian di atas; kekurangan di satu bagian diisi dari bagian lain."
                 : `Setiap tes mengambil ${neededFor("kosakata")} soal acak dari tiap bagian; kekurangan di satu bagian diisi dari bagian lain.`}
-              {isPlacement
-                ? " Selama bank soal penempatan masih kosong, tes memakai soal pilihan ganda dari bab level sebelumnya."
-                : " Selama bank soal belum cukup untuk satu ujian, ujian memakai soal pilihan ganda dari bab level ini."}
+              {isJlptSim
+                ? " Soal khusus simulasi di daftar bawah selalu didahulukan; kekurangannya diambil dari bank tes naik tahap level ini (diatur di tab Tes naik tahap). Soal tampil berurutan per bagian, dengan Mendengar di akhir."
+                : isPlacement
+                  ? " Selama bank soal penempatan masih kosong, tes memakai soal pilihan ganda dari bab level sebelumnya."
+                  : " Selama bank soal belum cukup untuk satu ujian, ujian memakai soal pilihan ganda dari bab level ini."}
             </p>
           </section>
           )}
         </>
       )}
 
-      {!isWorkbook && !isTopLevel && (
+      {!isWorkbook && !isTopLevel && !noJlptSim && (
       <section className={adminStyles.panel}>
         <div className={styles.toolbar}>
           <h2 className={adminStyles.panelTitle}>
             Daftar soal <span className={styles.muted}>({total})</span>
           </h2>
-          <button type="button" className={`${styles.btn} ${adminStyles.btnPrimary}`} onClick={() => setEditing("new")} disabled={!levelId}>
-            + Soal Baru
-          </button>
+          <div className={adminStyles.actionGroup}>
+            {isJlptSim && (
+              <>
+                <input
+                  ref={importRef}
+                  type="file"
+                  accept="application/json,.json"
+                  hidden
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void importPackage(f);
+                  }}
+                />
+                <button
+                  type="button"
+                  className={`${styles.btn} ${adminStyles.btnSecondary}`}
+                  onClick={() => importRef.current?.click()}
+                  disabled={!levelId || importing}
+                >
+                  {importing ? "Mengimpor…" : "Impor paket JSON"}
+                </button>
+              </>
+            )}
+            <button type="button" className={`${styles.btn} ${adminStyles.btnPrimary}`} onClick={() => setEditing("new")} disabled={!levelId}>
+              + Soal Baru
+            </button>
+          </div>
         </div>
         <div className={adminStyles.filterBar}>
           <input className={adminStyles.searchInput} placeholder="Cari pertanyaan atau jawaban…" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Cari soal" />
@@ -386,7 +598,7 @@ export function ExamManager() {
             aria-label="Filter bagian"
           >
             <option value="">Semua bagian</option>
-            {SECTIONS.map((s) => (
+            {sections.map((s) => (
               <option key={s.value} value={s.value}>{s.label}</option>
             ))}
           </select>
@@ -401,7 +613,9 @@ export function ExamManager() {
             </table>
           </SkeletonRegion>
         ) : questions.length === 0 ? (
-          <p className={adminStyles.emptyState}>Belum ada soal.</p>
+          <p className={adminStyles.emptyState}>
+            {isJlptSim ? "Belum ada soal khusus simulasi. Simulasi tetap jalan memakai bank tes naik tahap level ini." : "Belum ada soal."}
+          </p>
         ) : (
           <div className={adminStyles.tableWrap}>
             <table className={adminStyles.table}>
@@ -440,6 +654,7 @@ export function ExamManager() {
         <ExamQuestionForm
           item={editing === "new" ? undefined : editing}
           defaultSection={filter.section ?? "kosakata"}
+          sim={isJlptSim}
           onClose={() => setEditing(null)}
           onSubmit={async (data) => {
             if (editing === "new") await contentApi.createExamQuestion(levelId, examType, data);
@@ -457,11 +672,13 @@ export function ExamManager() {
 function ExamQuestionForm({
   item,
   defaultSection,
+  sim,
   onSubmit,
   onClose,
 }: {
   item?: ExamQuestionItem;
   defaultSection: ExamSection;
+  sim: boolean;
   onSubmit: (data: Omit<ExamQuestionItem, "id">) => Promise<void>;
   onClose: () => void;
 }) {
@@ -469,7 +686,10 @@ function ExamQuestionForm({
     section: item?.section ?? defaultSection,
     status: item?.status ?? "published",
     difficulty: item?.difficulty ?? 1,
+    category: item?.category ?? "",
+    passage: item?.passage ?? "",
   });
+  const section = String(meta.section);
   return (
     <ExerciseForm
       item={item}
@@ -481,10 +701,17 @@ function ExamQuestionForm({
           section: meta.section as ExamSection,
           status: meta.status as ExamQuestionItem["status"],
           difficulty: Number(meta.difficulty) || 1,
+          ...(sim
+            ? {
+                // Tipe soal yang tidak cocok lagi dengan bagian (bagian baru dipilih) dikosongkan
+                category: JLPT_CATEGORIES.some((c) => c.value === meta.category && c.section === section) ? String(meta.category) : null,
+                passage: String(meta.passage ?? "").trim() || null,
+              }
+            : {}),
         })
       }
     >
-      {EXAM_FIELDS.map((def) => (
+      {examFields(sim, section).map((def) => (
         <Field key={def.name} def={def} values={meta} set={(name, value) => setMeta((m) => ({ ...m, [name]: value }))} />
       ))}
     </ExerciseForm>

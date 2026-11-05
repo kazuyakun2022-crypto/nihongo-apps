@@ -44,6 +44,10 @@ export const INTENTS: NavIntent[] = [
     keywords: ["naik level", "naik tahap", "tes naik", "ujian naik", "ujian kelulusan", "tes kenaikan", "level berikutnya"],
   },
   {
+    tour: "jlpt-sim",
+    keywords: ["simulasi jlpt", "latihan jlpt", "tryout jlpt", "try out jlpt", "ujian jlpt", "tes jlpt", "soal jlpt", "simulasi ujian", "mogi shiken", "もぎしけん", "模擬試験"],
+  },
+  {
     tour: "gate",
     keywords: ["gerbang tulis", "gerbang"],
   },
@@ -154,6 +158,6 @@ export function bandForLevel(levelId: number | null | undefined): LevelBand {
 }
 
 /** Rute ujian: widget dibekukan total (tak terlihat, mikrofon & suara dihentikan). */
-export const EXAM_ROUTES = [/^\/belajar\/tes-naik-tahap/, /^\/belajar\/gerbang-tulis/, /^\/belajar\/gerbang-hiragana/, /^\/mulai\/tes-penempatan/];
+export const EXAM_ROUTES = [/^\/belajar\/tes-naik-tahap/, /^\/belajar\/simulasi-jlpt/, /^\/belajar\/gerbang-tulis/, /^\/belajar\/gerbang-hiragana/, /^\/mulai\/tes-penempatan/];
 /** Rute yang sudah punya Miu-chan sendiri (obrolan suara/teks): widget disembunyikan supaya tidak ganda. */
 export const OWN_MASCOT_ROUTES = [/^\/suara/, /^\/tanya/, /^\/ngobrol\/skenario\//];

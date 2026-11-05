@@ -5,16 +5,18 @@ import { asyncHandler } from "../../../shared/http/asyncHandler";
 import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
-import { EXERCISE_TYPES, isAnswerCorrect, type ExerciseType } from "../../learning/domain/Exercise";
-import { stringList, toChapterExercise } from "../../learning/infrastructure/PrismaLearningRepository";
+import { XP_REWARD, type ActivityRecorder } from "../../progress/domain/activity";
+import { toChapterExercise } from "../../learning/infrastructure/PrismaLearningRepository";
 import { workbookPassed } from "./workbookGateRoutes";
-import { EXAM_SECTIONS, LATE_GRACE_MS, examTotal, parseSectionRules, pickQuestions, sectionMin } from "../domain/SectionRules";
+import { LATE_GRACE_MS, examTotal, parseSectionRules, pickQuestions, sectionMin, withUnanswered } from "../domain/SectionRules";
+import { asExerciseType, gradeAnswers, saveAnswerRecords } from "./examGrading";
 
 /**
  * Tes naik tahap (/exam/level-up/*) dan tes penempatan saat daftar (/exam/placement/*).
  * Keduanya memakai aturan LevelExam dan bank ExamQuestion per level, dibedakan oleh jenis tesnya.
  * - Naik tahap: levelId = level siswa sekarang; lulus = naik ke level berikutnya.
  * - Penempatan: levelId = level tujuan; lulus = boleh memilih level itu sebagai titik mulai (lihat CompleteOnboarding).
+ * Simulasi JLPT punya alur sendiri (sesi berwaktu, skor 0-180): lihat jlptSimRoutes.ts.
  */
 type ExamKind = "level_up" | "placement";
 const KINDS: { path: string; type: ExamKind }[] = [
@@ -22,13 +24,8 @@ const KINDS: { path: string; type: ExamKind }[] = [
   { path: "placement", type: "placement" },
 ];
 
-const SECTIONS = EXAM_SECTIONS;
-
 /** Aturan tes penempatan sebelum admin menyimpan aturan sendiri. */
 const DEFAULT_PLACEMENT = { id: undefined, questionCount: 20, timeLimitMin: 20, passScore: 70, sectionMinScore: 0, cooldownHours: 0, sectionRules: null };
-
-const asExerciseType = (type: string): ExerciseType =>
-  (EXERCISE_TYPES as readonly string[]).includes(type) ? (type as ExerciseType) : "pilihan_ganda";
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -60,7 +57,19 @@ async function examConfig(levelId: number, type: ExamKind) {
   throw Errors.notFound("Konfigurasi tes");
 }
 
-export function levelExamRoutes() {
+export const submitBody = z.object({
+  attemptId: z.string().uuid(),
+  levelId: z.number().int().min(1),
+  answers: z.array(z.object({
+    questionId: z.string(),
+    answer: z.string().max(500),
+    section: z.string().optional(),
+    /** Soal berbicara yang dilewati (tanpa mikrofon) tidak ikut dinilai. */
+    skipped: z.boolean().optional(),
+  })).max(200),
+});
+
+export function levelExamRoutes(activity: ActivityRecorder) {
   const r = Router();
 
   // GET /exam/readiness?levelId=N
@@ -240,6 +249,8 @@ export function levelExamRoutes() {
           score: 0,
           passed: false,
           startedAt: new Date(),
+          // Daftar soal yang dibagikan: saat menilai, soal yang tidak dijawab dihitung salah
+          details: { questions: questions.map((q) => ({ id: q.id, section: q.section })) },
         },
       });
 
@@ -258,75 +269,21 @@ export function levelExamRoutes() {
 
     // POST /exam/{jenis}/submit
     r.post(`/${path}/submit`, asyncHandler(async (req, res) => {
-      const body = parseBody(
-        z.object({
-          attemptId: z.string().uuid(),
-          levelId: z.number().int().min(1),
-          answers: z.array(z.object({
-            questionId: z.string(),
-            answer: z.string().max(500),
-            section: z.string().optional(),
-            /** Soal berbicara yang dilewati (tanpa mikrofon) tidak ikut dinilai. */
-            skipped: z.boolean().optional(),
-          })).max(200),
-        }),
-        req.body,
-      );
+      const body = parseBody(submitBody, req.body);
       const user = learner(req);
-      const { attemptId, levelId, answers } = body;
+      const { attemptId, levelId } = body;
       const config = await examConfig(levelId, type);
 
       const attempt = await prisma.examAttempt.findFirst({ where: { id: attemptId, userId: user.id, levelId, type, finishedAt: null } });
       if (!attempt) throw Errors.notFound("Sesi tes");
+      const { results, perSection, correct, graded } = await gradeAnswers(withUnanswered(body.answers, attempt.details));
 
-      // Build correct-answer map from exam_questions
-      const qIds = answers.map(a => a.questionId);
-      const examQs = await prisma.examQuestion.findMany({
-        where: { id: { in: qIds } },
-        select: { id: true, type: true, options: true, correctAnswer: true, section: true },
-      });
-      const correctMap = new Map<string, { type: ExerciseType; options: unknown; correct: string; section: string }>();
-      for (const q of examQs) correctMap.set(q.id, { type: asExerciseType(q.type), options: q.options, correct: q.correctAnswer, section: q.section });
-
-      // Fallback: quiz_questions for IDs not found above
-      const missing = qIds.filter(id => !correctMap.has(id));
-      if (missing.length) {
-        const quizQs = await prisma.quizQuestion.findMany({
-          where: { id: { in: missing } },
-          select: { id: true, type: true, options: true, correctAnswer: true },
-        });
-        for (const q of quizQs) correctMap.set(q.id, { type: q.type, options: q.options, correct: q.correctAnswer, section: "kosakata" });
-      }
-
-      // Grade
-      const sectionCounts: Record<string, { correct: number; total: number }> = Object.fromEntries(
-        SECTIONS.map((s) => [s, { correct: 0, total: 0 }]),
-      );
-      let totalCorrect = 0;
-      let graded = 0;
-
-      const answerRecords = answers.map(a => {
-        const info = correctMap.get(a.questionId);
-        const skipped = !!a.skipped && info?.type === "berbicara";
-        const isCorrect = !!info && !skipped && isAnswerCorrect({ type: info.type, correctAnswer: info.correct, options: stringList(info.options) }, a.answer);
-        // Bagian diambil dari bank soal, bukan dari klien
-        const section = info?.section ?? "kosakata";
-        if (skipped) return { attemptId, questionId: a.questionId, answer: a.answer, isCorrect };
-        graded++;
-        if (sectionCounts[section]) {
-          sectionCounts[section].total++;
-          if (isCorrect) sectionCounts[section].correct++;
-        }
-        if (isCorrect) totalCorrect++;
-        return { attemptId, questionId: a.questionId, answer: a.answer, isCorrect };
-      });
-
-      const totalScore = Math.round((totalCorrect / Math.max(graded, 1)) * 100);
+      const totalScore = Math.round((correct / Math.max(graded, 1)) * 100);
       // Bagian tanpa soal tidak ditampilkan dan tidak ikut syarat nilai minimal
       const sectionScores = Object.fromEntries(
-        Object.entries(sectionCounts)
+        Object.entries(perSection)
           .filter(([, { total }]) => total > 0)
-          .map(([s, { correct, total }]) => [s, Math.round((correct / total) * 100)]),
+          .map(([s, { correct: c, total }]) => [s, Math.round((c / total) * 100)]),
       );
       const rules = parseSectionRules(config.sectionRules);
       const sectionMinScores = Object.fromEntries(Object.keys(sectionScores).map((sec) => [sec, sectionMin(rules, sec, config.sectionMinScore)]));
@@ -349,12 +306,7 @@ export function levelExamRoutes() {
         where: { id: attemptId },
         data: { score: totalScore, passed, finishedAt: new Date(), sectionScores, resultLevelId },
       });
-
-      // Save per-answer records (only for exam_questions, skip quiz_questions fallback)
-      const examOnlyAnswers = answerRecords.filter(a => examQs.some(q => q.id === a.questionId));
-      if (examOnlyAnswers.length) {
-        await prisma.examAttemptAnswer.createMany({ data: examOnlyAnswers });
-      }
+      await saveAnswerRecords(attemptId, results);
 
       // Promote user level if passed
       if (passed && nextLevel) {
@@ -369,7 +321,10 @@ export function levelExamRoutes() {
         ? new Date(Date.now() + config.cooldownHours * 3_600_000).toISOString()
         : null;
 
-      res.json({ passed, totalScore, sectionScores, sectionMinScores, late, resultLevelId, nextLevelId: nextLevel?.id ?? null, cooldownUntil });
+      const xp = type === "placement" ? XP_REWARD.placement : passed ? XP_REWARD.levelExamPassed : XP_REWARD.levelExamTried;
+      const progress = await activity.record(user.id, type === "placement" ? "placement" : "level_exam", xp);
+
+      res.json({ passed, totalScore, sectionScores, sectionMinScores, late, resultLevelId, nextLevelId: nextLevel?.id ?? null, cooldownUntil, progress });
     }));
   }
 

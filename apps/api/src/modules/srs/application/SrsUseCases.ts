@@ -2,6 +2,7 @@ import { Errors } from "../../../shared/domain/errors";
 import type { AuthUser, Clock } from "../../../shared/domain/types";
 import { review, type ReviewGrade } from "../domain/sm2";
 import type { SrsRepository } from "../domain/ports";
+import { XP_REWARD, type ActivityRecorder } from "../../progress/domain/activity";
 
 export class GetDueCards {
   constructor(private readonly deps: { repo: SrsRepository; clock: Clock }) {}
@@ -16,7 +17,7 @@ export class GetDueCards {
 }
 
 export class ReviewCard {
-  constructor(private readonly deps: { repo: SrsRepository; clock: Clock }) {}
+  constructor(private readonly deps: { repo: SrsRepository; clock: Clock; activity: ActivityRecorder }) {}
   async execute(user: AuthUser, cardId: string, grade: ReviewGrade) {
     if (user.role === "admin" || user.role === "super_admin") {
       throw Errors.forbidden("Akun Administrator tidak memiliki kartu SRS belajar.");
@@ -26,6 +27,7 @@ export class ReviewCard {
     const next = review(card, grade);
     const dueDate = new Date(this.deps.clock.now().getTime() + next.intervalDays * 86_400_000);
     await this.deps.repo.saveSchedule(card.id, { ...next, dueDate });
-    return { nextReviewInDays: next.intervalDays, isWeak: next.isWeak };
+    const progress = await this.deps.activity.record(user.id, "srs_review", XP_REWARD.srsReview);
+    return { nextReviewInDays: next.intervalDays, isWeak: next.isWeak, progress };
   }
 }

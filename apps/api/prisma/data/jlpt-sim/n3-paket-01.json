@@ -1,0 +1,72 @@
+{
+  "examSlug": "jlpt-n3-mock-01",
+  "levelCode": "N3",
+  "title": "Simulasi Ujian Penuh JLPT N3 - Paket 1",
+  "durationMinutes": 140,
+  "passingScore": 95,
+  "sectionalMinimums": { "mojiGoi": 19, "bunpouDokkai": 19, "listening": 19 },
+  "sections": [
+    {
+      "sectionType": "MOJI_GOI",
+      "title": "Language Knowledge (Vocabulary)",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "PARAPHRASE",
+          "promptText": "彼の話は<u>大げさ</u>だ。",
+          "options": [
+            { "index": 1, "text": "誇張されている" },
+            { "index": 2, "text": "うそばかりだ" },
+            { "index": 3, "text": "おもしろい" },
+            { "index": 4, "text": "複雑だ" }
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "大げさ (oogesa) = berlebihan/dibesar-besarkan, sepadan dengan 誇張されている (kochou sarete iru). Berlebihan tidak sama dengan bohong (うそ).",
+          "tags": ["N3", "Goi", "Iikae"]
+        }
+      ]
+    },
+    {
+      "sectionType": "DOKKAI",
+      "title": "Reading",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SHORT_PASSAGE",
+          "passage": "最近、駅前に新しい図書館ができた。以前の図書館より本の数は少ないが、夜9時まで開いているので、仕事帰りに寄る人が多いそうだ。",
+          "promptText": "新しい図書館について、正しいものはどれか。",
+          "options": [
+            { "index": 1, "text": "以前の図書館より本が多い" },
+            { "index": 2, "text": "夜遅くまで利用できる" },
+            { "index": 3, "text": "駅から遠いところにある" },
+            { "index": 4, "text": "仕事帰りに寄る人は少ない" }
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Perpustakaan buka sampai jam 9 malam (夜9時まで開いている). Bukunya lebih sedikit dari yang lama, letaknya di depan stasiun, dan banyak orang mampir sepulang kerja.",
+          "tags": ["N3", "Dokkai"]
+        }
+      ]
+    },
+    {
+      "sectionType": "CHOUKAI",
+      "title": "Listening Comprehension",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "POINT_COMPREHENSION",
+          "promptText": "二人は何時に駅で会うことにしましたか。",
+          "audioScript": "男の人と女の人が話しています。二人は、何時に駅で会うことにしましたか。明日の映画、何時からだっけ？二時半からだよ。駅で二時に会おうか。うーん、チケットを買わなきゃいけないから、もう少し早いほうがいいんじゃない？じゃあ、一時半にしよう。二人は、何時に駅で会うことにしましたか。",
+          "options": [
+            { "index": 1, "text": "1時" },
+            { "index": 2, "text": "1時半" },
+            { "index": 3, "text": "2時" },
+            { "index": 4, "text": "2時半" }
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Rencana awal jam 2, tapi karena harus membeli tiket dulu, mereka memajukannya: じゃあ、一時半にしよう. Film mulai jam 2.30.",
+          "tags": ["N3", "Choukai"]
+        }
+      ]
+    }
+  ]
+}

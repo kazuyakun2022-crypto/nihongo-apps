@@ -10,6 +10,7 @@ import { N2_AI } from "./scripts/kurikulumN2";
 import { N3_AI } from "./scripts/kurikulumN3";
 import { N4_AI } from "./scripts/kurikulumN4";
 import { N5_AI } from "./scripts/kurikulumN5";
+import { ACHIEVEMENTS } from "../src/modules/progress/domain/achievements";
 import { PRE_N5_AI } from "./scripts/kurikulumPreN5";
 
 const db = new PrismaClient();
@@ -973,12 +974,9 @@ async function main() {
     });
   }
 
-  const achievements = [
-    { code: "first_chat", name: "Obrolan pertama", description: "Menyelesaikan sesi ngobrol pertama dengan maskot." },
-    { code: "hiragana_master", name: "Hafal Hiragana", description: "Menyelesaikan semua latihan hiragana." },
-    { code: "streak_7", name: "Seminggu penuh", description: "Belajar 7 hari berturut-turut." },
-  ];
-  for (const a of achievements) await db.achievement.upsert({ where: { code: a.code }, create: a, update: a });
+  for (const { code, name, description } of ACHIEVEMENTS) {
+    await db.achievement.upsert({ where: { code }, create: { code, name, description }, update: { name, description } });
+  }
 
   // ── Level exam configurations ──
   const levelExamConfigs = [

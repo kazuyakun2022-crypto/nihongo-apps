@@ -1,0 +1,72 @@
+{
+  "examSlug": "jlpt-n4-mock-01",
+  "levelCode": "N4",
+  "title": "Simulasi Ujian Penuh JLPT N4 - Paket 1",
+  "durationMinutes": 115,
+  "passingScore": 90,
+  "sectionalMinimums": { "languageKnowledgeReading": 38, "listening": 19 },
+  "sections": [
+    {
+      "sectionType": "BUNPOU",
+      "title": "Language Knowledge (Grammar)",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SENTENCE_COMPOSITION",
+          "promptText": "毎朝、会社に ＿＿ ＿＿ ★ ＿＿ ことに しています。",
+          "options": [
+            { "index": 1, "text": "新聞を" },
+            { "index": 2, "text": "読む" },
+            { "index": 3, "text": "行く" },
+            { "index": 4, "text": "前に" }
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Urutan benar: 行く・前に・新聞を・読む (3-4-1-2), jadi kata di posisi ★ adalah 新聞を. 「毎朝、会社に行く前に新聞を読むことにしています」 = Setiap pagi saya membiasakan membaca koran sebelum berangkat ke kantor.",
+          "tags": ["N4", "Bunpou", "Narabikae"]
+        }
+      ]
+    },
+    {
+      "sectionType": "DOKKAI",
+      "title": "Reading",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SHORT_PASSAGE",
+          "passage": "田中さんへ\n明日の会議ですが、会議室が使えないので、3階の小さい部屋でします。時間は変わりません。会議の前に、資料を10部コピーしておいてください。\n山本",
+          "promptText": "田中さんは明日の会議の前に何をしなければなりませんか。",
+          "options": [
+            { "index": 1, "text": "会議室を予約する" },
+            { "index": 2, "text": "資料をコピーする" },
+            { "index": 3, "text": "会議の時間を変える" },
+            { "index": 4, "text": "3階の部屋をそうじする" }
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pesan Yamamoto: 会議の前に、資料を10部コピーしておいてください (sebelum rapat, tolong fotokopi materi 10 rangkap). Waktunya tidak berubah (時間は変わりません).",
+          "tags": ["N4", "Dokkai"]
+        }
+      ]
+    },
+    {
+      "sectionType": "CHOUKAI",
+      "title": "Listening Comprehension",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "POINT_COMPREHENSION",
+          "promptText": "女の人はどうして昨日のパーティーに行きませんでしたか。",
+          "audioScript": "男の人と女の人が話しています。女の人は、どうして昨日のパーティーに行きませんでしたか。昨日のパーティー、来なかったね。忙しかったの？ううん、仕事は早く終わったんだけど、急に熱が出ちゃって。そうなんだ。もう大丈夫？うん、もう元気だよ。女の人は、どうして昨日のパーティーに行きませんでしたか。",
+          "options": [
+            { "index": 1, "text": "仕事が忙しかったから" },
+            { "index": 2, "text": "病気になったから" },
+            { "index": 3, "text": "パーティーを忘れたから" },
+            { "index": 4, "text": "ほかの用事があったから" }
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pekerjaannya selesai cepat (仕事は早く終わった), tapi tiba-tiba demam (急に熱が出ちゃって), jadi alasannya sakit.",
+          "tags": ["N4", "Choukai"]
+        }
+      ]
+    }
+  ]
+}

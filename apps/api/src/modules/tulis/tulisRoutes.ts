@@ -5,6 +5,7 @@ import { currentUser } from "../../shared/http/auth";
 import { parseBody } from "../../shared/http/validate";
 import { issueHistory, logIssues, takeCheckQuota } from "./checkUsage";
 import { checkHandwriting } from "./handwritingCheck";
+import { XP_REWARD, type ActivityRecorder } from "../progress/domain/activity";
 
 /** Tulis di Buku: periksa foto lembar latihan menulis (dipasang di /api/tulis). */
 
@@ -33,7 +34,7 @@ const checkBody = z.object({
   corners: cornersSchema,
 });
 
-export function tulisRoutes(geminiApiKey: string) {
+export function tulisRoutes(geminiApiKey: string, activity: ActivityRecorder) {
   const router = Router();
 
   router.post(
@@ -50,7 +51,8 @@ export function tulisRoutes(geminiApiKey: string) {
       try {
         const result = await checkHandwriting(geminiApiKey, { mimeType, data }, body.script, body.chars, body.corners, { history });
         await logIssues(user.id, result);
-        res.json(result);
+        const progress = await activity.record(user.id, "handwriting", XP_REWARD.handwritingCheck);
+        res.json({ ...result, progress });
       } catch (err) {
         console.error("[tulis/periksa]", err instanceof Error ? err.message : err);
         res.status(502).json({ error: { code: "CHECK_FAILED", message: "Miu-chan belum bisa membaca fotomu sekarang. Coba lagi sebentar lagi." } });

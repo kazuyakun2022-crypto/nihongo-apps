@@ -147,10 +147,6 @@ export class PrismaLearningRepository implements LearningRepository {
     });
   }
 
-  async addXp(userId: string, xp: number): Promise<void> {
-    await this.db.user.update({ where: { id: userId }, data: { xpTotal: { increment: xp } } });
-  }
-
   async getLevelProgress(userId: string, levelId: number): Promise<LevelProgress> {
     const chaptersInLevel = await this.db.chapter.findMany({
       where: { levelId, status: "published" },

@@ -252,6 +252,20 @@ export default function BerandaPage() {
             </Link>
           </li>
           <li>
+            <Link href="/belajar/simulasi-jlpt" className={styles.practice} data-spotlight="beranda-jlpt">
+              <span className={styles.practiceIcon} aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="3" width="14" height="18" rx="2" />
+                  <path d="M9 8h6M9 12h6M9 16h3" />
+                </svg>
+              </span>
+              <span className={styles.practiceText}>
+                <strong>Simulasi JLPT</strong>
+                <span>Ujian berwaktu N5 sampai N1 dengan skor 0–180 dan pembahasan.</span>
+              </span>
+            </Link>
+          </li>
+          <li>
             <Link href="/huruf" className={styles.practice}>
               <span className={`${styles.practiceIcon} ${styles.practiceKana}`} aria-hidden="true" lang="ja">あ</span>
               <span className={styles.practiceText}>
