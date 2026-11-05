@@ -11,8 +11,9 @@ import { Alert } from "@/shared/ui/Alert";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 import type { Gender } from "@/features/auth/domain/types";
 import styles from "./profil.module.css";
-import { BookOpenIcon, CheckIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
+import { BookOpenIcon, CheckIcon, FileTextIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
 import { learningApi } from "@/features/learning/data/learningApi";
+import { AchievementList } from "@/features/progress/ui/AchievementList";
 import { askConfirm } from "@/shared/ui/confirmDialog";
 
 const roleLabel = {
@@ -327,6 +328,8 @@ export default function ProfilPage() {
             </div>
           </div>
 
+          {user.role !== "admin" && user.role !== "super_admin" && <AchievementList />}
+
           {/* Dedicated Role Privileges & Status Panel */}
           {user.role === "super_admin" && (
             <div className={`${styles.rolePrivilegeCard} ${styles.roleCardSuperAdmin}`}>
@@ -495,6 +498,9 @@ export default function ProfilPage() {
               </Link>
               <Link href="/review" className={styles.shortcutBtn}>
                 <RepeatIcon size={14} /> Review Kartu
+              </Link>
+              <Link href="/belajar/simulasi-jlpt" className={styles.shortcutBtn}>
+                <FileTextIcon size={14} /> Simulasi JLPT
               </Link>
               <Link href="/ngobrol" className={styles.shortcutBtn}>
                 <MessageIcon size={14} /> Tanya Miu-chan

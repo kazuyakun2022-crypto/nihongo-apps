@@ -3,12 +3,14 @@ import type { AuthUser, Clock } from "../../../shared/domain/types";
 import { dailySessionQuota, finalSpeechRate, type ChatMessage } from "../domain/Conversation";
 import { buildSystemPrompt, findDisallowedKanji, rewriteInstruction } from "../domain/LevelPolicy";
 import type { AiChatProvider, AiReply, ConversationRepository } from "../domain/ports";
+import { XP_REWARD, type ActivityRecorder, type ActivityResult } from "../../progress/domain/activity";
 
 interface Deps {
   repo: ConversationRepository;
   ai: AiChatProvider;
   clock: Clock;
   freeDailyLimit: number;
+  activity: ActivityRecorder;
 }
 
 /** Meminta balasan AI, lalu memastikan kanjinya sesuai level (maksimal 1 kali tulis ulang). */
@@ -111,7 +113,7 @@ export class SendMessage {
 
 /** Dokumen 8.4 langkah 7–8: akhiri sesi dan buat laporan singkat. */
 export class EndConversation {
-  constructor(private readonly deps: Pick<Deps, "repo" | "clock">) {}
+  constructor(private readonly deps: Pick<Deps, "repo" | "clock" | "activity">) {}
 
   async execute(user: AuthUser, sessionId: string) {
     const session = await this.deps.repo.findSession(sessionId);
@@ -120,7 +122,15 @@ export class EndConversation {
     const corrections = messages.flatMap((m) => (m.correction ? [m.correction] : []));
     const turns = messages.filter((m) => m.sender === "user").length;
     const summary = `${turns} giliran, ${corrections.length} koreksi`;
-    if (!session.endedAt) await this.deps.repo.endSession(sessionId, this.deps.clock.now(), summary);
-    return { turns, corrections, summary };
+    let progress: ActivityResult | null = null;
+    if (!session.endedAt) {
+      await this.deps.repo.endSession(sessionId, this.deps.clock.now(), summary);
+      // Sesi yang dibuka lalu langsung ditutup tanpa bicara tidak dihitung belajar
+      if (turns > 0) {
+        const xp = Math.min(turns * XP_REWARD.conversationPerTurn, XP_REWARD.conversationMax);
+        progress = await this.deps.activity.record(user.id, "conversation", xp);
+      }
+    }
+    return { turns, corrections, summary, progress };
   }
 }

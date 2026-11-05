@@ -17,6 +17,7 @@
     "content:import": "tsx prisma/scripts/importCurriculum.ts",
     "content:kurikulum": "tsx prisma/scripts/importKurikulum.ts",
     "content:kamus": "tsx prisma/scripts/importKamus.ts",
+    "content:jlpt-sim": "tsx prisma/scripts/importJlptSim.ts",
     "audio:pronunciation": "tsx scripts/buildPronunciationAudio.ts"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
     "cors": "2.8.5",
     "dotenv": "16.4.5",
     "express": "4.21.1",
+    "express-rate-limit": "7.4.1",
     "google-auth-library": "^11.3.1",
     "helmet": "8.0.0",
     "jsonwebtoken": "9.0.2",

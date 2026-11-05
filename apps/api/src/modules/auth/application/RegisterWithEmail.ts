@@ -60,7 +60,10 @@ export class RegisterWithEmail {
             role: "student",
           });
 
-    await this.deps.sendVerification.execute(user.id);
+    // Akun sudah tersimpan; email yang gagal terkirim bisa dikirim ulang dari aplikasi, jadi jangan gagalkan pendaftaran
+    await this.deps.sendVerification.execute(user.id).catch((err) => {
+      console.error("[auth] email verifikasi gagal dikirim", err instanceof Error ? err.message : err);
+    });
     return this.deps.sessions.issue(user, input.device);
   }
 }

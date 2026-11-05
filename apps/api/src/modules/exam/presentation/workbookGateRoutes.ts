@@ -6,6 +6,7 @@ import { asyncHandler } from "../../../shared/http/asyncHandler";
 import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
+import { XP_REWARD, type ActivityRecorder } from "../../progress/domain/activity";
 import { issueHistory, logIssues, takeCheckQuota } from "../../tulis/checkUsage";
 import { checkDrawnGrid, checkHandwriting } from "../../tulis/handwritingCheck";
 import { kanjiVgStrokes } from "../../tulis/kanjiVg";
@@ -181,7 +182,7 @@ const canvasBody = z.object({
     .max(60),
 });
 
-export function workbookGateRoutes(geminiApiKey: string) {
+export function workbookGateRoutes(geminiApiKey: string, activity: ActivityRecorder) {
   const r = Router();
 
   // GET /exam/workbook/status?levelId=N
@@ -304,7 +305,9 @@ export function workbookGateRoutes(geminiApiKey: string) {
     const missing = details.sheets.filter((s) => !details.sheetResults[s.index]);
     if (missing.length) throw Errors.validation(`Masih ada ${missing.length} lembar yang belum difoto.`);
     const results = details.sheets.flatMap((s) => details.sheetResults[s.index].results);
-    res.json(await finishAttempt(attempt.id, attempt.levelId, details, results));
+    const outcome = await finishAttempt(attempt.id, attempt.levelId, details, results);
+    const progress = await activity.record(user.id, "workbook_gate", outcome.passed ? XP_REWARD.gatePassed : XP_REWARD.gateTried);
+    res.json({ ...outcome, progress });
   }));
 
   // POST /exam/workbook/:attemptId/canvas { chars: [{ char, strokes }] } — jalur kanvas, dinilai & selesai sekaligus
@@ -322,7 +325,9 @@ export function workbookGateRoutes(geminiApiKey: string) {
       return { char: c.char, score: r.score, status: r.status, notes: r.notes, dims: r.dims, strokes: r.strokes };
     });
     details.canvasResults = results;
-    res.json(await finishAttempt(attempt.id, attempt.levelId, details, results));
+    const outcome = await finishAttempt(attempt.id, attempt.levelId, details, results);
+    const progress = await activity.record(user.id, "workbook_gate", outcome.passed ? XP_REWARD.gatePassed : XP_REWARD.gateTried);
+    res.json({ ...outcome, progress });
   }));
 
   return r;

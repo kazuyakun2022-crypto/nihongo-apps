@@ -6,6 +6,7 @@ import { asyncHandler } from "../../../shared/http/asyncHandler";
 import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
+import { XP_REWARD, type ActivityRecorder } from "../../progress/domain/activity";
 import { workbookPassed } from "./workbookGateRoutes";
 import { HIRAGANA_BASIC, MASTERY_GATE, buildGateItems, gradeGate, type GateItem } from "../domain/MasteryGate";
 
@@ -57,7 +58,7 @@ async function eligibility(userId: string, levelId: number) {
 }
 
 /** Mastery Gate Pre-N5 (dipasang di /api/exam/mastery-gate). */
-export function masteryGateRoutes() {
+export function masteryGateRoutes(activity: ActivityRecorder) {
   const r = Router();
 
   r.get("/status", asyncHandler(async (req, res) => {
@@ -163,7 +164,8 @@ export function masteryGateRoutes() {
       }
     }
 
-    res.json({ passed, accuracy, avgMs, results, weakMarked, nextLevel: passed ? next?.name ?? null : null, rules: MASTERY_GATE });
+    const progress = await activity.record(user.id, "mastery_gate", passed ? XP_REWARD.gatePassed : XP_REWARD.gateTried);
+    res.json({ passed, accuracy, avgMs, results, weakMarked, nextLevel: passed ? next?.name ?? null : null, rules: MASTERY_GATE, progress });
   }));
 
   return r;

@@ -7,6 +7,7 @@ export const GUIDE_DESTINATIONS: Record<string, string> = {
   continue: "lanjut belajar bab yang sedang dipelajari di peta belajar (materi, praktik, kuis per bab)",
   gate: "Gerbang Tulis di ujung peta belajar, syarat naik level",
   "level-test": "kesiapan & tes naik tahap / ujian kenaikan level",
+  "jlpt-sim": "simulasi JLPT (try out ujian N5–N1 berwaktu dengan skor 0–180 dan pembahasan)",
   "kana-table": "tabel huruf hiragana, katakana, dakuten, yoon, kanji beserta suaranya",
   "kana-writing": "latihan menulis huruf dengan jari di layar (kanvas) dan koreksi goresan",
   "kana-quiz": "kuis huruf untuk menguji hafalan hiragana/katakana",

@@ -2,6 +2,7 @@ import { Errors } from "../../../shared/domain/errors";
 import type { AuthUser, Clock } from "../../../shared/domain/types";
 import type { UserRepository } from "../../auth/domain/ports";
 import type { OnboardingConfig } from "../domain/Onboarding";
+import { XP_REWARD, type ActivityRecorder } from "../../progress/domain/activity";
 import { PASSING_QUIZ_SCORE, levelLockReason, type LearningRepository, type Level, type LevelProgress, type QuizAnswer } from "../domain/Learning";
 
 /** Tolak akses ke level yang terkunci untuk pelajar ini, dengan pesan sesuai alasannya. */
@@ -63,7 +64,7 @@ export class GetNextChapter {
 
 /** Nilai jawaban di server, simpan hasil, masukkan ke SRS, tambah XP. */
 export class SubmitQuiz {
-  constructor(private readonly deps: { repo: LearningRepository; clock: Clock }) {}
+  constructor(private readonly deps: { repo: LearningRepository; clock: Clock; activity: ActivityRecorder }) {}
   async execute(user: AuthUser, chapterId: string, answers: QuizAnswer[]) {
     if (user.role === "admin" || user.role === "super_admin") {
       throw Errors.forbidden("Akun Administrator tidak dapat mengikuti kuis belajar.");
@@ -78,13 +79,9 @@ export class SubmitQuiz {
     const passingScore = chapter.passScore ?? PASSING_QUIZ_SCORE;
     const passed = score >= passingScore;
     await this.deps.repo.saveQuizResult(user.id, chapterId, score, passed, now);
-    let xp = 5;
-    if (passed) {
-      await this.deps.repo.enqueueChapterItemsToSrs(user.id, chapterId, now);
-      xp = 20;
-    }
-    await this.deps.repo.addXp(user.id, xp);
-    return { score, passed, xpEarned: xp, passingScore, results };
+    if (passed) await this.deps.repo.enqueueChapterItemsToSrs(user.id, chapterId, now);
+    const progress = await this.deps.activity.record(user.id, "chapter_quiz", passed ? XP_REWARD.chapterQuizPassed : XP_REWARD.chapterQuizTried);
+    return { score, passed, xpEarned: progress.xpEarned, passingScore, results, progress };
   }
 }
 

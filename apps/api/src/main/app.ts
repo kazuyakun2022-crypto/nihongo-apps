@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import type { Env } from "../shared/config/env";
 import { errorHandler } from "../shared/http/errorHandler";
 import { optionalAuth, requireAuth, requireRole } from "../shared/http/auth";
+import { rateLimits } from "../shared/http/rateLimits";
 import type { Container } from "./container";
 import { authRoutes } from "../modules/auth/presentation/authRoutes";
 import { learningRoutes } from "../modules/learning/presentation/learningRoutes";
@@ -15,12 +16,14 @@ import { learnerMonitorRoutes } from "../modules/monitoring/learnerMonitorRoutes
 import { levelExamRoutes } from "../modules/exam/presentation/levelExamRoutes";
 import { masteryGateRoutes } from "../modules/exam/presentation/masteryGateRoutes";
 import { workbookGateRoutes } from "../modules/exam/presentation/workbookGateRoutes";
+import { jlptSimRoutes } from "../modules/exam/presentation/jlptSimRoutes";
 import { askRoutes } from "../modules/ask/presentation/askRoutes";
 import { contentAdminRoutes } from "../modules/content/presentation/contentAdminRoutes";
 import { adminMediaRoutes, publicMediaRoutes } from "../modules/content/presentation/mediaRoutes";
 import { kamusRoutes } from "../modules/content/presentation/kamusRoutes";
 import { kamusAdminRoutes } from "../modules/content/presentation/kamusAdminRoutes";
 import { tulisRoutes } from "../modules/tulis/tulisRoutes";
+import { progressRoutes } from "../modules/progress/presentation/progressRoutes";
 import { pronunciationAudio } from "../shared/infrastructure/pronunciationAudio";
 import { prisma } from "../shared/infrastructure/prisma";
 
@@ -59,7 +62,7 @@ export function createApp(env: Env, c: Container) {
 
   // Audio pelafalan (huruf, kosakata, contoh kalimat). Disimpan permanen di tts_cache dan boleh di-cache
   // browser/CDN, karena teks yang sama selalu menghasilkan audio yang sama (versi suara ada di parameter v).
-  app.get("/api/tts", async (req, res) => {
+  app.get("/api/tts", rateLimits.tts, async (req, res) => {
     const text = String(req.query.text || "").trim().slice(0, 300);
     if (!text) {
       return res.status(400).json({ error: { code: "BAD_REQUEST", message: "Parameter text wajib diisi." } });
@@ -79,16 +82,25 @@ export function createApp(env: Env, c: Container) {
 
   const auth = requireAuth(c.accessTokens);
 
+  // Rate limit dipasang sebelum route supaya request yang ditolak tidak menyentuh database atau AI
+  app.use("/api/auth/login", rateLimits.login);
+  app.use(["/api/auth/register", "/api/auth/guest"], rateLimits.signup);
+  app.use(["/api/auth/forgot-password", "/api/auth/verify-email/resend"], rateLimits.email);
+  app.use(["/api/ask", "/api/conversation"], rateLimits.ai);
+  app.use(["/api/tulis", "/api/exam/workbook"], rateLimits.vision);
+
   app.use("/api/auth", authRoutes(c.auth, c.accessTokens, { secureCookies: env.NODE_ENV === "production" }));
   app.use("/api/learning", auth, learningRoutes(c.learning));
   app.use("/api/srs", auth, srsRoutes(c.srs));
   app.use("/api/conversation", auth, conversationRoutes(c.conversation));
-  app.use("/api/exam/mastery-gate", auth, masteryGateRoutes());
-  app.use("/api/exam/workbook", auth, workbookGateRoutes(env.GEMINI_API_KEY));
-  app.use("/api/exam", auth, levelExamRoutes());
+  app.use("/api/exam/mastery-gate", auth, masteryGateRoutes(c.activity));
+  app.use("/api/exam/workbook", auth, workbookGateRoutes(env.GEMINI_API_KEY, c.activity));
+  app.use("/api/exam/jlpt-sim", auth, jlptSimRoutes(c.activity));
+  app.use("/api/exam", auth, levelExamRoutes(c.activity));
   app.use("/api/media", publicMediaRoutes());
   app.use("/api/kamus", auth, kamusRoutes());
-  app.use("/api/tulis", auth, tulisRoutes(env.GEMINI_API_KEY));
+  app.use("/api/tulis", auth, tulisRoutes(env.GEMINI_API_KEY, c.activity));
+  app.use("/api/progress", auth, progressRoutes(prisma, c.activity));
   app.use("/api/admin/media", auth, requireRole("admin"), adminMediaRoutes());
   app.use("/api/admin/kamus", auth, requireRole("admin"), kamusAdminRoutes());
   app.use("/api/admin/content", auth, requireRole("admin"), contentAdminRoutes());

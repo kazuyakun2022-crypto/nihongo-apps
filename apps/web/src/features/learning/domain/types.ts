@@ -104,6 +104,8 @@ export interface QuizResult {
   passed: boolean;
   xpEarned: number;
   passingScore: number;
+  /** Streak dan XP terbaru dari server setelah kuis ini dicatat. */
+  progress?: { xpTotal: number; streak: number };
   results: { questionId: string; correct: boolean; skipped: boolean; correctAnswer: string; explanation: string | null }[];
 }
 

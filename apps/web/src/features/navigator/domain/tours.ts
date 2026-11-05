@@ -278,6 +278,7 @@ export type TourKey =
   | "profile"
   | "home"
   | "level-test"
+  | "jlpt-sim"
   | "kana-quiz"
   | "dict-kanji"
   | "dict-grammar"
@@ -335,6 +336,22 @@ export const TOURS: Record<TourKey, Tour> = {
         say: { id: "Di bagian Latihan lain, ketuk Review kosakata.", ja: "「ふくしゅう」を タップ！", romaji: "fukushuu o tappu!" },
       },
       ...REVIEW,
+    ],
+  },
+  "jlpt-sim": {
+    title: "Simulasi JLPT",
+    steps: [
+      viaNav("beranda", ["/belajar/simulasi-jlpt"]),
+      {
+        target: "beranda-jlpt",
+        click: true,
+        skipOn: ["/belajar/simulasi-jlpt"],
+        say: {
+          id: "Di bagian Latihan lain, ketuk Simulasi JLPT. Pilih levelnya, lalu kerjakan seperti ujian sungguhan. Selama ujian aku diam dulu ya.",
+          ja: "「もぎしけん」を タップ！",
+          romaji: "mogi shiken o tappu!",
+        },
+      },
     ],
   },
   continue: { title: "Lanjut belajar", steps: [viaNav("belajar"), PETA_AKTIF, LIMA_LANGKAH] },

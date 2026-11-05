@@ -273,6 +273,10 @@
   border-radius: 12px;
   border: 1px solid var(--color-border);
   background: var(--color-surface-muted);
+  /* Label, angka, dan catatan masing-masing satu baris */
+  display: grid;
+  align-content: start;
+  gap: 2px;
 }
 
 .sectionStat strong {

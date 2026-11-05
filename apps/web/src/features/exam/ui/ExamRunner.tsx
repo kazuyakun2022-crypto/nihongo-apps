@@ -13,7 +13,23 @@ import { examApi, type ExamKind, type ExamQuestion, type ExamStatus, type Submit
 import styles from "./levelUpTest.module.css";
 import { AlertIcon, FrownIcon, HourglassIcon, TimerIcon, TrophyIcon } from "@/shared/ui/icons";
 
-type Phase = "loading" | "error" | "ready" | "testing" | "submitting" | "submit_failed" | "result";
+/** break = istirahat di antara sesi ujian bersesi (Simulasi JLPT). */
+type Phase = "loading" | "error" | "ready" | "testing" | "break" | "submitting" | "submit_failed" | "result";
+
+/** Sesi berwaktu: rentang soal [start, end) dengan batas waktu sendiri. */
+interface RunSession {
+  key: string;
+  title: string;
+  minutes: number;
+  start: number;
+  end: number;
+}
+
+/** Garis bawah pada soal ditulis sebagai <u>kata</u> di bank soal; selain tag ini, teks tampil apa adanya. */
+export function MarkedText({ text }: { text: string }) {
+  const parts = text.split(/<u>(.*?)<\/u>/g);
+  return <>{parts.map((p, i) => (i % 2 === 1 ? <u key={i}>{p}</u> : p))}</>;
+}
 
 const SECTION_LABELS: Record<string, string> = {
   kosakata: "Kosakata",
@@ -39,10 +55,24 @@ export interface ExamRunnerProps {
   backLabel: string;
   /** Tombol di layar hasil; retry null jika belum boleh mengulang (masih jeda). */
   resultActions: (result: SubmitExamResponse, retry: (() => void) | null) => ReactNode;
+  /** Nama bagian pengganti (misalnya istilah JLPT). */
+  sectionLabels?: Record<string, string>;
+  /** Isi tambahan di layar hasil, di bawah nilai per bagian. */
+  resultExtra?: (result: SubmitExamResponse) => ReactNode;
+  /** Boleh mengulang walau sudah lulus (latihan). */
+  retryAfterPass?: boolean;
+  /** Tata letak lebih lebar (simulasi dengan pembahasan panjang). */
+  wide?: boolean;
+  /** Pengganti daftar aturan di layar sebelum mulai. */
+  rules?: (status: ExamStatus) => ReactNode;
+  /** Pengganti nilai besar dan nilai per bagian di layar hasil. */
+  resultBody?: (result: SubmitExamResponse) => ReactNode;
 }
 
 /** Alur tes bersama untuk tes naik tahap dan tes penempatan: aturan → soal berwaktu → hasil. */
-export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultActions }: ExamRunnerProps) {
+export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultActions, sectionLabels, resultExtra, retryAfterPass, wide, rules, resultBody }: ExamRunnerProps) {
+  const wrapClass = wide ? `${styles.wrap} ${styles.wrapWide}` : styles.wrap;
+  const labelOf = (sec: string) => sectionLabels?.[sec] ?? SECTION_LABELS[sec] ?? sec;
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [error, setError] = useState("");
@@ -57,9 +87,19 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
   const [chosen, setChosen] = useState<string | null>(null);
   const [result, setResult] = useState<SubmitExamResponse | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  /** Waktu berakhir tes (ms). Sisa waktu dihitung dari sini, bukan dikurangi per detik: HP memperlambat
-   *  setInterval saat tab di latar belakang, sehingga hitungan mundur dulu meleset dari waktu server. */
+  /** Waktu berakhir sesi atau istirahat yang sedang berjalan (ms). Sisa waktu dihitung dari sini, bukan dikurangi
+   *  per detik: HP memperlambat setInterval saat tab di latar belakang, sehingga hitungan mundur dulu meleset. */
   const deadlineRef = useRef(0);
+  /** Sesi berwaktu; tes tanpa sesi diperlakukan sebagai satu sesi utuh. */
+  const [sessions, setSessions] = useState<RunSession[]>([]);
+  const [sessionIdx, setSessionIdx] = useState(0);
+  const [breakMinutes, setBreakMinutes] = useState(0);
+  const sessionIdxRef = useRef(0);
+  sessionIdxRef.current = sessionIdx;
+  const sessionsRef = useRef<RunSession[]>([]);
+  sessionsRef.current = sessions;
+  const breakMinutesRef = useRef(0);
+  breakMinutesRef.current = breakMinutes;
 
   // Load status on mount
   useEffect(() => {
@@ -68,9 +108,10 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
       .catch(() => { setError("Gagal memuat status tes. Coba lagi."); setPhase("error"); });
   }, [kind, levelId]);
 
-  // Timer tick
+  // Timer tick: sesi yang habis waktunya pindah ke istirahat (atau dikumpulkan bila sesi terakhir),
+  // istirahat yang habis langsung memulai sesi berikutnya
   useEffect(() => {
-    if (phase !== "testing") return;
+    if (phase !== "testing" && phase !== "break") return;
     let done = false;
     const tick = () => {
       const left = Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000));
@@ -78,8 +119,10 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
       if (left === 0 && !done) {
         done = true;
         if (timerRef.current) clearInterval(timerRef.current);
+        if (phase === "break") startSession(sessionIdxRef.current + 1);
+        else if (sessionIdxRef.current + 1 < sessionsRef.current.length) enterBreak();
         // Pakai handleSubmit terbaru agar jawaban yang sudah diisi ikut terkirim
-        void submitRef.current(true);
+        else void submitRef.current(true);
       }
     };
     timerRef.current = setInterval(tick, 1000);
@@ -100,8 +143,19 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
       setKanji(res.kanji ?? []);
       const secs = res.timeLimitMin * 60;
       setTimeLimitSec(secs);
-      deadlineRef.current = Date.now() + secs * 1000;
-      setRemaining(secs);
+      // Server mengirim soal berurutan per sesi; sesi tanpa soal dilewati
+      const runSessions: RunSession[] = [];
+      for (const s of res.jlpt?.sessions ?? []) {
+        const idx = res.questions.flatMap((q, i) => (q.session === s.key ? [i] : []));
+        if (idx.length) runSessions.push({ key: s.key, title: s.title, minutes: s.minutes, start: idx[0], end: idx[idx.length - 1] + 1 });
+      }
+      const all = runSessions.length ? runSessions : [{ key: "all", title: "", minutes: res.timeLimitMin, start: 0, end: res.questions.length }];
+      setSessions(all);
+      sessionsRef.current = all;
+      setBreakMinutes(res.jlpt?.breakMinutes ?? 0);
+      setSessionIdx(0);
+      deadlineRef.current = Date.now() + all[0].minutes * 60_000;
+      setRemaining(all[0].minutes * 60);
       setIndex(0);
       setAnswers({});
       setChosen(null);
@@ -152,16 +206,39 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
     });
   };
 
+  function enterBreak() {
+    deadlineRef.current = Date.now() + breakMinutesRef.current * 60_000;
+    setRemaining(breakMinutesRef.current * 60);
+    setPhase("break");
+  }
+
+  function startSession(i: number) {
+    const s = sessionsRef.current[i];
+    if (!s) return;
+    setSessionIdx(i);
+    setIndex(s.start);
+    setChosen(null);
+    deadlineRef.current = Date.now() + s.minutes * 60_000;
+    setRemaining(s.minutes * 60);
+    setPhase("testing");
+  }
+
+  const session = sessions[sessionIdx];
+  const sessionEnd = session?.end ?? questions.length;
+  const hasNextSession = sessionIdx + 1 < sessions.length;
+
   const next = () => {
-    if (index + 1 >= questions.length) {
-      void handleSubmit();
-    } else {
+    if (index + 1 < sessionEnd) {
       setIndex(i => i + 1);
       setChosen(null);
+    } else if (hasNextSession) {
+      enterBreak();
+    } else {
+      void handleSubmit();
     }
   };
 
-  const isLastQ = index + 1 >= questions.length;
+  const isLastQ = index + 1 >= sessionEnd;
   const min = Math.floor(remaining / 60);
   const sec = remaining % 60;
   const timerDanger = remaining < 120;
@@ -169,7 +246,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
   // ── LOADING ──
   if (phase === "loading") {
     return (
-      <SkeletonRegion label="Memuat tes…" className={styles.wrap}>
+      <SkeletonRegion label="Memuat tes…" className={wrapClass}>
         <div className={styles.readyCard}>
           <Skeleton width="7rem" height="1.5rem" radius="var(--radius-pill)" />
           <Skeleton width="80%" height="1.75rem" />
@@ -184,7 +261,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
   // ── GAGAL MENGIRIM: jawaban masih ada, bisa dikirim ulang ──
   if (phase === "submit_failed") {
     return (
-      <div className={styles.wrap}>
+      <div className={wrapClass}>
         <div className={styles.errorBox} role="alert">
           <p>{error}</p>
           <p>{Object.keys(answers).length} jawaban masih tersimpan di perangkat ini.</p>
@@ -197,7 +274,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
   // ── ERROR ──
   if (phase === "error") {
     return (
-      <div className={styles.wrap}>
+      <div className={wrapClass}>
         <div className={styles.errorBox}>
           <p>{error}</p>
           <Link href={backHref} className={styles.linkBtn}>← Kembali</Link>
@@ -212,12 +289,13 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
     const cooldownLabel = cooldownUntil ? formatCooldown(new Date(cooldownUntil)) : null;
 
     return (
-      <div className={styles.wrap}>
+      <div className={wrapClass}>
         <div className={styles.readyCard}>
           <span className={styles.readyBadge}>{copy.badge}</span>
           <h1 className={styles.readyTitle}>{copy.title}</h1>
           <p className={styles.readyDesc}>{copy.desc}</p>
 
+          {rules ? rules(status) : (
           <ul className={styles.ruleList}>
             <li><strong>{config.questionCount}</strong> soal (pilihan ganda, susun, menulis, dan berbicara)</li>
             <li><strong>{config.timeLimitMin} menit</strong> waktu pengerjaan</li>
@@ -225,7 +303,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
             {config.sectionRules ? (
               Object.entries(config.sectionRules).map(([sec, r]) => (
                 <li key={sec}>
-                  {SECTION_LABELS[sec] ?? sec}: <strong>{r?.count} soal</strong>, nilai minimal {r?.minScore}%
+                  {labelOf(sec)}: <strong>{r?.count} soal</strong>, nilai minimal {r?.minScore}%
                 </li>
               ))
             ) : (
@@ -234,6 +312,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
             <li>Jawaban tidak dapat diubah setelah lanjut</li>
             {config.cooldownHours > 0 && <li>Jeda {config.cooldownHours} jam setelah tidak lulus</li>}
           </ul>
+          )}
 
           {consecutiveFails >= 3 && (
             <p className={styles.warnBox}><AlertIcon size={16} /> Sudah {consecutiveFails}× gagal berturut-turut. Pastikan kamu sudah mengulang materi yang lemah.</p>
@@ -250,33 +329,101 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
     );
   }
 
+  // ── ISTIRAHAT DI ANTARA SESI ──
+  if (phase === "break" && session) {
+    const nextSession = sessions[sessionIdx + 1];
+    const done = questions.slice(session.start, session.end);
+    const answeredCount = done.filter((x) => answers[x.id]).length;
+    return (
+      <div className={wrapClass}>
+        <div className={styles.readyCard} role="status">
+          <span className={styles.readyBadge}>Sesi {sessionIdx + 1} dari {sessions.length} selesai</span>
+          <h1 className={styles.readyTitle}>Istirahat sebentar</h1>
+          <p className={styles.readyDesc}>
+            {session.title}: {answeredCount} dari {done.length} soal dijawab. Jawaban sesi ini sudah dikunci.
+          </p>
+          {nextSession && (
+            <ul className={styles.ruleList}>
+              <li>
+                Berikutnya: <strong>{nextSession.title}</strong>
+              </li>
+              <li>
+                {nextSession.end - nextSession.start} soal, <strong>{nextSession.minutes} menit</strong>
+              </li>
+              <li>
+                Sesi berikutnya mulai otomatis dalam{" "}
+                <strong>
+                  {pad(min)}:{pad(sec)}
+                </strong>
+              </li>
+            </ul>
+          )}
+          <button className={styles.startBtn} onClick={() => startSession(sessionIdx + 1)}>
+            Mulai sesi {sessionIdx + 2} →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // ── TESTING / SUBMITTING ──
   if ((phase === "testing" || phase === "submitting") && questions.length > 0) {
     const q = questions[index];
-    const progress = ((index + 1) / questions.length) * 100;
+    const sessionStart = session?.start ?? 0;
+    const sessionTotal = sessionEnd - sessionStart;
+    const progress = ((index - sessionStart + 1) / sessionTotal) * 100;
     const isChoice = q.type === "pilihan_ganda" || q.type === "mendengar";
     const current = answers[q.id];
     const answered = isChoice ? !!chosen : !!current?.answer || !!current?.skipped;
+    const sameSection = questions.filter((x) => x.section === q.section);
+    const sectionPos = { at: sameSection.indexOf(q) + 1, of: sameSection.length };
+    const multiSession = sessions.length > 1;
 
     return (
-      <div className={styles.wrap}>
+      <div className={wrapClass}>
         <div className={styles.testHeader}>
           <div className={styles.progressWrap}>
+            {multiSession && (
+              <span className={styles.sessionLabel}>
+                Sesi {sessionIdx + 1}/{sessions.length} · {session?.title}
+              </span>
+            )}
             <div className={styles.progressBar}>
               <div className={styles.progressFill} style={{ width: `${progress}%` }} />
             </div>
-            <span className={styles.progressLabel}>{index + 1}/{questions.length}</span>
+            <span className={styles.progressLabel}>
+              {index - sessionStart + 1}/{sessionTotal}
+              {multiSession && ` · soal ${index + 1} dari ${questions.length}`}
+            </span>
           </div>
-          <div className={`${styles.timer} ${timerDanger ? styles.timerDanger : ""}`}>
+          <div
+            className={`${styles.timer} ${timerDanger ? styles.timerDanger : ""}`}
+            aria-label={`Sisa waktu ${multiSession ? "sesi " : ""}${min} menit ${sec} detik`}
+          >
             <TimerIcon size={16} /> {pad(min)}:{pad(sec)}
           </div>
         </div>
 
-        <div className={styles.sectionChip}>{SECTION_LABELS[q.section] ?? q.section}</div>
+        <div className={styles.sectionChip}>
+          {labelOf(q.section)} · {sectionPos.at}/{sectionPos.of}
+        </div>
 
-        {isChoice ? <p className={styles.question} lang="ja">{q.question}</p> : <QuestionHeader q={q} />}
+        {q.passage && (
+          <div className={styles.passage} lang="ja" tabIndex={0} aria-label="Teks bacaan">
+            {q.passage}
+          </div>
+        )}
+
+        {isChoice ? (
+          <p className={styles.question} lang="ja">
+            <MarkedText text={q.question} />
+          </p>
+        ) : (
+          <QuestionHeader q={q} />
+        )}
         {q.audioUrl && (
-          <QuestionAudio key={q.id} url={q.audioUrl} className={styles.audioBtn} />
+          // Key harus beda dari kotak soal di bawah: key kembar membuat React tidak membuang tombol audio lama
+          <QuestionAudio key={`audio-${q.id}`} url={q.audioUrl} className={styles.audioBtn} />
         )}
 
         <div key={q.id}>
@@ -332,7 +479,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
             disabled={!answered || phase === "submitting"}
             onClick={next}
           >
-            {phase === "submitting" ? "Menilai…" : isLastQ ? "Kumpulkan →" : "Lanjut →"}
+            {phase === "submitting" ? "Menilai…" : !isLastQ ? "Lanjut →" : hasNextSession ? "Selesai sesi →" : "Kumpulkan →"}
           </button>
         </div>
       </div>
@@ -345,7 +492,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
     const cooldownLabel = cooldownUntil ? formatCooldown(new Date(cooldownUntil)) : null;
 
     return (
-      <div className={styles.wrap}>
+      <div className={wrapClass}>
         <div className={styles.resultCard}>
           {passed && <div className={styles.confetti} aria-hidden="true" />}
 
@@ -356,6 +503,8 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
             {passed ? copy.passedTitle : "Belum Lulus"}
           </h1>
 
+          {resultBody ? resultBody(result) : (
+          <>
           <div className={`${styles.scoreBig} ${passed ? styles.scorePassed : styles.scoreFailed}`}>
             {totalScore}%
           </div>
@@ -376,7 +525,7 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
               return (
                 <div key={sec} className={styles.sectionRow}>
                   <span className={styles.sectionName}>
-                    {SECTION_LABELS[sec] ?? sec} <small>(min. {min}%)</small>
+                    {labelOf(sec)} <small>(min. {min}%)</small>
                   </span>
                   <div className={styles.sectionBar}>
                     <div
@@ -391,13 +540,17 @@ export function ExamRunner({ kind, levelId, copy, backHref, backLabel, resultAct
               );
             })}
           </div>
+          </>
+          )}
+
+          {resultExtra?.(result)}
 
           {!passed && cooldownLabel && (
             <p className={styles.cooldownBox}><HourglassIcon size={16} /> Bisa ikut tes lagi dalam {cooldownLabel}</p>
           )}
 
           <div className={styles.resultActions}>
-            {resultActions(result, passed || cooldownLabel ? null : startTest)}
+            {resultActions(result, cooldownLabel || (passed && !retryAfterPass) ? null : startTest)}
           </div>
         </div>
       </div>

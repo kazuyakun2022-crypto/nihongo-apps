@@ -1,4 +1,5 @@
 import type { Role, UserStatus } from "../../../shared/domain/types";
+import { visibleStreak } from "../../progress/domain/streak";
 
 export type Gender = "male" | "female" | "other";
 
@@ -17,6 +18,7 @@ export interface User {
   avatarUrl?: string | null;
   dailyTargetMin: number | null;
   streakCount: number;
+  lastActiveDate?: Date | null;
   xpTotal: number;
   emailVerifiedAt: Date | null;
   failedLoginCount: number;
@@ -60,7 +62,7 @@ export interface PublicUser {
   xpTotal: number;
 }
 
-export function toPublicUser(user: User): PublicUser {
+export function toPublicUser(user: User, now: Date = new Date()): PublicUser {
   return {
     id: user.id,
     email: user.email,
@@ -74,7 +76,7 @@ export function toPublicUser(user: User): PublicUser {
     genderUpdatedAt: user.genderUpdatedAt ?? null,
     avatarUrl: user.avatarUrl ?? null,
     dailyTargetMin: user.dailyTargetMin,
-    streakCount: user.streakCount,
+    streakCount: visibleStreak(user.streakCount, user.lastActiveDate ?? null, now),
     xpTotal: user.xpTotal,
   };
 }

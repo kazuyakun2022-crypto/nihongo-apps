@@ -601,7 +601,7 @@ function SpeakButton({ onClick }: { onClick: () => void }) {
 }
 
 function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof useChapterLesson>; title: string; moduleTitle?: string | null }) {
-  const { score, passed, xpEarned, passingScore, results } = lesson.result!;
+  const { score, passed, xpEarned, passingScore, results, progress } = lesson.result!;
   const shownScore = useCountUp(score);
   const { updateUser, user } = useAuth();
   // Layar nilai penuh tampil dulu; pembahasan soal dibuka dari sana
@@ -609,7 +609,8 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
 
   // Sekali per hasil: tambah XP di header dan beri tahu peta agar memutar animasi node terbuka
   useEffect(() => {
-    if (xpEarned > 0 && user) updateUser({ xpTotal: user.xpTotal + xpEarned });
+    if (progress) updateUser({ xpTotal: progress.xpTotal, streakCount: progress.streak });
+    else if (xpEarned > 0 && user) updateUser({ xpTotal: user.xpTotal + xpEarned });
     if (passed && lesson.chapter) {
       try {
         sessionStorage.setItem(JUST_COMPLETED_KEY, lesson.chapter.id);

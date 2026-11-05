@@ -13,6 +13,7 @@ import { PrismaSessionRepository } from "../modules/auth/infrastructure/PrismaSe
 import { PrismaOneTimeTokenRepository } from "../modules/auth/infrastructure/PrismaOneTimeTokenRepository";
 import { BcryptPasswordHasher, CryptoTokenGenerator, JwtAccessTokenService } from "../modules/auth/infrastructure/security";
 import { ConsoleEmailSender, GoogleOAuthVerifier, NotConfiguredOAuthVerifier } from "../modules/auth/infrastructure/adapters";
+import { ResendEmailSender } from "../modules/auth/infrastructure/ResendEmailSender";
 import { SessionIssuer } from "../modules/auth/application/SessionIssuer";
 import { SendEmailVerification } from "../modules/auth/application/SendEmailVerification";
 import { RegisterWithEmail } from "../modules/auth/application/RegisterWithEmail";
@@ -32,6 +33,9 @@ import { UpdateProfile } from "../modules/auth/application/UpdateProfile";
 import { PrismaLearningRepository } from "../modules/learning/infrastructure/PrismaLearningRepository";
 import { PrismaOnboardingGuard, loadOnboardingConfig } from "../modules/learning/infrastructure/onboardingSettings";
 import { GetChapter, GetLevelProgress, GetNextChapter, GetOnboardingOptions, ListChapters, ListLevels, SubmitQuiz } from "../modules/learning/application/LearningUseCases";
+
+// Progress (streak, XP, lencana)
+import { PrismaActivityRecorder } from "../modules/progress/infrastructure/PrismaActivityRecorder";
 
 // SRS
 import { PrismaSrsRepository } from "../modules/srs/infrastructure/PrismaSrsRepository";
@@ -85,7 +89,10 @@ export function buildContainer(env: Env, db: Db) {
   const hasher = new BcryptPasswordHasher();
   const tokens = new CryptoTokenGenerator();
   const accessTokens = new JwtAccessTokenService(env.JWT_ACCESS_SECRET, env.ACCESS_TOKEN_TTL_MINUTES);
-  const email = new ConsoleEmailSender();
+  const email = env.RESEND_API_KEY ? new ResendEmailSender(env.RESEND_API_KEY, env.EMAIL_FROM) : new ConsoleEmailSender();
+  if (!env.RESEND_API_KEY && env.NODE_ENV === "production") {
+    console.warn("[email] RESEND_API_KEY kosong: email verifikasi dan reset password hanya dicetak ke log, tidak terkirim.");
+  }
   const refreshTtlDays = env.REFRESH_TOKEN_TTL_DAYS;
 
   const sessionIssuer = new SessionIssuer({ sessions, tokens, accessTokens, clock, refreshTtlDays });
@@ -112,6 +119,9 @@ export function buildContainer(env: Env, db: Db) {
     updateProfile: new UpdateProfile({ users }),
   };
 
+  // ── Progress ──
+  const activity = new PrismaActivityRecorder(db, clock);
+
   // ── Learning ──
   const learningRepo = new PrismaLearningRepository(db);
   const learning = {
@@ -119,14 +129,14 @@ export function buildContainer(env: Env, db: Db) {
     listChapters: new ListChapters({ repo: learningRepo }),
     getChapter: new GetChapter({ repo: learningRepo }),
     getNextChapter: new GetNextChapter({ repo: learningRepo, users }),
-    submitQuiz: new SubmitQuiz({ repo: learningRepo, clock }),
+    submitQuiz: new SubmitQuiz({ repo: learningRepo, clock, activity }),
     getLevelProgress: new GetLevelProgress({ repo: learningRepo }),
     getOnboardingOptions: new GetOnboardingOptions({ repo: learningRepo, loadConfig: () => loadOnboardingConfig(db) }),
   };
 
   // ── SRS ──
   const srsRepo = new PrismaSrsRepository(db);
-  const srs = { getDue: new GetDueCards({ repo: srsRepo, clock }), review: new ReviewCard({ repo: srsRepo, clock }) };
+  const srs = { getDue: new GetDueCards({ repo: srsRepo, clock }), review: new ReviewCard({ repo: srsRepo, clock, activity }) };
 
   // ── AI maskot (ngobrol & skenario) — prioritas: Anthropic → Groq → Mock ──
   const ai = env.ANTHROPIC_API_KEY
@@ -154,7 +164,7 @@ export function buildContainer(env: Env, db: Db) {
   };
   const transcriber = env.GROQ_API_KEY ? new GroqTranscriber(env.GROQ_API_KEY) : null;
   const speaker = env.GEMINI_API_KEY ? new GeminiTts(env.GEMINI_API_KEY) : null;
-  const convDeps = { repo: new PrismaConversationRepository(db), ai, clock, freeDailyLimit: env.FREE_DAILY_AI_SESSIONS };
+  const convDeps = { repo: new PrismaConversationRepository(db), ai, clock, freeDailyLimit: env.FREE_DAILY_AI_SESSIONS, activity };
   const conversation = {
     start: new StartConversation(convDeps),
     send: new SendMessage(convDeps),
@@ -183,7 +193,7 @@ export function buildContainer(env: Env, db: Db) {
   };
 
   const aiMode = env.ANTHROPIC_API_KEY ? "anthropic" : env.GROQ_API_KEY ? "groq" : env.GEMINI_API_KEY ? "gemini" : "mock";
-  return { accessTokens, auth, learning, srs, conversation, adminUsers, askUc, transcriber, speaker, aiMode };
+  return { accessTokens, activity, auth, learning, srs, conversation, adminUsers, askUc, transcriber, speaker, aiMode };
 }
 
 export type Container = ReturnType<typeof buildContainer>;
