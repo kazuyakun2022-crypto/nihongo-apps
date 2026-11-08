@@ -1084,3 +1084,162 @@
   gap: 10px;
   margin-top: 8px;
 }
+
+/* ── 5. RESPONSIVE PERFECTION FOR MOBILE (320px – 640px) ── */
+@media (max-width: 600px) {
+  .chatHeader {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .headerThumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .headerTitle {
+    font-size: 0.84rem;
+    max-width: 140px;
+  }
+
+  .headerRoleBadge {
+    display: none;
+  }
+
+  .headerSub {
+    font-size: 0.68rem;
+  }
+
+  .turnsBadge {
+    font-size: 0.66rem;
+    padding: 2px 6px;
+  }
+
+  .guideBtnInHeader {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+  }
+
+  .endBtn {
+    padding: 4px 9px;
+    font-size: 0.72rem;
+  }
+
+  .missionStrip {
+    padding: 6px 10px;
+    font-size: 0.74rem;
+  }
+
+  .messagesArea {
+    padding: 10px 10px 6px;
+    gap: 10px;
+  }
+
+  .mascotRow,
+  .userRow {
+    max-width: 92%;
+  }
+
+  .mascotBubble,
+  .userBubble {
+    padding: 10px 13px;
+    font-size: 0.9rem;
+    border-radius: 14px;
+  }
+
+  .quickSuggestionsBar {
+    padding: 6px 10px;
+    gap: 5px;
+  }
+
+  .suggestionChip {
+    font-size: 0.74rem;
+    padding: 4px 10px;
+  }
+
+  .composerArea {
+    padding: 8px 10px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+    gap: 6px;
+  }
+
+  .micToggleBtn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .composerInput {
+    height: 40px;
+    font-size: 0.86rem;
+    padding: 0 12px;
+  }
+
+  .sendSubmitBtn {
+    height: 40px;
+    padding: 0 12px;
+    font-size: 0.8rem;
+    gap: 4px;
+  }
+
+  /* Briefing Screen Mobile */
+  .scenarioIntroWrap {
+    padding: 8px 8px 24px;
+  }
+
+  .scenarioCard {
+    border-radius: 14px;
+  }
+
+  .scenarioCover {
+    height: 155px;
+  }
+
+  .scenarioCardBody {
+    padding: 14px 14px 18px;
+    gap: 12px;
+  }
+
+  .scenarioTitle {
+    font-size: 1.15rem;
+  }
+
+  .roleMatchupRow {
+    padding: 9px 10px;
+    gap: 6px;
+  }
+
+  .roleName {
+    font-size: 0.8rem;
+  }
+
+  .scenarioGoalBox {
+    padding: 10px 12px;
+  }
+
+  .scenarioGoalText {
+    font-size: 0.84rem;
+  }
+
+  .startBtn {
+    padding: 12px;
+    font-size: 0.92rem;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .headerTitle {
+    max-width: 95px;
+  }
+
+  .sendSubmitBtn span {
+    display: none;
+  }
+
+  .sendSubmitBtn {
+    padding: 0 10px;
+    width: 40px;
+    justify-content: center;
+  }
+}

@@ -134,6 +134,11 @@ export function ScoreScreen({
                   Lanjut ke bab berikutnya →
                 </Link>
               </div>
+
+              <button type="button" className={styles.reviewFeaturedBtn} onClick={onShowReview}>
+                <span>📖</span>
+                <span>Lihat Pembahasan, Yang Dipelajari & Tes Speak →</span>
+              </button>
             </>
           ) : (
             <>
@@ -147,13 +152,12 @@ export function ScoreScreen({
                 <button type="button" className={styles.btnPrimary} onClick={onRetryQuiz}>
                   Coba kuis lagi
                 </button>
+                <button type="button" className={styles.btnGhost} onClick={onShowReview}>
+                  Lihat pembahasan soal
+                </button>
               </div>
             </>
           )}
-
-          <button type="button" className={styles.reviewLink} onClick={onShowReview}>
-            Lihat pembahasan soal
-          </button>
         </div>
       </div>
     </div>,

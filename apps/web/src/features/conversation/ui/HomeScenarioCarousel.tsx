@@ -59,8 +59,6 @@ export function HomeScenarioCarousel() {
                   className={styles.image}
                   loading="lazy"
                 />
-                <div className={styles.imageOverlay} />
-                <span className={styles.levelBadge}>{s.levelCode}</span>
               </div>
 
               <h3 className={styles.cardTitle}>{s.title}</h3>
