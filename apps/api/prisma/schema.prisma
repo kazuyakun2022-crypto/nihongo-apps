@@ -125,6 +125,46 @@ enum MemoryType {
   fact
 }
 
+/// Jenis notifikasi in-app dan push. Nilainya disimpan sebagai enum Postgres.
+enum NotificationType {
+  study_reminder
+  streak
+  achievement
+  exam
+  announcement
+  system
+}
+
+enum AiProvider {
+  groq
+  gemini
+  openai
+  anthropic
+  openrouter
+}
+
+enum AiKeyStatus {
+  active
+  standby
+  degraded
+  exhausted
+  revoked
+}
+
+enum AiCapability {
+  TEXT_LLM
+  VISION_OCR
+  AUDIO_STT
+  AUDIO_TTS
+}
+
+enum AiFeature {
+  neko_chat
+  voice_overlay
+  vision_scanner
+  workbook_evaluator
+}
+
 // ───────────── Akun dan langganan ─────────────
 
 model User {
@@ -169,12 +209,18 @@ model User {
   memories           UserMemory[]
   handwritingLogs    HandwritingLog[]
   mascots            UserMascot[]
+  notifications      Notification[]
+  notificationPreference NotificationPreference?
+  pushSubscriptions  PushSubscription[]
   chaptersCreated    Chapter[]             @relation("ChapterCreator")
   chaptersApproved   Chapter[]             @relation("ChapterApprover")
   scenariosCreated   Scenario[]
   promptsUpdated     AiLevelPrompt[]
   auditActions       AuditLog[]            @relation("AuditActor")
   auditTargets       AuditLog[]            @relation("AuditTarget")
+  scanHistories      CameraScanHistory[]
+  aiProviderKeys     AiProviderKey[]
+  aiFeatureRoutes    AiFeatureRoute[]
 
   @@map("users")
 }
@@ -503,6 +549,16 @@ model Scenario {
   sortOrder      Int           @default(0) @map("sort_order") @db.SmallInt
   sourceKey      String?       @unique @map("source_key") @db.VarChar(100)
 
+  // ── Penambahan untuk Skenario Percakapan Berbasis Gambar ──
+  imageUrl       String?       @map("image_url") @db.Text
+  userRole       String?       @map("user_role") @db.VarChar(100)
+  location       String?       @map("location") @db.VarChar(150)
+  keigoType      String?       @map("keigo_type") @db.VarChar(100)
+  dialogueScript Json?         @map("dialogue_script")
+  furiganaRule   FuriganaRule  @default(full) @map("furigana_rule")
+  speechRate     Decimal       @default(1.0) @map("speech_rate") @db.Decimal(3, 2)
+  systemPrompt   String?       @map("system_prompt") @db.Text
+
   level         Level                 @relation(fields: [levelId], references: [id])
   createdBy     User?                 @relation(fields: [createdById], references: [id])
   chapter       Chapter?              @relation(fields: [chapterId], references: [id], onDelete: SetNull)
@@ -606,11 +662,14 @@ model ExamQuestion {
   category      String?             @db.VarChar(40)
   /// Dokkai: teks bacaan yang ditampilkan di atas soal. Choukai: skrip percakapan, hanya tampil di pembahasan.
   passage       String?
+  /// Simulasi JLPT: nomor paket (1-10). Kosong = bank campuran yang diambil acak.
+  packageNo     Int?                @map("package_no") @db.SmallInt
   sourceKey     String?             @unique @map("source_key") @db.VarChar(100)
   level         Level               @relation(fields: [levelId], references: [id])
   answers       ExamAttemptAnswer[]
 
   @@index([levelId, examType])
+  @@index([levelId, examType, packageNo])
   @@map("exam_questions")
 }
 
@@ -762,4 +821,198 @@ model HandwritingLog {
   @@unique([userId, char, issue])
   @@index([userId])
   @@map("handwriting_logs")
+}
+
+// ───────────── Notifikasi ─────────────
+
+/// Satu langganan Web Push per perangkat/browser. Endpoint berasal dari PushSubscription browser.
+model PushSubscription {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  endpoint     String    @unique @db.Text
+  p256dh       String    @db.Text
+  auth         String    @db.Text
+  userAgent    String?   @map("user_agent")
+  failureCount Int       @default(0) @map("failure_count") @db.SmallInt
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  lastUsedAt   DateTime? @map("last_used_at") @db.Timestamptz
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+/// Preferensi notifikasi pengguna. Baris dibuat saat pengguna pertama kali menyimpan pengaturan.
+model NotificationPreference {
+  userId        String   @id @map("user_id") @db.Uuid
+  pushEnabled   Boolean  @default(true) @map("push_enabled")
+  studyReminder Boolean  @default(true) @map("study_reminder")
+  streak        Boolean  @default(true) @map("streak")
+  achievement   Boolean  @default(true) @map("achievement")
+  exam          Boolean  @default(true) @map("exam")
+  announcement  Boolean  @default(true) @map("announcement")
+  reminderTime  String   @default("19:00") @map("reminder_time") @db.VarChar(5)
+  timezone      String   @default("Asia/Jakarta") @db.VarChar(50)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+/// Notifikasi dalam aplikasi. dedupe_key mencegah pengingat/event yang sama dibuat dua kali.
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  title     String           @db.VarChar(120)
+  body      String           @db.VarChar(500)
+  url       String?          @db.VarChar(255)
+  readAt    DateTime?        @map("read_at") @db.Timestamptz
+  dedupeKey String?          @unique @map("dedupe_key") @db.VarChar(120)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+/// Riwayat pemindaian teks kamera / scanner penterjemah
+model CameraScanHistory {
+  id              String            @id @default(uuid()) @db.Uuid
+  userId          String            @map("user_id") @db.Uuid
+  originalImgUrl  String            @map("original_img_url") @db.Text
+  rawJapaneseText String            @map("raw_japanese_text") @db.Text
+  furiganaHtml    String            @map("furigana_html") @db.Text
+  romajiText      String            @map("romaji_text") @db.Text
+  indonesianTrans String            @map("indonesian_trans") @db.Text
+  detectedLevel   String?           @map("detected_level") @db.VarChar(10) // N5, N4, N3, N2, N1
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokens          ScanTokenDetail[]
+
+  @@index([userId, createdAt])
+  @@map("camera_scan_histories")
+}
+
+/// Detail token morfologi per kata dari hasil pemindaian
+model ScanTokenDetail {
+  id             String            @id @default(uuid()) @db.Uuid
+  scanId         String            @map("scan_id") @db.Uuid
+  surfaceForm    String            @map("surface_form") @db.VarChar(100)
+  dictionaryForm String            @map("dictionary_form") @db.VarChar(100)
+  readingKana    String            @map("reading_kana") @db.VarChar(100)
+  romaji         String            @map("romaji") @db.VarChar(150)
+  partOfSpeech   String            @map("part_of_speech") @db.VarChar(50)
+  indonesianMean String            @map("indonesian_mean") @db.Text
+  jlptLevel      String            @map("jlpt_level") @db.VarChar(10)
+  pitchAccent    String?           @map("pitch_accent") @db.VarChar(50)
+
+  scanHistory    CameraScanHistory @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@index([scanId])
+  @@map("scan_token_details")
+}
+
+/// Banner promosi, iklan, dan rekomendasi dinamis di beranda
+model Banner {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String   @db.VarChar(150)
+  description String?  @db.VarChar(300)
+  imageUrl    String   @map("image_url") @db.Text
+  linkUrl     String   @map("link_url") @db.VarChar(500)
+  badge       String?  @db.VarChar(50) // contoh: "Promo", "Rekomendasi", "Event", "Tips"
+  target      String   @default("_self") @db.VarChar(20) // "_self" atau "_blank"
+  order       Int      @default(0) // urutan tampilan slide (0, 1, 2, ...)
+  isActive    Boolean  @default(true) @map("is_active")
+  shadingOpacity  Int      @default(60) @map("shading_opacity") // Ketebalan shading 0 - 100 (%)
+  shadingPosition String   @default("left") @map("shading_position") @db.VarChar(30) // "left", "right", "bottom", "full"
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([isActive, order])
+  @@map("banners")
+}
+
+// ───────────── Super Admin AI Multi-Key & Discovery ─────────────
+
+model AiProviderKey {
+  id              String         @id @default(uuid()) @db.Uuid
+  provider        AiProvider
+  label           String         @db.VarChar(100)
+  encryptedKey    String         @map("encrypted_key") @db.Text
+  keyIv           String         @map("key_iv") @db.VarChar(64)
+  keyTag          String         @map("key_tag") @db.VarChar(64)
+  keyHint         String         @map("key_hint") @db.VarChar(30)
+  priority        Int            @default(1) @db.SmallInt
+  weight          Int            @default(100) @db.SmallInt
+  status          AiKeyStatus    @default(active)
+  failureCount    Int            @default(0) @map("failure_count")
+  successCount    Int            @default(0) @map("success_count")
+  lastLatencyMs   Int?           @map("last_latency_ms")
+  cooldownUntil   DateTime?      @map("cooldown_until") @db.Timestamptz
+  lastUsedAt      DateTime?      @map("last_used_at") @db.Timestamptz
+  createdById     String?        @map("created_by") @db.Uuid
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  createdBy       User?          @relation(fields: [createdById], references: [id])
+  circuitLogs     AiCircuitLog[]
+
+  @@index([provider, status, priority])
+  @@map("ai_provider_keys")
+}
+
+model AiModelRegistry {
+  id              String         @id @default(uuid()) @db.Uuid
+  provider        AiProvider
+  modelId         String         @map("model_id") @db.VarChar(120)
+  displayName     String         @map("display_name") @db.VarChar(150)
+  capabilities    AiCapability[]
+  contextLength   Int?           @map("context_length")
+  isDeprecated    Boolean        @default(false) @map("is_deprecated")
+  discoveredAt    DateTime       @default(now()) @map("discovered_at") @db.Timestamptz
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@unique([provider, modelId])
+  @@index([provider, isDeprecated])
+  @@map("ai_model_registry")
+}
+
+model AiFeatureRoute {
+  feature          AiFeature      @id
+  primaryProvider  AiProvider     @map("primary_provider")
+  primaryModelId   String         @map("primary_model_id") @db.VarChar(120)
+  backupProvider   AiProvider?    @map("backup_provider")
+  backupModelId    String?        @map("backup_model_id") @db.VarChar(120)
+  fallbackProvider AiProvider?    @map("fallback_provider")
+  fallbackModelId  String?        @map("fallback_model_id") @db.VarChar(120)
+  temperature      Decimal        @default(0.7) @db.Decimal(3, 2)
+  maxTokens        Int            @default(2048) @map("max_tokens")
+  timeoutMs        Int            @default(15000) @map("timeout_ms")
+  updatedById      String?        @map("updated_by") @db.Uuid
+  updatedAt        DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  updatedBy        User?          @relation(fields: [updatedById], references: [id])
+
+  @@map("ai_feature_routes")
+}
+
+model AiCircuitLog {
+  id                BigInt         @id @default(autoincrement())
+  providerKeyId     String?        @map("provider_key_id") @db.Uuid
+  provider          AiProvider
+  feature           AiFeature?
+  httpStatus        Int?           @map("http_status") @db.SmallInt
+  errorType         String?        @map("error_type") @db.VarChar(50)
+  errorMessage      String?        @map("error_message") @db.Text
+  latencyMs         Int?           @map("latency_ms")
+  failoverTriggered Boolean        @default(false) @map("failover_triggered")
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  providerKey       AiProviderKey? @relation(fields: [providerKeyId], references: [id], onDelete: SetNull)
+
+  @@index([provider, createdAt])
+  @@map("ai_circuit_logs")
 }

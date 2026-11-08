@@ -10,7 +10,7 @@ import { CloseIcon } from "@/shared/ui/icons";
 export type FieldDef =
   | { name: string; label: string; type: "text" | "textarea"; required?: boolean; hint?: string; wide?: boolean; jp?: boolean }
   | { name: string; label: string; type: "number"; min?: number; max?: number; hint?: string }
-  | { name: string; label: string; type: "select"; options: { value: string; label: string }[]; hint?: string }
+  | { name: string; label: string; type: "select"; options: { value: string; label: string }[]; hint?: string; wide?: boolean }
   | { name: string; label: string; type: "choices"; answerName: string; hint?: string }
   | { name: string; label: string; type: "image"; hint?: string };
 
@@ -135,7 +135,7 @@ export function Field({ def, values, set }: { def: FieldDef; values: FormValues;
     return <ImageField id={id} label={def.label} hint={def.hint} value={value as string | null} onChange={(url) => set(def.name, url)} />;
   }
 
-  const wide = def.type === "textarea" || (def.type === "text" && def.wide);
+  const wide = def.type === "textarea" || ((def.type === "text" || def.type === "select") && def.wide);
   return (
     <div className={`${styles.field} ${wide ? styles.fieldWide : ""}`}>
       <label htmlFor={id} className={adminStyles.fieldLabel}>

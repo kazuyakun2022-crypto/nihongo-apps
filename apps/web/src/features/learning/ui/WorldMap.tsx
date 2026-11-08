@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { workbookGateApi, type WorkbookStatus } from "@/features/exam/data/workbookGateApi";
-import { Mascot } from "@/shared/ui/Mascot";
+import { NekoAvatar } from "@/shared/ui/neko/NekoAvatar";
 import { SceneProp } from "./MapScenery";
 import type { ChapterSummary, Level } from "../domain/types";
 import styles from "./worldMap.module.css";
@@ -25,8 +25,8 @@ export const JUST_COMPLETED_KEY = "nihongo:justCompleted";
  */
 const DIMS = {
   // Liukan ponsel sedikit lebih sempit agar hiasan di samping node tidak terpotong tepi layar
-  compact: { gap: 112, amplitude: 62, room: 56, mascot: 56 },
-  wide: { gap: 160, amplitude: 150, room: 82, mascot: 80 },
+  compact: { gap: 112, amplitude: 62, room: 84, mascot: 76 },
+  wide: { gap: 168, amplitude: 190, room: 124, mascot: 112 },
 };
 const WIDE_QUERY = "(min-width: 900px)";
 
@@ -331,9 +331,15 @@ export function WorldMap({ units, nextId, level }: { units: MapUnit[]; nextId: s
                       </span>
                     )}
                     {state === "active" && (
-                      <span className={styles.nodeMascot} ref={mascotRef} aria-hidden>
+                      <span className={styles.nodeMascot} ref={mascotRef} aria-label="Miu-chan">
                         <span className={styles.mascotBody}>
-                          <Mascot mood="semangat" size={dims.mascot} title="" />
+                          <NekoAvatar
+                            size={dims.mascot}
+                            mode="idle"
+                            emotion="semangat"
+                            label="Miu-chan"
+                            onTap={() => setSelected({ kind: "chapter", chapter: c, index, state })}
+                          />
                         </span>
                       </span>
                     )}

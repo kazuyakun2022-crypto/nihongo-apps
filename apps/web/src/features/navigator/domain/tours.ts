@@ -32,14 +32,12 @@ export interface Tour {
   steps: TourStep[];
 }
 
-type NavKey = "beranda" | "belajar" | "huruf" | "ngobrol" | "kamus" | "profil";
+type NavKey = "beranda" | "belajar" | "ngobrol" | "profil";
 
 const NAV_NAME: Record<NavKey, { id: string; ja: string; romaji: string }> = {
   beranda: { id: "Beranda", ja: "ホーム", romaji: "hoomu" },
   belajar: { id: "Belajar", ja: "べんきょう", romaji: "benkyou" },
-  huruf: { id: "Huruf", ja: "もじ", romaji: "moji" },
   ngobrol: { id: "Ngobrol", ja: "かいわ", romaji: "kaiwa" },
-  kamus: { id: "Kamus", ja: "じしょ", romaji: "jisho" },
   profil: { id: "Profil", ja: "プロフィール", romaji: "purofiiru" },
 };
 
@@ -80,7 +78,7 @@ const BERANDA: TourStep[] = [
   },
   {
     target: "beranda-latihan",
-    say: { id: "Latihan tambahan ada di sini: review kosakata, ngobrol dengan Miu-chan, dan tabel huruf.", ja: "ほかの れんしゅうは ここだよ。", romaji: "hoka no renshuu wa koko da yo." },
+    say: { id: "Latihan tambahan ada di sini: review kosakata, simulasi JLPT, dan ngobrol dengan Miu-chan.", ja: "ほかの れんしゅうは ここだよ。", romaji: "hoka no renshuu wa koko da yo." },
   },
   {
     target: null,
@@ -118,53 +116,6 @@ const BELAJAR: TourStep[] = [
   PETA_GERBANG,
 ];
 
-const HURUF_TABEL: TourStep = {
-  target: "huruf-tabel",
-  say: { id: "Pilih jenis huruf di sini: Hiragana, Katakana, Dakuten, Yoon, atau Kanji.", ja: "ここで もじの しゅるいを えらぼう。", romaji: "koko de moji no shurui o erabou." },
-  missing: "Tabel huruf tampil saat kamu tidak sedang di mode latihan atau kuis. Ketuk Kembali ke Tabel Huruf dulu ya.",
-};
-
-const HURUF_GRID: TourStep = {
-  target: "huruf-grid",
-  say: { id: "Ketuk huruf mana saja untuk mendengar cara bacanya dan melihat contoh kata.", ja: "もじを タップすると おとが きけるよ。", romaji: "moji o tappu suru to oto ga kikeru yo." },
-};
-
-const HURUF: TourStep[] = [
-  HURUF_TABEL,
-  HURUF_GRID,
-  {
-    target: "huruf-tulis",
-    say: { id: "Latihan Menulis: tulis huruf di layar dengan jari, lalu aku koreksi goresanmu.", ja: "ゆびで もじを かく れんしゅうだよ。", romaji: "yubi de moji o kaku renshuu da yo." },
-  },
-  {
-    target: "huruf-buku",
-    say: { id: "Tulis di Buku: cetak lembar, tulis dengan pensil, lalu foto untuk dinilai.", ja: "かみに かいて、しゃしんで チェック！", romaji: "kami ni kaite, shashin de chekku!" },
-  },
-  {
-    target: "huruf-kuis",
-    say: { id: "Sudah hafal? Uji dirimu dengan kuis huruf di sini.", ja: "クイズで たしかめよう！", romaji: "kuizu de tashikameyou!" },
-  },
-];
-
-const MENULIS: TourStep[] = [
-  {
-    target: "tulis-pilih-huruf",
-    say: { id: "Pilih huruf yang mau dilatih di baris ini. Geser ke samping untuk huruf lainnya.", ja: "かきたい もじを えらんでね。", romaji: "kakitai moji o erande ne." },
-  },
-  {
-    target: "tulis-kanvas",
-    say: { id: "Tulis hurufnya di kotak ini dengan jari atau mouse. Ikuti bayangan abu-abunya.", ja: "ここに ゆびで かいてね。", romaji: "koko ni yubi de kaite ne." },
-  },
-  {
-    target: "tulis-panduan",
-    say: { id: "Sudah lancar? Matikan bayangan contoh untuk mencoba dari ingatan.", ja: "なれたら おてほんを けしてみよう。", romaji: "naretara otehon o keshite miyou." },
-  },
-  {
-    target: "tulis-koreksi",
-    say: { id: "Selesai menulis, ketuk Koreksi Otomatis. Aku periksa jumlah dan arah goresanmu.", ja: "かけたら チェックしよう！", romaji: "kaketara chekku shiyou!" },
-  },
-];
-
 const REVIEW: TourStep[] = [
   {
     target: ["review-kartu-depan", "review-kosong"],
@@ -184,17 +135,6 @@ const REVIEW: TourStep[] = [
   {
     target: "review-nilai",
     say: { id: "Pilih dengan jujur: Lupa, Sulit, Bisa, atau Mudah. Kartu yang sulit akan muncul lebih sering.", ja: "どのくらい おぼえていたか えらんでね。", romaji: "dono kurai oboete ita ka erande ne." },
-  },
-];
-
-const KAMUS: TourStep[] = [
-  {
-    target: "kamus-tabs",
-    say: { id: "Kamus punya beberapa jenis: bergambar, kosakata, kanji, tata bahasa, dan ungkapan.", ja: "じしょは いろいろ あるよ。", romaji: "jisho wa iroiro aru yo." },
-  },
-  {
-    target: "kamus-cari",
-    say: { id: "Ketik kata di sini, boleh bahasa Indonesia, romaji, atau huruf Jepang.", ja: "ここに ことばを いれて さがそう。", romaji: "koko ni kotoba o irete sagasou." },
   },
 ];
 
@@ -247,42 +187,24 @@ const PROFIL: TourStep = {
   },
 };
 
-function kamusTab(key: string, name: string, ja: string, romaji: string): TourStep {
-  return {
-    target: `kamus-tab-${key}`,
-    click: true,
-    say: { id: `Ketuk tab ${name}.`, ja: `「${ja}」を タップ！`, romaji: `${romaji} o tappu!` },
-  };
-}
-
 /* ── Tur ── */
 
 export type TourKey =
   | "page-beranda"
   | "page-belajar"
-  | "page-huruf"
   | "page-review"
-  | "page-kamus"
   | "page-ngobrol"
   | "page-tulis-buku"
   | "page-profil"
-  | "kana-writing"
-  | "kana-table"
-  | "workbook"
   | "review"
   | "continue"
   | "gate"
   | "roleplay"
   | "voice"
-  | "dictionary"
   | "profile"
   | "home"
   | "level-test"
   | "jlpt-sim"
-  | "kana-quiz"
-  | "dict-kanji"
-  | "dict-grammar"
-  | "dict-phrases"
   | "ask"
   | "progress"
   | "welcome";
@@ -290,41 +212,11 @@ export type TourKey =
 export const TOURS: Record<TourKey, Tour> = {
   "page-beranda": { title: "Kenalan dengan Beranda", steps: BERANDA },
   "page-belajar": { title: "Cara memakai peta belajar", steps: BELAJAR },
-  "page-huruf": { title: "Isi halaman Huruf", steps: HURUF },
   "page-review": { title: "Cara review kartu", steps: REVIEW },
-  "page-kamus": { title: "Cara memakai kamus", steps: KAMUS },
   "page-ngobrol": { title: "Cara ngobrol dengan Miu-chan", steps: NGOBROL },
   "page-tulis-buku": { title: "Cara Tulis di Buku", steps: TULIS_BUKU },
   "page-profil": { title: "Halaman profil", steps: [PROFIL] },
 
-  "kana-writing": {
-    title: "Latihan menulis huruf",
-    steps: [
-      viaNav("huruf"),
-      {
-        target: "huruf-tulis",
-        click: true,
-        skipIfPresent: "tulis-kanvas",
-        say: { id: "Sekarang ketuk tombol Latihan Menulis.", ja: "「かくれんしゅう」を タップ！", romaji: "kaku renshuu o tappu!" },
-        missing: "Tombolnya ada di tabel huruf. Kalau sedang kuis, kembali ke tabel dulu ya.",
-      },
-      ...MENULIS,
-    ],
-  },
-  "kana-table": { title: "Tabel huruf", steps: [viaNav("huruf"), HURUF_TABEL, HURUF_GRID] },
-  workbook: {
-    title: "Menulis di buku",
-    steps: [
-      viaNav("huruf", ["/belajar/tulis-buku"]),
-      {
-        target: "huruf-buku",
-        click: true,
-        skipOn: ["/belajar/tulis-buku"],
-        say: { id: "Ketuk tombol Tulis di Buku.", ja: "「ノートに かく」を タップ！", romaji: "nooto ni kaku o tappu!" },
-      },
-      ...TULIS_BUKU,
-    ],
-  },
   review: {
     title: "Review kosakata",
     steps: [
@@ -341,11 +233,11 @@ export const TOURS: Record<TourKey, Tour> = {
   "jlpt-sim": {
     title: "Simulasi JLPT",
     steps: [
-      viaNav("beranda", ["/belajar/simulasi-jlpt"]),
+      viaNav("beranda", ["/simulasi", "/belajar/simulasi-jlpt"]),
       {
         target: "beranda-jlpt",
         click: true,
-        skipOn: ["/belajar/simulasi-jlpt"],
+        skipOn: ["/simulasi", "/belajar/simulasi-jlpt"],
         say: {
           id: "Di bagian Latihan lain, ketuk Simulasi JLPT. Pilih levelnya, lalu kerjakan seperti ujian sungguhan. Selama ujian aku diam dulu ya.",
           ja: "「もぎしけん」を タップ！",
@@ -378,7 +270,6 @@ export const TOURS: Record<TourKey, Tour> = {
       },
     ],
   },
-  dictionary: { title: "Mencari kata di kamus", steps: [viaNav("kamus"), ...KAMUS] },
   profile: { title: "Profil", steps: [viaNav("profil"), PROFIL] },
   home: { title: "Ke beranda", steps: [viaNav("beranda"), BERANDA[0]] },
   "level-test": {
@@ -395,21 +286,6 @@ export const TOURS: Record<TourKey, Tour> = {
       },
     ],
   },
-  "kana-quiz": {
-    title: "Kuis huruf",
-    steps: [
-      viaNav("huruf"),
-      HURUF_TABEL,
-      {
-        target: "huruf-kuis",
-        click: true,
-        say: { id: "Pilih jenis hurufnya dulu di atas, lalu ketuk Mulai Kuis.", ja: "「クイズ」を タップ！", romaji: "kuizu o tappu!" },
-      },
-    ],
-  },
-  "dict-kanji": { title: "Kamus kanji", steps: [viaNav("kamus"), kamusTab("kanji", "Kanji", "かんじ", "kanji"), KAMUS[1]] },
-  "dict-grammar": { title: "Kamus tata bahasa", steps: [viaNav("kamus"), kamusTab("tata_bahasa", "Tata Bahasa", "ぶんぽう", "bunpou"), KAMUS[1]] },
-  "dict-phrases": { title: "Kamus ungkapan", steps: [viaNav("kamus"), kamusTab("ungkapan", "Ungkapan & Sebutan", "ひょうげん", "hyougen"), KAMUS[1]] },
   ask: {
     title: "Tanya AI",
     steps: [
@@ -451,16 +327,8 @@ export const TOURS: Record<TourKey, Tour> = {
         },
       },
       {
-        target: "nav-huruf",
-        say: { id: "Huruf: tabel hiragana, katakana, dan kanji lengkap dengan suaranya, plus latihan menulis.", ja: "もじの れんしゅうは ここ！", romaji: "moji no renshuu wa koko!" },
-      },
-      {
         target: "nav-ngobrol",
         say: { id: "Ngobrol: tanya apa saja, bicara langsung denganku pakai suara, atau latihan peran seperti belanja di konbini.", ja: "わたしと おしゃべり しよう！", romaji: "watashi to oshaberi shiyou!" },
-      },
-      {
-        target: "nav-kamus",
-        say: { id: "Kamus: cari arti kata, kanji, tata bahasa, dan ungkapan sehari-hari.", ja: "じしょで しらべよう。", romaji: "jisho de shirabeyou." },
       },
       {
         target: "nav-profil",
@@ -493,12 +361,8 @@ export function pageTourFor(pathname: string): TourKey | null {
       return "page-beranda";
     case "/belajar":
       return "page-belajar";
-    case "/huruf":
-      return "page-huruf";
     case "/review":
       return "page-review";
-    case "/kamus":
-      return "page-kamus";
     case "/ngobrol":
       return "page-ngobrol";
     case "/belajar/tulis-buku":

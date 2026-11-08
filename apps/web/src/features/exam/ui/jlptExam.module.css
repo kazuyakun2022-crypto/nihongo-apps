@@ -1,0 +1,525 @@
+/* Layar Simulasi JLPT bergaya kertas ujian resmi */
+
+.narrow,
+.wide,
+.exam {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) var(--space-8);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.narrow {
+  max-width: 36rem;
+}
+
+.wide {
+  max-width: 48rem;
+}
+
+.exam {
+  max-width: 68rem;
+  gap: var(--space-3);
+}
+
+.resultSub {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Bilah atas: judul paket, sesi, timer ── */
+.bar {
+  position: sticky;
+  top: var(--space-2);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.barTitle {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.barTitle strong {
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barTitle span {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timer {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+  font-variant-numeric: tabular-nums;
+}
+
+.timerTotal {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.timerDanger {
+  color: var(--color-danger);
+}
+
+/* ── Tata letak: soal + lembar jawaban ── */
+.layout {
+  display: grid;
+  /* minmax(0, 1fr): kolom tidak boleh melebar mengikuti isi (soal/pilihan panjang) melewati layar */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.paper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* Judul Daimon seperti kertas ujian: 問題1 漢字読み */
+.daimon {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.daimonNo {
+  padding: 2px 10px;
+  border: 2px solid var(--color-text);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-sm);
+}
+
+.daimonName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.qHead {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.qCount {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.flagBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.flagBtn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.flagOn {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+  color: var(--color-text);
+}
+
+.qBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  outline: none;
+}
+
+.passage {
+  margin: 0;
+  padding: var(--space-4);
+  max-height: 45vh;
+  overflow-y: auto;
+  background: var(--color-surface-muted);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.passage:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.question {
+  margin: 0;
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.question u {
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+.qNo {
+  flex: none;
+  min-width: 2rem;
+  padding: 0 6px;
+  border: var(--border-width) solid var(--color-text);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  line-height: 1.8;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 48px;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: border-color var(--motion-fast), background var(--motion-fast);
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.option:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.optionOn {
+  border-color: var(--color-primary);
+  border-width: 2px;
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  font-weight: var(--font-weight-bold);
+}
+
+/* Bulatan nomor pilihan, terisi saat dipilih seperti lembar jawaban komputer */
+.mark {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--color-text-muted);
+  border-radius: 50%;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.optionOn .mark {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.navBtn,
+.sheetToggle {
+  min-width: 0;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.navBtn:disabled,
+.finishBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.navNext,
+.navFinish {
+  justify-self: end;
+}
+
+.navFinish {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.sheetToggle {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Lembar jawaban (OMR) ── */
+.sheet {
+  display: none;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.sheetOpen {
+  display: grid;
+}
+
+.sheetHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.sheetHead h2 {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.sheetHead span {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.omr {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: 4px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.omrRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 36px;
+  padding: 2px var(--space-2);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.omrRow:hover {
+  background: var(--color-surface-muted);
+}
+
+.omrRow:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.omrCurrent {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface));
+}
+
+.omrFlag .omrNo {
+  color: var(--color-accent);
+}
+
+.omrNo {
+  flex: none;
+  width: 1.6rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.bubbles {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--color-text-muted);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+}
+
+.bubbleOn {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-weight: var(--font-weight-bold);
+}
+
+.omrFlagIcon {
+  color: var(--color-accent);
+}
+
+.finishBtn {
+  min-height: 44px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.keys {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* Layar lebar: lembar jawaban selalu tampil di samping soal */
+@media (min-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 19rem;
+  }
+
+  .sheet {
+    display: grid;
+    position: sticky;
+    top: 5.5rem;
+  }
+
+  .sheetToggle {
+    display: none;
+  }
+
+  .nav {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .omr {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* HP: sembunyikan pintasan keyboard */
+@media (max-width: 600px) {
+  .keys {
+    display: none;
+  }
+
+  .paper {
+    padding: var(--space-3);
+  }
+}
+
+/* Label tombol navigasi: panjang di layar lebar, pendek di HP sempit */
+.short {
+  display: none;
+}
+
+@media (max-width: 420px) {
+  .long {
+    display: none;
+  }
+
+  .short {
+    display: inline;
+  }
+
+  .navBtn,
+  .sheetToggle {
+    padding: 0 var(--space-2);
+  }
+}

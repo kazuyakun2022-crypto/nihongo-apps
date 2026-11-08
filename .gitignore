@@ -39,3 +39,6 @@ Thumbs.db
 apps/Suara/
 NEKO_AI/
 scratch_*
+
+# Hasil mentah AI pembuat paket Simulasi JLPT (sumber resmi: prisma/data/jlpt-sim/bank hasil ekspor)
+apps/api/prisma/data/jlpt-sim/generated/

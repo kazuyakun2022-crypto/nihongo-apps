@@ -92,17 +92,6 @@ export function KamusGambar({ tabs }: { tabs?: ReactNode } = {}) {
   return (
     <div className={styles.wrap}>
       <header className={styles.hero}>
-        <div className={styles.heroText}>
-          <p className={styles.eyebrow} lang="ja">
-            えじてん
-          </p>
-          <h1 className={styles.heading}>Kamus Gambar</h1>
-          <p className={styles.subheading}>
-            {categories
-              ? `${ALL_ENTRIES.length} kosakata bergambar dalam ${categories.length} kategori. Ketuk gambar untuk mendengar pelafalannya.`
-              : "Memuat kosakata bergambar…"}
-          </p>
-        </div>
         <div className={styles.toolbar}>
           <input
             data-spotlight="kamus-cari"

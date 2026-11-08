@@ -5,59 +5,49 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
-import { CircleCheckIcon, CircleXIcon, LockIcon, TimerIcon, TrophyIcon } from "@/shared/ui/icons";
-import { examApi, type ExamStatus, type JlptSimLevel, type SubmitExamResponse } from "../data/examApi";
-import { ExamRunner, MarkedText } from "./ExamRunner";
+import { LockIcon, ShuffleIcon, TimerIcon, TrophyIcon } from "@/shared/ui/icons";
+import { examApi, type JlptSimLevel } from "../data/examApi";
+import { JlptExam } from "./JlptExam";
 import runnerStyles from "./levelUpTest.module.css";
 import styles from "./jlptSimulation.module.css";
 
-/** Nama bagian mengikuti istilah kertas ujian JLPT. */
-export const JLPT_SECTION_LABELS: Record<string, string> = {
-  membaca: "Moji-Goi: Kanji Yomi",
-  kosakata: "Moji-Goi: Kosakata",
-  tata_bahasa: "Bunpou (Tata Bahasa)",
-  dokkai: "Dokkai (Membaca)",
-  mendengar: "Choukai (Mendengar)",
-};
-
-/** Tipe soal resmi (Daimon) untuk pembahasan. Sama dengan JLPT_CATEGORIES di server. */
-const CATEGORY_LABELS: Record<string, string> = {
-  kanji_yomi: "漢字読み Kanji Yomi",
-  hyouki: "表記 Hyouki",
-  gokeisei: "語形成 Gokeisei",
-  bunmyaku: "文脈規定 Bunmyaku Kitei",
-  iikae: "言い換え類義 Iikae Ruigi",
-  youhou: "用法 Youhou",
-  bunpou_keishiki: "文の文法1 Bun no Bunpou 1",
-  narabikae: "文の文法2 ★ Narabikae",
-  bunshou_bunpou: "文章の文法 Bunshou no Bunpou",
-  dokkai_tanbun: "内容理解 短文",
-  dokkai_chuubun: "内容理解 中文",
-  dokkai_choubun: "内容理解 長文",
-  dokkai_tougou: "統合理解",
-  dokkai_jouhou: "情報検索",
-  choukai_kadai: "課題理解",
-  choukai_point: "ポイント理解",
-  choukai_gaiyou: "概要理解",
-  choukai_sokuji: "即時応答",
-  choukai_tougou: "統合理解",
-};
-
-const SECTION_ORDER = ["membaca", "kosakata", "tata_bahasa", "dokkai", "mendengar"];
+const BASE = "/simulasi";
+const PACKAGE_TOTAL = 10;
+const MAX_SCORE = 180;
+const HISTORY_SHOWN = 5;
+const pad = (n: number) => String(n).padStart(2, "0");
 const dateFmt = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short" });
 
-/** Simulasi JLPT: pilih level N5–N1, kerjakan sesi-sesi berwaktu seperti ujian asli, lalu lihat skor 0–180 dan pembahasan. */
+/** Gambaran kemampuan tiap tingkat (ringkasan dari deskripsi resmi JLPT) dan urutan kesulitannya. */
+const LEVEL_INFO: Record<string, { desc: string; difficulty: number }> = {
+  N5: { desc: "Memahami ungkapan dan kalimat dasar dalam hiragana, katakana, dan kanji sederhana.", difficulty: 1 },
+  N4: { desc: "Memahami bahasa Jepang dasar untuk percakapan dan bacaan sehari-hari.", difficulty: 2 },
+  N3: { desc: "Memahami bahasa Jepang dalam situasi sehari-hari sampai tingkat tertentu.", difficulty: 3 },
+  N2: { desc: "Memahami bahasa sehari-hari dan situasi yang lebih luas, termasuk berita.", difficulty: 4 },
+  N1: { desc: "Memahami bahasa Jepang dalam berbagai situasi, termasuk tulisan yang kompleks.", difficulty: 5 },
+};
+
+/**
+ * Simulasi JLPT, tiga layar:
+ * 1. tanpa parameter            → pilih tingkat (N5–N1)
+ * 2. ?levelId=N                 → daftar paket soal tingkat itu
+ * 3. ?levelId=N&paket=3 | acak  → layar ujian
+ */
 export function JlptSimulation() {
   const params = useSearchParams();
   const levelId = Number(params.get("levelId"));
-  if (Number.isInteger(levelId) && levelId > 0) return <SimulationRun levelId={levelId} />;
-  return <LevelPicker />;
+  const paketParam = params.get("paket");
+  if (!Number.isInteger(levelId) || levelId < 1) return <LevelPicker />;
+  if (paketParam === null) return <LevelPackages levelId={levelId} />;
+  const n = Number(paketParam);
+  const paket = Number.isInteger(n) && n >= 1 && n <= PACKAGE_TOTAL ? n : null;
+  return <JlptExam key={`${levelId}-${paketParam}`} levelId={levelId} paket={paket} backHref={`${BASE}?levelId=${levelId}`} />;
 }
 
-function LevelPicker() {
+/** Data semua tingkat dimuat sekali; layar paket memakai data yang sama. */
+function useLevels() {
   const [levels, setLevels] = useState<JlptSimLevel[] | null>(null);
   const [failed, setFailed] = useState(false);
-
   useEffect(() => {
     let alive = true;
     examApi
@@ -68,294 +58,299 @@ function LevelPicker() {
       alive = false;
     };
   }, []);
+  return { levels, failed };
+}
+
+function LoadFailed() {
+  return (
+    <p className={runnerStyles.errorBox} role="alert">
+      Simulasi belum bisa dimuat. Periksa koneksi, lalu muat ulang halaman.
+    </p>
+  );
+}
+
+/** Bilah skor 0–180 dengan garis batas lulus; menunjukkan seberapa jauh skor dari kelulusan. */
+function ScoreBar({ score, pass, compact }: { score: number | null; pass: number; compact?: boolean }) {
+  const passed = score !== null && score >= pass;
+  return (
+    <span
+      className={`${styles.scoreBar} ${compact ? styles.scoreBarCompact : ""}`}
+      role="img"
+      aria-label={score === null ? "Belum ada skor" : `Skor ${score} dari ${MAX_SCORE}, batas lulus ${pass}`}
+    >
+      {score !== null && (
+        <span className={`${styles.scoreFill} ${passed ? styles.scoreFillPass : ""}`} style={{ width: `${(score / MAX_SCORE) * 100}%` }} />
+      )}
+      <span className={styles.passMark} style={{ left: `${(pass / MAX_SCORE) * 100}%` }} />
+    </span>
+  );
+}
+
+/** Lima ruas: tingkat kesulitan relatif N5 (1) sampai N1 (5). */
+function Difficulty({ value }: { value: number }) {
+  return (
+    <span className={styles.difficulty} role="img" aria-label={`Tingkat kesulitan ${value} dari 5`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i} className={i <= value ? styles.diffOn : styles.diffOff} />
+      ))}
+    </span>
+  );
+}
+
+// ── Layar 1: pilih tingkat ──
+function LevelPicker() {
+  const { levels, failed } = useLevels();
+  const { user } = useAuth();
 
   return (
     <div className={styles.wrap}>
       <header className={styles.intro}>
-        <span className={runnerStyles.readyBadge}>Simulasi JLPT</span>
-        <h1 className={styles.title}>Coba ujian JLPT sebelum hari H</h1>
+        <h1 className={styles.title}>Simulasi JLPT</h1>
         <p className={styles.lead}>
-          Susunannya mengikuti ujian resmi: beberapa sesi dengan waktu masing-masing, skor 0–180, dan nilai minimal tiap kelompok skor.
-          Hasilnya tidak mengubah levelmu, jadi boleh diulang kapan saja.
+          Pilih tingkat, lalu kerjakan paket soal dengan susunan ujian resmi: sesi berwaktu, lembar jawaban bulat, dan skor 0–180.
+          Hasilnya tidak mengubah levelmu.
         </p>
       </header>
 
       {failed ? (
-        <p className={runnerStyles.errorBox} role="alert">Daftar simulasi belum bisa dimuat. Coba muat ulang halaman.</p>
+        <LoadFailed />
       ) : !levels ? (
-        <SkeletonRegion label="Memuat daftar level…" className={styles.grid}>
-          {[0, 1, 2].map((i) => (
-            <div key={i} className={styles.card}>
-              <Skeleton width="3rem" height="2rem" />
-              <Skeleton width="70%" />
-              <Skeleton height="2.5rem" radius="var(--radius-pill)" />
-            </div>
+        <SkeletonRegion label="Memuat tingkat…" className={styles.levelList}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} height="7.5rem" radius="var(--radius-lg)" />
           ))}
         </SkeletonRegion>
       ) : (
-        <ul className={styles.grid}>
-          {levels.map((l) => (
-            <li key={l.levelId} className={styles.card}>
-              <div className={styles.cardHead}>
-                <span className={styles.code}>{l.code}</span>
-                {l.passedCount > 0 && (
-                  <span className={styles.passedTag}>
-                    <TrophyIcon size={13} /> Pernah lulus
+        <ul className={styles.levelList}>
+          {levels.map((l) => {
+            const info = LEVEL_INFO[l.code];
+            const mine = user?.currentLevelId === l.levelId;
+            const body = (
+              <>
+                <span className={styles.levelBadge} aria-hidden="true">{l.code}</span>
+                <span className={styles.levelBody}>
+                  <span className={styles.levelName}>
+                    {l.name}
+                    {mine && <span className={styles.mineTag}>Levelmu</span>}
                   </span>
+                  <span className={styles.levelDesc}>{info?.desc}</span>
+                  <span className={styles.levelFacts}>
+                    {info && <Difficulty value={info.difficulty} />}
+                    <span>
+                      <TimerIcon size={13} /> {l.timeLimitMin} mnt
+                    </span>
+                    <span>{l.available ? `${l.packages.length} paket` : "Belum ada soal"}</span>
+                  </span>
+                </span>
+                <span className={styles.levelScore}>
+                  {l.bestScore === null ? (
+                    <span className={styles.levelScoreEmpty}>Belum dicoba</span>
+                  ) : (
+                    <span className={styles.levelScoreValue}>
+                      <strong>{l.bestScore}</strong>/{MAX_SCORE}
+                      {l.passedCount > 0 && <TrophyIcon size={14} className={styles.trophy} title="Pernah lulus" />}
+                    </span>
+                  )}
+                  <ScoreBar score={l.bestScore} pass={l.passScore} />
+                  <span className={styles.levelPass}>Lulus {l.passScore}</span>
+                </span>
+              </>
+            );
+            return (
+              <li key={l.levelId}>
+                {l.available ? (
+                  <Link href={`${BASE}?levelId=${l.levelId}`} className={`${styles.levelCard} ${mine ? styles.levelMine : ""}`}>
+                    {body}
+                  </Link>
+                ) : (
+                  <div className={`${styles.levelCard} ${styles.levelLocked}`} aria-disabled="true">
+                    {body}
+                    <LockIcon size={16} className={styles.lockIcon} title="Bank soal belum tersedia" />
+                  </div>
                 )}
-              </div>
-              <p className={styles.meta}>
-                {l.questionCount} soal · <TimerIcon size={13} /> {l.timeLimitMin} menit · lulus {l.passScore}/180
-              </p>
-              <ol className={styles.sessionList} aria-label={`Sesi ${l.code}`}>
-                {l.sessions.map((s) => (
-                  <li key={s.key}>
-                    <span>{s.title}</span>
-                    <span className={styles.sessionMin}>{s.minutes} mnt</span>
-                  </li>
-                ))}
-              </ol>
-              <p className={styles.best}>
-                {l.bestScore === null ? "Belum pernah dicoba" : `Skor terbaik ${l.bestScore}/180 dari ${l.attempts} percobaan`}
-              </p>
-              {l.recent.length > 0 && (
-                <ol className={styles.history} aria-label={`Riwayat simulasi ${l.code}`}>
-                  {l.recent.map((a) => (
-                    <li key={a.takenAt} className={a.passed ? styles.historyPass : styles.historyFail}>
-                      <span>{dateFmt.format(new Date(a.takenAt))}</span>
-                      <strong>{a.score}</strong>
-                      <span className="visually-hidden">{a.passed ? "lulus" : "belum lulus"}</span>
-                    </li>
-                  ))}
-                </ol>
-              )}
-              {l.available ? (
-                <Link href={`/belajar/simulasi-jlpt?levelId=${l.levelId}`} className={styles.startLink}>
-                  Mulai simulasi {l.code}
-                </Link>
-              ) : (
-                <p className={styles.unavailable}>
-                  <LockIcon size={14} /> Bank soal {l.code} belum tersedia
-                </p>
-              )}
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
 
-      <Link href="/belajar" className={runnerStyles.backLink}>← Kembali ke Belajar</Link>
+      <Link href="/beranda" className={runnerStyles.backLink}>← Kembali ke Beranda</Link>
     </div>
   );
 }
 
-function SimulationRules({ status }: { status: ExamStatus }) {
-  const j = status.jlpt;
-  if (!j) return null;
+// ── Layar 2: paket soal satu tingkat ──
+function LevelPackages({ levelId }: { levelId: number }) {
+  const { levels, failed } = useLevels();
+  const [showAll, setShowAll] = useState(false);
+  const level = levels?.find((l) => l.levelId === levelId);
+
+  if (failed) {
+    return (
+      <div className={styles.wrap}>
+        <LoadFailed />
+        <Link href={BASE} className={styles.crumb}>← Semua tingkat</Link>
+      </div>
+    );
+  }
+  if (!levels) {
+    return (
+      <SkeletonRegion label="Memuat paket…" className={styles.wrap}>
+        <Skeleton width="8rem" />
+        <Skeleton height="5rem" radius="var(--radius-lg)" />
+        <Skeleton height="7rem" radius="var(--radius-lg)" />
+        <div className={styles.packageCards}>
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} height="9rem" radius="var(--radius-lg)" />
+          ))}
+        </div>
+      </SkeletonRegion>
+    );
+  }
+  if (!level) {
+    return (
+      <div className={styles.wrap}>
+        <p className={runnerStyles.errorBox} role="alert">Tingkat ini tidak punya simulasi JLPT.</p>
+        <Link href={BASE} className={styles.crumb}>← Semua tingkat</Link>
+      </div>
+    );
+  }
+
+  const info = LEVEL_INFO[level.code];
+  const totalMinutes = level.sessions.reduce((n, s) => n + s.minutes, 0) || 1;
+  const history = showAll ? level.recent : level.recent.slice(0, HISTORY_SHOWN);
+
   return (
-    <div className={styles.rules}>
-      <div>
-        <h2 className={styles.rulesTitle}>Sesi ujian</h2>
-        <ol className={styles.rulesList}>
-          {j.sessions.map((s, i) => (
-            <li key={s.key}>
-              <span>
-                {i + 1}. {s.title}
-              </span>
-              <span className={styles.rulesValue}>
-                {s.questionCount} soal · {s.minutes} menit
-              </span>
+    <div className={styles.wrap}>
+      <Link href={BASE} className={styles.crumb}>← Semua tingkat</Link>
+
+      <header className={styles.levelHero}>
+        <span className={styles.heroBadge} aria-hidden="true">{level.code}</span>
+        <div className={styles.heroText}>
+          <h1 className={styles.title}>Simulasi {level.name}</h1>
+          <p className={styles.lead}>{info?.desc}</p>
+        </div>
+      </header>
+
+      <section className={styles.summary} aria-labelledby="susunan-title">
+        <h2 id="susunan-title" className="visually-hidden">Susunan ujian</h2>
+        <dl className={styles.summaryStats}>
+          <div>
+            <dt>Waktu</dt>
+            <dd>{level.timeLimitMin} menit</dd>
+          </div>
+          <div>
+            <dt>Batas lulus</dt>
+            <dd>{level.passScore}/{MAX_SCORE}</dd>
+          </div>
+          <div>
+            <dt>Skor terbaik</dt>
+            <dd>{level.bestScore === null ? "–" : `${level.bestScore}/${MAX_SCORE}`}</dd>
+          </div>
+        </dl>
+        {/* Panjang tiap ruas sebanding dengan waktu sesinya */}
+        <div className={styles.timeline} aria-hidden="true">
+          {level.sessions.map((s) => (
+            <span key={s.key} className={styles.timelineSeg} style={{ flexGrow: s.minutes }} />
+          ))}
+        </div>
+        <ol className={styles.sessionLegend}>
+          {level.sessions.map((s, i) => (
+            <li key={s.key} style={{ flexGrow: s.minutes, flexBasis: `${(s.minutes / totalMinutes) * 100}%` }}>
+              <span className={styles.sessionNo}>Sesi {i + 1}</span>
+              <span className={styles.sessionTitle}>{s.title}</span>
+              <span className={styles.sessionMin}>{s.minutes} menit</span>
             </li>
           ))}
         </ol>
-        <p className={styles.rulesNote}>
-          Tiap sesi punya waktu sendiri dan jawabannya dikunci saat sesi selesai. Di antara sesi ada istirahat maksimal {j.breakMinutes} menit.
-        </p>
-      </div>
-      <div>
-        <h2 className={styles.rulesTitle}>Syarat lulus</h2>
-        <ul className={styles.rulesList}>
-          <li>
-            <span>Skor total</span>
-            <span className={styles.rulesValue}>
-              minimal {j.pass}/{j.maxScore}
-            </span>
-          </li>
-          {j.groups.map((g) => (
-            <li key={g.key}>
-              <span>{g.label}</span>
-              <span className={styles.rulesValue}>
-                minimal {g.min}/{g.max}
-              </span>
+      </section>
+
+      <section aria-labelledby="paket-title" className={styles.block}>
+        <div className={styles.blockHead}>
+          <h2 id="paket-title" className={styles.blockTitle}>Paket soal</h2>
+          <span className={styles.blockMeta}>
+            {level.packages.length} dari {PACKAGE_TOTAL} tersedia
+          </span>
+        </div>
+
+        <ul className={styles.packageCards}>
+          {level.packages.map((p) => (
+            <li key={p.no}>
+              <Link
+                href={`${BASE}?levelId=${level.levelId}&paket=${p.no}`}
+                className={`${styles.packageCard} ${p.passed ? styles.packagePassed : ""}`}
+                aria-label={`Paket ${p.no}, ${p.questionCount} soal, ${p.bestScore === null ? "belum dicoba" : `skor terbaik ${p.bestScore}`}`}
+              >
+                <span className={styles.packageTop}>
+                  <span className={styles.packageNo}>{pad(p.no)}</span>
+                  {p.passed && <TrophyIcon size={16} className={styles.trophy} />}
+                </span>
+                <span className={styles.packageLabel}>Paket</span>
+                <span className={styles.packageMeta}>{p.questionCount} soal</span>
+                <span className={styles.packageFoot}>
+                  <span className={styles.packageScore}>
+                    {p.bestScore === null ? "Belum dicoba" : <><strong>{p.bestScore}</strong>/{MAX_SCORE}</>}
+                  </span>
+                  <ScoreBar score={p.bestScore} pass={level.passScore} compact />
+                </span>
+              </Link>
             </li>
           ))}
-        </ul>
-        <p className={styles.rulesNote}>Skor total cukup tapi satu kelompok di bawah minimalnya tetap dinyatakan tidak lulus, seperti JLPT asli.</p>
-      </div>
-    </div>
-  );
-}
-
-function SimulationScore({ result }: { result: SubmitExamResponse }) {
-  const sim = result.simulation;
-  if (!sim) return null;
-  const totalShort = sim.scaledScore < sim.pass;
-  return (
-    <div className={styles.scoreBlock}>
-      <p className={`${styles.totalScore} ${result.passed ? styles.totalPass : styles.totalFail}`}>
-        <strong>{sim.scaledScore}</strong>
-        <span>/{sim.maxScore}</span>
-      </p>
-      <p className={styles.totalNote}>
-        {result.passed
-          ? "Skor total dan semua kelompok memenuhi syarat lulus JLPT."
-          : result.late
-            ? "Jawaban terkirim melewati batas waktu, jadi belum bisa dinyatakan lulus."
-            : totalShort
-              ? `Batas lulus ${sim.pass}/${sim.maxScore}. Kurang ${sim.pass - sim.scaledScore} poin lagi.`
-              : "Skor total sudah cukup, tapi ada kelompok di bawah nilai minimalnya."}
-      </p>
-
-      <div className={runnerStyles.sectionBars}>
-        <h3 className={runnerStyles.sectionTitle}>Skor per kelompok</h3>
-        {sim.groups.map((g) => (
-          <div key={g.key} className={runnerStyles.sectionRow}>
-            <span className={runnerStyles.sectionName}>
-              {g.label} <small>{g.empty ? "(belum ada soal)" : `(min. ${g.min})`}</small>
-            </span>
-            <div className={runnerStyles.sectionBar}>
-              <div
-                className={`${runnerStyles.sectionBarFill} ${g.passed ? runnerStyles.sectionBarPass : runnerStyles.sectionBarFail}`}
-                style={{ width: `${(g.scaled / g.max) * 100}%` }}
-              />
-            </div>
-            <span className={`${runnerStyles.sectionScore} ${g.passed ? runnerStyles.sectionScorePass : runnerStyles.sectionScoreFail}`}>
-              {g.empty ? "–" : `${g.scaled}/${g.max}`}
-            </span>
-          </div>
-        ))}
-      </div>
-      {sim.partial && (
-        <p className={styles.partialNote}>
-          Bank soal level ini belum punya soal untuk semua kelompok, jadi skor total dihitung dari kelompok yang ada.
-        </p>
-      )}
-    </div>
-  );
-}
-
-function SimulationRun({ levelId }: { levelId: number }) {
-  return (
-    <ExamRunner
-      kind="jlpt-sim"
-      levelId={levelId}
-      sectionLabels={JLPT_SECTION_LABELS}
-      retryAfterPass
-      wide
-      copy={{
-        badge: "Simulasi JLPT",
-        title: "Siap mencoba simulasi JLPT?",
-        desc: "Kerjakan seperti hari ujian: siapkan waktu tanpa gangguan dan headphone untuk sesi Choukai.",
-        passedTitle: "Lulus simulasi!",
-        passedDesc: "",
-      }}
-      backHref="/belajar/simulasi-jlpt"
-      backLabel="Pilih level lain"
-      rules={(status) => <SimulationRules status={status} />}
-      resultBody={(result) => <SimulationScore result={result} />}
-      resultExtra={(result) => <SimulationReview result={result} />}
-      resultActions={(_result, retry) => (
-        <>
-          <Link href="/belajar/simulasi-jlpt" className={runnerStyles.startBtn}>Pilih level lain</Link>
-          {retry && <button className={runnerStyles.retryBtn} onClick={retry}>Ulangi simulasi</button>}
-        </>
-      )}
-    />
-  );
-}
-
-function SimulationReview({ result }: { result: SubmitExamResponse }) {
-  const { updateUser } = useAuth();
-  const [onlyWrong, setOnlyWrong] = useState(true);
-
-  // Streak dan XP di header ikut diperbarui sekali per hasil
-  useEffect(() => {
-    if (result.progress) updateUser({ xpTotal: result.progress.xpTotal, streakCount: result.progress.streak });
-  }, [result]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const sim = result.simulation;
-  if (!sim) return null;
-  const wrongCount = sim.review.filter((r) => !r.correct && !r.skipped).length;
-  const groups = SECTION_ORDER.map((section) => {
-    const all = sim.review.filter((r) => r.section === section);
-    const wrong = all.filter((r) => !r.correct && !r.skipped);
-    return { section, all, wrong, shown: onlyWrong ? wrong : all };
-  }).filter((g) => g.all.length > 0);
-  // Bagian dengan kesalahan terbanyak dibuka lebih dulu, sisanya dilipat supaya halaman tidak memanjang
-  const worst = [...groups].sort((a, b) => b.wrong.length - a.wrong.length)[0]?.section;
-
-  return (
-    <section className={styles.review} aria-labelledby="pembahasan-title">
-      <div className={styles.reviewHead}>
-        <h3 id="pembahasan-title" className={runnerStyles.sectionTitle}>Pembahasan</h3>
-        <label className={styles.toggle}>
-          <input type="checkbox" checked={onlyWrong} onChange={(e) => setOnlyWrong(e.target.checked)} />
-          Hanya yang salah ({wrongCount})
-        </label>
-      </div>
-
-      {onlyWrong && wrongCount === 0 ? (
-        <p className={styles.allRight}>Semua jawaban benar. Hebat!</p>
-      ) : (
-        groups.map((g) => (
-          <details key={g.section} className={styles.group} open={g.section === worst && g.wrong.length > 0}>
-            <summary className={styles.groupSummary}>
-              <span className={styles.groupName}>{JLPT_SECTION_LABELS[g.section] ?? g.section}</span>
-              <span className={g.wrong.length ? styles.groupCountBad : styles.groupCountGood}>
-                {g.all.length - g.wrong.length}/{g.all.length} benar
+          <li>
+            <Link href={`${BASE}?levelId=${level.levelId}&paket=acak`} className={`${styles.packageCard} ${styles.packageRandom}`}>
+              <span className={styles.packageTop}>
+                <ShuffleIcon size={22} className={styles.randomIcon} />
               </span>
-            </summary>
-            {g.shown.length === 0 ? (
-              <p className={styles.groupEmpty}>Tidak ada jawaban salah di bagian ini.</p>
-            ) : (
-              <ol className={styles.reviewList}>
-                {g.shown.map((r) => (
-                  <li key={r.questionId} className={styles.reviewItem}>
-                    {r.category && <span className={styles.category}>{CATEGORY_LABELS[r.category] ?? r.category}</span>}
-                    {r.passage && (
-                      <details className={styles.passageReview}>
-                        <summary>{r.section === "mendengar" ? "Lihat skrip percakapan" : "Lihat teks bacaan"}</summary>
-                        <p lang="ja">{r.passage}</p>
-                      </details>
-                    )}
-                    <p className={styles.reviewQuestion} lang="ja">
-                      <MarkedText text={r.question} />
-                    </p>
-                    <dl className={styles.answers}>
-                      <div className={r.correct ? styles.answerRight : styles.answerWrong}>
-                        <dt>
-                          {r.correct ? <CircleCheckIcon size={15} /> : <CircleXIcon size={15} />}
-                          Jawabanmu
-                        </dt>
-                        <dd lang="ja">{r.skipped ? "dilewati" : r.given || "tidak dijawab"}</dd>
-                      </div>
-                      {!r.correct && (
-                        <div className={styles.answerKey}>
-                          <dt>
-                            <CircleCheckIcon size={15} />
-                            Jawaban benar
-                          </dt>
-                          <dd lang="ja">{r.correctAnswer}</dd>
-                        </div>
-                      )}
-                    </dl>
-                    {r.explanation && <p className={styles.explanation}>{r.explanation}</p>}
+              <span className={styles.packageLabel}>Paket acak</span>
+              <span className={styles.packageMeta}>{level.questionCount} soal</span>
+              <span className={styles.packageFoot}>
+                <span className={styles.packageHint}>Soal berbeda setiap kali</span>
+              </span>
+            </Link>
+          </li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="riwayat-title" className={styles.block}>
+        <div className={styles.blockHead}>
+          <h2 id="riwayat-title" className={styles.blockTitle}>Riwayat</h2>
+          {level.attempts > 0 && <span className={styles.blockMeta}>{level.attempts} percobaan</span>}
+        </div>
+        {level.recent.length > 0 && (
+          <p className={styles.legend}>
+            <span className={styles.legendMark} aria-hidden="true" /> Garis tegak pada bilah = batas lulus {level.passScore}. Skor hijau berarti lulus.
+          </p>
+        )}
+        {level.recent.length === 0 ? (
+          <p className={styles.emptyNote}>Belum ada percobaan. Mulai dari Paket 01 untuk mendapatkan skor pertamamu.</p>
+        ) : (
+          <>
+            <ol className={styles.historyList}>
+              {history.map((a) => {
+                const passed = a.passed;
+                return (
+                  <li key={a.takenAt} className={styles.historyRow}>
+                    <span className={styles.historyWhen}>
+                      <span>{dateFmt.format(new Date(a.takenAt))}</span>
+                      <span className={styles.historyPaket}>{a.paket ? `Paket ${a.paket}` : "Acak"}</span>
+                    </span>
+                    <ScoreBar score={a.score} pass={level.passScore} compact />
+                    <span className={`${styles.historyScore} ${passed ? styles.textPass : styles.textFail}`}>
+                      {a.score}
+                      <span className="visually-hidden">{passed ? ", lulus" : ", belum lulus"}</span>
+                    </span>
                   </li>
-                ))}
-              </ol>
+                );
+              })}
+            </ol>
+            {level.recent.length > HISTORY_SHOWN && (
+              <button type="button" className={styles.moreBtn} onClick={() => setShowAll((v) => !v)} aria-expanded={showAll}>
+                {showAll ? "Tampilkan lebih sedikit" : `Tampilkan semua (${level.recent.length})`}
+              </button>
             )}
-          </details>
-        ))
-      )}
-    </section>
+          </>
+        )}
+      </section>
+    </div>
   );
 }

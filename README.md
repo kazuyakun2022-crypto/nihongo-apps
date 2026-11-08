@@ -44,6 +44,7 @@ apps/api/src/
 │   ├── learning/        level, bab, kuis
 │   ├── srs/             flashcard pengulangan berjeda (SM-2)
 │   ├── conversation/    AI maskot: prompt per level, cek kanji, kuota, memori
+│   ├── notifications/   pengingat belajar, lencana, hasil ujian, pengumuman, Web Push
 │   └── users/           manajemen pengguna oleh Admin + audit log
 ├── shared/              error domain, config .env, middleware HTTP
 └── main/
@@ -86,6 +87,9 @@ Konsekuensinya:
 | GET, POST | `/api/learning/levels`, `/levels/:id/chapters`, `/chapters/:id`, `/chapters/:id/quiz` | Materi |
 | GET, POST | `/api/srs/due`, `/api/srs/cards/:id/review` | Review flashcard |
 | POST | `/api/conversation/sessions`, `/sessions/:id/messages`, `/sessions/:id/end` | Ngobrol dengan maskot |
+| GET, PUT, POST, DELETE | `/api/notifications`, `/preferences`, `/subscriptions`, `/:id/read` | Kotak notifikasi, pengaturan, langganan Web Push |
+| POST | `/api/notifications/cron/reminders` | Dijalankan cron eksternal dengan header `x-cron-secret` |
+| POST | `/api/admin/notifications/announcement` | Kirim pengumuman ke pelajar aktif; khusus Admin |
 | GET, PATCH, POST | `/api/admin/users`, `/:id/role`, `/:id/suspend` | Khusus Admin |
 
 ## Arsitektur frontend
@@ -133,6 +137,7 @@ apps/web/src/
 - `public/sw.js` menyimpan halaman dan aset untuk offline; `/api` tidak pernah di-cache. Naikkan `VERSION` setiap mengubah file ini.
 - Service worker hanya aktif di build production (`npm run build && npm start -w apps/web`).
 - Komponen `InstallPrompt` menampilkan tombol pasang (Android/desktop) atau panduan "Tambahkan ke Layar Utama" (iPhone).
+- Notifikasi push memakai VAPID (`npx web-push generate-vapid-keys`) dan hanya aktif di aplikasi terpasang. Pengingat harian dijalankan cron eksternal; lihat `docs/DEPLOY.md`.
 
 ## Yang perlu dilengkapi sebelum rilis
 
@@ -141,5 +146,4 @@ apps/web/src/
 - [ ] Pembayaran Premium: modul baru untuk Midtrans/Xendit (tabel `subscriptions` sudah ada).
 - [ ] Panel admin web untuk Pengajar dan Admin (API manajemen pengguna sudah ada).
 - [ ] Mode suara: speech-to-text dan text-to-speech di modul `conversation`.
-- [ ] Web push untuk pengingat belajar (handler `push` sudah ada di `sw.js`).
 - [ ] Ganti `JWT_ACCESS_SECRET` dan password Admin, aktifkan HTTPS di production.

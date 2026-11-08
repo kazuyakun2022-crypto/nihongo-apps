@@ -139,6 +139,15 @@ export interface ExamQuestionItem extends Omit<QuizItem, "options"> {
   category?: string | null;
   /** Simulasi JLPT: teks bacaan Dokkai atau skrip Choukai. */
   passage?: string | null;
+  /** Simulasi JLPT: nomor paket 1-10; null = bank campuran. */
+  packageNo?: number | null;
+}
+
+/** Ringkasan satu paket simulasi di admin. no null = soal campuran tanpa paket. */
+export interface ExamPackageSummary {
+  no: number | null;
+  published: number;
+  draft: number;
 }
 
 /** Skenario latihan ngobrol AI (role-play) per level. */
@@ -148,6 +157,10 @@ export interface ScenarioRow {
   title: string;
   goal: string;
   mascotRole: string;
+  userRole?: string | null;
+  location?: string | null;
+  keigoType?: string | null;
+  imageUrl?: string | null;
   initialMessage: string | null;
   targetGrammar: string[] | null;
   chapterId: string | null;
@@ -155,11 +168,22 @@ export interface ScenarioRow {
   status: ContentStatus;
   sortOrder: number;
   sourceKey: string | null;
+  systemPrompt?: string | null;
+  dialogueScript?: any | null;
   chapter: { title: string } | null;
   _count: { conversations: number };
 }
-export type ScenarioInput = Pick<ScenarioRow, "title" | "goal" | "mascotRole" | "initialMessage" | "chapterId" | "maxTurns" | "status" | "sortOrder"> & {
+export type ScenarioInput = Pick<
+  ScenarioRow,
+  "title" | "goal" | "mascotRole" | "initialMessage" | "chapterId" | "maxTurns" | "status" | "sortOrder"
+> & {
   targetGrammar: string[];
+  userRole?: string | null;
+  location?: string | null;
+  keigoType?: string | null;
+  imageUrl?: string | null;
+  systemPrompt?: string | null;
+  dialogueScript?: any | null;
 };
 
 const base = "/admin/content";
@@ -191,9 +215,15 @@ export const contentApi = {
   onboarding: () => apiRequest<{ config: OnboardingConfig }>(`${base}/onboarding`),
   saveOnboarding: (data: OnboardingConfig) => apiRequest<{ config: OnboardingConfig }>(`${base}/onboarding`, json("PUT", data)),
 
-  exam: (levelId: number, type: ExamType, params: { section?: ExamSection; search?: string; page?: number }) => {
+  exam: (
+    levelId: number,
+    type: ExamType,
+    params: { section?: ExamSection; search?: string; page?: number; paket?: number | "campuran"; status?: "published" | "draft" },
+  ) => {
     const sp = new URLSearchParams({ type });
     if (params.section) sp.set("section", params.section);
+    if (params.paket) sp.set("paket", String(params.paket));
+    if (params.status) sp.set("status", params.status);
     if (params.search) sp.set("search", params.search);
     if (params.page) sp.set("page", String(params.page));
     return apiRequest<{
@@ -207,6 +237,8 @@ export const contentApi = {
       publishedPerSection: Partial<Record<ExamSection, number>>;
       /** Simulasi JLPT: soal terbit tes naik tahap yang ikut dipakai bila bank simulasi kurang. */
       borrowedPerSection: Partial<Record<ExamSection, number>>;
+      /** Simulasi JLPT: jumlah soal terbit dan draft per paket. */
+      packages?: ExamPackageSummary[];
     }>(`${base}/levels/${levelId}/exam?${sp.toString()}`);
   },
   saveExamConfig: (levelId: number, type: ExamType, data: ExamConfig) =>
@@ -214,6 +246,9 @@ export const contentApi = {
   /** Impor paket soal Simulasi JLPT (format JSON data ingestion). */
   importJlptPackage: (levelId: number, pkg: unknown) =>
     apiRequest<{ created: number; updated: number; examSlug: string }>(`${base}/levels/${levelId}/exam/import?type=jlpt_sim`, json("POST", pkg)),
+  /** Terbitkan (atau tarik ke draft) seluruh soal satu paket simulasi. */
+  publishJlptPackage: (levelId: number, no: number, status: "published" | "draft") =>
+    apiRequest<{ updated: number; status: string }>(`${base}/levels/${levelId}/exam/packages/${no}/publish`, json("POST", { status })),
   resetExamConfig: (levelId: number, type: ExamType) =>
     apiRequest(`${base}/levels/${levelId}/exam?type=${type}`, json("DELETE")),
   createExamQuestion: (levelId: number, type: ExamType, data: Omit<ExamQuestionItem, "id">) =>

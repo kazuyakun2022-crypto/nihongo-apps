@@ -1,0 +1,2128 @@
+{
+  "examSlug": "jlpt-n2-mock-02",
+  "levelCode": "N2",
+  "variantIndex": 2,
+  "title": "Simulasi JLPT N2 - Paket 02",
+  "sections": [
+    {
+      "sectionType": "MOJI_GOI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:1",
+          "status": "published",
+          "promptText": "彼は運転中の<u>過失</u>を認め、深く反省している。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "過失",
+            "かじつ",
+            "かしつ",
+            "かっしつ"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「過失」は「かしつ」と読み、不注意による失敗や過ちを意味します。「かじつ」は果実の誤読です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:2",
+          "status": "published",
+          "promptText": "高速道路で前を走るトラックを<u>追い越す</u>。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "おいつく",
+            "おいすごす",
+            "おいのす",
+            "おいこす"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「追い越す」は「おいこす」と読み、前を行く人や物よりも前に出ることを意味します。「おいつく」は別の動詞です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:3",
+          "status": "published",
+          "promptText": "論文の<u>原稿</u>を今週中に提出しなければならない。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "けんこう",
+            "けんごう",
+            "げんこう",
+            "げんごう"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「原稿」は「げんこう」と読み、印刷や放送などのもととなる文章を意味します。「けんこう」は健康の誤りです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:4",
+          "status": "published",
+          "promptText": "少しの<u>油断</u>が大きな事故につながることもある。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ゆだん",
+            "ゆたんの",
+            "ゆだんの",
+            "ゆたん"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「油断」は「ゆだん」と読み、気を許して油断することを意味します。「ゆたん」は濁点の誤りです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:5",
+          "status": "published",
+          "promptText": "会議で新しい企画について<u>協議</u>する。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "きょうぎ",
+            "きょぎ",
+            "きゅうぎ",
+            "ぎょうぎ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「協議」は「きょうぎ」と読み、話し合って物事を決めることを意味します。「ぎょうぎ」は行儀の読みです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:6",
+          "status": "published",
+          "promptText": "夜道で不審な男を見かけたので、警察の<u>きび</u>をお願いした。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "警備",
+            "経費",
+            "軽微",
+            "警具"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「警備」は危険に備えて警戒し守ることを意味します。文脈に最も適しているのは「警備」です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:7",
+          "status": "published",
+          "promptText": "川の水が海に流れ込んで、<u>たんすい</u>と海水が混ざる場所がある。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "淡水",
+            "短水",
+            "炭水",
+            "坦水"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「淡水」は塩分を含まない水のことで、川や湖の水などを指します。漢字の組み合わせとして「淡水」が正しいです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:8",
+          "status": "published",
+          "promptText": "この書類に必要事項を<u>きざむ</u>時間はなかったので、あとで書くことにした。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "痛む",
+            "裁く",
+            "砕く",
+            "刻む"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「刻む」は文字や模様を彫りつけること、または時間を細かく分けるなどの意味で使われます。ここでは「心に刻む」や「文字を刻む」などの用法に関連します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:9",
+          "status": "published",
+          "promptText": "会議の資料に新しい<u>こうもく</u>を追加して印刷し直した。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "項目",
+            "公目",
+            "構目",
+            "向目"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「項目」は、いくつかの事項に分けたその一つ一つを指します。ビジネスや文書で非常によく使われるN2レベルの語彙です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:10",
+          "status": "published",
+          "promptText": "海外旅行に行くために、空港の<u>ぜいかん</u>で荷物の検査を受けた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "済関",
+            "税間",
+            "是関",
+            "税関"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「税関」は、関税を徴収し、輸出入品の取締りを行う国の機関です。旅行や貿易の文脈で必須の漢字です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "WORD_FORMATION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:11",
+          "status": "published",
+          "promptText": "新製品の開発によって、この伝統的な工芸品の（　）化が進められている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "現代",
+            "近代",
+            "自動",
+            "商業"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「〜化」は名詞につけて「そういう状態にする・変化させる」という意味を作ります。「商業化」で、ビジネスや商売の対象にすることを表します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "WORD_FORMATION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:12",
+          "status": "published",
+          "promptText": "今回のプロジェクトでは、計画の段階から（　）的な管理が求められている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "組織的",
+            "組織",
+            "組織性",
+            "組織化"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜的」は名詞に接続して、まとまりのある様子や方針に基づいていることを表す形容動詞を作ります。「組織的」は組織全体で統一して行うさまを意味します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "WORD_FORMATION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:13",
+          "status": "published",
+          "promptText": "この書類はまだ未完成であり、上司による（　）的な確認が残っている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "最終的",
+            "最終化",
+            "最終性",
+            "最終"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜的」は名詞について「最終の段階にあてはまる」という意味の形容動詞を作ります。「最終的」はこれ以上変更がない決定を表す際によく使われます。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "WORD_FORMATION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:14",
+          "status": "published",
+          "promptText": "この地域は台風の被害を受けやすく、常に（　）体制を整えておく必要がある。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "不",
+            "無",
+            "未",
+            "緊急"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "文脈に合う複合語を作るため、「緊急」という語を「体制」の前に置いて「緊急体制」という熟語を作ります。「緊急体制」は、非常事態に備えて臨時の組織や態勢をとることを意味するN2レベルの重要な表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "WORD_FORMATION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:15",
+          "status": "published",
+          "promptText": "政府は来年度から、行政手続きのデジタル（　）を進める方針を固めた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "化",
+            "性",
+            "的",
+            "発"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「デジタル化」は「名詞＋化」の形で、物事がその状態に変わることや変えることを表します。ここでは行政手続きをデジタルにするという意味で使われています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:16",
+          "status": "published",
+          "promptText": "新商品の（　）が来週の金曜日に予定されているので、広報部は現在その準備で忙しい。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "要領",
+            "目安",
+            "段階",
+            "発表"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「発表」menyatakan pengumuman atau peluncuran sesuatu kepada publik, sangat cocok dengan konteks produk baru perusahaan. Pilihan lain tidak sesuai secara semantik.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:17",
+          "status": "published",
+          "promptText": "夜間に強い風が吹いた影響で、市内の広い範囲で一時的に（　）が発生した。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "真空",
+            "電力",
+            "蒸発",
+            "停電"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「停電」berarti pemadaman listrik, yang merupakan akibat logis dari angin kencang di malam hari. Kata lain seperti 真空 (vakum) atau 蒸発 (penguapan) tidak masuk akal dalam konteks ini.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:18",
+          "status": "published",
+          "promptText": "道に迷っている様子の観光客に声をかけ、目的地までの（　）を丁寧に教えてあげた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "周辺",
+            "目安",
+            "道順",
+            "段階"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「道順」berarti rute atau urutan jalan menuju suatu tempat. Kata ini paling tepat dipasangkan dengan kata kerja 'mengajari' kepada orang yang tersesat.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:19",
+          "status": "published",
+          "promptText": "新製品の企画書には、会社の売上目標だけでなく、社会的（　）についても記載する必要がある。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "予算",
+            "貢献",
+            "割引",
+            "面積"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「貢献」menyatakan sumbangsih atau kontribusi positif kepada masyarakat atau suatu hal. Dalam konteks proposal bisnis, mencantumkan kontribusi sosial sangat penting selain target penjualan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:20",
+          "status": "published",
+          "promptText": "台風が近づいているため、古い建物の周辺は警察によって（　）に警戒されている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "若々しい",
+            "厳重",
+            "騒々しい",
+            "危うい"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「厳重」berarti ketat, saksama, atau dijaga dengan sangat aman (厳重に警戒する). Kata ini tepat untuk menggambarkan situasi siaga menghadapi bencana atau bahaya.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:21",
+          "status": "published",
+          "promptText": "彼の小説は独創的なアイデアにあふれており、まさに文学界の（　）と言える作品だ。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "傑作",
+            "書籍",
+            "テーマ",
+            "焦点"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「傑作」berarti karya master (masterpiece) yang sangat luar biasa. Kalimat ini memuji novel tersebut sebagai karya agung di dunia sastra.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 22,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:22",
+          "status": "published",
+          "promptText": "新商品の（　）に向けて、開発チームは毎日遅くまで残業している。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "消化",
+            "性能",
+            "加速",
+            "発売"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「発売」は商品の販売を開始することを意味し、文脈に最も適切です。「発売に向けて」で「商品が売り出される時期や計画に向かって」という意味になります。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 23,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:23",
+          "status": "published",
+          "promptText": "最近の<u>景気</u>は少しずつ良くなっているようだ。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "世の中の経済の状態",
+            "会社の売上の目標",
+            "商品の生産の量",
+            "人々の生活のレベル"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「景気」は社会全体の経済活動や景気の状態を意味します。「世の中の経済の状態」が最も適切な言い換えです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 24,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:24",
+          "status": "published",
+          "promptText": "会議の<u>テーマ</u>は「環境問題について」に決まった。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "話し合う話題",
+            "参加するメンバー",
+            "決める結論",
+            "配る資料"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「テーマ」は議論や研究などの中心となる話題や課題を指します。「話し合う話題」が正しい言い換えです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 25,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:25",
+          "status": "published",
+          "promptText": "彼の説明は<u>あいまい</u>で、よく理解できなかった。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "はっきりしなくてよく分からない様子",
+            "長すぎて退屈な様子",
+            "難しすぎて専門的な様子",
+            "嘘が多くて信じられない様子"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「あいまい」は意味や態度が明確でないさまを表します。「はっきりしなくてよく分からない様子」が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 26,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:26",
+          "status": "published",
+          "promptText": "新しい社長が来月<u>就任</u>することになった。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "別の部署に移動すること",
+            "会社を新しく辞めること",
+            "新しい仕事や地位に就くこと",
+            "大切な役目を終えること"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「就任」は新しい公の役職や地位につくことを意味します。「新しい仕事や地位に就くこと」が適切な言い換えです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 27,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:27",
+          "status": "published",
+          "promptText": "新製品の企画について、チーム内で<u>再三</u>話し合いが行われた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "何回も",
+            "少しずつ",
+            "偶然に",
+            "急に"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「再三」は何度も繰り返すことを表すため、「何回も」が最も意味が近い。他の選択肢は頻度や様子を表すが意味が異なる。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 28,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:28",
+          "status": "published",
+          "promptText": "工夫",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "彼は日本語の上達のために、毎日テレビのニュースを工夫して見ている。",
+            "この新しい機械の使い方はとても複雑なので、よく工夫して読んでください。",
+            "新しいプロジェクトを成功させるために、みんなでよく工夫を話し合った。",
+            "毎日の生活費を減らすために、食費を抑える工夫をしている。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「工夫（くふう）」は、よい方法や手段を考え出すことを意味します。生活費を減らすための方法を考える文脈に最も適しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 29,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:29",
+          "status": "published",
+          "promptText": "締め切り",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "論文の締め切りが来週の金曜日に迫っているので、今必死に書いています。",
+            "銀行の締め切りが過ぎてしまったので、今日のATMは使えない。",
+            "この電車の締め切りは午後10時ですから、急いで乗ってください。",
+            "来週の会議の締め切りを、もっと大きな部屋に変更してください。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「締め切り」は仕事や提出物などの期限を意味します。書類や論文などを提出する期限について述べる際に正しく使われています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 30,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:30",
+          "status": "published",
+          "promptText": "見下ろす",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "高い山の山頂から、美しい街の景色を見下ろした。",
+            "彼はプライドが高いので、いつも他人を見下ろして話す。",
+            "夜空を見下ろすと、たくさんの星が輝いていた。",
+            "深い森のなかで、遠くの空を見下ろしながら歩いた。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「見下ろす」は高いところから低いところへ目を向けること、または位置的に下を見ることを表します。山の頂上から街を見る文脈が正確です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 31,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:31",
+          "status": "published",
+          "promptText": "皮肉",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "暑い夏には、冷たい皮肉を飲むと元気が出る。",
+            "彼はいつも上司を褒めるふりをして皮肉を言っている。",
+            "この果物は皮肉が多くて、食べるのに苦労する。",
+            "新しいパソコンの皮肉は、とても軽くて持ち運びやすい。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「皮肉」は、遠回しに相手をからかったり批判したりすることを表します。1番目の文の使い方が正しく、ほかの選択肢は意味がまったく異なります。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 32,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n2-mock-02:moji_goi:32",
+          "status": "published",
+          "promptText": "気配",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "会議の前に、しっかりと睡眠の気配をとることが大切だ。",
+            "このスープは塩気が強すぎて、少し気配がする。",
+            "彼女は新しいドレスを着て、みんなの気配を集めた。",
+            "廊下の向こうから誰かが歩いてくる気配がする。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「気配」は、様子や雰囲気から感じられる気取りや兆しを表します。1番の文は人の存在を感じる正しい使い方です。",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "BUNPOU",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:1",
+          "status": "published",
+          "promptText": "真夜中にスマホのメッセージ音が鳴ったので、気になってしまい、つい画面を見（　　　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ずにはおかない",
+            "ないではいけない",
+            "ざるを得ない",
+            "ずにはいられない"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「〜ずにはいられない」は、自分の意志に関係なく、自然とその行動をしてしまう状態を表します。夜中に通知が気になって、どうしても画面を見てしまったという感情を表すのに最適です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:2",
+          "status": "published",
+          "promptText": "今回の企画案は、これまでの売上データ（　　　）作成されたものであるため、説得力がある。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "からいうと",
+            "に基づいて",
+            "をめぐって",
+            "に関して"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「〜に基づいて」は、ある基準やデータを土台にして何かを行うことを表します。データが企画の土台になっているため、この表現が最も適切です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:3",
+          "status": "published",
+          "promptText": "地球温暖化が進むにつれて、世界各地で異常気象の発生する（　　　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "おそれがある",
+            "一方だ",
+            "にほかならない",
+            "ざるを得ない"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜おそれがある」は、よくない事態が起こるかもしれないと心配されるときに使います。異常気象の発生というマイナスな事態を予測する文脈に合致します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:4",
+          "status": "published",
+          "promptText": "長年の努力の（　　　）、彼らはついに世界的な音楽コンクールで優勝を果たした。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "最中に",
+            "うちに",
+            "際に",
+            "末に"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「〜末に」は、長く苦労した結果、最終的にある事態に至ったことを表します。「長年の努力」という長い時間のあとに結果が出たという文脈に合います。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:5",
+          "status": "published",
+          "promptText": "山田選手はけがをしているにも（　　　）、チームの勝利のために試合に出場し続けた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "対して",
+            "ついては",
+            "かわらず",
+            "よって"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「〜にもかかわらず」は、ある事情から当然予想されることとは違う結果や行動になるときに使います。けがをしているという逆境を押して出場したことを表します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:6",
+          "status": "published",
+          "promptText": "長時間の議論の（　）、ようやく新しい企画案が全員一致で可決された。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "あげく",
+            "もとで",
+            "うちに",
+            "おいて"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜あげく」は、長い時間や様々な苦労をした結果、最終的に良くない結果ややっとのことで結論が出ることを表します。ここでは長時間の議論の末にようやく決まったという文脈に合致します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:7",
+          "status": "published",
+          "promptText": "社長は来賓客に対し、自ら新商品の開発秘話について（　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "いらっしゃった",
+            "めしあがった",
+            "ごらんになった",
+            "おっしゃった"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「言う」の尊敬語は「おっしゃる」です。社長が話すという動作を高めるために適切です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:8",
+          "status": "published",
+          "promptText": "これだけ綿密な準備を怠らなければ、失敗する（　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "べきだ",
+            "っこない",
+            "かねない",
+            "にほかならない"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「〜っこない」は強い否定を表し、「絶対に〜ない」という意味になります。綿密な準備をしているため失敗するはずがないという確信を表すのに適しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:9",
+          "status": "published",
+          "promptText": "経験の有無を（　）、意欲のある若い人材を広く採用する方針だ。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "問わず",
+            "もとで",
+            "はじめとして",
+            "めぐって"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜を問わず」は「〜に関係なく、〜を問題にしないで」という意味を表す文法です。経験の有無に関係なく採用するという文脈に最適です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:10",
+          "status": "published",
+          "promptText": "母校の発展に少しでも役立てればと、全財産を寄付する（　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "わけにはいかない",
+            "ざるを得ない",
+            "ものだ",
+            "ことにした"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「〜ことにした」は自分の意思で決断したことを表します。寄付するという自発的な意思決定を示すのに適切な表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:11",
+          "status": "published",
+          "promptText": "長年の研究が実を結び、新薬の開発に成功した喜びは、言葉に（　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "言語道断である",
+            "表しようがない",
+            "せずにはいられない",
+            "ないではいられない"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pola 「〜ようがない」 berarti tidak bisa atau mustahil melakukan sesuatu karena keterbatasan. Kalimat ini bermakna kebahagiaan atas keberhasilan pengembangan obat baru begitu besar hingga tidak bisa diungkapkan dengan kata-kata.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:12",
+          "status": "published",
+          "promptText": "景気が回復しつつある（　）、中小企業の経営状況はいまだに厳しいままだ。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ぬV-dictionary",
+            "ものか",
+            "一方で",
+            "上に"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Pola 「〜一方で」 digunakan untuk menyatakan dua hal yang berlawanan secara bersamaan (di satu sisi..., di sisi lain...). Kalimat ini membandingkan pemulihan ekonomi makro dengan kondisi keuangan perusahaan kecil dan menengah yang masih sulit.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:13",
+          "status": "published",
+          "promptText": "新しい企画の方向性 ＿★＿ ＿＿ ＿＿ ＿＿ 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "行われている",
+            "めぐって",
+            "激しい議論が",
+            "開発チームの間で"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Urutan benar: めぐって・開発チームの間で・激しい議論が・行われている (★ = めぐって). Kalimat lengkap: 「新しい企画の方向性めぐって開発チームの間で激しい議論が行われている。」. Pola 「〜をめぐって」 berarti 'mengenai' atau 'berkisar tentang' suatu masalah. Kalimat ini bermakna perdebatan sengit sedang dilakukan di antara tim pengembang mengenai arah perencanaan baru.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:14",
+          "status": "published",
+          "promptText": "長年住んだ家を ＿＿ ＿＿ ＿★＿ ＿＿ 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "事情があった",
+            "えない",
+            "ざるを",
+            "手放さ"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Urutan benar: 手放さ・ざるを・えない・事情があった (★ = えない). Kalimat lengkap: 「長年住んだ家を手放さざるをえない事情があった。」. Pola 「〜ざるをえない」 berarti 'terpaksa harus' melakukan sesuatu meskipun sebenarnya tidak diinginkan. Di sini, pembicara terpaksa melepaskan rumah yang sudah lama ditinggali karena suatu keadaan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:15",
+          "status": "published",
+          "promptText": "円高が進む ＿＿ ＿★＿ ＿＿ ＿＿ 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "に",
+            "したがって",
+            "業績が悪化している",
+            "輸産業界の"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Urutan benar: に・したがって・輸産業界の・業績が悪化している (★ = したがって). Kalimat lengkap: 「円高が進むにしたがって輸産業界の業績が悪化している。」. Pola 「〜にしたがって / 〜につれて」 menyatakan perubahan yang terjadi seiring dengan perubahan hal lain. Artinya, seiring dengan menguatnya nilai yen, kinerja industri ekspor semakin memburuk.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:16",
+          "status": "published",
+          "promptText": "彼は毎日の努力を ＿＿ ＿★＿ ＿＿ ＿＿ 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "勝ち取ることができた",
+            "今回の合格を",
+            "からこそ",
+            "重ねた"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Urutan benar: 重ねた・からこそ・今回の合格を・勝ち取ることができた (★ = からこそ). Kalimat lengkap: 「彼は毎日の努力を重ねたからこそ今回の合格を勝ち取ることができた。」. Pola 「〜からこそ」 digunakan untuk menegaskan alasan secara kuat (hanya karena... maka...). Menyatakan bahwa keberhasilan kelulusannya diraih justru karena usaha setiap hari.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:17",
+          "status": "published",
+          "promptText": "この資料のデータに ＿★＿ ＿＿ ＿＿ ＿＿ 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "もとづいて",
+            "作成して",
+            "まいります",
+            "新しい事業計画を"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Urutan benar: もとづいて・新しい事業計画を・作成して・まいります (★ = もとづいて). Kalimat lengkap: 「この資料のデータにもとづいて新しい事業計画を作成してまいります。」. Pola 「〜にもとづいて」 berarti 'berdasarkan' suatu hal sebagai acuan. Kalimat bisnis ini menggunakan keigo (まいります) untuk menyatakan pembuatan rencana bisnis baru berdasarkan data.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:18",
+          "status": "published",
+          "promptText": "（1）に入るのはどれか。",
+          "passage": "長年お世話になった恩師の退職パーティーで、私は感謝の気持ち（1）花束を贈呈した。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "をこめて",
+            "を問わず",
+            "に応じて",
+            "にかけては"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜をこめて」は、気持ちや感情をそのものに込めるという意味を表します。「感謝の気持ちをこめて」は定型的な表現としてもよく使われます。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:19",
+          "status": "published",
+          "promptText": "（1）に入るのはどれか。",
+          "passage": "昨今の急激な物価上昇に伴い、生活費の負担が増える（1）。節約を心がける人が増えている。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "一方だ",
+            "べきだ",
+            "にすぎない",
+            "わけがない"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜一方だ」は、ある傾向や変化がますます進んでいる状態を表します。物価上昇に伴い負担が増え続けているという変化を示すのに適切です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:20",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "近年の急速な技術革新（1）従来のビジネスモデルが大きく変化している。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "にほかならない",
+            "にともなって",
+            "わけではない",
+            "ざるを得ない"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「〜にともなって」は「〜と一緒に変化する」という意味を表し、技術の変化に合わせてビジネスモデルが変わる文脈に最も適しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:21",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "社員の健康管理は企業にとって重要であり、定期的な健康診断を実施する（1）。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ものか",
+            "どころか",
+            "わけにはいかない",
+            "にこしたことはない"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「〜にこしたことはない」は「〜であるほうが望ましい、最善である」という意味を表し、健康診断の実施が推奨される状況に適切です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 22,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n2-mock-02:bunpou:22",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "この新しいプロジェクトを成功させる（1）、チーム全員の協力が不可欠である。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "おそれがある",
+            "わりに",
+            "あげく",
+            "うえで"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「〜うえで」は「〜を達成するために、〜という目的に際して」という意味を表し、プロジェクトを成功させるための条件を述べる文脈に合致します。",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "DOKKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:1",
+          "status": "published",
+          "promptText": "このメールで、総務部が社員に伝えたいことは何か。",
+          "passage": "社員の皆様へ\n\n平素より当社の業務にご協力いただき、ありがとうございます。\n今週末、本社ビル全体の受変電設備点検を実施いたします。それに伴い、下記の日時はビルへの立ち入りが一切禁止となります。\n\n日時：10月15日（土）午前8時〜午後5時\n\n休日出勤や資料の取り出し等で上記時間帯にビル内に入ることはできませんので、十分にご注意ください。皆様のご理解とご協力をお願い申し上げます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "今週末は社員全員が休日出勤することになっている。",
+            "受変電設備の故障のため、臨時の休業を行う。",
+            "土曜日の指定された時間は、ビルの中に一切入れない。",
+            "点検の間は、社外の人がビルに入ることができなくなる。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "メールには、点検に伴い「指定された時間はビルへの立ち入りが一切禁止となる」と明記されているため、3番が正解です。「それに伴い」は、前の事柄が原因となって次の事柄が発生することを表す文法・表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:2",
+          "status": "published",
+          "promptText": "社員食堂の利用について、正しいものはどれか。",
+          "passage": "社員各位\n\nいつも社員食堂をご利用いただき、ありがとうございます。\n最近、昼食時の混雑を緩和するため、来週月曜日より、部署ごとに利用時間の割り当てを実施いたします。詳細につきましては、社内イントラネットの掲示板をご確認ください。皆様のご協力をお願い申し上げます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "昼食時の混雑を避けるため、部署別に利用時間が決められる。",
+            "社員食堂のメニューが新しく変更される予定である。",
+            "社内イントラネットで新しいメニューを注文できる。",
+            "来週月曜日から、すべての部署で昼食時間が禁止される。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "本文に「昼食時の混雑を緩和するため、…部署ごとに利用時間の割り当てを実施いたします」とあるため、部署別に利用時間が決められることがわかる。選択肢2が正解。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:3",
+          "status": "published",
+          "promptText": "このメールの主な目的は何か。",
+          "passage": "取引先各位\n\n平素は格別のお引き立てを賜り、厚く御礼申し上げます。\nさて、誠に勝手ながら、弊社は来る十月五日を創立記念日のため、臨時休業とさせていただきます。当日は電話対応等もすべて停止いたしますので、何卒ご理解とご協力を賜りますようお願い申し上げます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "十月五日の臨時休業を知らせるため。",
+            "電話対応の時間を変更するため。",
+            "新しい取引先を募集するため。",
+            "十月五日に新製品を発表するため。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "本文に「十月五日を創立記念日のため、臨時休業とさせていただきます」と書かれており、休業のお知らせが主目的である。選択肢2が正解。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:4",
+          "status": "published",
+          "promptText": "このお知らせで最も伝えたいことは何か。",
+          "passage": "社員各位\n\n来週予定されていた全体会議は、都合により再来週の火曜日に延期となりました。場所と時間に変更はありません。なお、当日は資料を事前に各自で印刷して持参してください。急な変更でご迷惑をおかけしますが、よろしくお願いいたします。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "会議の日時が変わったこと",
+            "会議の場所が変更されたこと",
+            "資料を当日配布しないこと",
+            "会議が中止になったこと"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "本文には、来週の全体会議が再来週の火曜日に延期（変更）されたと書かれています。「延期」は予定を先送りにすることを意味します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:5",
+          "status": "published",
+          "promptText": "このメールから読み取れることは何か。",
+          "passage": "取引先 各位\n\n平素は格別のお引き立てを賜り、厚く御礼申し上げます。\nさて、弊社では誠に勝手ながら、システムメンテナンスのため、来る十月五日の午前中はすべての業務を一時停止いたします。皆様にはご不便をおかけしますが、ご理解とご協力を賜りますようお願い申し上げます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "新しいシステムが導入されること",
+            "十月五日の終日は会社が休みであること",
+            "十月五日の午前中は仕事ができないこと",
+            "システムの不具合が偶然発生したこと"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「すべての業務を一時停止いたします」とあるため、十月五日の午前中は業務が行われないことがわかります。「一時停止」は一定時間動きを止めることです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:6",
+          "status": "published",
+          "promptText": "筆者は、現代の読書においてどのようなことが大切だと考えているか。",
+          "passage": "現代人は情報過多の社会に生きている。インターネットを開けば、膨大なニュースや意見が瞬時に飛び込んでくる。このような状況では、一つの文章じっくりと向き合う時間が失われがちである。次から次へと新しい情報に目を奪われ、浅い理解のまま情報を消費してしまうのだ。しかし、本当の知識や深い思索を得るためには、立ち止まって考えるプロセスが欠かせない。効率よく情報を得ることばかりを優先するのではなく、時には読んだ内容について自分なりに問い直し、筆者の意図を深く味わうことが大切である。情報に振り回されない姿勢こそが、これからの時代に求められている。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "得た情報を鵜呑みにせず、立ち止まって深く考えながら味わうように読むこと",
+            "他人の意見に左右されないように、自分独自の新しい情報発信を行うこと",
+            "次々と新しいニュースを読んで、できるだけ多くの情報を素早く処理すること",
+            "効率を最優先にして、インターネット上の短い意見だけを素早く理解すること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "筆者は効率よく情報を得るだけでなく、立ち止まって考え筆者の意図を味わうことが大切だと述べているため、3が正解。「〜がちである」は「よくそうなる傾向がある」という意味を表す文法項目。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:7",
+          "status": "published",
+          "promptText": "商店街の店主たちは、なぜ共同でイベントを企画したのか。",
+          "passage": "近年、郊外型の大規模な商業施設が増えたことで、昔ながらの商店街に足を運ぶ客が減少していた。シャッターを下ろしたままの店も目立ち、地域全体の活気が失われつつあった。この状況を危惧した若い店主たちは、ただ嘆くだけではなく、何とかして客足を取り戻そうと立ち上がった。彼らは個別の店で努力するのではなく、商店街全体が一つのチームとして協力し、週末に手作りのマルシェを開催することにしたのだ。このイベントを通じて、地域の魅力再発見につながり、かつての賑わいを取り戻すための第一歩を踏み出すことができた。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "郊外の大きな商業施設に対抗するため、若い店主たちが協力してイベントを開き、活気を取り戻そうとしたから",
+            "行政からの強い要請を受けて、シャッターを下ろした店をすべて新しい店に改装するため",
+            "個々の店の売上を競い合うことで、商店街全体のサービス向上を図ろうとしたから",
+            "古い店をすべて閉めて、若い世代に向けた新しい事業に全面的に切り替えるため"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "本文には客の減少と活気の喪失に対し、若い店主たちが協力してマルシェを開催し賑わいを取り戻そうとしたことが書かれているため、1が正解。「〜つつある」は「その変化が進行中である」ことを表す文法項目。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:8",
+          "status": "published",
+          "promptText": "筆者は最近のスマートフォンについて、どのように述べているか。",
+          "passage": "近年のスマートフォンは、多機能化が進み、生活のあらゆる場面で欠かせない道具となっている。しかし、その便利さの裏で、私たちは多くの時間を画面に奪われているのではないだろうか。通知が鳴るたびに作業を中断し、情報を確認する習慣が定着したことで、深く考える時間が失われつつある。効率よく情報を得られる一方で、一つの物事にじっくり向き合う集中力が低下していることは、看過できない問題である。道具に支配されるのではなく、主体的に関係性を見直す時期に来ている。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "多機能なスマートフォンのおかげで、人々の集中力が向上している。",
+            "便利さと引き換えに、深く考えたり集中したりする時間が奪われている。",
+            "通知機能のせいで、仕事の効率が著しく低下していることが問題である。",
+            "スマートフォンなしでは生活できない社会構造を早急に変えるべきだ。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は通知や多機能化によって「深く考える時間が失われつつある」「集中力が低下している」と述べているため、2番が正解です。「〜一方で」は対比を表す文法項目です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:9",
+          "status": "published",
+          "promptText": "企業が新しい働き方を導入する際、最も重要なことは何か。",
+          "passage": "多くの企業がテレワークやフレックスタイム制などの新しい働き方を導入している。制度を整えることは比較的容易であるが、単に場所や時間を変えるだけでは十分ではない。大切なのは、社員一人ひとりが自律的に仕事の成果を追求する意識を持つことである。評価の仕組みも、労働時間ではなく成果を重視する形へ根本的に転換しなければ、形骸化してしまう危険性がある。新しい制度の成功は、単なる形だけでなく、組織の意識改革にかかっている。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "制度の導入と同時に、成果主義の評価システムや意識改革を進めること。",
+            "フレックスタイム制を廃止して、全員が同じ時間に働くこと。",
+            "労働時間を厳しく管理し、オフィスに出社する日数を増やすこと。",
+            "テレワークに必要な最新のデジタル機器を全社員に支給すること。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "本文では制度の導入だけでなく「成果を重視する形へ根本的に転換」「組織の意識改革にかかっている」と述べられているため、2番が正解です。「〜にかかっている」は、それが成立するかどうかは〜次第であるという意味の表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:10",
+          "status": "published",
+          "promptText": "筆者は、テレワークの導入において最も重要なことは何だと述べているか。",
+          "passage": "近年の働き方改革に伴い、多くの企業がテレワークを導入している。しかし、単にオフィス以外の場所で働く環境を整えるだけでは、十分な成果は得られない。形だけの導入にとどまらず、社員同士の円滑なコミュニケーションや、業務の進捗状況の可視化といった、組織の仕組み作りこそが不可欠なのである。ICTツールをどれだけ最新のものにしても、それを使いこなす社内の信頼関係や評価の公平性が伴わなければ、かえって業務効率の低下を招きかねない。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "最新のICTツールを導入して作業効率を上げること",
+            "オフィスを完全になくしてコストを削減すること",
+            "業務の可視化や信頼関係といった組織の仕組みを整えること",
+            "社員が自宅で自由に働ける環境を最優先に作ること"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "筆者は単なる環境整備ではなく、業務の可視化や仕組み作りが不可欠であると述べています。「～こそが不可欠なのである」という強調表現がポイントです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:11",
+          "status": "published",
+          "promptText": "本文によると、企業が失敗を恐れるあまり陥りがちな傾向とはどのようなことか。",
+          "passage": "ビジネスの現場において、新しい企画やプロジェクトを立ち上げる際、失敗を過度に恐れるあまり、前例踏襲型の無難な意思決定に終始してしまう企業が少なくない。確かにリスクを避けることは短期的な安定につながるかもしれない。しかし、変化の激しい現代市場においては、新しい挑戦をしないこと自体が最大のリスクとなり得るのだ。失敗から学ぶ姿勢を失った組織は、やがて市場での競争力を失っていく運命にある。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "リスクを十分に検討せず、無謀な投資を繰り返すこと",
+            "市場の変化を無視して、古い製品を作り続けること",
+            "過去の前例に頼り、新しい挑戦を避けてしまうこと",
+            "短期的な利益を優先して、社員の教育を怠ること"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "本文の「前例踏襲型の無難な意思決定に終始してしまう」という部分が、失敗を恐れて新しい挑戦を避ける傾向を指しています。「前例踏襲」はN2レベルの重要語彙です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:12",
+          "status": "published",
+          "promptText": "筆者は、近年のテレワークの普及についてどのように考えているか。",
+          "passage": "近年のデジタル技術の急速な発展に伴い、多くの企業でテレワークが導入されるようになった。通勤時間の削減やワークライフバランスの向上といったメリットが強調されがちだが、それだけで万事解決とはいかない。対面での偶発的な雑談から生まれる新しいアイデアや、チームの一体感が薄れるという課題も浮き彫りになってきている。効率性ばかりを追求するあまり、組織の求心力が低下しては本末転倒である。したがって、今後は単なるリモートの推奨ではなく、対面とオンラインそれぞれの長所を意識的に組み合わせた柔軟な働き方の設計が不可欠なのである。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "偶発的な雑談を防ぐために、オンラインでのコミュニケーションを厳しく制限すべきだ",
+            "メリットだけでなく課題もあるため、対面とオンラインを使い分けるべきだ",
+            "効率性が高まるため、今後はすべての業務をテレワークに移行すべきだ",
+            "一体感が薄れるというデメリットが大きいため、テレワークは廃止すべきだ"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者はテレワークの効率性を認めつつも、一体感の低下などの課題を指摘し、両者の長所を組み合わせた柔軟な働き方が不可欠だと述べています。「本末転倒」は、大事なこととそうでないことが入れ替わってしまうこと、「不可欠だ」はなくてはならないという意味です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:13",
+          "status": "published",
+          "promptText": "この文章によると、商品開発において「失敗」はどのような意味を持つか。",
+          "passage": "新しい商品を開発する際、企業はとかく「成功確率」の高い安全な企画を選びがちである。しかし、市場の変化が激しい現代においては、過去の成功体験にしがみつくことこそが最大のリスクとなり得る。むしろ、綿密な準備の末に起きた「失敗」から得られる知見こそが、次の革新的なヒット商品を生み出すための貴重な原動力となるのだ。失敗を恐れて挑戦を避ける姿勢こそが、企業を緩慢な衰退へと導くのである。失敗を許容する文化を社内にいかに根付かせるかが、長期的な生存の鍵を握っている。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "企業を緩慢な衰退へと導く、最も恐るべき現象である",
+            "次の革新的な商品を生み出すための貴重な原動力となる",
+            "過去の成功体験と同様に、避けるべき最大のリスクである",
+            "安全な企画を選ぶための判断基準となるものである"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "文章中盤で「失敗から得られる知見こそが、次の革新的なヒット商品を生み出すための貴重な原動力となる」と直接的に述べられています。「原動力」は物事を動かすための力、「許容する」は大目に見る・受け入れるという意味です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:14",
+          "status": "published",
+          "promptText": "筆者は、なぜ最近の企業において業務の効率化が進まないと考えているか。",
+          "passage": "近年のビジネス環境の変化に伴い、多くの企業が業務効率化の必要性を叫んでいる。しかし、掛け声ばかりが大きくて実際の成果につながらないケースが後を絶たない。その最大の原因は、既存の業務プロセスを見直すことなく、単に新しいデジタルツールを導入するだけで満足してしまっている点にある。道具だけを最新にしても、それを扱う人間の仕事の進め方が昔のままであれば、かえって混乱を招くだけである。真の効率化を達成するためには、ツール選びの前に、日々の業務そのものを根本的に整理し、不要な作業を思い切って削ぎ落とす勇気が不可欠なのである。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "経営陣からの掛け声だけで、具体的なデジタル化の計画が全く立てられていないから",
+            "新しいデジタルツールの導入だけで満足し、古い仕事の進め方を変えていないから",
+            "業務プロセスの見直しを先延ばしにし、新しいツールの選定ばかりに時間をかけているから",
+            "社員のデジタルスキルが不足しており、新しい道具を使いこなせていないから"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は道具を新しくしても人間の仕事の進め方が昔のままであることが効率化が進まない原因だと述べています。「～にとどまる／～で満足してしまう」という表現や、本質的な改革の必要性を問う問題です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:17",
+          "status": "published",
+          "promptText": "筆者は、伝統的な職人文化と現代の効率主義についてどのように考えているか。",
+          "passage": "近年のビジネス界では、あらゆる場面で効率化やマニュアル化が叫ばれている。短期間で成果を出し、コストを削減することが最優先される風潮が強い。しかし、長年培われてきた職人的な技術や文化の世界においては、その効率至上主義が必ずしも良い結果をもたらすとは限らない。効率を追求するあまり、試行錯誤の過程で得られる深い洞察や、マニュアルには表せない暗黙知が軽視されがちである。真の品質や創造性は、しばしば非効率に見える地道な作業や、遠回りの経験の積み重ねから生まれるものである。もちろん現代のスピード感も重要ではあるが、効率化の波に呑み込まれ、文化の根幹にある熟練のプロセスを失うことは、長期的な視点において大きな損失と言わざるを得ない。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "マニュアル化を進めることで、暗黙知に頼らない誰でも再現可能な技術を確立すべきだ。",
+            "非効率な作業をすべて排除すれば、職人の世界でも短期間で高い成果を上げることが可能になる。",
+            "現代の効率至上主義を全面的に受け入れ、伝統的な技術や文化のあり方を速やかに改めるべきだ。",
+            "効率化ばかりを重視すると、長い目で見て大切な技術や創造性の基盤を失う危険性がある。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "筆者は効率化の一方で、非効率に見える地道な経験や暗黙知こそが品質や創造性の源泉であると主張しています。「〜ざるを得ない」という表現を用いて、効率化の波に呑まれることの損失を強く警鐘を鳴らしています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:18",
+          "status": "published",
+          "promptText": "筆者が考える「本当の読書」について、最も近いものはどれか。",
+          "passage": "情報があふれる現代社会において、私たちは日々膨大なテキストを断片的に消費している。SNSの短い投稿やニュースの要約など、素早く情報を得ることが賢い生き方のように扱われがちである。しかし、それは本来の意味での「読書」とは異なるのではないか。本を読むという行為は、著者と対話し、自分自身の内面を揺さぶられる体験である。難解な文章と格闘し、著者の思考の軌跡をたどりながら、行間にある意味を噛みしめるプロセスにこそ価値がある。手軽に結論だけを求める姿勢は、思考力を浅くしてしまう。時間をかけて一冊の本と向き合うことは、多様な価値観を受け入れる心を育て、自己を形成する上で不可欠な営みなのである。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "手軽に要約を読んで内容を把握するほうが、効率的に知識を吸収できるため望ましい。",
+            "時間をかけて難解な文章を読み解き、著者と向き合うことで自身の思考を深めることが大切だ。",
+            "読書を通じて多様な価値観を知るためには、できるだけ多くの本を斜め読みすることが効果的である。",
+            "SNSやニュースを活用して、世の中の最新情報を素早く大量にインプットすることが重要である。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は、情報を素早く消費する現代の傾向に疑問を呈し、時間をかけて本と向き合い思考を深めるプロセスこそが重要だと述べています。「〜にほかならない」「〜営みなのである」といった表現が筆者の主張を支えています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:19",
+          "status": "published",
+          "promptText": "筆者は、現代の企業における「効率性」の追求についてどのように考えているか。",
+          "passage": "近年のビジネス界では、あらゆる場面で「効率化」が至上命題として掲げられている。無駄を省き、短時間で最大の成果を上げることが優秀さの証であるかのような風潮さえある。確かに、数字としての生産性を高めることは企業存続のために不可欠である。しかし、すべてのプロセスを合理化の視点だけで測ろうとすると、思わぬ落とし穴にはまることがある。\n\n例えば、熟練者が長年の経験から培った勘や、一見すると非効率に見える丁寧な顧客対応のプロセスには、マニュアル化できない価値が宿っている。こうした要素は、すぐに目に見える利益を生むわけではないが、顧客との深い信頼関係を築き、長期的な企業の土台を支えるものである。効率性ばかりを過度に追求するあまり、現場の「ゆとり」や「遊び」の部分を根こそぎ奪ってしまうと、組織の持続可能性そのものを損なう結果になりかねない。\n\n真に求められているのは、効率を完全に否定することではなく、効率性と人間的な営みとのバランスを慎重に見極めることである。目先の数字に惑わされず、時間をかけて育むべき価値を見失わない姿勢こそが、これからの組織運営には必要なのである。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "効率性を高めることだけが企業の存続につながるため、すべての業務をマニュアル化すべきだ。",
+            "非効率なプロセスは一切排除し、短時間で成果を上げる仕組みを急いで構築すべきだ。",
+            "長期的な信頼関係を築くためには、生産性の追求を完全にやめる必要がある。",
+            "効率化は必要だが、目に見えない価値やゆとりを失うと組織の持続可能性が損なわれる。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "筆者は効率性の必要性を認めつつも、過度な効率化が現場のゆとりや長期的価値を奪い、組織の持続可能性を損なうと主張しているため、3番が正解。「～かねない」は「～という悪い結果になるおそれがある」という意味を表す文型。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "INTEGRATED_READING",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:15",
+          "status": "published",
+          "promptText": "筆者Aと筆者Bは、テレワークの導入についてどのように考えているか。",
+          "passage": "「A」\nテレワークは通勤時間を削減し、従業員のプライベートの時間を増やす画期的な制度である。満員電車のストレスから解放されることで、社員の心身の健康が保たれ、結果として離職率の低下にもつながる。企業側にとっても、オフィス維持費を大幅に削減できるという大きなメリットがある。\n\n「B」\nテレワークは確かに通勤の負担を減らすが、職場での偶発的な意見交換や雑談から生まれる新しいアイデアの創出を阻害する側面がある。画面越しのコミュニケーションでは相手の微妙なニュアンスや熱量が伝わりにくく、チームの一体感が薄れる恐れがある。効率性ばかりを重視するべきではない。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "筆者Aは社員の負担軽減とコスト削減の観点から賛成し、筆者Bはチームワークや創造性の低下を懸念して慎重である。",
+            "筆者Aはオフィス維持費の削減を最も重視しており、筆者Bは通勤時間の削減こそが最優先だと主張している。",
+            "筆者Aも筆者Bも、テレワークが社内のコミュニケーションを活発化させると考えているが、コスト面で意見が対立している。",
+            "筆者Aは心身の健康を理由に反対し、筆者Bは新しいアイデアの創出ができるという理由で積極的に導入を勧めている。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "筆者Aは通勤削減による健康維持やコスト削減を挙げて肯定しており、筆者Bは雑談からのアイデア創出が阻害される点や一体感の低下を懸念しています。「阻害する」は「邪魔をする・妨げる」という意味です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "INTEGRATED_READING",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:16",
+          "status": "published",
+          "promptText": "AI（人工知能）の普及による雇用への影響について、筆者Aと筆者Bの意見の共通点または相違点は何か。",
+          "passage": "「A」\nAIの急速な発展により、定型的な事務作業やデータ処理の多くは自動化され、人間の仕事は奪われていくだろう。労働者は常に新しいスキルを習得し続けなければ、市場価値を保つことができない厳しい時代が到来している。\n\n「B」\nAIが多くの業務を代替するのは事実であるが、それは人間がより創造的で高度な判断を要する仕事に集中できるチャンスでもある。技術の進歩を恐れるのではなく、AIを道具として使いこなす能力を身につけることが重要なのである。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "筆者Aは人間の仕事が失われると危惧し、筆者BはAIを道具として活用することで人間はより創造的な仕事ができると前向きにとらえている。",
+            "筆者Aは事務作業の自動化を歓迎し、筆者Bは定型業務が人間から奪われることに強い不安を示している。",
+            "筆者Aと筆者Bはともに、AIによって人間の仕事がすべてなくなり、労働者が完全に不要になると予測している。",
+            "筆者AはAIの導入に反対しており、筆者BはAIのさらなる技術革新が早急に必要であると主張している。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "筆者Aは仕事が奪われるという厳しい視点を持ち、筆者Bは創造的な仕事に集中できるチャンスと前向きにとらえています。「代替する」は「かわりに果たす・置き換わる」という意味です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:20",
+          "status": "published",
+          "promptText": "佐藤さんは来週の水曜日の午後、取引先との会議の前に資料作成をしたい。この資料作成ができる最も適した時間帯はいつか。",
+          "passage": "【レンタルオフィス利用案内】\n・営業時間：平日 9:00～20:00\n・施設予約について：\n　- 個室会議室：利用日の1週間前まで要予約。午前（9:00～12:00）または午後（13:00～17:00）。\n　- オープン席：予約不要。いつでも利用可能。\n　- 集中ブース：前日までに要予約。1コマ2時間（①10:00～12:00、②13:00～15:00、③15:30～17:30）。\n・今週の水曜日の状況：\n　- 個室会議室は終日満室。\n　- 集中ブースの②（13:00～15:00）はすでに予約済みだが、③（15:30～17:30）は空いている。\n　- オープン席はいつでも利用できるが、午後からは清掃のため利用できないことがある。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "個室会議室の午後の枠を予約して利用する",
+            "集中ブースの15:30～17:30の枠を予約して利用する",
+            "オープン席を午後の時間帯に予約なしで利用する",
+            "集中ブースの13:00～15:00の枠を当日申し込んで利用する"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "水曜日の午後は個室会議室が満室で、オープン席も午後から使えない可能性があるため、前日までに予約が必要な集中ブースの③（15:30～17:30）が適しています。「～かねない」などの禁止表現を避け、条件を正確に読み取る力を試す問題です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n2-mock-02:dokkai:21",
+          "status": "published",
+          "promptText": "田中さんは今月末で会社を退職する。有給休暇の消化と最終出社に関する規定に照らし、田中さんが取るべき正しい手続きはどれか。",
+          "passage": "【退職時の手続きに関する規定】\n・有給休暇の残日数は、退職日の2週間前までに人事部に申請し、承認を得なければならない。\n・最終出社日の1週間前からは、引き継ぎ期間のため有給休暇を取得することは原則としてできない。\n・退職届は退職日の1ヶ月前までに直属の上司に提出すること。\n・健康保険証や社員証などの会社の貸与物は、最終出社日の翌営業日までに返却する義務がある。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "会社の貸与物は最終出社日の1週間前までに返却する",
+            "退職日の10日前に有給休暇の申請を人事部に行う",
+            "最終出社日の3日前に有給休暇をまとめて取得する",
+            "退職届を退職日の1ヶ月前までに上司に提出する"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "本文に「退職届は退職日の1ヶ月前までに直属の上司に提出すること」と明確に記載されています。他の選択肢は規定の期間や条件に違反しています。",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "CHOUKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:1",
+          "status": "published",
+          "promptText": "このあと何をしますか",
+          "passage": "女：田中さん、来客用の茶器の準備はお済みですか。男：はい、洗って棚にしまってあります。女：そうですか。では、お湯を沸かしておいていただけますか。あ、お茶の葉は私が後で入れますから、お湯だけでいいです。男：承知いたしました。すぐに沸かします。",
+          "audioScript": "女：田中さん、来客用の茶器の準備はお済みですか。男：はい、洗って棚にしまってあります。女：そうですか。では、お湯を沸かしておいていただけますか。あ、お茶の葉は私が後で入れますから、お湯だけでいいです。男：承知いたしました。すぐに沸かします。",
+          "imageUrl": null,
+          "options": [
+            "茶器を洗って棚にしまう",
+            "お湯を沸かして、お茶の葉を入れる",
+            "お湯を沸かすが、お茶の葉は入れない",
+            "お茶の葉を用意してからお湯を沸かす"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "女性が「お湯だけでいいです」と指示しているため、お湯を沸かす作業のみを行い、お茶の葉は入れません。条件を正確に聞き取る力を試す問題です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:2",
+          "status": "published",
+          "promptText": "このあと何をしますか",
+          "passage": "男：佐藤さん、今日のゴミ出しですが、段ボールはまとまりましたか。女：はい、縛って玄関に置いてあります。男：あれはまだ濡れている部分があるから、もう少し乾かした方がいいですね。外の棚に移動させておいてくれますか。女：わかりました、すぐに移動させます。",
+          "audioScript": "男：佐藤さん、今日のゴミ出しですが、段ボールはまとまりましたか。女：はい、縛って玄関に置いてあります。男：あれはまだ濡れている部分があるから、もう少し乾かした方がいいですね。外の棚に移動させておいてくれますか。女：わかりました、すぐに移動させます。",
+          "imageUrl": null,
+          "options": [
+            "段ボールの濡れた部分を自分で拭く",
+            "段ボールをすぐにゴミ捨て場に持っていく",
+            "段ボールを縛って玄関に置く",
+            "段ボールを外の棚に動かして乾燥させる"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "男性が「外の棚に移動させておいてくれますか」と言い、女性が「すぐに移動させます」と答えているため、外の棚へ移動させるのが正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:3",
+          "status": "published",
+          "promptText": "このあと何をしますか",
+          "passage": "女：高橋君、次の会議の資料、何部必要だっけ。男：参加者は十人の予定ですので、十部用意します。女：あ、佐藤課長も急遽参加することになったから、もう一部追加して。それと、ホチキス留めは私がやるから、そのまま持ってきて。男：かしこまりました。十一部印刷して持ってきます。",
+          "audioScript": "女：高橋君、次の会議の資料、何部必要だっけ。男：参加者は十人の予定ですので、十部用意します。女：あ、佐藤課長も急遽参加することになったから、もう一部追加して。それと、ホチキス留めは私がやるから、そのまま持ってきて。男：かしこまりました。十一部印刷して持ってきます。",
+          "imageUrl": null,
+          "options": [
+            "資料を十部印刷してホチキス留めする",
+            "資料を十一部印刷してそのまま持っていく",
+            "資料を十部印刷して佐藤課長に渡す",
+            "資料を十一部印刷してホチキス留めする"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "参加者分の10部に佐藤課長分の1部を追加して11部用意し、ホチキス留めは女性がやるため「そのまま持ってきて」という指示に従います。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:4",
+          "status": "published",
+          "promptText": "このあと、男の人文書を作成するために何をしますか。",
+          "passage": "男：部長、来週の会議用の資料ですが、これでよろしいでしょうか。女：全体的によくまとまっているわね。ただ、冒頭の市場分析の部分、最近のデータに差し替えた方がいいわね。男：承知いたしました。最新の統計資料を探してデータを更新します。女：それと、結論の提言部分に少し説得力が足りないから、先月のアンケート結果も引用して補強してくれる？男：はい、分かりました。では、データの更新とアンケート結果の追加を行い、再度提出いたします。女：お願いね。あ、印刷は私が指示するから、まずは修正データの作成だけに集中してちょうだい。",
+          "audioScript": "男：部長、来週の会議用の資料ですが、これでよろしいでしょうか。女：全体的によくまとまっているわね。ただ、冒頭の市場分析の部分、最近のデータに差し替えた方がいいわね。男：承知いたしました。最新の統計資料を探してデータを更新します。女：それと、結論の提言部分に少し説得力が足りないから、先月のアンケート結果も引用して補強してくれる？男：はい、分かりました。では、データの更新とアンケート結果の追加を行い、再度提出いたします。女：お願いね。あ、印刷は私が指示するから、まずは修正データの作成だけに集中してちょうだい。",
+          "imageUrl": null,
+          "options": [
+            "修正した資料を自分でプリンターで印刷する",
+            "会議用の資料全体を最初から新しく作り直す",
+            "アンケート結果を引用してすぐに資料を印刷する",
+            "最新の統計データを探して分析部分を修正する"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "女の人から市場分析のデータを新しいものに差し替えることと、アンケート結果を引用して提言部分を補強するよう指示されています。印刷は後で自分でやる必要がないため、データの更新と修正が最初に行うことです。「差し替える」は古いものを新しいものに取り換えるという意味です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:5",
+          "status": "published",
+          "promptText": "このあと、女の人はまず何をしなければなりませんか。",
+          "passage": "男：佐藤さん、来期の新入社員研修のスケジュール案、もう確認してくれた？女：はい、大体拝見しました。グループワークの時間が少し長すぎる気がしますが、いかがでしょうか。男：そうですね。では、その時間を短縮して、ビジネスマナーの講義を増やしましょうか。女：それがいいですね。それじゃあ、スケジュール表をそのように修正して、午後の会議までに印刷しておいてくれますか。男：あ、午後の会議の資料なら、私が会議室に配っておきますよ。女：ありがとう助かるわ。私は修正版のデータを人事部長にメールで送っておく必要があるわね。",
+          "audioScript": "男：佐藤さん、来期の新入社員研修のスケジュール案、もう確認してくれた？女：はい、大体拝見しました。グループワークの時間が少し長すぎる気がしますが、いかがでしょうか。男：そうですね。では、その時間を短縮して、ビジネスマナーの講義を増やしましょうか。女：それがいいですね。それじゃあ、スケジュール表をそのように修正して、午後の会議までに印刷しておいてくれますか。男：あ、午後の会議の資料なら、私が会議室に配っておきますよ。女：ありがとう助かるわ。私は修正版のデータを人事部長にメールで送っておく必要があるわね。",
+          "imageUrl": null,
+          "options": [
+            "午後の会議の資料を会議室に配りに行く",
+            "グループワークの時間を長く変更する",
+            "新入社員研修の講義を自分で担当する",
+            "スケジュール表の修正版をメールで送信する"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "会話の最後に女の人が「私は修正版のデータを人事部長にメールで送っておく必要があるわね」と言っているため、これが彼女が自分でするべき最初の行動です。「拝見する」は見るの謙譲語です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:6",
+          "status": "published",
+          "promptText": "女の人が企画書について上司から指摘された点は何ですか。",
+          "passage": "女の人と上司が企画書について話しています。女の人が企画書について上司から指摘された点は何ですか。部長、先ほど提出した新商品の企画書ですが、いかがでしょうか。全体的な構成はよくまとまっているよ。ただ、ターゲット層の分析データが少し古いように感じるね。最近の市場の動きを反映させた方がいいだろう。承知いたしました。すぐに新しいデータに差し替えます。データ以外の部分は問題ないですか。うん、そこ以外はとてもいい企画だと思うよ。女の人が企画書について上司から指摘された点は何ですか。",
+          "audioScript": "女の人と上司が企画書について話しています。女の人が企画書について上司から指摘された点は何ですか。部長、先ほど提出した新商品の企画書ですが、いかがでしょうか。全体的な構成はよくまとまっているよ。ただ、ターゲット層の分析データが少し古いように感じるね。最近の市場の動きを反映させた方がいいだろう。承知いたしました。すぐに新しいデータに差し替えます。データ以外の部分は問題ないですか。うん、そこ以外はとてもいい企画だと思うよ。女の人が企画書について上司から指摘された点は何ですか。",
+          "imageUrl": null,
+          "options": [
+            "全体的な構成がわかりにくいこと",
+            "ターゲット層の分析データが古いこと",
+            "市場の動きを全く無視している点",
+            "商品の価格設定が高すぎる点"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "上司は企画書について「ターゲット層の分析データが少し古いように感じるね」と指摘しています。「～ように感じる」は、話し手の推測や印象を表す表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:7",
+          "status": "published",
+          "promptText": "店長は、来月のセールに向けてどのような準備を求めていますか。",
+          "passage": "店長と従業員が来月のセールについて話しています。店長は、来月のセールに向けてどのような準備を求めていますか。来月は創業祭のセールですね。準備は順調ですか。はい、商品の発注は終わりました。ただ、当日の人員配置に少し悩んでいます。そうですか。今回は例年以上の客数が見込まれるから、レジの台数を増やすだけでなく、誘導スタッフの配置を厚くする必要があるね。わかりました。では、アルバイトのシフトを見直します。それと、お客様をお待たせしないよう、事前のレジ操作の練習も徹底してください。承知いたしました。店長は、来月のセールに向けてどのような準備を求めていますか。",
+          "audioScript": "店長と従業員が来月のセールについて話しています。店長は、来月のセールに向けてどのような準備を求めていますか。来月は創業祭のセールですね。準備は順調ですか。はい、商品の発注は終わりました。ただ、当日の人員配置に少し悩んでいます。そうですか。今回は例年以上の客数が見込まれるから、レジの台数を増やすだけでなく、誘導スタッフの配置を厚くする必要があるね。わかりました。では、アルバイトのシフトを見直します。それと、お客様をお待たせしないよう、事前のレジ操作の練習も徹底してください。承知いたしました。店長は、来月のセールに向けてどのような準備を求めていますか。",
+          "imageUrl": null,
+          "options": [
+            "レジの台数を減らすこと",
+            "誘導スタッフの配置とレジ練習の徹底",
+            "アルバイトの採用を増やすこと",
+            "商品の追加発注を急ぐこと"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "店長は「誘導スタッフの配置を厚くする」ことと「事前のレジ操作の練習も徹底してください」と求めています。「～を徹底してください」は、相手に強く実行を促す表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:8",
+          "status": "published",
+          "promptText": "男の人が最近の仕事のやり方について感じていることは何ですか。",
+          "passage": "男の人と女の人が仕事の進め方について話しています。男の人が最近の仕事のやり方について感じていることは何ですか。最近、オンラインでの会議ややり取りが増えましたが、どうですか。便利にはなりましたが、何となく物足りなさを感じますね。資料の共有は早くなりましたが、直接顔を合わせて話すときの微妙なニュアンスやアイデアが伝わりにくい気がします。確かに、テキストだけだと冷たい印象を受けることもありますね。効率は上がったとしても、チームの一体感が薄れるのは問題かもしれません。そうなんですよ。効率ばかり追い求めるのも考えものですね。男の人が最近の仕事のやり方について感じていることは何ですか。",
+          "audioScript": "男の人と女の人が仕事の進め方について話しています。男の人が最近の仕事のやり方について感じていることは何ですか。最近、オンラインでの会議ややり取りが増えましたが、どうですか。便利にはなりましたが、何となく物足りなさを感じますね。資料の共有は早くなりましたが、直接顔を合わせて話すときの微妙なニュアンスやアイデアが伝わりにくい気がします。確かに、テキストだけだと冷たい印象を受けることもありますね。効率は上がったとしても、チームの一体感が薄れるのは問題かもしれません。そうなんですよ。効率ばかり追い求めるのも考えものですね。男の人が最近の仕事のやり方について感じていることは何ですか。",
+          "imageUrl": null,
+          "options": [
+            "資料の共有に時間がかかりすぎる",
+            "効率は上がったが一体感が薄れた",
+            "テキストでのやり取りが完璧である",
+            "オンライン会議が少なすぎて不便だ"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "男の人は効率は上がった一方で「チームの一体感が薄れる」「効率ばかり追い求めるのも考えものだ」と述べています。「～も考えものだ」は、一長一短がある、あるいは否定的な評価をする際に使う表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:9",
+          "status": "published",
+          "promptText": "男の人は、新しいプロジェクトの企画書について、まず何をするべきだと言っていますか。",
+          "passage": "男の人と女の人が新しいプロジェクトの企画書について話しています。女の人、来月の企画書なんだけど、全体的にデータが不足している気がするんだ。はい、もう少し市場調査の数字を追加しましょうか。いや、数字を入れる前に、今回の企画で一番伝えたいメッセージを明確にすべきだね。そこがぶれていると、いくらデータを並べても説得力が出ないから。分かりました。では、コンセプトの部分をもう一度練り直します。うん、そこをしっかり頼むよ。男の人は、新しいプロジェクトの企画書について、まず何をするべきだと言っていますか。",
+          "audioScript": "男の人と女の人が新しいプロジェクトの企画書について話しています。女の人、来月の企画書なんだけど、全体的にデータが不足している気がするんだ。はい、もう少し市場調査の数字を追加しましょうか。いや、数字を入れる前に、今回の企画で一番伝えたいメッセージを明確にすべきだね。そこがぶれていると、いくらデータを並べても説得力が出ないから。分かりました。では、コンセプトの部分をもう一度練り直します。うん、そこをしっかり頼むよ。男の人は、新しいプロジェクトの企画書について、まず何をするべきだと言っていますか。",
+          "imageUrl": null,
+          "options": [
+            "市場調査の数字を追加する",
+            "一番伝えたいメッセージを明確にする",
+            "全体的なデザインを修正する",
+            "予算の計画を詳しく見直す"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "男の人はデータを入れる前に一番伝えたいメッセージを明確にすべきだと述べているため、2番が正解です。「～べきだ」は、当然行うべき義務やアドバイスを表す文法です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:10",
+          "status": "published",
+          "promptText": "店長は、来週からの新しい制服について、どのような点が重要だと言っていますか。",
+          "passage": "店長と店員が来週からの新しい制服について話しています。来週から新しい制服に変わりますが、着心地はどうですか。動きやすくてとてもいいのですが、お客様への印象はどうでしょうか。そうですね、清潔感があって評判は良いのですが、それ以上に大切なのは、接客の際にきちんとした印象を与える着こなしをすることです。制服が変わっても、私たちの丁寧な対応が一番大切ですからね。確かにそうですね。気を引き締めてまいります。店長は、新しい制服について、どのような点が重要だと言っていますか。",
+          "audioScript": "店長と店員が来週からの新しい制服について話しています。来週から新しい制服に変わりますが、着心地はどうですか。動きやすくてとてもいいのですが、お客様への印象はどうでしょうか。そうですね、清潔感があって評判は良いのですが、それ以上に大切なのは、接客の際にきちんとした印象を与える着こなしをすることです。制服が変わっても、私たちの丁寧な対応が一番大切ですからね。確かにそうですね。気を引き締めてまいります。店長は、新しい制服について、どのような点が重要だと言っていますか。",
+          "imageUrl": null,
+          "options": [
+            "お客様に清潔感を与えること",
+            "着心地が良くて動きやすいこと",
+            "新しいデザインが流行に合っていること",
+            "きちんとした印象を与える着こなしをすること"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "店長は制服のデザインそのものよりも、接客の際にきちんとした印象を与える着こなしをすることが一番大切だと述べているため、3番が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:11",
+          "status": "published",
+          "promptText": "開発部の部長は、今回のシステム障害の原因についてどう考えていますか。",
+          "passage": "開発部の部長と社員がシステム障害について話しています。今回のシステム障害の原因は、やはり事前のテスト不足だったのでしょうか。いや、テストは十分に行っていたんだよ。問題は、想定外のアクセス集中が起きたときのバックアップ体制が甘かったことにある。今後は、トラブルが起きたときの対応手順をもう一度見直す必要があるね。承知いたしました。すぐにチームで確認します。開発部の部長は、今回のシステム障害の原因についてどう考えていますか。",
+          "audioScript": "開発部の部長と社員がシステム障害について話しています。今回のシステム障害の原因は、やはり事前のテスト不足だったのでしょうか。いや、テストは十分に行っていたんだよ。問題は、想定外のアクセス集中が起きたときのバックアップ体制が甘かったことにある。今後は、トラブルが起きたときの対応手順をもう一度見直す必要があるね。承知いたしました。すぐにチームで確認します。開発部の部長は、今回のシステム障害の原因についてどう考えていますか。",
+          "imageUrl": null,
+          "options": [
+            "事前のテストが十分ではなかったこと",
+            "想定外のアクセスに対応する体制が甘かったこと",
+            "社員の操作ミスが重なったこと",
+            "システムのデザインが複雑すぎたこと"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "部長はテストは十分だったとした上で、想定外のアクセス集中時のバックアップ体制が甘かったと原因を述べているため、2番が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:12",
+          "status": "published",
+          "promptText": "スピーカーが最も伝えたいことは何か。",
+          "passage": "みなさん、新商品の開発において、お客様の意見を聞くことは重要ですが、時にはその言葉の裏にある本当のニーズを見極める必要があります。表面的な要望にだけ囚われてしまうと、本当に革新的な商品は生まれません。お客様自身も気づいていない潜在的な不満や願望を察知し、それを形にすることこそが、私たち企画部門の真の役割なのです。",
+          "audioScript": "みなさん、新商品の開発において、お客様の意見を聞くことは重要ですが、時にはその言葉の裏にある本当のニーズを見極める必要があります。表面的な要望にだけ囚われてしまうと、本当に革新的な商品は生まれません。お客様自身も気づいていない潜在的な不満や願望を察知し、それを形にすることこそが、私たち企画部門の真の役割なのです。",
+          "imageUrl": null,
+          "options": [
+            "開発部門は顧客の声に耳を貸さず独自に商品を設計すべきだ",
+            "顧客の意見をそのまま取り入れて商品開発を行うべきだ",
+            "顧客の表面的な要望だけでなく潜在的なニーズを捉えることが重要だ",
+            "新商品の企画ではお客様の不満を聞き出すことが最も大切だ"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "スピーカーは表面的な要望に囚われず、気づいていない潜在的なニーズを形にすることが重要だと述べています。文脈から2番目の選択肢が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:13",
+          "status": "published",
+          "promptText": "この講話の主旨は何か。",
+          "passage": "仕事を進める上で、計画の緻密さは大切ですが、予期せぬトラブルが発生した際に行動が止まってしまうようでは意味がありません。大切なのは、状況の変化に応じて迅速に方針を切り替える臨機応変さです。完璧な計画に固執するあまり、目の前のチャンスを逃したり対応が遅れたりしては本末転倒と言えるでしょう。",
+          "audioScript": "仕事を進める上で、計画の緻密さは大切ですが、予期せぬトラブルが発生した際に行動が止まってしまうようでは意味がありません。大切なのは、状況の変化に応じて迅速に方針を切り替える臨機応変さです。完璧な計画に固執するあまり、目の前のチャンスを逃したり対応が遅れたりしては本末転倒と言えるでしょう。",
+          "imageUrl": null,
+          "options": [
+            "チャンスを逃さないために計画を変更せず最後までやり通すべきだ",
+            "完璧な計画にこだわりすぎず状況の変化に柔軟に対応することが大切だ",
+            "トラブルを防ぐために事前の綿密な計画が何よりも不可欠である",
+            "予期せぬ事態が起きたときは計画通りに作業を中断するべきだ"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "計画の固執を戒め、状況の変化に応じた臨機応変さの重要性を説いているため、3番目の選択肢が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:14",
+          "status": "published",
+          "promptText": "アナウンスで最も言いたいことは何か。",
+          "passage": "本日はご来場いただき誠にありがとうございます。展覧会の混雑緩和とお客様の安全確保のため、会場内での大きな声での会話や、展示品への接触はお控えいただいております。また、作品の写真撮影は特定のエリアを除き禁止となっております。皆様が気持ちよく鑑賞できるよう、ご理解とご協力をお願い申し上げます。",
+          "audioScript": "本日はご来場いただき誠にありがとうございます。展覧会の混雑緩和とお客様の安全確保のため、会場内での大きな声での会話や、展示品への接触はお控えいただいております。また、作品の写真撮影は特定のエリアを除き禁止となっております。皆様が気持ちよく鑑賞できるよう、ご理解とご協力をお願い申し上げます。",
+          "imageUrl": null,
+          "options": [
+            "安全で快適な鑑賞環境を保つためにルールへの協力が求められている",
+            "混雑を避けるために早めに会場から退出するようお願いしている",
+            "会場内ではすべてのエリアで写真撮影が一切禁止されている",
+            "展示品に触れてもよい場所が一部のエリアに限り設定されている"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "混雑緩和や安全確保、マナー遵守を求めて全体として快適な鑑賞への協力を促しているため、3番目の選択肢が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:15",
+          "status": "published",
+          "promptText": "部長が部下に伝えたかったことは何か。",
+          "passage": "今回のプロジェクトは残念ながら失敗に終わりましたが、これで終わりではありません。なぜこのような結果になったのか、その原因をチーム全体で徹底的に分析することが肝心です。失敗そのものを恐れる必要はありません。そこから得た教訓を次の企画にどう活かすか、前向きに検証していきましょう。",
+          "audioScript": "今回のプロジェクトは残念ながら失敗に終わりましたが、これで終わりではありません。なぜこのような結果になったのか、その原因をチーム全体で徹底的に分析することが肝心です。失敗そのものを恐れる必要はありません。そこから得た教訓を次の企画にどう活かすか、前向きに検証していきましょう。",
+          "imageUrl": null,
+          "options": [
+            "計画に問題があったので今後は事前の準備だけに集中しなさい",
+            "失敗の責任を明確にしてチームのメンバーを厳しく指導する必要がある",
+            "今回の企画が失敗したため今後は新しい挑戦を控えるべきだ",
+            "プロジェクトの失敗の原因を分析し次の経験につなげることが重要だ"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "失敗を恐れず、原因を分析して次の企画に活かすこと（教訓を活かすこと）の重要性を述べているため、1番目の選択肢が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:16",
+          "status": "published",
+          "promptText": "スピーカーが最も伝えたいことは何か。",
+          "passage": "本日は新商品の開発プロジェクトについて話し合いますが、ただ売上を伸ばすことだけを考えてはなりません。現代の消費者は、商品そのものの機能だけでなく、その製造過程や環境への配慮まで厳しく見ています。したがって、これからは社会的責任を果たしながら利益を生み出す姿勢が不可欠となるのです。利益と社会的価値の両立を常に意識して進めていきましょう。",
+          "audioScript": "本日は新商品の開発プロジェクトについて話し合いますが、ただ売上を伸ばすことだけを考えてはなりません。現代の消費者は、商品そのものの機能だけでなく、その製造過程や環境への配慮まで厳しく見ています。したがって、これからは社会的責任を果たしながら利益を生み出す姿勢が不可欠となるのです。利益と社会的価値の両立を常に意識して進めていきましょう。",
+          "imageUrl": null,
+          "options": [
+            "消費者の厳しい意見を避けるために広告宣伝を控えるべきだ",
+            "環境に配慮した新しい製造技術を早急に導入するべきだ",
+            "売上だけでなく社会的責任も考慮して商品開発を行うべきだ",
+            "製造コストを削減して商品の価格を安く抑えるべきだ"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "話者は単なる売上の追求ではなく、製造過程や環境への配慮といった社会的責任と利益を両立させる姿勢が不可欠だと述べています。したがって、2番が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:17",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "鈴木さん、来週の会議の資料、まだできていない部分があるんだけど、手伝おうか。",
+          "audioScript": "鈴木さん、来週の会議の資料、まだできていない部分があるんだけど、手伝おうか。",
+          "imageUrl": null,
+          "options": [
+            "ありがとうございます。では、後半のデータ入力をお願いできますか。",
+            "いえ、自分で全部やりますので、手伝わなくても結構です。",
+            "手伝っていただけると助かりますが、来週でも間に合います。",
+            "会議の資料はすでに完成しておりますので、大丈夫です。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "相手からの手伝いの申し出に対し、感謝を述べて具体的な作業（データ入力）を依頼するのが最も自然なビジネス上の返答です。「～ていただけますか」は相手に協力を仰ぐ丁寧な表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:18",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "部長、先ほどお伝えした企画書の件ですが、修正点はこれでよろしいでしょうか。",
+          "audioScript": "部長、先ほどお伝えした企画書の件ですが、修正点はこれでよろしいでしょうか。",
+          "imageUrl": null,
+          "options": [
+            "はい、これで問題ありません。そのまま進めてください。",
+            "いいえ、まだ修正していませんので、これから直します。",
+            "企画書は昨日提出したはずですが、どうなっていますか。",
+            "よくわかりませんので、他の人に聞いていただけますか。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "部下からの確認に対し、上司が承認を与える場面です。「これで問題ありません」で肯定し、次の指示を出す流れが適切です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:19",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "田中さん、今日の打ち合わせの時間は15時からに変更になりましたが、ご存じでしたか。",
+          "audioScript": "田中さん、今日の打ち合わせの時間は15時からに変更になりましたが、ご存じでしたか。",
+          "imageUrl": null,
+          "options": [
+            "いいえ、知りませんでした。教えていただきありがとうございます。",
+            "はい、15時から変更になりましたので、参加できません。",
+            "変更の連絡はしましたが、まだ返事が来ていません。",
+            "今日の打ち合わせは中止になったと聞いております。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "予定の変更を知らなかったことへの気づきと、情報を教えてくれた相手への感謝を伝えるのが適切です。「知らなかった」と素直に認め、お礼を言う表現が好まれます。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:20",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "すみません、先ほど提出していただいた企画書ですが、データの一部に誤りが見つかりました。",
+          "audioScript": "すみません、先ほど提出していただいた企画書ですが、データの一部に誤りが見つかりました。",
+          "imageUrl": null,
+          "options": [
+            "わかりました、それでは今回は中止します。",
+            "はい、しっかりと目を通して確認しました。",
+            "すでにすべて完璧に仕上げてあります。",
+            "すぐに対応して訂正版を再提出いたします。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "相手から書類のミスを指摘された場面です。「すぐに対応して訂正版を再提出いたします」がビジネスの状況として最も適切で自然な返答です。他の選択肢は状況に合っていません。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:21",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "会議の資料、来週の月曜日までには印刷を終えておいてほしいんだけど、間に合いそう？",
+          "audioScript": "会議の資料、来週の月曜日までには印刷を終えておいてほしいんだけど、間に合いそう？",
+          "imageUrl": null,
+          "options": [
+            "はい、月曜日の朝一番でお持ちします。",
+            "いいえ、まだまったく手をつけていません。",
+            "わかりました、来月までお待ちください。",
+            "はい、昨日すでにすべて配り終えました。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "上司や同僚からの期限付きの依頼に対する返答です。「はい、月曜日の朝一番でお持ちします」と答えることで、期限に間に合わせる意志と具体的なタイミングを伝えられます。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 22,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:22",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "田中さん、今回のプロジェクトのリーダーを引き受けてくれないかって頼まれたんだけど、どう思う？",
+          "audioScript": "田中さん、今回のプロジェクトのリーダーを引き受けてくれないかって頼まれたんだけど、どう思う？",
+          "imageUrl": null,
+          "options": [
+            "リーダーなんて面倒なので絶対に断ります。",
+            "すでに他の人に頼んだので無理です。",
+            "私に務まるか不安ですが、精一杯頑張ります。",
+            "そんなにやりたいなら、あなたがやればいいです。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "重要な役割を打診されたときの返答です謙遜しつつも前向きに引き受ける姿勢を示す「私に務まるか不安ですが、精一杯頑張ります」が最も適切です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 23,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:23",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "この新しいシステムの操作方法、ちょっと複雑で難しそうですね。",
+          "audioScript": "この新しいシステムの操作方法、ちょっと複雑で難しそうですね。",
+          "imageUrl": null,
+          "options": [
+            "そうですね。よければ後ほど使い方をご説明しましょうか。",
+            "はい、とても簡単なので誰でもすぐ使えます。",
+            "いいえ、私もさっぱり使い方がわかりません。",
+            "では、すぐにこのシステムを廃止しましょう。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "相手が困っている様子や難しさを感じていることに対して、手助けを申し出る場面です。「よければ後ほど使い方をご説明しましょうか」が親切で自然な対応です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 24,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:24",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "部長、今回の新規プロジェクトの件ですが、私のチームで担当させていただいてもよろしいでしょうか。",
+          "audioScript": "部長、今回の新規プロジェクトの件ですが、私のチームで担当させていただいてもよろしいでしょうか。",
+          "imageUrl": null,
+          "options": [
+            "ぜひお願いしたいと思っていたところだ。",
+            "こちらこそ、いつもご協力ありがとうございます。",
+            "それでは、担当者を変更しておきます。",
+            "それは残念ですが、またの機会にしましょう。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pilihan pertama adalah tanggapan yang paling natural untuk menerima penawaran bantuan atau kesediaan seseorang secara positif. Ungkapan '～と思っていたところだ' menunjukkan kecocokan waktu dan harapan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 25,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:25",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "すみません、こちらの資料のデータに一部誤りがあるようなのですが。",
+          "audioScript": "すみません、こちらの資料のデータに一部誤りがあるようなのですが。",
+          "imageUrl": null,
+          "options": [
+            "ご指摘ありがとうございます。すぐに修正いたします。",
+            "はい、しっかりと確認させていただきました。",
+            "とんでもありません。私の方こそ失礼いたしました。",
+            "承知いたしました。来週までにお持ちします。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Ketika diberi tahu ada kesalahan pada dokumen, respons yang tepat adalah berterima kasih atas koreksinya dan berjanji untuk segera memperbaiki. Pola 'すぐに～する' menunjukkan tindakan cepat.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 26,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:26",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "部長、今回の新規プロジェクトの件ですが、私のアイデアでは少しリスクが高すぎるでしょうか。",
+          "audioScript": "部長、今回の新規プロジェクトの件ですが、私のアイデアでは少しリスクが高すぎるでしょうか。",
+          "imageUrl": null,
+          "options": [
+            "リスクを恐れていては、新しい成果は生まれませんよ。",
+            "失敗から学ぶことも多いので、思い切ってやってみましょう。",
+            "もう少し慎重にデータを集めたほうがいいかもしれませんね。",
+            "いえ、十分に検討された現実的な計画だと思います。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "相手が自分のアイデアのリスクを心配して意見を求めている場面です。「いえ、～」と否定して安心させつつ、計画を評価する2番が最も自然な返答です。文法パターン「～でしょうか」に対する適切な肯定・否定の応答を測っています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 27,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:27",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "すみません、来週の会議の資料、まだデータで届いていないんですが。",
+          "audioScript": "すみません、来週の会議の資料、まだデータで届いていないんですが。",
+          "imageUrl": null,
+          "options": [
+            "はい、来週の会議でしっかり発表します。",
+            "申し訳ありません。すぐにお送りいたします。",
+            "承知いたしました。会議の時間を変更します。",
+            "あ、すでに印刷して机の上に置いてあります。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "相手が資料のデータが届いていないと困っている状況に対し、謝罪と迅速な対応（すぐ送る）を伝える2番が最も自然で適切な返答です。「すぐにお送りいたします」というビジネスにおける丁寧な対応表現が問われています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 28,
+          "questionType": "INTEGRATED_LISTENING",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:28",
+          "status": "published",
+          "promptText": "3人はどの企画案を実施することに決めたか。",
+          "passage": "男の人：来期の新入社員向け研修の企画ですが、皆さんの案が出そろいましたね。山田さんの「ビジネスマナー徹底合宿」はどうですか。女の人１：スパルタ式は今の若い世代には敬遠されがちですし、コストもかかりすぎます。男の人：なるほど。では、田中さんの「グループワーク中心の実践型研修」は？女の人２：そちらは魅力的ですが、準備に手間がかかりすぎて現在の講師陣では対応困難です。男の人：残るは、山田さんのもう一つの案、「オンライン自己学習と座談会の組み合わせ」ですね。女の人１：これなら負担も少なく、効果も期待できそうです。それにしましょう。田中さん：はい、賛成です。",
+          "audioScript": "男の人：来期の新入社員向け研修の企画ですが、皆さんの案が出そろいましたね。山田さんの「ビジネスマナー徹底合宿」はどうですか。女の人１：スパルタ式は今の若い世代には敬遠されがちですし、コストもかかりすぎます。男の人：なるほど。では、田中さんの「グループワーク中心の実践型研修」は？女の人２：そちらは魅力的ですが、準備に手間がかかりすぎて現在の講師陣では対応困難です。男の人：残るは、山田さんのもう一つの案、「オンライン自己学習と座談会の組み合わせ」ですね。女の人１：これなら負担も少なく、効果も期待できそうです。それにしましょう。田中さん：はい、賛成です。",
+          "imageUrl": null,
+          "options": [
+            "グループワーク中心の実践型研修",
+            "オンライン自己学習と座談会の組み合わせ",
+            "外部講師による講演会",
+            "ビジネスマナー徹底合宿"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "合宿はコストと時代背景から敬遠され、実践型研修は準備の負担が大きすぎるため除外されました。残ったオンライン自己学習と座談会の組み合わせが、負担が少なく効果も期待できるという理由で全員一致で選ばれました。敬遠されがち（敬遠されがちだ：cenderung dihindari）という表現がポイントです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 29,
+          "questionType": "INTEGRATED_LISTENING",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:29",
+          "status": "published",
+          "promptText": "3人はどの省エネ対策を優先して導入することにしたか。",
+          "passage": "部長：来月からの全社的な省エネ対策について相談したい。社員からの提案は3つある。まず、オフィスの照明をすべてLEDに変える案だが、初期費用が高すぎるな。課長：そうですね。では、空調の温度設定を厳しくする案は？社員：それだと執務効率に悪影響が出る恐れがあります。部長：確かに。残るは、昼休みの一斉消灯とPCの省電力設定の徹底だな。課長：これなら費用もかからず、すぐに実行できますね。社員：賛成です。それを今すぐ進めましょう。",
+          "audioScript": "部長：来月からの全社的な省エネ対策について相談したい。社員からの提案は3つある。まず、オフィスの照明をすべてLEDに変える案だが、初期費用が高すぎるな。課長：そうですね。では、空調の温度設定を厳しくする案は？社員：それだと執務効率に悪影響が出る恐れがあります。部長：確かに。残るは、昼休みの一斉消灯とPCの省電力設定の徹底だな。課長：これなら費用もかからず、すぐに実行できますね。社員：賛成です。それを今すぐ進めましょう。",
+          "imageUrl": null,
+          "options": [
+            "昼休みの一斉消灯とPCの省電力設定の徹底",
+            "オフィスの照明をすべてLEDに変える",
+            "空調の温度設定を厳しくする",
+            "在宅勤務日数を強制的に増やす"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "LED化は初期費用が高すぎ、空調の温度変更は執務効率への悪影響が懸念されるため不採用となりました。費用がかからず即座に実行できる昼休みの一斉消灯とPCの省電力設定の徹底が選ばれました。悪影響が出る恐れがある（～恐れがある：kekhawatiran akan terjadinya sesuatu yang buruk）というパターンが使われています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 30,
+          "questionType": "INTEGRATED_LISTENING",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n2-mock-02:choukai:30",
+          "status": "published",
+          "promptText": "3人はどの記念品を作ることに決定したか。",
+          "passage": "男性社員：創立50周年の記念品についてですが、カタログギフトはどうでしょう。女性社員１：無難ですが、形に残らないので少し物足りなさを感じますね。男性社員：では、社名入りの高級万年筆は？女性社員２：使わない人にとっては引き出しの肥やしになってしまいます。実用的なものがいいですね。男性社員：なるほど。では、社員食堂で使える特製タンブラーはいかがですか。毎日使えますし、デザインも工夫できます。女性社員１：それなら記念にもなりますし、日常的に使えて良さそうですね。女性社員２：賛成です。それにしましょう。",
+          "audioScript": "男性社員：創立50周年の記念品についてですが、カタログギフトはどうでしょう。女性社員１：無難ですが、形に残らないので少し物足りなさを感じますね。男性社員：では、社名入りの高級万年筆は？女性社員２：使わない人にとっては引き出しの肥やしになってしまいます。実用的なものがいいですね。男性社員：なるほど。では、社員食堂で使える特製タンブラーはいかがですか。毎日使えますし、デザインも工夫できます。女性社員１：それなら記念にもなりますし、日常的に使えて良さそうですね。女性社員２：賛成です。それにしましょう。",
+          "imageUrl": null,
+          "options": [
+            "社員食堂で使える特製タンブラー",
+            "社名入りの高級万年筆",
+            "カタログギフト",
+            "オリジナルデザインのクオカード"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "カタログギフトは形に残らず、万年筆は使われない可能性があるため選ばれませんでした。毎日使えて記念にもなる特製タンブラーが最適な選択肢として全員一致で決定しました。物足りなさを感じる（物足りない：kurang memuaskan）という表現が問われています。",
+          "difficulty": 1
+        }
+      ]
+    }
+  ]
+}

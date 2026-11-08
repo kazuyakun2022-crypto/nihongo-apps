@@ -37,12 +37,21 @@ import { GetChapter, GetLevelProgress, GetNextChapter, GetOnboardingOptions, Lis
 // Progress (streak, XP, lencana)
 import { PrismaActivityRecorder } from "../modules/progress/infrastructure/PrismaActivityRecorder";
 
+// Notifikasi (in-app + Web Push)
+import { PrismaNotificationRepository } from "../modules/notifications/infrastructure/PrismaNotificationRepository";
+import { WebPushSender } from "../modules/notifications/infrastructure/WebPushSender";
+import { NotificationService } from "../modules/notifications/application/NotificationService";
+
 // SRS
 import { PrismaSrsRepository } from "../modules/srs/infrastructure/PrismaSrsRepository";
 import { GetDueCards, ReviewCard } from "../modules/srs/application/SrsUseCases";
 
 // Conversation
 import { PrismaConversationRepository } from "../modules/conversation/infrastructure/PrismaConversationRepository";
+
+// Scanner
+import { ScanVisionService } from "../modules/scan/infrastructure/scanVisionService";
+import { ScanHistoryRepo } from "../modules/scan/infrastructure/scanHistoryRepo";
 import { AnthropicChatProvider } from "../modules/conversation/infrastructure/AnthropicChatProvider";
 import { MockChatProvider } from "../modules/conversation/infrastructure/MockChatProvider";
 import { GroqChatProvider } from "../modules/conversation/infrastructure/GroqChatProvider";
@@ -119,8 +128,19 @@ export function buildContainer(env: Env, db: Db) {
     updateProfile: new UpdateProfile({ users }),
   };
 
+  // ── Notifikasi ──
+  const notifications = new NotificationService({
+    repo: new PrismaNotificationRepository(db),
+    push: new WebPushSender(env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY, env.VAPID_SUBJECT, env.PUSH_TTL_SECONDS),
+    publicKey: env.VAPID_PUBLIC_KEY,
+    clock,
+  });
+  if (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY) {
+    console.warn("[push] VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY kosong: push dimatikan, notifikasi in-app tetap berjalan.");
+  }
+
   // ── Progress ──
-  const activity = new PrismaActivityRecorder(db, clock);
+  const activity = new PrismaActivityRecorder(db, clock, notifications);
 
   // ── Learning ──
   const learningRepo = new PrismaLearningRepository(db);
@@ -193,7 +213,10 @@ export function buildContainer(env: Env, db: Db) {
   };
 
   const aiMode = env.ANTHROPIC_API_KEY ? "anthropic" : env.GROQ_API_KEY ? "groq" : env.GEMINI_API_KEY ? "gemini" : "mock";
-  return { accessTokens, activity, auth, learning, srs, conversation, adminUsers, askUc, transcriber, speaker, aiMode };
+  const scanVision = new ScanVisionService(env.GEMINI_API_KEY || "", env.GROQ_API_KEY || "");
+  const scanHistory = new ScanHistoryRepo(db);
+
+  return { accessTokens, activity, auth, learning, srs, conversation, adminUsers, askUc, transcriber, speaker, aiMode, notifications, scanVision, scanHistory };
 }
 
 export type Container = ReturnType<typeof buildContainer>;

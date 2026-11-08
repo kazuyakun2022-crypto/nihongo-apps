@@ -9,7 +9,6 @@ import {
   type SystemStats,
 } from "@/features/admin/data/adminApi";
 import type { Role } from "@/features/auth/domain/types";
-import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
 import { SkeletonTableRows } from "@/shared/ui/Skeleton";
 import { Pagination } from "@/features/admin/ui/Pagination";
 import styles from "@/app/(app)/admin/admin.module.css";
@@ -209,11 +208,6 @@ export default function AdminPenggunaPage() {
 
   return (
     <div className={styles.container}>
-      <AdminHeaderNav
-        title="Tata Kelola Pengguna"
-        subtitle="Cari dan kelola akun pengguna platform, ubah peranan (role), moderasi penangguhan, dan berikan akses langganan."
-      />
-
       {/* Action Notification */}
       {actionMessage && (
         <div
@@ -323,7 +317,7 @@ export default function AdminPenggunaPage() {
                         <span className={`${styles.badge} ${styles[`role_${u.role}`] || ""}`}>{ROLE_LABEL[u.role] ?? u.role}</span>
                       </td>
                       <td>
-                        <span className={styles[(STATUS[u.status] ?? STATUS.suspended).cls]}>
+                        <span className={`${styles.badge} ${styles[(STATUS[u.status] ?? STATUS.suspended).cls]}`}>
                           {(STATUS[u.status] ?? { label: u.status }).label}
                         </span>
                       </td>
@@ -335,7 +329,7 @@ export default function AdminPenggunaPage() {
                         )}
                         {!isSelf && !canEdit && (
                           <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", fontStyle: "italic", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                            Terproteksi (Super Admin)
+                            Terproteksi
                           </span>
                         )}
                         {!isSelf && canEdit && (
@@ -349,7 +343,7 @@ export default function AdminPenggunaPage() {
                                 setNewRole(u.role);
                               }}
                             >
-                              Ubah Role
+                              Ubah Peran
                             </button>
 
                             {isSuperAdmin && (
@@ -358,7 +352,6 @@ export default function AdminPenggunaPage() {
                                 className={`${styles.btnSm} ${styles.btnSuccess}`}
                                 disabled={busy}
                                 onClick={() => {
-                                  // Modal selalu mulai bersih, tidak membawa isian pengguna sebelumnya
                                   setGrantDays(30);
                                   setGrantReason("");
                                   setGrantModalUser(u);
@@ -378,7 +371,7 @@ export default function AdminPenggunaPage() {
                                   setSuspendModalUser(u);
                                 }}
                               >
-                                Suspend
+                                Tangguhkan
                               </button>
                             )}
 

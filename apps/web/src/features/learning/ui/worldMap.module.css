@@ -4,7 +4,7 @@
   --node: 64px;
   --node-active: 76px;
   --lip: 6px;
-  --mascot: 56px;
+  --mascot: 76px;
   --path-w: 8px;
   --map-gap: var(--space-5);
   --c-done: var(--color-success);
@@ -285,33 +285,35 @@
   }
 }
 
-/* Maskot berdiri di samping node aktif, bernapas pelan */
+/* Maskot berdiri di samping node aktif — NekoAvatar WebGL animasi hidup (seperti di Voice AI) */
 .nodeMascot {
   position: absolute;
-  /* Berdiri utuh di atas node aktif, di atas cincin denyutnya */
-  z-index: 2;
-  top: calc(var(--node-active) / -2 - var(--mascot) - 2px);
+  z-index: 3;
+  top: calc(var(--node-active) / -2 - var(--mascot) * 0.86 + 6px);
   left: calc(var(--mascot) / -2);
-  pointer-events: none;
-  /* Transform elemen ini dipakai animasi lompat antar-node (WorldMap.tsx); napas di elemen dalam */
+  width: var(--mascot);
+  height: var(--mascot);
+  pointer-events: auto;
+  cursor: pointer;
+  /* Transform elemen ini dipakai animasi lompat antar-node (WorldMap.tsx) */
   transform-origin: 50% 100%;
-  filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.15));
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.16));
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.nodeMascot:hover {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.nodeMascot:active {
+  transform: translateY(1px) scale(0.97);
 }
 
 .mascotBody {
   display: block;
+  width: 100%;
+  height: 100%;
   transform-origin: 50% 100%;
-  animation: idleBreath 3s ease-in-out infinite;
-}
-
-@keyframes idleBreath {
-  0%,
-  100% {
-    transform: translateY(0) scaleY(1);
-  }
-  50% {
-    transform: translateY(-3px) scaleY(1.02);
-  }
 }
 
 /* ── Label di samping node ── */
@@ -722,9 +724,9 @@
     --node: 84px;
     --node-active: 100px;
     --lip: 8px;
-    --mascot: 80px;
+    --mascot: 112px;
     --path-w: 11px;
-    max-width: 48rem;
+    max-width: 100%;
     --map-gap: var(--space-7);
   }
 

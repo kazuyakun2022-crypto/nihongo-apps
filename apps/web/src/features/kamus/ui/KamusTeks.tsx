@@ -233,13 +233,6 @@ export function KamusTeks({ tab, tabs }: { tab: KamusTab; tabs?: ReactNode }) {
   return (
     <div className={styles.wrap}>
       <header className={styles.hero}>
-        <div>
-          <p className={styles.eyebrow} lang="ja">
-            {copy.eyebrow}
-          </p>
-          <h1 className={styles.heading}>{copy.title}</h1>
-          <p className={styles.lead}>{copy.lead}</p>
-        </div>
         <input
           data-spotlight="kamus-cari"
           type="search"

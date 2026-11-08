@@ -87,10 +87,6 @@ export function LearningPath() {
     <div className={`${styles.page} ${scenery.realm}`} data-realm={level?.code} data-time={time ?? undefined}>
       {level && <SceneBackdrop code={level.code} time={time} />}
       <header className={styles.header}>
-        <div>
-          <p className={`${styles.eyebrow} ${scenery.ink}`} lang="ja">べんきょう</p>
-          <h1 className={`${styles.title} ${scenery.ink}`}>Belajar</h1>
-        </div>
         <div ref={tabsRef} className={styles.levelTabs} role="tablist" aria-label="Pilih level" data-spotlight="belajar-level">
           {!levels &&
             [0, 1, 2, 3].map((i) => <Skeleton key={i} width="3.5rem" height="2.25rem" radius="var(--radius-pill)" />)}

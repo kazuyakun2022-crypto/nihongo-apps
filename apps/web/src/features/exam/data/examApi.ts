@@ -32,6 +32,9 @@ export interface ExamStatus {
   };
   /** Hanya Simulasi JLPT: sesi berwaktu dan kelompok skor resmi. */
   jlpt?: JlptStructure;
+  /** Hanya Simulasi JLPT: paket tetap yang dipilih (null = acak) dan level ujian. */
+  paket?: number | null;
+  level?: { code: string; name: string };
 }
 
 export interface JlptStructure {
@@ -136,11 +139,13 @@ export interface JlptSimLevel {
   /** Batas lulus total (0-180). */
   passScore: number;
   sessions: { key: string; title: string; minutes: number; questionCount: number }[];
+  /** Paket tetap yang sudah terbit, beserta skor terbaik siswa per paket. */
+  packages: { no: number; questionCount: number; attempts: number; bestScore: number | null; passed: boolean }[];
   attempts: number;
   passedCount: number;
   /** Skor terbaik (0-180). */
   bestScore: number | null;
-  recent: { score: number; passed: boolean; takenAt: string }[];
+  recent: { score: number; passed: boolean; takenAt: string; paket: number | null }[];
 }
 
 export const examApi = {
@@ -150,11 +155,11 @@ export const examApi = {
   getReadiness: (levelId: number): Promise<ReadinessResponse> =>
     api.get(`/exam/readiness?levelId=${levelId}`),
 
-  getStatus: (kind: ExamKind, levelId: number): Promise<ExamStatus> =>
-    api.get(`/exam/${kind}/status?levelId=${levelId}`),
+  getStatus: (kind: ExamKind, levelId: number, paket?: number | null): Promise<ExamStatus> =>
+    api.get(`/exam/${kind}/status?levelId=${levelId}${paket ? `&paket=${paket}` : ""}`),
 
-  getQuestions: (kind: ExamKind, levelId: number): Promise<ExamQuestionsResponse> =>
-    api.get(`/exam/${kind}/questions?levelId=${levelId}`),
+  getQuestions: (kind: ExamKind, levelId: number, paket?: number | null): Promise<ExamQuestionsResponse> =>
+    api.get(`/exam/${kind}/questions?levelId=${levelId}${paket ? `&paket=${paket}` : ""}`),
 
   submit: (kind: ExamKind, body: SubmitExamBody): Promise<SubmitExamResponse> =>
     apiRequest(`/exam/${kind}/submit`, { method: "POST", body }),

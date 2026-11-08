@@ -22,8 +22,12 @@ import { contentAdminRoutes } from "../modules/content/presentation/contentAdmin
 import { adminMediaRoutes, publicMediaRoutes } from "../modules/content/presentation/mediaRoutes";
 import { kamusRoutes } from "../modules/content/presentation/kamusRoutes";
 import { kamusAdminRoutes } from "../modules/content/presentation/kamusAdminRoutes";
+import { adminBannerRoutes, publicBannerRoutes } from "../modules/content/presentation/bannerRoutes";
+import { adminAiRoutes } from "../modules/ai/presentation/adminAiRoutes";
 import { tulisRoutes } from "../modules/tulis/tulisRoutes";
 import { progressRoutes } from "../modules/progress/presentation/progressRoutes";
+import { adminNotificationRoutes, notificationCronRoutes, notificationRoutes } from "../modules/notifications/presentation/notificationRoutes";
+import { scanRoutes } from "../modules/scan/presentation/scanRoutes";
 import { pronunciationAudio } from "../shared/infrastructure/pronunciationAudio";
 import { prisma } from "../shared/infrastructure/prisma";
 
@@ -52,7 +56,8 @@ export function createApp(env: Env, c: Container) {
       credentials: true,
     }),
   );
-  // Foto lembar tulisan butuh batas lebih besar; dipasang lebih dulu sehingga parser umum di bawah melewatinya
+  // Foto lembar tulisan & scan kamera butuh batas lebih besar; dipasang lebih dulu sehingga parser umum di bawah melewatinya
+  app.use("/api/scan", express.json({ limit: "8mb" }));
   app.use("/api/tulis", express.json({ limit: "3mb" }));
   app.use("/api/exam/workbook", express.json({ limit: "3mb" }));
   app.use(express.json({ limit: "100kb" }));
@@ -90,14 +95,18 @@ export function createApp(env: Env, c: Container) {
   app.use(["/api/tulis", "/api/exam/workbook"], rateLimits.vision);
 
   app.use("/api/auth", authRoutes(c.auth, c.accessTokens, { secureCookies: env.NODE_ENV === "production" }));
+  app.use("/api/notifications/cron", notificationCronRoutes(c.notifications, env.CRON_SECRET));
+  app.use("/api/notifications", auth, notificationRoutes(c.notifications));
   app.use("/api/learning", auth, learningRoutes(c.learning));
   app.use("/api/srs", auth, srsRoutes(c.srs));
   app.use("/api/conversation", auth, conversationRoutes(c.conversation));
-  app.use("/api/exam/mastery-gate", auth, masteryGateRoutes(c.activity));
-  app.use("/api/exam/workbook", auth, workbookGateRoutes(env.GEMINI_API_KEY, c.activity));
-  app.use("/api/exam/jlpt-sim", auth, jlptSimRoutes(c.activity));
-  app.use("/api/exam", auth, levelExamRoutes(c.activity));
+  app.use("/api/exam/mastery-gate", auth, masteryGateRoutes(c.activity, c.notifications));
+  app.use("/api/exam/workbook", auth, workbookGateRoutes(env.GEMINI_API_KEY, c.activity, c.notifications));
+  app.use("/api/exam/jlpt-sim", auth, jlptSimRoutes(c.activity, c.notifications));
+  app.use("/api/exam", auth, levelExamRoutes(c.activity, c.notifications));
   app.use("/api/media", publicMediaRoutes());
+  app.use("/api/banners", publicBannerRoutes());
+  app.use("/api/admin/banners", auth, requireRole("admin"), adminBannerRoutes());
   app.use("/api/kamus", auth, kamusRoutes());
   app.use("/api/tulis", auth, tulisRoutes(env.GEMINI_API_KEY, c.activity));
   app.use("/api/progress", auth, progressRoutes(prisma, c.activity));
@@ -105,8 +114,11 @@ export function createApp(env: Env, c: Container) {
   app.use("/api/admin/kamus", auth, requireRole("admin"), kamusAdminRoutes());
   app.use("/api/admin/content", auth, requireRole("admin"), contentAdminRoutes());
   app.use("/api/admin/learners", auth, requireRole("super_admin"), learnerMonitorRoutes());
+  app.use("/api/admin/notifications", auth, requireRole("admin"), adminNotificationRoutes(c.notifications));
+  app.use("/api/admin/ai-engine", auth, requireRole("super_admin"), adminAiRoutes(prisma));
   app.use("/api/admin", auth, requireRole("admin"), adminUserRoutes(c.adminUsers));
   app.use("/api/ask", askRoutes(c.askUc, c.transcriber, c.speaker, optionalAuth(c.accessTokens)));
+  app.use("/api/scan", optionalAuth(c.accessTokens), scanRoutes(c.scanVision, c.scanHistory, prisma));
 
   app.use((_req, res) => res.status(404).json({ error: { code: "NOT_FOUND", message: "Endpoint tidak ditemukan." } }));
   app.use(errorHandler);

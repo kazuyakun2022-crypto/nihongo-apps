@@ -346,3 +346,343 @@
     opacity: 0.55;
   }
 }
+
+/* ── SCENARIO INTRO & MISSION BRIEFING (Unified Master Card) ── */
+.scenarioIntroWrap {
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  padding: var(--space-2) 0 var(--space-6);
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
+}
+
+.scenarioCard {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.scenarioCover {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: #1f1a1c;
+}
+
+@media (max-width: 480px) {
+  .scenarioCover {
+    height: 135px;
+  }
+}
+
+.scenarioCoverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.scenarioCoverOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(15, 8, 10, 0.65) 100%);
+}
+
+.scenarioCoverBadges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.scenarioCoverLevel {
+  background: var(--color-primary, #b91c1c);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.scenarioCoverLoc {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scenarioCardBody {
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scenarioTitle {
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.scenarioMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  color: var(--color-text-muted, #736b6e);
+  background: var(--color-bg, #faf8f5);
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #e5e0dc);
+}
+
+.scenarioGoalBox {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scenarioGoalLabel {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.scenarioGoalText {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #78350f;
+  line-height: 1.45;
+}
+
+.scenarioGrammarWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.scenarioGrammarLabel {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #736b6e);
+}
+
+.grammarChip {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--color-bg, #faf8f5);
+  border: 1px solid var(--color-border, #e5e0dc);
+  color: var(--color-text, #1f1a1c);
+  font-family: var(--font-japanese, inherit);
+}
+
+/* ── DIALOGUE ACCORDION & GUIDE ── */
+.scenarioGuideAccordion {
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.scenarioGuideToggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: var(--color-bg, #faf8f5);
+  border: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text, #1f1a1c);
+  transition: background 0.15s ease;
+}
+
+.scenarioGuideToggle:hover {
+  background: #f3efe9;
+}
+
+.scenarioGuideList {
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-surface, #ffffff);
+  border-top: 1px solid var(--color-border, #e5e0dc);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.dialogueStepItem {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--color-bg, #faf8f5);
+  border: 1px solid var(--color-border, #f0ebe6);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dialogueStepRole {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-primary, #b91c1c);
+}
+
+.dialogueStepRoleUser {
+  color: #0369a1;
+}
+
+.dialogueStepJa {
+  font-family: var(--font-japanese, inherit);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text, #1f1a1c);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.dialogueStepId {
+  font-size: 0.76rem;
+  color: var(--color-text-muted, #736b6e);
+  margin: 0;
+}
+
+.dialogueStepHint {
+  font-size: 0.72rem;
+  color: #92400e;
+  background: #fef9c3;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 2px;
+  align-self: flex-start;
+}
+
+.scenarioActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.startBtn {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  background: var(--color-primary, #b91c1c);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(185, 28, 28, 0.25);
+}
+
+.startBtn:hover:not(:disabled) {
+  background: #991b1b;
+  transform: translateY(-1px);
+}
+
+.startBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.backLinkRow {
+  text-align: center;
+  margin-top: 2px;
+}
+
+.backLinkRow a {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #736b6e);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.backLinkRow a:hover {
+  color: var(--color-primary, #b91c1c);
+}
+
+/* ── IN-CHAT COMPACT SCENARIO BAR ── */
+.inChatBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--color-bg, #faf8f5);
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+}
+
+.inChatGoal {
+  color: var(--color-text, #1f1a1c);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inChatGuideToggle {
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border, #e5e0dc);
+  background: var(--color-surface, #ffffff);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--color-primary, #b91c1c);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.inChatGuideToggle:hover {
+  background: var(--color-primary-soft, rgba(185, 28, 28, 0.08));
+}
+
+.inChatGuideDrawer {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+

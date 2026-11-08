@@ -1,6 +1,5 @@
 "use client";
 
-import { PageHeader } from "@/shared/ui/PageHeader";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,7 +10,7 @@ import { Alert } from "@/shared/ui/Alert";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 import type { Gender } from "@/features/auth/domain/types";
 import styles from "./profil.module.css";
-import { BookOpenIcon, CheckIcon, FileTextIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
+import { BookOpenIcon, BellIcon, CheckIcon, FileTextIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
 import { learningApi } from "@/features/learning/data/learningApi";
 import { AchievementList } from "@/features/progress/ui/AchievementList";
 import { askConfirm } from "@/shared/ui/confirmDialog";
@@ -245,14 +244,6 @@ export default function ProfilPage() {
 
   return (
     <section className={styles.wrap} aria-label="Profil Pengguna">
-      {/* Header */}
-      <PageHeader
-        seal="人"
-        jp="プロフィール"
-        title="Profil Pengguna"
-        subtitle="Kelola identitas, foto profil, dan status kemajuan belajarmu."
-      />
-
       {pageNotice && <Alert tone="success">{pageNotice}</Alert>}
 
       <div className={styles.contentGrid}>
@@ -499,7 +490,7 @@ export default function ProfilPage() {
               <Link href="/review" className={styles.shortcutBtn}>
                 <RepeatIcon size={14} /> Review Kartu
               </Link>
-              <Link href="/belajar/simulasi-jlpt" className={styles.shortcutBtn}>
+              <Link href="/simulasi" className={styles.shortcutBtn}>
                 <FileTextIcon size={14} /> Simulasi JLPT
               </Link>
               <Link href="/ngobrol" className={styles.shortcutBtn}>
@@ -507,6 +498,9 @@ export default function ProfilPage() {
               </Link>
               <Link href="/suara" className={styles.shortcutBtn}>
                 <MicIcon size={14} /> Ngobrol Suara
+              </Link>
+              <Link href="/profil/notifikasi" className={styles.shortcutBtn}>
+                <BellIcon size={14} /> Pengaturan Notifikasi
               </Link>
               {(user.role === "admin" || user.role === "super_admin") && (
                 <Link

@@ -225,7 +225,7 @@ export function OnboardingEditor() {
                       Wajib tes penempatan
                     </label>
                     {s.requiresTest && (
-                      <Link href={`/admin/konten/ujian?jenis=penempatan&level=${s.levelId}`} className={styles.inlineLink}>
+                      <Link href={`/admin/materi/ujian?jenis=penempatan&level=${s.levelId}`} className={styles.inlineLink}>
                         Atur soal tes ({level?.placementQuestions ?? 0})
                       </Link>
                     )}

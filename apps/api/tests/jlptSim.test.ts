@@ -11,7 +11,9 @@ import {
   scoreJlpt,
   sessionOf,
 } from "../src/modules/exam/domain/JlptSim";
-import { jlptPackageSchema, mapJlptPackage } from "../src/modules/exam/domain/jlptImport";
+import { jlptPackageSchema, mapJlptPackage, packageNumber, QUESTION_TYPE_MAP } from "../src/modules/exam/domain/jlptImport";
+import { PLAN } from "../src/modules/exam/domain/jlptPlan";
+import { JLPT_CATEGORIES } from "../src/modules/exam/domain/JlptSim";
 import { examTotal, parseSectionRules, pickQuestions, withUnanswered } from "../src/modules/exam/domain/SectionRules";
 
 const full = (correct: number, total: number) => ({ correct, total });
@@ -168,9 +170,9 @@ describe("impor paket soal JSON", () => {
     expect(img.questions[0].imageUrl).toBeNull();
   });
 
-  it("semua paket contoh di prisma/data/jlpt-sim valid", () => {
-    const dir = join(__dirname, "..", "prisma", "data", "jlpt-sim");
-    const files = readdirSync(dir).filter((f) => f.endsWith(".json"));
+  it("semua file di bank soal (prisma/data/jlpt-sim/bank) valid", () => {
+    const dir = join(__dirname, "..", "prisma", "data", "jlpt-sim", "bank");
+    const files = readdirSync(dir, { recursive: true }).map(String).filter((f) => f.endsWith(".json"));
     expect(files.length).toBeGreaterThanOrEqual(5);
     for (const f of files) {
       const { errors, questions } = mapJlptPackage(jlptPackageSchema.parse(JSON.parse(readFileSync(join(dir, f), "utf8"))));
@@ -202,5 +204,36 @@ describe("penilaian soal yang tidak dijawab", () => {
   it("percobaan lama tanpa daftar soal dinilai seperti dulu", () => {
     const answers = [{ questionId: "z", answer: "x" }];
     expect(withUnanswered(answers, null)).toBe(answers);
+  });
+});
+
+describe("paket simulasi", () => {
+  it("rencana Daimon tiap level menghasilkan jumlah soal per bagian yang sama dengan aturan resmi", () => {
+    for (const code of ["N5", "N4", "N3", "N2", "N1"] as const) {
+      const perSection: Record<string, number> = {};
+      for (const item of PLAN[code]) {
+        const category = JLPT_CATEGORIES.find((c) => c.key === QUESTION_TYPE_MAP[item.questionType]);
+        expect(category, `${code} ${item.questionType}`).toBeDefined();
+        perSection[category!.section] = (perSection[category!.section] ?? 0) + item.count;
+      }
+      expect(perSection, code).toEqual(JLPT_SPEC[code].counts);
+    }
+  });
+
+  it("nomor paket dari variantIndex atau dari akhir examSlug", () => {
+    expect(packageNumber({ examSlug: "jlpt-n5-mock-04" })).toBe(4);
+    expect(packageNumber({ examSlug: "jlpt-n5-mock-04", variantIndex: 7 })).toBe(7);
+    expect(packageNumber({ examSlug: "jlpt-n5-latihan" })).toBeNull();
+    expect(packageNumber({ examSlug: "jlpt-n5-mock-11" })).toBeNull();
+  });
+
+  it("soal dalam satu bagian diurutkan per Daimon lalu nomor soal", () => {
+    const qs = [
+      { id: "a", section: "kosakata", category: "iikae", sourceKey: "p:moji_goi:3" },
+      { id: "b", section: "kosakata", category: "bunmyaku", sourceKey: "p:moji_goi:9" },
+      { id: "c", section: "kosakata", category: "bunmyaku", sourceKey: "p:moji_goi:2" },
+      { id: "d", section: "membaca", category: "kanji_yomi", sourceKey: "p:moji_goi:1" },
+    ];
+    expect(orderBySection(qs).map((q) => q.id)).toEqual(["d", "c", "b", "a"]);
   });
 });

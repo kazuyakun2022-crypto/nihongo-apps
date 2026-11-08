@@ -3,6 +3,7 @@ import type { Clock } from "../../../shared/domain/types";
 import { ACHIEVEMENTS, candidatesFor, type ProgressStat } from "../domain/achievements";
 import type { ActivityKind, ActivityRecorder, ActivityResult, EarnedAchievement } from "../domain/activity";
 import { dbDateFromDay, nextStreak } from "../domain/streak";
+import type { Notifier } from "../../notifications/domain/types";
 
 /** SRS dianggap dikuasai bila jeda ulangnya sudah 3 minggu. */
 const SRS_MASTERED_DAYS = 21;
@@ -10,7 +11,7 @@ const SRS_MASTERED_DAYS = 21;
 export class PrismaActivityRecorder implements ActivityRecorder {
   private catalogSynced: Promise<Map<string, number>> | null = null;
 
-  constructor(private readonly db: Db, private readonly clock: Clock) {}
+  constructor(private readonly db: Db, private readonly clock: Clock, private readonly notifier?: Notifier) {}
 
   async record(userId: string, kind: ActivityKind, xp: number): Promise<ActivityResult> {
     const user = await this.db.user.findUnique({ where: { id: userId }, select: { streakCount: true, lastActiveDate: true, role: true } });
@@ -33,6 +34,23 @@ export class PrismaActivityRecorder implements ActivityRecorder {
       // Lencana tidak boleh menggagalkan kuis atau ujian yang sudah tersimpan
       console.error("[progress] gagal memberi lencana", err instanceof Error ? err.message : err);
     }
+
+    if (newAchievements.length && this.notifier) {
+      await Promise.all(
+        newAchievements.map((achievement) =>
+          this.notifier!.notify(userId, {
+            type: "achievement",
+            title: `Lencana baru: ${achievement.name}`,
+            body: achievement.description ?? "Kamu membuka lencana baru. Cek profil untuk melihat koleksimu.",
+            url: "/profil",
+            dedupeKey: `achievement:${userId}:${achievement.code}`,
+          }).catch((err) => {
+            console.error("[notifications] gagal membuat notifikasi lencana", err instanceof Error ? err.message : err);
+          }),
+        ),
+      );
+    }
+
     return { xpEarned: Math.max(0, xp), xpTotal: updated.xpTotal, streak, newAchievements };
   }
 

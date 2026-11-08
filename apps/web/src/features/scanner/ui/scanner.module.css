@@ -1,0 +1,1237 @@
+/* ==========================================================================
+   Kamera Scanner AI & Live AR Reader: NihonGo Design System
+   Anti-slop compliant: Washi paper, Sumi ink, Beni crimson, Kin gold.
+   Dose-capped glassmorphism, zero neon/cyan default, calm purposeful motion.
+   ========================================================================== */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-bottom: var(--space-8);
+}
+
+/* ── Viewfinder Utama / Kamera Area ── */
+.cameraBox {
+  position: relative;
+  width: 100%;
+  height: 68vh;
+  min-height: 520px;
+  max-height: 720px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: #181517; /* Deep Sumi Ink tone */
+  border: 1px solid color-mix(in srgb, var(--palette-sumi) 80%, var(--color-border));
+  box-shadow: 0 14px 34px -8px rgba(26, 22, 24, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .cameraBox {
+    height: 74vh;
+    min-height: 480px;
+    border-radius: var(--radius-lg);
+  }
+}
+
+.videoFeed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frozenImagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Status Kamera (Top-Left HUD) ── */
+.liveStatusHud {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(26, 22, 24, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  z-index: 6;
+}
+
+.statusDotLive {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--palette-matcha, #3a8544);
+}
+
+.statusDotPaused {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--palette-tamago, #e6a817);
+}
+
+/* ── Framing Reticle (Japanese Rangefinder Style) ── */
+.framingOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-4);
+}
+
+.reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 82%;
+  height: 62%;
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(18, 15, 17, 0.42);
+}
+
+.reticleCornerTL {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 22px;
+  height: 22px;
+  border-top: 3px solid var(--palette-butter, #ffd66b);
+  border-left: 3px solid var(--palette-butter, #ffd66b);
+  border-top-left-radius: 10px;
+}
+.reticleCornerTR {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  border-top: 3px solid var(--palette-butter, #ffd66b);
+  border-right: 3px solid var(--palette-butter, #ffd66b);
+  border-top-right-radius: 10px;
+}
+.reticleCornerBL {
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  width: 22px;
+  height: 22px;
+  border-bottom: 3px solid var(--palette-butter, #ffd66b);
+  border-left: 3px solid var(--palette-butter, #ffd66b);
+  border-bottom-left-radius: 10px;
+}
+.reticleCornerBR {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  border-bottom: 3px solid var(--palette-butter, #ffd66b);
+  border-right: 3px solid var(--palette-butter, #ffd66b);
+  border-bottom-right-radius: 10px;
+}
+
+/* ── Top-Right Controls (Flash & Flip) ── */
+.cameraControlsTop {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+  z-index: 6;
+}
+
+.camBtn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(26, 22, 24, 0.75);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.camBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.camBtnActive {
+  background: var(--palette-tamago);
+  color: var(--palette-sumi);
+  border-color: var(--palette-tamago);
+}
+
+/* ── Floating Real-time AR Translation Card (Dose-capped glassmorphism) ── */
+.arLiveOverlay {
+  position: absolute;
+  bottom: 96px;
+  left: var(--space-3);
+  right: var(--space-3);
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(26, 22, 24, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  color: #ffffff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  z-index: 6;
+  animation: arSlideUp 0.22s var(--ease-spring) forwards;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@keyframes arSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.arTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.arBadgeGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arLevelBadge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.04em;
+}
+
+.arStatusBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #d1c7c9;
+}
+
+.arDismissBtn {
+  background: transparent;
+  border: none;
+  color: #a89fa2;
+  cursor: pointer;
+  padding: 4px;
+  display: grid;
+  place-items: center;
+}
+
+.arDismissBtn:hover {
+  color: #ffffff;
+}
+
+.arLiveJapanese {
+  font-family: var(--font-japanese);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.55;
+}
+
+.arLiveJapanese ruby {
+  ruby-align: center;
+}
+
+.arLiveJapanese rt {
+  font-size: 0.62em;
+  color: var(--palette-butter, #ffd66b);
+  font-weight: 700;
+}
+
+.arLiveRomaji {
+  font-size: 0.78rem;
+  color: #c9bfc2;
+  font-style: italic;
+  font-family: var(--font-family);
+  margin-top: -2px;
+}
+
+.arLiveIndonesian {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: #faf7f5;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.arActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  flex-wrap: wrap;
+}
+
+.arAudioBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+
+.arAudioBtn:hover {
+  background: var(--palette-beni-900);
+}
+
+.arDetailBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.arDetailBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ── HUD Bottom Controls Bar ── */
+.cameraControlsBottom {
+  position: absolute;
+  bottom: var(--space-4);
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  z-index: 6;
+}
+
+.hudCircleBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(26, 22, 24, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.hudCircleBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.hudBtnLabel {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #e6dedf;
+}
+
+.shutterLiveBtn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  background: var(--color-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform var(--motion-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  gap: 2px;
+}
+
+.shutterLiveBtn:hover {
+  transform: scale(1.04);
+}
+
+.shutterLiveBtn:active {
+  transform: scale(0.95);
+}
+
+.shutterBtnFrozen {
+  background: var(--palette-sumi);
+  border-color: var(--palette-tamago);
+  color: var(--palette-tamago);
+}
+
+/* ── Fallback Viewfinder (Saat Kamera Stream Tidak Aktif) ── */
+.cameraFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  background: #181517;
+  color: #ffffff;
+  z-index: 2;
+  gap: 12px;
+}
+
+.fallbackIconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: grid;
+  place-items: center;
+  color: var(--palette-butter);
+}
+
+.fallbackTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.fallbackText {
+  font-size: 0.82rem;
+  color: #c9bfc2;
+  margin: 0;
+  max-width: 360px;
+  line-height: 1.45;
+}
+
+.fallbackBtnRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.primaryFallbackBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+
+.primaryFallbackBtn:hover {
+  background: var(--palette-beni-900);
+}
+
+.secondaryFallbackBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.secondaryFallbackBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Kartu Contoh Bacaan Praktik (Content-driven study list) ── */
+.samplePresetsCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.samplePresetsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.samplePresetsTitle {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.samplePresetsSub {
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+  margin: 2px 0 0;
+}
+
+.sampleList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-2);
+}
+
+.sampleItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.sampleItem:hover {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.sampleLevelTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.sampleTextCol {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sampleTitle {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.sampleSub {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sampleArrow {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Result Detail Canvas Card ── */
+.resultCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.resultTopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.levelTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.furiganaToggleWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.furiganaBtn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.furiganaBtnActive {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+/* ── Japanese Token Interactive Flow ── */
+.japaneseBlock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: var(--space-3) 0;
+}
+
+.tokenChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 1.15rem;
+  font-family: var(--font-japanese);
+  font-weight: 700;
+  transition: all var(--motion-fast);
+}
+
+.tokenChip:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.tokenChip ruby {
+  ruby-align: center;
+}
+
+.tokenChip rt {
+  font-size: 0.58em;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.posVerb {
+  border-color: #fca5a5;
+  background: #fff1f2;
+  color: #991b1b;
+}
+
+.posNoun {
+  border-color: #bae6fd;
+  background: #f0f9ff;
+  color: #0369a1;
+}
+
+.posParticle {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.posAdjective {
+  border-color: #fde68a;
+  background: #fefce8;
+  color: #854d0e;
+}
+
+.posOther {
+  border-color: var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.tokenActiveKaraoke {
+  outline: 2px solid var(--color-primary);
+  box-shadow: 0 2px 8px rgba(177, 42, 58, 0.25);
+  transform: scale(1.05);
+}
+
+.romajiBlock {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-family: var(--font-family);
+  margin-top: -4px;
+}
+
+/* ── Indonesian Translation Block ── */
+.indonesianBlock {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: var(--space-4);
+  background: var(--palette-beni-100);
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.indonesianText {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--palette-sumi);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--motion-fast);
+}
+
+.copyBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ── Audio Synthesis Reader Bar ── */
+.audioBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.audioControlsLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.playBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+
+.playBtn:hover {
+  background: var(--palette-beni-900);
+}
+
+.speedGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.speedBtn {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.speedBtnActive {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.voiceSelector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.voiceBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.voiceBtnActive {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+/* ── Shadowing Section ── */
+.shadowingSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+}
+
+.shadowingHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.shadowingTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.micRecordBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+
+.micRecordBtn:hover {
+  background: var(--palette-beni-900);
+}
+
+.micRecordBtnActive {
+  background: #c03040;
+}
+
+.voiceScoreCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.scoreCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.88rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.scoreDesc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scoreFeedback {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.scoreSub {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Modals (Smart Dictionary, Manual Text & History) ── */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 15, 17, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 100;
+}
+
+.modalBox {
+  width: 100%;
+  max-width: 500px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--space-5);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modalHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modalWordTitle {
+  font-family: var(--font-japanese);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.modalReading {
+  font-family: var(--font-japanese);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.modalRomaji {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.closeModalBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.closeModalBtn:hover {
+  color: var(--color-text);
+}
+
+.modalBadges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badgeJlpt {
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.badgePos {
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.badgePitch {
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: #fefce8;
+  border: 1px solid #fde68a;
+  color: #854d0e;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.modalConjugation {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  padding: 6px 10px;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+}
+
+.modalMeaning {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modalMeaningTitle {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  letter-spacing: 0.04em;
+}
+
+.modalMeaningText {
+  font-size: 0.92rem;
+  color: var(--color-text);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.modalExample {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-primary);
+}
+
+.modalExampleJa {
+  font-family: var(--font-japanese);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--color-text);
+}
+
+.modalExampleId {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.modalActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--space-2);
+}
+
+.srsSaveBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+
+.srsSaveBtn:hover {
+  background: var(--palette-beni-900);
+}
+
+.workbookBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.workbookBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.textInputArea {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-japanese);
+  font-size: 0.95rem;
+  color: var(--color-text);
+  resize: vertical;
+}
+
+.textInputArea:focus {
+  outline: 2px solid var(--color-primary);
+  border-color: transparent;
+}
+
+/* ── History Drawer / List ── */
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.historyItem:hover {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.historyLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.historyJa {
+  font-family: var(--font-japanese);
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyId {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyDate {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+}
