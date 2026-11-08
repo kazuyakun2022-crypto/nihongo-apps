@@ -178,3 +178,4 @@ ALTER TABLE "ai_feature_routes" ADD CONSTRAINT "ai_feature_routes_updated_by_fke
 
 -- AddForeignKey
 ALTER TABLE "ai_circuit_logs" ADD CONSTRAINT "ai_circuit_logs_provider_key_id_fkey" FOREIGN KEY ("provider_key_id") REFERENCES "ai_provider_keys"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+

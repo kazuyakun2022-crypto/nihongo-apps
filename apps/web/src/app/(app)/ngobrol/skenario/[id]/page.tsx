@@ -20,19 +20,24 @@ export default function SkenarioPage() {
       .catch(() => setScenario(null));
   }, [id]);
 
-  if (scenario === undefined) return <Skeleton height="20rem" radius="var(--radius-lg)" />;
-  if (scenario === null) {
+  if (scenario === undefined) {
     return (
-      <div style={{ display: "grid", gap: "var(--space-3)", padding: "var(--space-4)" }}>
-        <Alert>Skenario tidak ditemukan atau belum terbuka untuk levelmu.</Alert>
-        <Link href="/ngobrol?tab=skenario">← Kembali ke daftar skenario</Link>
+      <div style={{ maxWidth: "42rem", margin: "2rem auto", padding: "1rem" }}>
+        <Skeleton height="22rem" radius="var(--radius-lg)" />
       </div>
     );
   }
-  return (
-    // Wadah bisa digulir: halaman chat tingginya dikunci (overflow hidden), laporan akhir yang panjang tetap terbaca
-    <div style={{ maxWidth: "48rem", margin: "0 auto", width: "100%", padding: "var(--space-3) var(--space-3) 0", boxSizing: "border-box", flex: 1, minHeight: 0, overflowY: "auto" }}>
-      <ChatScreen scenario={scenario} />
-    </div>
-  );
+
+  if (scenario === null) {
+    return (
+      <div style={{ maxWidth: "36rem", margin: "3rem auto", display: "grid", gap: "var(--space-3)", padding: "var(--space-4)" }}>
+        <Alert>Skenario tidak ditemukan atau belum terbuka untuk levelmu.</Alert>
+        <Link href="/ngobrol?tab=skenario" style={{ fontWeight: 700, color: "var(--color-primary)" }}>
+          ← Kembali ke daftar skenario
+        </Link>
+      </div>
+    );
+  }
+
+  return <ChatScreen scenario={scenario} />;
 }
