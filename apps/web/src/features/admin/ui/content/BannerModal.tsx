@@ -81,8 +81,8 @@ export function BannerModal({
   const [shadingPosition, setShadingPosition] = useState<ShadingPosition>("left");
   const [shadingOpacity, setShadingOpacity] = useState<number>(60);
 
-  // Hook perilaku modal (Escape, kunci scroll, focus trap)
-  useModalBehavior(dialogRef as React.RefObject<HTMLElement>, onClose, submitting);
+  // Hook perilaku modal (Escape, kunci scroll hanya jika terbuka, focus trap)
+  useModalBehavior(dialogRef as React.RefObject<HTMLElement>, onClose, submitting, isOpen);
 
   useEffect(() => {
     if (banner) {

@@ -8,13 +8,20 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([t
  * Perilaku standar modal: Esc menutup (kecuali `locked`, mis. sedang menyimpan), fokus awal ke isian pertama,
  * Tab berputar di dalam modal, halaman di belakang tidak ikut tergulir, dan fokus kembali ke pembuka saat ditutup.
  */
-export function useModalBehavior(containerRef: RefObject<HTMLElement>, onClose: () => void, locked = false) {
+export function useModalBehavior(
+  containerRef: RefObject<HTMLElement>,
+  onClose: () => void,
+  locked = false,
+  enabled = true,
+) {
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   const lockedRef = useRef(locked);
   lockedRef.current = locked;
 
   useEffect(() => {
+    if (!enabled) return;
+
     const opener = document.activeElement as HTMLElement | null;
     const box = containerRef.current;
     const first = box?.querySelector<HTMLElement>("input, select, textarea") ?? box?.querySelector<HTMLElement>(FOCUSABLE);
@@ -48,7 +55,5 @@ export function useModalBehavior(containerRef: RefObject<HTMLElement>, onClose: 
       document.body.style.overflow = prevOverflow;
       opener?.focus?.({ preventScroll: true });
     };
-    // Dipasang sekali selama modal terbuka
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [enabled, containerRef]);
 }

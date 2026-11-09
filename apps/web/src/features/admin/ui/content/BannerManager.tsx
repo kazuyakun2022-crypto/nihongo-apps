@@ -603,13 +603,15 @@ export function BannerManager() {
       )}
 
       {/* ── MODAL MANDIRI: FORM TAMBAH & EDIT BANNER ── */}
-      <BannerModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        banner={editingBanner}
-        defaultOrder={banners.length}
-        onSave={handleSave}
-      />
+      {modalOpen && (
+        <BannerModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          banner={editingBanner}
+          defaultOrder={banners.length}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 }
