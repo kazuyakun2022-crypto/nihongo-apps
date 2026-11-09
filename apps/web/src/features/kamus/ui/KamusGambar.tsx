@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useLayerBack } from "@/shared/lib/useLayerBack";
 import { useSpeech } from "@/shared/lib/useSpeech";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { kamusApi } from "../data/kamusApi";
@@ -251,6 +252,7 @@ function WordDetail({
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const { speak, stop } = useSpeech();
+  useLayerBack(true, onClose, "kamus-dialog");
   const entry = list[index];
   const go = useCallback((step: number) => onIndex((index + step + list.length) % list.length), [index, list.length, onIndex]);
 

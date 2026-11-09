@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { NavigatorProvider } from "@/features/navigator/application/NavigatorProvider";
 import { MascotNavigator } from "@/features/navigator/ui/MascotNavigator";
@@ -14,6 +14,7 @@ import { InAppNotificationBanner } from "@/features/notifications/ui/InAppNotifi
 import styles from "./shell.module.css";
 import { ConfirmHost } from "@/shared/ui/confirmDialog";
 import {
+  ArrowLeftIcon,
   SidebarToggleIcon,
   NavHomeIcon,
   NavLearnIcon,
@@ -151,6 +152,21 @@ function screenTitle(pathname: string, isSuperAdmin?: boolean): string | null {
   return null;
 }
 
+function getParentRoute(pathname: string, isAdmin: boolean): string | null {
+  if (pathname.startsWith("/profil/")) return "/profil";
+  if (pathname.startsWith("/belajar/")) return "/belajar";
+  if (pathname.startsWith("/ngobrol/skenario/")) return "/ngobrol?tab=skenario";
+  if (pathname.startsWith("/simulasi/")) return "/simulasi";
+  if (pathname.startsWith("/admin/materi/")) return "/admin/materi";
+  if (pathname.startsWith("/admin/pengguna/")) return "/admin/pengguna";
+  if (pathname.startsWith("/admin/pantau/")) return "/admin/pantau";
+  if (pathname.startsWith("/admin/") && pathname !== "/admin" && pathname !== "/admin/ringkasan") return "/admin";
+  if (pathname === "/notifikasi") return "/beranda";
+  if (pathname === "/scan") return "/beranda";
+  if (pathname === "/review") return "/beranda";
+  return null;
+}
+
 const adminNav: NavItem[] = [
   {
     href: "/admin",
@@ -202,9 +218,19 @@ const adminNav: NavItem[] = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin" || user?.role === "super_admin";
   const isSuperAdmin = user?.role === "super_admin";
+  const parentRoute = getParentRoute(pathname, isAdmin);
+
+  const handleTopBarBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else if (parentRoute) {
+      router.push(parentRoute);
+    }
+  };
 
   const nav = isAdmin
     ? adminNav.filter((item) => !item.superAdminOnly || isSuperAdmin)
@@ -285,6 +311,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <header className={styles.topBar}>
             <div className={styles.topBarInner}>
               <div className={styles.topBarLeft}>
+                {parentRoute && (
+                  <button
+                    type="button"
+                    className={styles.topBarBackBtn}
+                    onClick={handleTopBarBack}
+                    aria-label="Kembali ke layar sebelumnya"
+                    title="Kembali"
+                  >
+                    <ArrowLeftIcon size={16} strokeWidth={2.4} />
+                    <span className={styles.topBarBackLabel}>Kembali</span>
+                  </button>
+                )}
                 <Link href={isAdmin ? "/admin" : "/beranda"} className={styles.topBarBrand} title="Ke Beranda">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/app-icon.png" alt="日本語" className={styles.topBarLogoImg} />

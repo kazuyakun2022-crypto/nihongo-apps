@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useLayerBack } from "@/shared/lib/useLayerBack";
 import { QuestionAudio } from "@/features/learning/ui/exercises/QuestionAudio";
 import { Skeleton, SkeletonRegion, SkeletonText } from "@/shared/ui/Skeleton";
 import { askConfirm } from "@/shared/ui/confirmDialog";
@@ -49,6 +50,18 @@ export function JlptExam({ levelId, paket, backHref }: { levelId: number; paket:
   const [remaining, setRemaining] = useState(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [result, setResult] = useState<SubmitExamResponse | null>(null);
+
+  // ── LAYER BACK HANDLERS ──
+  useLayerBack(sheetOpen, () => setSheetOpen(false), "jlpt-sheet");
+  useLayerBack(
+    phase === "testing",
+    () => {
+      if (window.confirm("Keluar dari simulasi JLPT? Jawaban sesi ini tidak akan tersimpan.")) {
+        window.location.href = backHref;
+      }
+    },
+    "jlpt-testing"
+  );
   /** Akhir sesi/istirahat yang sedang berjalan (ms). Sisa waktu dihitung dari sini, bukan dikurangi per detik,
    *  karena HP memperlambat setInterval saat tab di latar belakang. */
   const deadlineRef = useRef(0);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useLayerBack } from "@/shared/lib/useLayerBack";
 import { useAssessment, useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
@@ -40,6 +41,7 @@ export function ReviewDeck() {
 
   const { completeObligation } = useDailyReview();
   const [speakTestCards, setSpeakTestCards] = useState<DueCard[] | null>(null);
+  useLayerBack(speakTestCards !== null, () => setSpeakTestCards(null), "review-speak-test");
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
   const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
   const [showRecap, setShowRecap] = useState(false);

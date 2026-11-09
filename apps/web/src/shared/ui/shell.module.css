@@ -42,6 +42,46 @@
   min-width: 0;
 }
 
+.topBarBackBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 35%, var(--color-border));
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: all var(--motion-fast);
+}
+
+.topBarBackBtn:hover {
+  background: var(--palette-beni-100);
+  border-color: var(--color-primary-soft);
+  transform: translateX(-2px);
+}
+
+.topBarBackLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .topBarBackLabel {
+    display: none;
+  }
+  .topBarBackBtn {
+    width: 36px;
+    padding: 0;
+  }
+}
+
 .topBarBrand {
   display: inline-flex;
   align-items: center;

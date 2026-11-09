@@ -6,6 +6,7 @@ import { useNotifications } from "@/features/notifications/application/Notificat
 import type { NotificationPreferences } from "@/features/notifications/domain/types";
 import styles from "@/features/notifications/ui/notification.module.css";
 import { Button } from "@/shared/ui/Button";
+import { ArrowLeftIcon } from "@/shared/ui/icons";
 
 const ZONES = [
   { value: "Asia/Jakarta", label: "WIB — Asia/Jakarta" },
@@ -86,6 +87,23 @@ export default function NotificationSettingsPage() {
 
   return (
     <div className={styles.page}>
+      <div style={{ marginBottom: "var(--space-3)" }}>
+        <Link
+          href="/profil"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "0.86rem",
+            fontWeight: 700,
+            color: "var(--color-primary)",
+            textDecoration: "none",
+          }}
+        >
+          <ArrowLeftIcon size={16} /> Kembali ke Profil
+        </Link>
+      </div>
+
       {/* ── KARTU 1: Notifikasi di Perangkat (HP / Laptop) ── */}
       <section className={styles.card}>
         <div className={styles.cardHead}>

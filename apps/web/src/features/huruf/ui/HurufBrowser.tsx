@@ -3,6 +3,7 @@
 import { useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import Link from "next/link";
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { useLayerBack } from "@/shared/lib/useLayerBack";
 import { Button } from "@/shared/ui/Button";
 import uiStyles from "@/shared/ui/ui.module.css";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
@@ -750,6 +751,11 @@ export function HurufBrowser({ kanjiLevel }: { kanjiLevel: JlptLevel }) {
   const [mobileModalOpen, setMobileModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDesktop, setIsDesktop] = useState(true);
+
+  // ── LAYER BACK HANDLERS (Per-step layer navigation) ──
+  useLayerBack(mobileModalOpen, () => setMobileModalOpen(false), "huruf-modal");
+  useLayerBack(mode === "writing", () => setMode("table"), "huruf-writing");
+  useLayerBack(mode === "quiz", () => setMode("table"), "huruf-quiz");
 
   // Responsive breakpoint detector
   useEffect(() => {

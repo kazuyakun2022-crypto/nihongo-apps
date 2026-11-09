@@ -9,6 +9,7 @@ import { TextField } from "@/shared/ui/TextField";
 import { Alert } from "@/shared/ui/Alert";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 import type { Gender } from "@/features/auth/domain/types";
+import { useLayerBack } from "@/shared/lib/useLayerBack";
 import styles from "./profil.module.css";
 import { BookOpenIcon, BellIcon, CheckIcon, FileTextIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, LogoutIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, SettingsIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
 import { learningApi } from "@/features/learning/data/learningApi";
@@ -99,6 +100,11 @@ export default function ProfilPage() {
 
   const [logoutTarget, setLogoutTarget] = useState<"current" | "all" | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  // ── LAYER BACK HANDLERS (Per-step modal navigation) ──
+  useLayerBack(isPhotoModalOpen, () => { if (!uploading) setIsPhotoModalOpen(false); }, "photo-modal");
+  useLayerBack(isEditProfileOpen, () => { if (!savingProfile) setIsEditProfileOpen(false); }, "edit-profile-modal");
+  useLayerBack(logoutTarget !== null, () => { if (!loggingOut) setLogoutTarget(null); }, "logout-modal");
 
   // Perhitungan jeda (cooldown) perubahan jenis kelamin 2 hari (48 jam)
   const COOLDOWN_MS = 2 * 24 * 60 * 60 * 1000;
