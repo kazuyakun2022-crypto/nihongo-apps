@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { adminApi, type SystemStats } from "@/features/admin/data/adminApi";
-import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
 import { ArrowRightIcon, BookOpenIcon, MessageIcon, StarIcon, UsersIcon } from "@/shared/ui/icons";
 import { PageSkeleton, Skeleton } from "@/shared/ui/Skeleton";
 import styles from "./admin.module.css";
@@ -63,34 +62,38 @@ export default function AdminDashboardPage() {
 
   const nav = [
     { href: "/admin/pengguna", title: "Kelola Pengguna", desc: "Cari akun, moderasi penangguhan, ubah peran, dan beri premium" },
-    { href: "/admin/konten", title: "Kelola Konten", desc: "Bab, kamus, skenario percakapan, ujian, dan pendaftaran" },
+    { href: "/admin/materi", title: "Kelola Materi", desc: "Bab pelajaran, kamus kosakata, skenario percakapan, ujian, dan tes penempatan" },
+    { href: "/admin/konten", title: "Kelola Konten & Iklan", desc: "Spanduk rekomendasi, promosi, dan iklan berputar di Beranda siswa" },
     { href: "/admin/ai", title: "Konfigurasi AI", desc: "Instruksi sistem per tingkat JLPT, batas kata, dan kecepatan suara" },
     ...(isSuperAdmin ? [{ href: "/admin/pantau", title: "Pantau Belajar", desc: "Level, progres bab, ujian, percakapan, dan pencapaian setiap pelajar" }] : []),
+    { href: "/admin/notifikasi", title: "Kirim Pengumuman", desc: "Kirim notifikasi in-app dan push ke pelajar aktif" },
+    { href: "/notifikasi", title: "Notifikasi Saya", desc: "Pengingat, lencana, dan pengumuman terbaru untuk akunmu" },
     { href: "/ngobrol", title: "Uji Miu-chan", desc: "Coba jawaban, suara, dan percakapan maskot seperti yang dilihat pelajar" },
   ];
 
   return (
     <div className={styles.container}>
-      <AdminHeaderNav
-        title={isSuperAdmin ? "Dashboard Super Admin" : "Dashboard Administrator"}
-        subtitle="Ringkasan pengguna, aktivitas, dan materi platform NihonGo."
-      />
-
-      {isSuperAdmin ? (
-        <div className={`${styles.roleNoticeBanner} ${styles.superAdminNotice}`}>
-          <span>
-            <strong>Otoritas Super Admin:</strong> kontrol penuh atas seluruh pengguna, pengangkatan akun Admin, konfigurasi instruksi AI dan
-            kecepatan suara, pemberian status premium, serta pemantauan progres belajar seluruh pelajar.
+      <div className={`${styles.roleNoticeBanner} ${isSuperAdmin ? styles.superAdminNotice : styles.adminNotice}`}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <span className={`${styles.authorityBadge} ${isSuperAdmin ? styles.authoritySuper : styles.authorityAdmin}`}>
+            {isSuperAdmin ? "Super Admin" : "Administrator"}
+          </span>
+          <span style={{ fontSize: "0.85rem" }}>
+            {isSuperAdmin
+              ? "Pusat Kendali Eksekutif: Akses penuh pengguna, konfigurasi multi-key AI, dan pantau kurikulum."
+              : "Pusat Manajemen: Pengelolaan akun pelajar, moderasi, dan peninjauan materi pembelajaran."}
           </span>
         </div>
-      ) : (
-        <div className={`${styles.roleNoticeBanner} ${styles.adminNotice}`}>
-          <span>
-            <strong>Otoritas Administrator:</strong> kelola akun pelajar dan guru, pantau metrik, dan tangguhkan akun pelanggar. Konfigurasi AI dan
-            pengangkatan Admin hanya untuk Super Admin.
-          </span>
-        </div>
-      )}
+        <button
+          type="button"
+          className={`${styles.btnSm} ${styles.btnSecondary}`}
+          onClick={load}
+          disabled={loading}
+          title="Muat ulang data statistik"
+        >
+          {loading ? "Memuat…" : "Segarkan"}
+        </button>
+      </div>
 
       {error && (
         <div className={styles.errorBanner} role="alert">

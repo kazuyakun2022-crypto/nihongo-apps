@@ -29,6 +29,8 @@ fitur/xyz ──PR──▶ dev ──PR──▶ main
 3. Merge ke `dev` → Vercel men-deploy staging. Coba di URL staging.
 4. Siap rilis: buka PR `dev` → `main`. Merge → Vercel men-deploy produksi.
 
+Bank soal Simulasi JLPT (membuat, mengekspor, dan mengisi production): lihat [jlpt-bank.md](jlpt-bank.md).
+
 Mengubah `schema.prisma`? Buat migrasinya dulu (`npm run db:migrate -w apps/api -- --name nama_perubahan`) dan commit folder migrasinya. CI gagal jika schema berubah tanpa migrasi. Migrasi dijalankan otomatis saat build API di Vercel (`prisma migrate deploy`).
 
 ## Setup pertama kali
@@ -59,6 +61,10 @@ Mengubah `schema.prisma`? Buat migrasinya dulu (`npm run db:migrate -w apps/api 
    | `WEB_ORIGIN` | `https://nihongo-web.vercel.app` (ubah setelah URL web asli diketahui) |
    | `GEMINI_API_KEY`, `GROQ_API_KEY`, `ANTHROPIC_API_KEY` | Kunci AI; kosong = maskot tiruan |
    | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Login Google; boleh kosong |
+   | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Kunci Web Push. Buat dengan `npx web-push generate-vapid-keys`; jangan pakai kunci yang sama untuk staging |
+   | `VAPID_SUBJECT` | `mailto:email-kamu@contoh.com` |
+   | `CRON_SECRET` | String acak panjang untuk mengamankan endpoint cron pengingat |
+   | `PUSH_TTL_SECONDS` | Opsional, default `86400` |
 
 4. **Deploy**. Cek `https://<url-api>/api/health` → `{"ok":true,…}`.
 
@@ -78,27 +84,66 @@ Di kedua project → **Settings → Environment Variables** → tambah variabel 
 | API | `JWT_ACCESS_SECRET` | String acak lain (beda dari produksi) |
 | API | `NODE_ENV` | `production` |
 | API | `WEB_ORIGIN` | `https://nihongo-web-git-dev-<nama-akun>.vercel.app` |
+| API | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | Pasangan kunci khusus staging |
+| API | `CRON_SECRET` | Rahasia staging, beda dari produksi |
 | Web | `API_URL` | `https://nihongo-api-git-dev-<nama-akun>.vercel.app` |
 
 Lalu di kedua project → **Settings → Deployment Protection** → matikan **Vercel Authentication**. Jika tetap menyala, URL preview minta login Vercel dan web staging tidak bisa memanggil API staging. Push ke `dev` (atau **Redeploy** deployment terakhir `dev`) untuk menerapkan. URL staging yang tetap ada di **Deployments → filter branch `dev` → Domains**.
 
-### 6. Isi data awal database
+### 6. Isi data lengkap ke database Production / Staging
 
-Jalankan dari laptop setelah API pertama kali sukses deploy (tabel dibuat oleh migrasi saat build). Ulangi dengan connection string branch `dev` untuk staging.
+Untuk menaikkan seluruh data aplikasi (Pelajaran/Kurikulum, 15 Skenario Gambar, Kamus, dan **1.468 Bank Soal Simulasi JLPT**), gunakan skrip injeksi otomatis yang sudah disediakan di root project.
 
+#### Di Windows (PowerShell):
 ```powershell
-cd apps/api
-$env:DATABASE_URL = "<connection string Neon>"
-$env:NODE_ENV = "production"
-$env:SEED_SUPERADMIN_EMAIL = "email-kamu@contoh.com"
-$env:SEED_SUPERADMIN_PASSWORD = "password-kuat-min-12"
-npm run db:seed
-npm run content:import   # impor kurikulum lengkap (opsional)
+# Buka PowerShell di root folder project
+.\isi-production.ps1
+```
+*Skrip akan meminta memasukkan connection string Neon Production (atau membaca dari `apps/api/.env.production.local` jika diisi `PROD_DATABASE_URL=...`), memvalidasi, meminta konfirmasi, lalu menginjeksi semua data secara berurutan dan terverifikasi.*
+
+#### Di Linux / macOS / Bash:
+```bash
+# Jalankan dari root project
+bash isi-production.sh
 ```
 
-Variabel `$env:` hanya berlaku di jendela PowerShell itu. Tutup jendelanya setelah selesai supaya perintah berikutnya tidak tanpa sengaja mengenai database produksi.
+**Rincian data yang otomatis diinjeksi ke production:**
+1. **Migrasi Schema:** Menjalankan `npx prisma migrate deploy` memastikan semua tabel terbaru siap.
+2. **Kurikulum & Pelajaran:** Seluruh bab, blok materi, kosakata, dan latihan dari Pre-N5 hingga N1.
+3. **15 Skenario Percakapan Situasional:** 15 skenario interaktif berbasis gambar situasi resmi (`/images/scenarios/`) dengan dialogue scripts dan prompts.
+4. **Kamus Lengkap:** Kosakata, Kanji, dan Tata Bahasa per level JLPT.
+5. **Bank Soal Simulasi JLPT (1.468 Soal):**
+   - **N5:** 4 Paket (248 soal, 13 tipe Daimon)
+   - **N4:** 4 Paket (320 soal, 14 tipe Daimon)
+   - **N3:** 3 Paket (294 soal, 16 tipe Daimon)
+   - **N2:** 3 Paket (315 soal, 19 tipe Daimon)
+   - **N1:** 3 Paket (291 soal, 18 tipe Daimon)
+   - *Semua soal dilengkapi pembobotan, 4 opsi, kunci jawaban terverifikasi, wacana Dokkai, script audio Choukai, dan pembahasan detail.*
 
-Pengaturan pendaftaran, bank soal penempatan, dan aturan ujian diatur dari halaman admin setelah login sebagai Super Admin. Untuk login Google, tambahkan URL web produksi & staging ke *Authorized JavaScript origins* di Google Cloud Console.
+---
+
+### 7. Notifikasi push dan cron pengingat
+
+- Notifikasi in-app (pengingat belajar, lencana, hasil ujian, pengumuman) otomatis tersimpan di database. Tidak perlu konfigurasi tambahan.
+- Web Push memerlukan HTTPS (Vercel sudah menyediakannya) dan aplikasi yang dipasang ke layar utama. Di iPhone/iPad perlu iOS 16.4+; pengguna membuka **Bagikan → Tambahkan ke Layar Utama**, lalu mengaktifkan push di **Profil → Pengaturan Notifikasi**.
+- Pengingat harian dijalankan oleh cron eksternal, bukan proses yang selalu hidup. Panggil endpoint berikut setiap 15 menit (mis. lewat cron-job.org gratis):
+
+  ```text
+  POST https://<url-api>/api/notifications/cron/reminders
+  Header: x-cron-secret: <CRON_SECRET>
+  ```
+
+  Uji manual dari PowerShell:
+
+  ```powershell
+  Invoke-RestMethod -Method Post `
+    -Uri "https://<url-api>/api/notifications/cron/reminders" `
+    -Headers @{ "x-cron-secret" = "<CRON_SECRET>" }
+  ```
+
+  Endpoint menolak permintaan bila `CRON_SECRET` kosong (503) atau salah (401). Setiap pengguna hanya menerima satu pengingat per hari menurut zona waktunya, jadi cron boleh berjalan sesering apa pun.
+- Jika kunci VAPID diganti, langganan push lama tidak valid. Pengguna perlu membuka pengaturan notifikasi dan menekan **Aktifkan push** lagi.
+
 
 ## Batasan paket gratis
 

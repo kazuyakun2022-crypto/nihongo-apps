@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { AuthProvider } from "@/features/auth/application/AuthProvider";
+import { NotificationsProvider } from "@/features/notifications/application/NotificationsProvider";
 import { ServiceWorkerRegister } from "@/shared/ui/ServiceWorkerRegister";
 import { ViewTransitions } from "@/shared/ui/ViewTransitions";
 import { SplashGate } from "@/shared/ui/neko/SplashGate";
@@ -45,9 +46,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <AuthProvider>
-          <ViewTransitions>
-            <SplashGate initialSeen={splashSeen}>{children}</SplashGate>
-          </ViewTransitions>
+          <NotificationsProvider>
+            <ViewTransitions>
+              <SplashGate initialSeen={splashSeen}>{children}</SplashGate>
+            </ViewTransitions>
+          </NotificationsProvider>
         </AuthProvider>
         <ServiceWorkerRegister />
       </body>

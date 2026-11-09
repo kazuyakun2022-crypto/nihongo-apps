@@ -19,7 +19,7 @@ export function dbDateFromDay(day: string): Date {
   return new Date(`${day}T00:00:00.000Z`);
 }
 
-function daysBetween(fromDay: string, toDay: string): number {
+export function daysBetween(fromDay: string, toDay: string): number {
   return Math.round((dbDateFromDay(toDay).getTime() - dbDateFromDay(fromDay).getTime()) / 86_400_000);
 }
 

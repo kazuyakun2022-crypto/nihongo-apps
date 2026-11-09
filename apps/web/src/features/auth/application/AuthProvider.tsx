@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { tokenStore } from "@/core/http/apiClient";
 import { authApi } from "../data/authApi";
+import { unsubscribePush } from "@/features/notifications/application/pushSubscription";
 import type { AuthRepository, AuthResponse, User } from "../domain/types";
 
 type Status = "loading" | "authenticated" | "anonymous";
@@ -174,6 +175,8 @@ export function AuthProvider({ children, repository = authApi }: { children: Rea
         try {
           localStorage.removeItem(USER_CACHE_KEY);
         } catch {}
+        // Lepas langganan push perangkat ini selama token masih valid.
+        await unsubscribePush();
         await repository.logout(allDevices).catch(() => undefined);
         tokenStore.set(null);
         // Hapus data pribadi yang di-cache service worker (dokumen 10.6).

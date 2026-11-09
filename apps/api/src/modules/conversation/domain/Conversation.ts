@@ -24,11 +24,17 @@ export interface ScenarioBrief {
   title: string;
   goal: string;
   mascotRole: string;
+  userRole?: string | null;
+  location?: string | null;
+  keigoType?: string | null;
+  imageUrl?: string | null;
   maxTurns: number;
   /** Kalimat pembuka dari admin; null = dibuat AI. */
   initialMessage: string | null;
   /** Pola tata bahasa yang dilatih dalam skenario. */
   targetGrammar: string[];
+  dialogueScript?: any | null;
+  systemPrompt?: string | null;
 }
 
 /** Skenario yang bisa dipilih siswa di daftar latihan ngobrol. */
@@ -40,6 +46,14 @@ export interface ScenarioListItem {
   chapterId: string | null;
   chapterTitle: string | null;
   targetGrammar: string[];
+  imageUrl?: string | null;
+  userRole?: string | null;
+  mascotRole?: string | null;
+  location?: string | null;
+  keigoType?: string | null;
+  initialMessage?: string | null;
+  dialogueScript?: any | null;
+  systemPrompt?: string | null;
 }
 
 /** Emosi dominan Neko-sensei per balasan (ditulis AI di <correction_data>). */

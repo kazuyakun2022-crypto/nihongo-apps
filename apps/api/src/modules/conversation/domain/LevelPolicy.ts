@@ -111,9 +111,16 @@ export function buildSystemPrompt(ctx: ConversationContext): string {
     `- "cepat": memuji keberhasilan pengguna, kalimat seruan/exclamation, atau ungkapan kasual yang natural seperti yang diucapkan penutur asli.`,
     ``,
     scenario
-      ? `# SCENARIO\nSkenario: ${scenario.title}\nPeranmu: ${scenario.mascotRole}\nTujuan pengguna: ${scenario.goal}\n` +
+      ? `# SCENARIO ROLEPLAY (SITUASI NYATA JEPANG)\n` +
+        `Skenario: ${scenario.title}\n` +
+        `Latar Tempat: ${scenario.location || "Jepang"}\n` +
+        `Peranmu: ${scenario.mascotRole}\n` +
+        `Peran Pengguna: ${scenario.userRole || "Siswa"}\n` +
+        `Ragam Bahasa / Keigo: ${scenario.keigoType || "Teineigo"}\n` +
+        `Tujuan / Misi Pengguna: ${scenario.goal}\n` +
         (scenario.targetGrammar.length ? `Pola target: ${scenario.targetGrammar.join("; ")}. Pancing pengguna memakai pola ini; puji bila berhasil.\n` : "") +
-        `Tetaplah dalam peran selama percakapan.`
+        (scenario.systemPrompt ? `Instruksi Khusus Skenario: ${scenario.systemPrompt}\n` : "") +
+        `PENTING: Bertindaklah sepenuhnya sesuai peranmu di situasi ini. Jangan keluar dari karakter!`
       : `# FREE TALK MODE\nMode ngobrol bebas: tanyakan keseharian, hobi, dan minat pengguna.`,
     ``,
     memoryLines.length

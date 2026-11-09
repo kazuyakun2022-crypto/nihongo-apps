@@ -1,15 +1,14 @@
-"use client";
+import { BannerManager } from "@/features/admin/ui/content/BannerManager";
+import adminStyles from "@/app/(app)/admin/admin.module.css";
 
-import { Suspense } from "react";
-import { ContentShell } from "@/features/admin/ui/content/ContentShell";
-import { ChapterManager } from "@/features/admin/ui/content/ChapterManager";
+export const metadata = {
+  title: "Kelola Banner & Iklan | Admin NihonGo",
+};
 
 export default function AdminKontenPage() {
   return (
-    <ContentShell title="Konten Pelajaran" subtitle="Atur bab, kosakata, kanji, tata bahasa, dan latihan (menyusun, menulis, berbicara, dll.) untuk setiap level.">
-      <Suspense>
-        <ChapterManager />
-      </Suspense>
-    </ContentShell>
+    <div className={adminStyles.container}>
+      <BannerManager />
+    </div>
   );
 }

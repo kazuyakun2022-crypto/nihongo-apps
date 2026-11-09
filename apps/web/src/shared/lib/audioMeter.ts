@@ -41,6 +41,17 @@ export class AudioMeter {
     }
   }
 
+  detachMic(): void {
+    if (!this.mic) return;
+    try {
+      this.mic.source.disconnect();
+      this.mic.analyser.disconnect();
+    } catch {
+      /* sudah terputus */
+    }
+    this.mic = null;
+  }
+
   /** Mengembalikan true kalau suara bisa dianalisis. */
   attachVoice(audio: HTMLAudioElement): boolean {
     this.detachVoice();

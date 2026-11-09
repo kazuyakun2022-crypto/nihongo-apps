@@ -1,0 +1,1708 @@
+{
+  "examSlug": "jlpt-n4-mock-03",
+  "levelCode": "N4",
+  "variantIndex": 3,
+  "title": "Simulasi JLPT N4 - Paket 03",
+  "sections": [
+    {
+      "sectionType": "MOJI_GOI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:1",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "来週の<u>予定</u>を教えてください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "よてい",
+            "よて",
+            "ゆてい",
+            "よだい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「予定」dibaca「よてい」(rencana/jadwal).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:2",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "部屋の<u>案内</u>をします。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "あんない",
+            "あない",
+            "あんなえ",
+            "あんねい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「案内」dibaca「あんない」(pemandu/informasi).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:3",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "窓を<u>閉めて</u>ください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "しめて",
+            "あけて",
+            "とめて",
+            "きめて"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「閉めて」dibaca「しめて」(menutup).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:4",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "明日<u>出発</u>します。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "しゅっぱつ",
+            "しゅぱつ",
+            "しゅつはつ",
+            "しっぱつ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「出発」dibaca「しゅっぱつ」(keberangkatan).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:5",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>危険</u>ですから入らないでください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "きけん",
+            "きげん",
+            "きかん",
+            "きこん"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「危険」dibaca「きけん」(bahaya).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:6",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>急に</u>雨が降り出しました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "きゅうに",
+            "きゅに",
+            "きょうに",
+            "きに"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「急に」dibaca「きゅうに」(tiba-tiba).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:7",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "パスポートを<u>準備</u>してください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "じゅんび",
+            "じゅんひ",
+            "じゅび",
+            "じゅうび"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「準備」dibaca「じゅんび」(persiapan).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:8",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "会議室を<u>予約</u>しました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "よやく",
+            "よきやく",
+            "ゆやく",
+            "よやっく"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「予約」dibaca「よやく」(reservasi).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:9",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>理由</u>を説明してください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "りゆう",
+            "りゆ",
+            "りよう",
+            "りゅう"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「理由」dibaca「りゆう」(alasan).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:10",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "薬を<u>のんで</u>寝ます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "飲んで",
+            "食んで",
+            "吸んで",
+            "呑んで"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Hiragana「のんで」ditulis「飲んで」(meminum obat).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:11",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "<u>けいかく</u>を 立てます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "計画",
+            "計策",
+            "定画",
+            "定策"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Hiragana「けいかく」ditulis「計画」(rencana).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:12",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "<u>きかい</u>の 使い方を習う。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "機械",
+            "機会",
+            "器械",
+            "機具"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Hiragana「きかい」(mesin) ditulis「機械」.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:13",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "友だちに<u>そうだん</u>します。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "相談",
+            "対談",
+            "想談",
+            "相論"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Hiragana「そうだん」ditulis「相談」(konsultasi).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:14",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "荷物を<u>はこび</u>ます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "運び",
+            "送り",
+            "配り",
+            "届け"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Hiragana「はこび」ditulis「運び」(mengangkut/membawa).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:15",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "席を<u>ゆずり</u>ました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "譲り",
+            "渡し",
+            "貸し",
+            "送り"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Hiragana「ゆずり」ditulis「譲り」(memberikan tempat duduk).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:16",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "会議の資料を参加者の人数分（　）した。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "コピー",
+            "サイン",
+            "メモ",
+            "マーク"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Memfotokopi dokumen sebanyak jumlah peserta.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:17",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "台風が近づいているので、戸締まりを（　）確認した。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "しっかり",
+            "すっきり",
+            "うっかり",
+            "ぴったり"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Memeriksa dengan seksama/pasti (しっかり).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:18",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "この料理は味が少し（　）ので、醤油を足した。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "薄い",
+            "浅い",
+            "ぬるい",
+            "細い"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Rasa masakan agak hambar/encer (薄い).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:19",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "道に迷ったので、通りがかりの人に（　）を聞いた。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "道順",
+            "切符",
+            "都合",
+            "案内"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Tersesat di jalan, menanyakan rute jalan (道順).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:20",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "約束の時間に遅れそうなので、（　）連絡を入れた。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "あらかじめ",
+            "突然",
+            "さっそく",
+            "ようやく"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Memberi kabar terlebih dahulu (あらかじめ).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:21",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "会議の資料を参加者の人数分（　）した。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "コピー",
+            "サイン",
+            "メモ",
+            "マーク"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Memfotokopi dokumen sebanyak jumlah peserta.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 22,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:22",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "台風が近づいているので、戸締まりを（　）確認した。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "しっかり",
+            "すっきり",
+            "うっかり",
+            "ぴったり"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Memeriksa dengan seksama/pasti (しっかり).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 23,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:23",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "この料理は味が少し（　）ので、醤油を足した。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "薄い",
+            "浅い",
+            "ぬるい",
+            "細い"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Rasa masakan agak hambar/encer (薄い).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 24,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:24",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "道に迷ったので、通りがかりの人に（　）を聞いた。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "道順",
+            "切符",
+            "都合",
+            "案内"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Tersesat di jalan, menanyakan rute jalan (道順).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 25,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:25",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "約束の時間に遅れそうなので、（　）連絡を入れた。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "あらかじめ",
+            "突然",
+            "さっそく",
+            "ようやく"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Memberi kabar terlebih dahulu (あらかじめ).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 26,
+          "questionType": "PARAPHRASE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:26",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "その知らせを聞いて<u>たまげた</u>。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "非常に驚いた",
+            "怒り出した",
+            "がっかりした",
+            "喜んだ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Tamageru (たまげる) adalah ungkapan kaget luar biasa (非常に驚いた).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 27,
+          "questionType": "PARAPHRASE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:27",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "彼は<u>すなおな</u>性格だ。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "素直で正直な",
+            "頑固で厳しい",
+            "短気で怒りっぽい",
+            "無口でおとなしい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Sunao (素直) berarti jujur dan penurut.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 28,
+          "questionType": "PARAPHRASE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:28",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "<u>およそ</u>30分で到着します。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "だいたい",
+            "かならず",
+            "ぜったいに",
+            "やっと"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Oyoso (およそ) bermakna kira-kira / kurang lebih (だいたい).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 29,
+          "questionType": "PARAPHRASE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:29",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "その知らせを聞いて<u>たまげた</u>。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "非常に驚いた",
+            "怒り出した",
+            "がっかりした",
+            "喜んだ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Tamageru (たまげる) adalah ungkapan kaget luar biasa (非常に驚いた).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 30,
+          "questionType": "PARAPHRASE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:30",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "彼は<u>すなおな</u>性格だ。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "素直で正直な",
+            "頑固で厳しい",
+            "短気で怒りっぽい",
+            "無口でおとなしい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Sunao (素直) berarti jujur dan penurut.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 31,
+          "questionType": "USAGE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:31",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "【都合】",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "明日は都合が悪いので参加できません。",
+            "この靴は都合がとても高いです。",
+            "都合を降ろして荷物を入れます。",
+            "都合をよく噛んで食べてください。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「都合」(kondisi kelonggaran waktu) tepat digunakan untuk menyatakan situasi ada acara lain.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 32,
+          "questionType": "USAGE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:32",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "【遠慮】",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ここではタバコをご遠慮ください。",
+            "遠慮をして駅まで走りました。",
+            "雨が遠慮に降っています。",
+            "遠慮な本を読んで寝ました。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「遠慮」(menahan diri / segan) digunakan pada permohonan sopan seperti「ご遠慮ください」.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 33,
+          "questionType": "USAGE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:33",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "【案内】",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "東京タワーの案内をしてもらった。",
+            "友達に新しいペンを案内した。",
+            "雨が降る案内が出ている。",
+            "案内を食べてから出かけた。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「案内」(panduan/menemani berkunjung) tepat dipakai untuk menunjukkan tempat wisata.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 34,
+          "questionType": "USAGE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:34",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "【都合】",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "明日は都合が悪いので参加できません。",
+            "この靴は都合がとても高いです。",
+            "都合を降ろして荷物を入れます。",
+            "都合をよく噛んで食べてください。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「都合」(kondisi kelonggaran waktu) tepat digunakan untuk menyatakan situasi ada acara lain.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 35,
+          "questionType": "USAGE",
+          "sourceKey": "jlpt-n4-mock-03:moji_goi:35",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "【遠慮】",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ここではタバコをご遠慮ください。",
+            "遠慮をして駅まで走りました。",
+            "雨が遠慮に降っています。",
+            "遠慮な本を読んで寝ました。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「遠慮」(menahan diri / segan) digunakan pada permohonan sopan seperti「ご遠慮ください」.",
+          "difficulty": 2
+        }
+      ]
+    },
+    {
+      "sectionType": "BUNPOU",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:1",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "雨が 降り（　）です。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "そう",
+            "よう",
+            "らしい",
+            "みたい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kelihatannya akan turun hujan (dugaan visual): Masu-stem + sou desu.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:2",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "先生に 本を 貸して（　）ました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "いただき",
+            "くださり",
+            "あげ",
+            "やり"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menerima kebaikan dari orang yang dihormati: V-te itadaku.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:3",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "日本へ 行ったこと（　）ありますか。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "が",
+            "を",
+            "に",
+            "で"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola pengalaman: V-ta koto ga aru.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:4",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "風邪を 引かない（　）に、暖かく してください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "よう",
+            "そう",
+            "ため",
+            "こと"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola tujuan negatif agar tidak terjadi: V-nai you ni.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:5",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "窓が 開けて（　）あります。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "あり",
+            "い",
+            "おき",
+            "み"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola keadaan yang sengaja dibuat: V-te aru.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:6",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "雨が 降り（　）です。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "そう",
+            "よう",
+            "らしい",
+            "みたい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kelihatannya akan turun hujan (dugaan visual): Masu-stem + sou desu.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:7",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "先生に 本を 貸して（　）ました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "いただき",
+            "くださり",
+            "あげ",
+            "やり"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menerima kebaikan dari orang yang dihormati: V-te itadaku.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:8",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "日本へ 行ったこと（　）ありますか。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "が",
+            "を",
+            "に",
+            "で"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola pengalaman: V-ta koto ga aru.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:9",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "風邪を 引かない（　）に、暖かく してください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "よう",
+            "そう",
+            "ため",
+            "こと"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola tujuan negatif agar tidak terjadi: V-nai you ni.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "SENTENCE_COMPOSITION",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:10",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "雨が ＿＿ ＿★＿ ＿＿ ＿＿ 出かけましょう。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "やんだら",
+            "すぐに",
+            "かいものに",
+            "スーパーへ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Urutan benar: やんだら すぐに スーパーへ かいものに (★ = やんだら).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "SENTENCE_COMPOSITION",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:11",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "先生に ＿＿ ＿★＿ ＿＿ ＿＿ わかりました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "おしえて",
+            "いただいたので",
+            "よく",
+            "文法が"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Urutan benar: おしえて いただいたので 文法が よく (★ = いただいたので).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "SENTENCE_COMPOSITION",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:12",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "雨が ＿＿ ＿★＿ ＿＿ ＿＿ 出かけましょう。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "やんだら",
+            "すぐに",
+            "かいものに",
+            "スーパーへ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Urutan benar: やんだら すぐに スーパーへ かいものに (★ = やんだら).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "TEXT_GRAMMAR",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:13",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "（1）に入る最もよいものを選んでください。",
+          "passage": "日本に来てから、半年がたちました。最初は日本語が全く話せませんでしたが、（1）少しずつ話せるようになりました。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "最近は",
+            "昔は",
+            "突然",
+            "決して"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Keterangan kontras waktu: belakangan ini (最近は) mulai bisa berbicara sedikit demi sedikit.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "TEXT_GRAMMAR",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:14",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "（1）に入る最もよいものを選んでください。",
+          "passage": "日本に来てから、半年がたちました。最初は日本語が全く話せませんでしたが、（1）少しずつ話せるようになりました。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "最近は",
+            "昔は",
+            "突然",
+            "決して"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Keterangan kontras waktu: belakangan ini (最近は) mulai bisa berbicara sedikit demi sedikit.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "TEXT_GRAMMAR",
+          "sourceKey": "jlpt-n4-mock-03:bunpou:15",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "（1）に入る最もよいものを選んでください。",
+          "passage": "日本に来てから、半年がたちました。最初は日本語が全く話せませんでしたが、（1）少しずつ話せるようになりました。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "最近は",
+            "昔は",
+            "突然",
+            "決して"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Keterangan kontras waktu: belakangan ini (最近は) mulai bisa berbicara sedikit demi sedikit.",
+          "difficulty": 2
+        }
+      ]
+    },
+    {
+      "sectionType": "DOKKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SHORT_PASSAGE",
+          "sourceKey": "jlpt-n4-mock-03:dokkai:1",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "図書館の利用について、正しいものはどれですか。",
+          "passage": "【図書館からのお知らせ】\n館内での飲食は原則禁止ですが、ふた付きの水筒やペットボトルの飲み物に限り、持ち込みが可能です。本を汚さないよう、十分ご注意ください。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ふた付きの飲み物なら持ち込んでもよい",
+            "館内でお弁当を食べてもよい",
+            "どんな飲み物も持ち込んではいけない",
+            "本を読みながらお菓子を食べてもよい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Minuman botol/termos bertutup diperbolehkan.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "SHORT_PASSAGE",
+          "sourceKey": "jlpt-n4-mock-03:dokkai:2",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "図書館の利用について、正しいものはどれですか。",
+          "passage": "【図書館からのお知らせ】\n館内での飲食は原則禁止ですが、ふた付きの水筒やペットボトルの飲み物に限り、持ち込みが可能です。本を汚さないよう、十分ご注意ください。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ふた付きの飲み物なら持ち込んでもよい",
+            "館内でお弁当を食べてもよい",
+            "どんな飲み物も持ち込んではいけない",
+            "本を読みながらお菓子を食べてもよい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Minuman botol/termos bertutup diperbolehkan.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "SHORT_PASSAGE",
+          "sourceKey": "jlpt-n4-mock-03:dokkai:3",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "図書館の利用について、正しいものはどれですか。",
+          "passage": "【図書館からのお知らせ】\n館内での飲食は原則禁止ですが、ふた付きの水筒やペットボトルの飲み物に限り、持ち込みが可能です。本を汚さないよう、十分ご注意ください。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ふた付きの飲み物なら持ち込んでもよい",
+            "館内でお弁当を食べてもよい",
+            "どんな飲み物も持ち込んではいけない",
+            "本を読みながらお菓子を食べてもよい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Minuman botol/termos bertutup diperbolehkan.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "MID_PASSAGE",
+          "sourceKey": "jlpt-n4-mock-03:dokkai:4",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "筆者が日本のコンビニについて驚いたことは何か。",
+          "passage": "日本のコンビニエンスストアは、単に買い物をするだけの場所ではない。荷物の発送や公共料金の支払い、銀行ATMの利用、さらには住民票の発行までできる。年中無休で24時間開いており、生活のあらゆるインフラが集約されている点に、私は大きな感銘を受けた。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "生活に必要な多様なサービスが24時間提供されていること",
+            "商品の値段がスーパーより非常に安いこと",
+            "店員が全員外国人であること",
+            "電車の切符が買えること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Berbagai layanan penunjang kehidupan terintegrasi selama 24 jam.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "MID_PASSAGE",
+          "sourceKey": "jlpt-n4-mock-03:dokkai:5",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "筆者が日本のコンビニについて驚いたことは何か。",
+          "passage": "日本のコンビニエンスストアは、単に買い物をするだけの場所ではない。荷物の発送や公共料金の支払い、銀行ATMの利用、さらには住民票の発行までできる。年中無休で24時間開いており、生活のあらゆるインフラが集約されている点に、私は大きな感銘を受けた。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "生活に必要な多様なサービスが24時間提供されていること",
+            "商品の値段がスーパーより非常に安いこと",
+            "店員が全員外国人であること",
+            "電車の切符が買えること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Berbagai layanan penunjang kehidupan terintegrasi selama 24 jam.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "MID_PASSAGE",
+          "sourceKey": "jlpt-n4-mock-03:dokkai:6",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "筆者が日本のコンビニについて驚いたことは何か。",
+          "passage": "日本のコンビニエンスストアは、単に買い物をするだけの場所ではない。荷物の発送や公共料金の支払い、銀行ATMの利用、さらには住民票の発行までできる。年中無休で24時間開いており、生活のあらゆるインフラが集約されている点に、私は大きな感銘を受けた。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "生活に必要な多様なサービスが24時間提供されていること",
+            "商品の値段がスーパーより非常に安いこと",
+            "店員が全員外国人であること",
+            "電車の切符が買えること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Berbagai layanan penunjang kehidupan terintegrasi selama 24 jam.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "sourceKey": "jlpt-n4-mock-03:dokkai:7",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "留学生割引を利用して新幹線に乗るための条件は何か。",
+          "passage": "【JR学割乗車券のご案内】\n・片道の営業キロが101キロ以上の場合、運賃が2割引となります。\n・学校が発行する「学生・生徒旅客運賃割引証」を窓口に提示してください。\n・特急券や指定席券は割引の対象外です。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "片道101キロ以上で学校の発行する学割証を提示すること",
+            "特急券も2割引になること",
+            "往復でなくても自動的に割引されること",
+            "学生証だけを見せればよいこと"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Jarak minimal 101 km dan wajib menunjukkan sertifikat diskon pelajar dari sekolah.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "sourceKey": "jlpt-n4-mock-03:dokkai:8",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "留学生割引を利用して新幹線に乗るための条件は何か。",
+          "passage": "【JR学割乗車券のご案内】\n・片道の営業キロが101キロ以上の場合、運賃が2割引となります。\n・学校が発行する「学生・生徒旅客運賃割引証」を窓口に提示してください。\n・特急券や指定席券は割引の対象外です。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "片道101キロ以上で学校の発行する学割証を提示すること",
+            "特急券も2割引になること",
+            "往復でなくても自動的に割引されること",
+            "学生証だけを見せればよいこと"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Jarak minimal 101 km dan wajib menunjukkan sertifikat diskon pelajar dari sekolah.",
+          "difficulty": 2
+        }
+      ]
+    },
+    {
+      "sectionType": "CHOUKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n4-mock-03:choukai:1",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の学生は このあと まず 何を しますか。",
+          "passage": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "申請書に 記入する",
+            "推薦状を 取りに行く",
+            "成績証明書を コピーする",
+            "学長に 会いに行く"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertama-tama mengisi formulir aplikasi (まずこちらの申請書に記入してください).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n4-mock-03:choukai:2",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の学生は このあと まず 何を しますか。",
+          "passage": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "申請書に 記入する",
+            "推薦状を 取りに行く",
+            "成績証明書を コピーする",
+            "学長に 会いに行く"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertama-tama mengisi formulir aplikasi (まずこちらの申請書に記入してください).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n4-mock-03:choukai:3",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の学生は このあと まず 何を しますか。",
+          "passage": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "申請書に 記入する",
+            "推薦状を 取りに行く",
+            "成績証明書を コピーする",
+            "学長に 会いに行く"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertama-tama mengisi formulir aplikasi (まずこちらの申請書に記入してください).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n4-mock-03:choukai:4",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の学生は このあと まず 何を しますか。",
+          "passage": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "申請書に 記入する",
+            "推薦状を 取りに行く",
+            "成績証明書を コピーする",
+            "学長に 会いに行く"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertama-tama mengisi formulir aplikasi (まずこちらの申請書に記入してください).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n4-mock-03:choukai:5",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の学生は このあと まず 何を しますか。",
+          "passage": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "申請書に 記入する",
+            "推薦状を 取りに行く",
+            "成績証明書を コピーする",
+            "学長に 会いに行く"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertama-tama mengisi formulir aplikasi (まずこちらの申請書に記入してください).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n4-mock-03:choukai:6",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の学生は このあと まず 何を しますか。",
+          "passage": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "申請書に 記入する",
+            "推薦状を 取りに行く",
+            "成績証明書を コピーする",
+            "学長に 会いに行く"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertama-tama mengisi formulir aplikasi (まずこちらの申請書に記入してください).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n4-mock-03:choukai:7",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の学生は このあと まず 何を しますか。",
+          "passage": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "申請書に 記入する",
+            "推薦状を 取りに行く",
+            "成績証明書を コピーする",
+            "学長に 会いに行く"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertama-tama mengisi formulir aplikasi (まずこちらの申請書に記入してください).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n4-mock-03:choukai:8",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の学生は このあと まず 何を しますか。",
+          "passage": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "大学の 事務室で 男の学生と 係の人が 話しています。\n学生：「奨学金の 申し込みを したいのですが。」\n係：「はい。まず こちらの 申請書に 記入してください。それから、成績証明書と 推薦状を 添えて 窓口に 出してください。」\n学生：「成績証明書は 今 手元に あります。」\n係：「では、申請書を 書いてから 一緒に 出してくださいね。」\n男の学生は このあと まず 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "申請書に 記入する",
+            "推薦状を 取りに行く",
+            "成績証明書を コピーする",
+            "学長に 会いに行く"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertama-tama mengisi formulir aplikasi (まずこちらの申請書に記入してください).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n4-mock-03:choukai:9",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "passage": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "audioUrl": null,
+          "audioScript": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "imageUrl": null,
+          "options": [
+            "漢字を覚えること",
+            "文法を理解すること",
+            "発音すること",
+            "聞き取ること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Paling kesulitan menghafal kanji (漢字を覚えるのが一番苦労しています).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n4-mock-03:choukai:10",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "passage": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "audioUrl": null,
+          "audioScript": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "imageUrl": null,
+          "options": [
+            "漢字を覚えること",
+            "文法を理解すること",
+            "発音すること",
+            "聞き取ること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Paling kesulitan menghafal kanji (漢字を覚えるのが一番苦労しています).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n4-mock-03:choukai:11",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "passage": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "audioUrl": null,
+          "audioScript": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "imageUrl": null,
+          "options": [
+            "漢字を覚えること",
+            "文法を理解すること",
+            "発音すること",
+            "聞き取ること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Paling kesulitan menghafal kanji (漢字を覚えるのが一番苦労しています).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n4-mock-03:choukai:12",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "passage": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "audioUrl": null,
+          "audioScript": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "imageUrl": null,
+          "options": [
+            "漢字を覚えること",
+            "文法を理解すること",
+            "発音すること",
+            "聞き取ること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Paling kesulitan menghafal kanji (漢字を覚えるのが一番苦労しています).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n4-mock-03:choukai:13",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "passage": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "audioUrl": null,
+          "audioScript": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "imageUrl": null,
+          "options": [
+            "漢字を覚えること",
+            "文法を理解すること",
+            "発音すること",
+            "聞き取ること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Paling kesulitan menghafal kanji (漢字を覚えるのが一番苦労しています).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n4-mock-03:choukai:14",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "passage": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "audioUrl": null,
+          "audioScript": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "imageUrl": null,
+          "options": [
+            "漢字を覚えること",
+            "文法を理解すること",
+            "発音すること",
+            "聞き取ること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Paling kesulitan menghafal kanji (漢字を覚えるのが一番苦労しています).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n4-mock-03:choukai:15",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "passage": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "audioUrl": null,
+          "audioScript": "留学生が 話しています。\n女：「日本語の 勉強は どうですか。」\n男：「文法や 会話は 楽しいんですが、やっぱり 漢字を 覚えるのが 一番 苦労しています。似た 形が 多すぎます。」\n男の人が 日本語の 勉強で 一番 難しいと 感じているのは 何ですか。",
+          "imageUrl": null,
+          "options": [
+            "漢字を覚えること",
+            "文法を理解すること",
+            "発音すること",
+            "聞き取ること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Paling kesulitan menghafal kanji (漢字を覚えるのが一番苦労しています).",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n4-mock-03:choukai:16",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "この荷物、手伝いましょうか。",
+          "audioUrl": null,
+          "audioScript": "この荷物、手伝いましょうか。",
+          "imageUrl": null,
+          "options": [
+            "助かります、お願いします。",
+            "どういたしまして。",
+            "手伝いました。",
+            "いいえ、荷物です。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menerima tawaran bantuan: 助かります、お願いします.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n4-mock-03:choukai:17",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "明日、雨が降るそうですよ。",
+          "audioUrl": null,
+          "audioScript": "明日、雨が降るそうですよ。",
+          "imageUrl": null,
+          "options": [
+            "じゃあ、傘を持っていきます。",
+            "雨でしたね。",
+            "よかったですね。",
+            "雨を飲みます。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Merespons kabar cuaca: kalau begitu bawa payung.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n4-mock-03:choukai:18",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "この荷物、手伝いましょうか。",
+          "audioUrl": null,
+          "audioScript": "この荷物、手伝いましょうか。",
+          "imageUrl": null,
+          "options": [
+            "助かります、お願いします。",
+            "どういたしまして。",
+            "手伝いました。",
+            "いいえ、荷物です。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menerima tawaran bantuan: 助かります、お願いします.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n4-mock-03:choukai:19",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "明日、雨が降るそうですよ。",
+          "audioUrl": null,
+          "audioScript": "明日、雨が降るそうですよ。",
+          "imageUrl": null,
+          "options": [
+            "じゃあ、傘を持っていきます。",
+            "雨でしたね。",
+            "よかったですね。",
+            "雨を飲みます。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Merespons kabar cuaca: kalau begitu bawa payung.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n4-mock-03:choukai:20",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "この荷物、手伝いましょうか。",
+          "audioUrl": null,
+          "audioScript": "この荷物、手伝いましょうか。",
+          "imageUrl": null,
+          "options": [
+            "助かります、お願いします。",
+            "どういたしまして。",
+            "手伝いました。",
+            "いいえ、荷物です。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menerima tawaran bantuan: 助かります、お願いします.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n4-mock-03:choukai:21",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "明日、雨が降るそうですよ。",
+          "audioUrl": null,
+          "audioScript": "明日、雨が降るそうですよ。",
+          "imageUrl": null,
+          "options": [
+            "じゃあ、傘を持っていきます。",
+            "雨でしたね。",
+            "よかったですね。",
+            "雨を飲みます。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Merespons kabar cuaca: kalau begitu bawa payung.",
+          "difficulty": 2
+        },
+        {
+          "questionNumber": 22,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n4-mock-03:choukai:22",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "この荷物、手伝いましょうか。",
+          "audioUrl": null,
+          "audioScript": "この荷物、手伝いましょうか。",
+          "imageUrl": null,
+          "options": [
+            "助かります、お願いします。",
+            "どういたしまして。",
+            "手伝いました。",
+            "いいえ、荷物です。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menerima tawaran bantuan: 助かります、お願いします.",
+          "difficulty": 2
+        }
+      ]
+    }
+  ]
+}

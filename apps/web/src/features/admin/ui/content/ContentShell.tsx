@@ -4,13 +4,12 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/application/AuthProvider";
-import { AdminHeaderNav } from "@/features/admin/ui/AdminHeaderNav";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import styles from "./content.module.css";
 import { CloseIcon } from "@/shared/ui/icons";
 
 /** Kerangka halaman konten admin: cek akses, judul, dan tab Pelajaran / Ujian / Kamus / Pendaftaran. */
-export function ContentShell({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+export function ContentShell({ children }: { title?: string; subtitle?: string; children: React.ReactNode }) {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -30,18 +29,20 @@ export function ContentShell({ title, subtitle, children }: { title: string; sub
 
   const tabs = [
     {
-      href: "/admin/konten",
+      href: "/admin/materi",
       label: "Pelajaran",
-      active: !["/admin/konten/ujian", "/admin/konten/pendaftaran", "/admin/konten/kamus", "/admin/konten/skenario"].some((p) => pathname.startsWith(p)),
+      active:
+        pathname === "/admin/materi" ||
+        pathname.startsWith("/admin/materi/bab") ||
+        (pathname === "/admin/konten" && !pathname.includes("banner")),
     },
-    { href: "/admin/konten/skenario", label: "Skenario AI", active: pathname.startsWith("/admin/konten/skenario") },
-    { href: "/admin/konten/ujian", label: "Ujian & Tes Penempatan", active: pathname.startsWith("/admin/konten/ujian") },
-    { href: "/admin/konten/kamus", label: "Kamus", active: pathname.startsWith("/admin/konten/kamus") },
-    { href: "/admin/konten/pendaftaran", label: "Pendaftaran", active: pathname.startsWith("/admin/konten/pendaftaran") },
+    { href: "/admin/materi/ujian", label: "Ujian & Tes Penempatan", active: pathname.startsWith("/admin/materi/ujian") },
+    { href: "/admin/materi/kamus", label: "Kamus", active: pathname.startsWith("/admin/materi/kamus") },
+    { href: "/admin/materi/pendaftaran", label: "Pendaftaran", active: pathname.startsWith("/admin/materi/pendaftaran") },
+    { href: "/admin/materi/skenario", label: "Skenario AI", active: pathname.startsWith("/admin/materi/skenario") },
   ];
   return (
     <div className={adminStyles.container}>
-      <AdminHeaderNav title={title} subtitle={subtitle} />
       <nav className={`${adminStyles.tabs} ${styles.wrapTabs}`} aria-label="Jenis konten">
         {tabs.map((t) => (
           <Link

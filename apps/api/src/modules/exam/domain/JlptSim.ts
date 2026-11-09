@@ -153,17 +153,34 @@ export function sessionOf(code: JlptCode, section: string): string | null {
   return JLPT_SPEC[code].sessions.find((s) => (s.sections as string[]).includes(section))?.key ?? null;
 }
 
-/** Urutkan soal seperti kertas ujian: per sesi, lalu per bagian di dalam sesi. Urutan dalam bagian dipertahankan. */
-export function orderBySection<T extends { section: string }>(questions: T[]): T[] {
-  const rank = (s: string) => {
+/**
+ * Urutkan soal seperti kertas ujian: per bagian, lalu per tipe soal (Daimon) di dalam bagian, lalu nomor soal
+ * di paket (angka di akhir sourceKey). Soal tanpa tipe/nomor mempertahankan urutan asalnya.
+ */
+export function orderBySection<T extends { section: string; category?: string | null; sourceKey?: string | null }>(questions: T[]): T[] {
+  const sectionRank = (s: string) => {
     const i = (SIM_SECTIONS as readonly string[]).indexOf(s);
     return i < 0 ? SIM_SECTIONS.length : i;
   };
+  const categoryRank = (c?: string | null) => {
+    const i = c ? JLPT_CATEGORIES.findIndex((x) => x.key === c) : -1;
+    return i < 0 ? JLPT_CATEGORIES.length : i;
+  };
+  const number = (key?: string | null) => Number(/:(\d+)$/.exec(key ?? "")?.[1] ?? Number.MAX_SAFE_INTEGER);
   return questions
     .map((q, i) => ({ q, i }))
-    .sort((a, b) => rank(a.q.section) - rank(b.q.section) || a.i - b.i)
+    .sort(
+      (a, b) =>
+        sectionRank(a.q.section) - sectionRank(b.q.section) ||
+        categoryRank(a.q.category) - categoryRank(b.q.category) ||
+        number(a.q.sourceKey) - number(b.q.sourceKey) ||
+        a.i - b.i,
+    )
     .map(({ q }) => q);
 }
+
+/** Bank simulasi hanya soal pilihan: lembar jawaban bulat (1-4) seperti JLPT tidak cocok untuk soal susun/tulis/bicara. */
+export const SIM_QUESTION_TYPES = ["pilihan_ganda", "mendengar"] as const;
 
 export interface GroupScore {
   key: string;

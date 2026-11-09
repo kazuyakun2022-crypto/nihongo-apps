@@ -6,6 +6,228 @@
   overflow-x: clip;
 }
 
+/* ── Bilah Atas Terpadu (Top Bar) ── */
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  width: 100%;
+  height: 56px;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--color-surface) 94%, var(--color-gold-soft));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 22%, var(--color-border));
+  box-shadow: 0 2px 16px -8px rgba(107, 21, 32, 0.08);
+  transition: background var(--motion-fast);
+}
+
+.topBarInner {
+  width: 100%;
+  max-width: var(--content-max);
+  height: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.topBarLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.topBarBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--color-text);
+  min-width: 0;
+  transition: opacity var(--motion-fast);
+}
+
+.topBarBrand:hover {
+  opacity: 0.88;
+}
+
+.topBarSeal {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 6px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-japanese), var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, #fff 25%, transparent), 0 3px 8px -2px rgba(107, 21, 32, 0.4);
+  transform: rotate(-3deg);
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.topBarBrand:hover .topBarSeal {
+  transform: rotate(0deg) scale(1.05);
+}
+
+.topBarBrandText {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.topBarName {
+  font-family: var(--font-japanese), var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-text);
+  letter-spacing: 0.03em;
+}
+
+.topBarTag {
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pembatas breadcrumb elegan khas Jepang */
+.topBarDivider {
+  display: inline-block;
+  color: color-mix(in srgb, var(--color-gold) 45%, var(--color-border));
+  font-size: 0.95rem;
+  font-weight: 300;
+  user-select: none;
+  margin: 0 4px;
+}
+
+/* Badge nama halaman yang elegan & rapi */
+.topBarScreen {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-primary);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-primary) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.topBarActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.topBarSuperBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.3);
+}
+
+.topBarAdminBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #8c1d2c 100%);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+@media (max-width: 600px) {
+  .topBarSuperBadge,
+  .topBarAdminBadge {
+    display: none;
+  }
+}
+
+/* Di layar desktop / tablet landscape: topbar rapih, sticky, dan terintegrasi penuh */
+@media (min-width: 900px) {
+  .topBar {
+    position: sticky;
+    top: 0;
+    z-index: 45;
+    height: 58px;
+    background: color-mix(in srgb, var(--color-surface) 94%, var(--color-gold-soft));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 24%, var(--color-border));
+    box-shadow: 0 2px 16px -8px rgba(107, 21, 32, 0.07);
+  }
+
+  .topBarInner {
+    max-width: 100%;
+    height: 100%;
+    padding: 0 var(--space-6);
+  }
+
+  .topBarLeft {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .topBarBrand {
+    display: inline-flex;
+  }
+
+  .topBarScreen {
+    font-size: 1rem;
+    padding: 4px 12px;
+  }
+
+  .topBarActions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .topBarInner {
+    padding: 0 var(--space-7);
+  }
+}
+
+/* Di ponsel sempit (<480px), sembunyikan slogan teks agar judul tetap muat lega */
+@media (max-width: 480px) {
+  .topBarTag {
+    display: none;
+  }
+}
+
 .main {
   width: 100%;
   max-width: min(var(--content-max), 100%);
@@ -14,8 +236,9 @@
   min-width: 0;
   overflow-x: hidden;
   overflow-x: clip;
-  padding: var(--space-4) var(--space-3) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-4));
+  padding: var(--space-3) var(--space-3) calc(var(--nav-height) + max(env(safe-area-inset-bottom, 0px), 8px) + var(--space-6));
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   /* backwards, bukan both: transform yang tertinggal setelah animasi menjadikan <main> containing block,
      sehingga modal & elemen position:fixed di dalam halaman ikut tergeser/terpotong (bukan menempel ke layar) */
@@ -50,7 +273,7 @@
 
 @media (min-width: 480px) {
   .main {
-    padding: var(--space-4) var(--space-3) calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-4));
+    padding: var(--space-3) var(--space-3) calc(var(--nav-height) + max(env(safe-area-inset-bottom, 0px), 8px) + var(--space-6));
   }
   .mainChat {
     padding: 0 !important;
@@ -70,20 +293,40 @@
   }
 }
 
-/* Ponsel: navigasi di bawah agar mudah dijangkau jempol. */
+/* ══ Navigasi Bawah Ponsel (Mobile Bottom Bar) ══
+   Desain bernuansa Washi Jepang hangat, glassy modern, dengan animasi pop-in halus & label nama layar jelas */
 .nav {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 50;
-  background: var(--color-surface);
-  border-top: var(--border-width) solid var(--color-border);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  /* pan-x memblokir geser vertikal yang dimulai dari navigasi; manipulation
-     tetap mematikan double-tap zoom tapi mengizinkan scroll satu jari. */
+  background: color-mix(in srgb, var(--color-surface) 94%, var(--color-gold-soft));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid color-mix(in srgb, var(--color-gold) 35%, var(--color-border));
+  box-shadow: 0 -8px 30px -10px rgba(107, 21, 32, 0.22), 0 -1px 0 rgba(255, 255, 255, 0.6) inset;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
   touch-action: manipulation;
   transform: translateZ(0);
+}
+
+/* Garis rambut emas & merah bercahaya di atas bilah navigasi */
+.nav::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent 2%,
+    var(--color-gold) 20%,
+    var(--color-primary-soft) 50%,
+    var(--color-gold) 80%,
+    transparent 98%
+  );
+  opacity: 0.9;
+  z-index: 2;
 }
 
 .brand {
@@ -93,66 +336,162 @@
 .navList {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 4px 6px;
   display: grid;
-  grid-template-columns: repeat(var(--nav-cols, 6), 1fr);
+  grid-template-columns: repeat(var(--nav-cols, 4), 1fr);
   height: var(--nav-height);
+  box-sizing: border-box;
+  align-items: center;
+  gap: 4px;
 }
 
 .navLink {
   height: 100%;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   text-decoration: none;
-  color: var(--color-text-muted);
-  font-size: 0.625rem;   /* 10px — cukup terbaca untuk 6 item */
-  font-weight: var(--font-weight-bold);
-  transition: color var(--motion-fast), transform var(--motion-fast) var(--ease-spring);
-  padding: 0 2px;
+  color: color-mix(in srgb, var(--color-text-muted) 88%, transparent);
+  padding: 4px 2px;
+  border-radius: 12px;
+  position: relative;
   overflow: hidden;
+  transition:
+    color var(--motion-fast),
+    background var(--motion-fast),
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-fast);
 }
 
-.navLink svg {
-  width: 20px;
-  height: 20px;
+.navIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  position: relative;
+  transition: transform 280ms var(--ease-spring), filter 200ms ease;
+}
+
+.navIconWrap svg {
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
+  transition: stroke-width 200ms ease, transform 280ms var(--ease-spring);
 }
 
-.navLink span {
+/* Label nama layar di navigasi bawah ponsel */
+.navLabel {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-  text-align: center;
+  letter-spacing: 0.01em;
+  transition:
+    color 200ms ease,
+    transform 200ms var(--ease-spring),
+    font-weight 200ms ease;
 }
 
+.navLabelText,
+.navLabelShort {
+  display: inline;
+}
+
+.navLabelFull {
+  display: none;
+}
+
+/* Sentuhan jari lembut (tap feedback) */
 .navLink:active {
-  transform: scale(0.88);
+  transform: scale(0.92);
 }
 
+/* Item aktif di navigasi bawah ponsel: kapsul halus bercahaya + animasi ikon */
 .navLink[aria-current="page"] {
   color: var(--color-primary);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-primary) 12%, transparent) 0%,
+    color-mix(in srgb, var(--color-primary) 4%, transparent) 100%
+  );
+  box-shadow:
+    0 2px 10px -2px rgba(177, 42, 58, 0.16),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
-/* Layar ≥480px: label huruf sedikit lebih besar */
+/* Penanda aktif: busur permata merah beni bercahaya di atas */
+.navLink[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 26px;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, #f43f5e, var(--color-primary));
+  box-shadow: 0 2px 8px rgba(244, 63, 94, 0.65);
+  transform: translateX(-50%);
+  animation: navIndicatorGlow 2.4s ease-in-out infinite alternate;
+}
+
+.navLink[aria-current="page"] .navIconWrap {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 2px 6px rgba(177, 42, 58, 0.35));
+  animation: navIconBounce 340ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.navLink[aria-current="page"] .navLabel {
+  color: var(--color-primary);
+  font-weight: 800;
+  transform: scale(1.04);
+}
+
+@keyframes navIconBounce {
+  0% { transform: translateY(0) scale(0.85); }
+  50% { transform: translateY(-4px) scale(1.15); }
+  100% { transform: translateY(-2px) scale(1); }
+}
+
+@keyframes navIndicatorGlow {
+  0% { opacity: 0.85; box-shadow: 0 2px 6px rgba(244, 63, 94, 0.5); }
+  100% { opacity: 1; box-shadow: 0 2px 12px rgba(244, 63, 94, 0.9); }
+}
+
+/* Layar ≥480px: ruang lebih lega */
 @media (min-width: 480px) {
-  .navLink {
-    font-size: 0.6875rem;  /* 11px */
-    gap: 2px;
+  .navList {
+    padding: 6px 12px;
+    gap: 8px;
   }
-  .navLink svg {
-    width: 22px;
-    height: 22px;
+  .navLabel {
+    font-size: 0.72rem; /* 11.5px */
+  }
+  .navIconWrap svg {
+    width: 23px;
+    height: 23px;
   }
 }
 
-/* Desktop: sidebar di kiri, tetap di tempat saat halaman discroll. */
+/* Pegangan panah disembunyikan di layar ponsel */
+.collapseBtn {
+  display: none;
+}
+
+/* Desktop & iPad landscape: sidebar OVERLAY (menimpa konten saat melebar, rail saat disembunyikan) */
 @media (min-width: 900px) {
+  /* Shell mempertahankan ruang lajur ikon ramping (rail) — konten tidak menggeser saat sidebar dibuka melebar */
   .shell {
     display: block;
-    padding-left: var(--sidebar-width);
+    padding-left: var(--sidebar-rail, 4.5rem);
   }
 
   .nav {
@@ -166,14 +505,127 @@
     display: flex;
     flex-direction: column;
     border-top: 0;
-    border-right: var(--border-width) solid var(--color-border);
+    border-right: 1px solid color-mix(in srgb, var(--color-gold) 30%, var(--color-border));
     padding: var(--space-5) var(--space-3);
     backdrop-filter: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transform: translateX(0);
+    transition:
+      width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      padding 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 280ms ease;
+    box-shadow: 8px 0 24px -10px rgba(107, 21, 32, 0.25);
+    z-index: 50;
+    pointer-events: auto;
     animation: var(--kf-slideInLeft) var(--motion-entrance) var(--ease-entrance) backwards;
   }
 
+  /* Saat disembunyikan (hide): side menu tetap muncul sedikit sebagai lajur ikon ramping (rail) */
+  .sidebarCollapsed .nav {
+    width: var(--sidebar-rail, 4.5rem);
+    padding: var(--space-5) 8px;
+    box-shadow: 3px 0 14px -4px rgba(107, 21, 32, 0.12);
+  }
+
+  .sidebarCollapsed .brand {
+    justify-content: center;
+    padding: 0 0 var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+
+  .sidebarCollapsed .brandSeal {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1.15rem;
+    margin: 0 auto;
+  }
+
+  .sidebarCollapsed .brandText {
+    display: none !important;
+  }
+
+  .sidebarCollapsed .navList {
+    padding-right: 0;
+  }
+
+  .sidebarCollapsed .navLink {
+    justify-content: center;
+    padding: 12px 0;
+    gap: 0;
+  }
+
+  .sidebarCollapsed .navLabel,
+  .sidebarCollapsed .navLabelFull,
+  .sidebarCollapsed .navLabelShort,
+  .sidebarCollapsed .navLabelText {
+    display: none !important;
+  }
+
+  .sidebarCollapsed .navIconWrap {
+    display: flex !important;
+  }
+
+  /* Tombol buka/tutup — setengah lingkaran timbul di tengah tepi kanan sidebar */
+  .collapseBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: var(--sidebar-width);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 52px;
+    padding: 0;
+    /* Hanya sisi kanan yang membulat (setengah lingkaran) */
+    border-radius: 0 48px 48px 0;
+    background-color: var(--color-paper-deep);
+    border: 1px solid color-mix(in srgb, var(--color-gold) 40%, var(--color-border));
+    border-left: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    box-shadow: 4px 0 14px -3px rgba(107, 21, 32, 0.22);
+    z-index: 60;
+    transition:
+      left 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      background 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .collapseBtn:hover {
+    background-color: var(--color-surface);
+    color: var(--color-primary);
+    box-shadow: 5px 0 16px -2px rgba(107, 21, 32, 0.28);
+  }
+
+  .collapseBtn:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  /* Saat sidebar disembunyikan (rail): tombol menempel di tepi lajur ikon (muncul sedikit di tengah) */
+  .sidebarCollapsed .collapseBtn {
+    left: var(--sidebar-rail, 4.5rem);
+  }
+
+  /* Ikon panah berputar saat sidebar disembunyikan */
+  .collapseIconWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform: rotate(0deg);
+  }
+
+  .sidebarCollapsed .collapseIconWrap {
+    transform: rotate(180deg);
+  }
+
   .brand {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
     flex-shrink: 0;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-heavy);
@@ -185,7 +637,6 @@
     flex: 1 1 auto;
     min-height: 0;
     grid-template-columns: 1fr;
-    /* Tanpa ini baris grid meregang memenuhi tinggi sidebar (tiap menu ±130px). */
     align-content: start;
     height: auto;
     gap: var(--space-1);
@@ -198,16 +649,37 @@
 
   .navLink {
     display: flex;
+    flex-direction: row;
+    align-items: center;
     justify-content: flex-start;
     gap: var(--space-3);
     padding: var(--space-3);
     border-radius: var(--radius-md);
     font-size: var(--font-size-sm);
     overflow: visible;
+    background: transparent;
+    box-shadow: none;
     transition:
       color var(--motion-fast),
       background var(--motion-fast),
       transform var(--motion-fast) var(--ease-spring);
+  }
+
+  .navIconWrap {
+    width: auto;
+    height: auto;
+    transform: none !important;
+    animation: none !important;
+    filter: none !important;
+  }
+
+  .navLabel {
+    display: inline;
+    font-size: var(--font-size-sm);
+    font-weight: inherit;
+    max-width: none;
+    overflow: visible;
+    transform: none !important;
   }
 
   .navLink svg {
@@ -231,20 +703,22 @@
   }
 
   .navLink[aria-current="page"] {
-    background: var(--color-surface-muted);
+    background: var(--color-surface);
     color: var(--color-primary);
     position: relative;
+    font-weight: var(--font-weight-bold);
+    box-shadow: var(--shadow-paper);
   }
 
   .navLink[aria-current="page"]::before {
     content: "";
     position: absolute;
     left: 0;
-    top: 25%;
-    bottom: 25%;
+    top: 22%;
+    bottom: 22%;
     width: 3px;
     border-radius: var(--radius-pill);
-    background: var(--color-primary);
+    background: var(--color-gold);
   }
 
   .main {
@@ -259,60 +733,15 @@
   }
 }
 
-/* Label pendek hanya di navigasi bawah; sidebar desktop memakai label lengkap */
-.navLabelFull {
-  display: none;
-}
-
 @media (min-width: 900px) {
-  .navLabelFull {
+  .navLabelFull,
+  .navLabelText {
     display: inline;
   }
 
   .navLabelShort {
     display: none;
   }
-}
-
-/* ══ Rombakan tampilan: navigasi bernuansa Jepang hangat ══ */
-
-/* Ponsel: bilah bawah dari kertas washi, garis rambut emas di atasnya */
-.nav {
-  background: color-mix(in srgb, var(--color-surface) 92%, var(--color-gold-soft));
-  border-top: 0;
-  box-shadow: 0 -8px 24px -16px rgba(107, 21, 32, 0.35);
-}
-
-.nav::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-gold) 30%, var(--color-gold) 70%, transparent);
-  opacity: 0.55;
-}
-
-.navLink {
-  position: relative;
-}
-
-/* Penanda menu aktif di ponsel: garis pendek di atas ikon (bukan titik) */
-.navLink[aria-current="page"]::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 24px;
-  height: 3px;
-  border-radius: 0 0 3px 3px;
-  background: var(--color-primary);
-  transform: translateX(-50%);
-}
-
-.navLink[aria-current="page"] svg {
-  stroke-width: 2.4;
 }
 
 /* Merek: cap hanko + nama mincho (hanya tampil di sidebar desktop) */
@@ -397,9 +826,18 @@
   }
 
   .navLink[aria-current="page"]::before {
+    position: absolute;
+    left: 0;
+    right: auto;
     top: 22%;
     bottom: 22%;
+    width: 3px;
+    height: auto;
+    border-radius: var(--radius-pill);
     background: var(--color-gold);
+    box-shadow: none;
+    transform: none;
+    animation: none;
   }
 
   .navLink[aria-current="page"]::after {

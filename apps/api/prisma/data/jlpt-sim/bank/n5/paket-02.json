@@ -1,0 +1,1268 @@
+{
+  "examSlug": "jlpt-n5-mock-02",
+  "levelCode": "N5",
+  "variantIndex": 2,
+  "title": "Simulasi JLPT N5 - Paket 02",
+  "sections": [
+    {
+      "sectionType": "MOJI_GOI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:1",
+          "status": "published",
+          "promptText": "<u>水</u>を　のみます。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "みづ",
+            "みす",
+            "みず",
+            "みっず"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Kanji「水」dibaca「みず」yang berarti air. Pilihan lain salah pada penulisan dakuten atau konsonan ganda.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:2",
+          "status": "published",
+          "promptText": "<u>出口</u>は　あちらです。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "てくり",
+            "でくり",
+            "でぐち",
+            "てぐち"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Kanji「出口」dibaca「でぐち」yang berarti pintu keluar. Perhatikan perubahan bunyi menjadi dakuten pada「ぐち」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:3",
+          "status": "published",
+          "promptText": "そらに　<u>飛行機</u>が　とんで　います。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ひこっき",
+            "ひこき",
+            "ひこうき",
+            "びこうき"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Kanji「飛行機」dibaca「ひこうき」yang berarti pesawat terbang. Vokal「こう」adalah bunyi panjang (chouon).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:4",
+          "status": "published",
+          "promptText": "あしたは　<u>地下鉄</u>で　いきます。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ちかてつ",
+            "じかてづ",
+            "じかてつ",
+            "ちかてづ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「地下鉄」dibaca「ちかてつ」yang berarti kereta bawah tanah (subway). Huruf awal adalah「ち」bukan「じ」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:5",
+          "status": "published",
+          "promptText": "かのじょの　かみは　<u>短い</u>です。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "みぢかい",
+            "みじかい",
+            "みしかい",
+            "みじっかい"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Kanji「短い」dibaca「みじかい」yang berarti pendek. Bunyi tengah menggunakan「じ」bukan「ぢ」atau「し」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:6",
+          "status": "published",
+          "promptText": "<u>外国人</u>の　ともだちが　います。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "がいこくしん",
+            "かいこくじん",
+            "がいこくじん",
+            "がいごくじん"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Kanji「外国人」dibaca「がいこくじん」yang bermakna orang asing. Kanji「外」dibaca「がい」dan「人」dibaca「じん」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:7",
+          "status": "published",
+          "promptText": "この　へやは　とても　<u>明るい</u>です。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "あかろい",
+            "あがるい",
+            "あかるい",
+            "あがろい"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Kanji「明るい」dibaca「あかるい」yang berarti terang. Okurigana yang benar adalah「るい」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:8",
+          "status": "published",
+          "promptText": "つぎの ことばの かんじは どう かきますか。",
+          "passage": "あした <u>あおい</u> てがみを かきます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "黒い",
+            "赤い",
+            "白い",
+            "青い"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Kata 'aoi' ditulis dengan kanji 青い yang berarti 'biru'. Pilihan lainnya adalah Akai (merah), Shiroi (putih), dan Kuroi (hitam).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:9",
+          "status": "published",
+          "promptText": "つぎの ことばの かんじは どう かきますか。",
+          "passage": "あした えきで <u>ともだち</u>を まちます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "日本人",
+            "友達",
+            "家族",
+            "子供"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Kata 'tomodachi' ditulis dengan kanji 友達 yang berarti 'teman'. Pilihan lain adalah kodomo (anak-anak), nihonjin (orang Jepang), dan kazoku (keluarga).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:10",
+          "status": "published",
+          "promptText": "つぎの ことばの かんじは どう かきますか。",
+          "passage": "きょうは <u>あめ</u>が ふって います。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "魚",
+            "肉",
+            "花",
+            "雨"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Kata 'ame' ditulis dengan kanji 雨 yang berarti 'hujan'. Pilihan lainnya adalah niku (daging), hana (bunga), dan sakana (ikan).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:11",
+          "status": "published",
+          "promptText": "つぎの ことばの かんじは どう かきますか。",
+          "passage": "あかるい <u>へや</u>ですね。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "部屋",
+            "会社",
+            "学校",
+            "店"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kata 'heya' ditulis dengan kanji 部屋 yang berarti 'kamar' atau 'ruangan'. Pilihan lain adalah mise (toko), gakkou (sekolah), dan kaisha (perusahaan).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "ORTHOGRAPHY",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:12",
+          "status": "published",
+          "promptText": "つぎの ことばの かんじは どう かきますか。",
+          "passage": "まいにち <u>にほんご</u>を べんきょうします。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "日曜日",
+            "日本",
+            "日本人",
+            "日本語"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Kata 'nihongo' ditulis dengan kanji 日本語 yang berarti 'bahasa Jepang'. Pilihan lain adalah nihonjin (orang Jepang), nihon (Jepang), dan nichiyoubi (hari Minggu).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:13",
+          "status": "published",
+          "promptText": "あした は （　） です から、 がっこうへ いきません。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "じかん",
+            "しごと",
+            "やすみ",
+            "げんき"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Kalimat ini bermakna \"Besok libur, jadi tidak pergi ke sekolah\". Kata \"yasumi\" berarti libur atau istirahat, yang merupakan alasan logis untuk tidak pergi ke sekolah.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:14",
+          "status": "published",
+          "promptText": "のどが かわきましたから、 つめたい （　）を のみます。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "さかな",
+            "パン",
+            "ごはん",
+            "おちゃ"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Kalimat ini bermakna \"Karena haus, saya minum (teh) dingin\". Ketika haus, seseorang memerlukan minuman seperti \"ocha\" (teh), bukan makanan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:15",
+          "status": "published",
+          "promptText": "まいにち じかんが ありませんから、 （　） ねます。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "白く",
+            "大きく",
+            "高く",
+            "早く"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Kalimat ini bermakna \"Karena setiap hari tidak punya waktu (sibuk), saya tidur lebih awal\". Kata \"hayaku\" berfungsi untuk menerangkan kata kerja tidur menjadi \"lebih awal\".",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:16",
+          "status": "published",
+          "promptText": "この ペンは （　） ですから、 ふたつ かいました。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "あたらしい",
+            "安い",
+            "高い",
+            "おいしい"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Kalimat ini bermakna \"Karena pulpen ini murah, saya beli dua\". Alasan logis untuk membeli lebih dari satu barang adalah karena harganya yang \"yasui\" (murah).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:17",
+          "status": "published",
+          "promptText": "まいばん 、 おふろ に はいって から 、 （　） を かきます 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "にっき",
+            "てがみ",
+            "しんぶん",
+            "きっぷ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kegiatan menulis yang dilakukan setiap malam sebelum tidur biasanya adalah buku harian (にっき). Pilihan lain seperti surat, koran, atau tiket tidak sesuai dengan kebiasaan rutin harian.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:18",
+          "status": "published",
+          "promptText": "あつい です から 、 まど を （　） ください 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "しめて",
+            "いれて",
+            "あけて",
+            "かけて"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Karena cuaca panas, tindakan yang tepat pada jendela adalah membukanya (あけて). Kata dasar yang diuji adalah あけます.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:19",
+          "status": "published",
+          "promptText": "もんだい：<u>しゃしん</u> を とります。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ほん を よみます",
+            "え を かきます",
+            "カメラ で とります",
+            "てがみ を かきます"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「しゃしん」は写真（kamera untuk mengambil gambar）です。「カメラでとります」が同じ意味になります。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:20",
+          "status": "published",
+          "promptText": "つぎの ぶんの 「<u>ひるごはん</u>」 と だいたい お同じ いみの ことばは どれですか。",
+          "passage": "きょうは レストランで <u>ひるごはん</u>を たべました。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "よるの くだもの",
+            "ひるに たべる ごはん",
+            "おいしい りょうり",
+            "あさの たべもの"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「ひるごはん」は昼の時間に食べる食事のことです。「ひるに たべる ごはん」が正しい言い換えです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n5-mock-02:moji_goi:21",
+          "status": "published",
+          "promptText": "もんだい： つぎの ぶんしょうの <u>すこし</u> と おなじ いみの ことばは どれですか。",
+          "passage": "きのう は <u>すこし</u> つかれました。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "あまり",
+            "たくさん",
+            "とても",
+            "ちょっと"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「すこし」は「たったこれだけ」という意味で、同じ意味の言葉は「ちょっと」です。「とても」や「たくさん」は反対の意味になります。",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "BUNPOU",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:1",
+          "status": "published",
+          "promptText": "きのう 、 わたし は にほん の えいが を （　） 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "みますした",
+            "みて",
+            "みます",
+            "みました"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Kata keterangan 'きのう' (kemarin) menunjukkan waktu lampau, sehingga verba harus diubah ke bentuk lampau '～ました'. Pola ini menguji konjugasi bentuk lampau dari kata kerja.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:2",
+          "status": "published",
+          "promptText": "あした 、 いっしょに えき へ （　） か 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "いきます",
+            "いかない",
+            "いきました",
+            "いって"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola 'V-ませんか' digunakan untuk mengajak seseorang melakukan sesuatu dengan sopan. Bentuk dasar verba 'いく' digunakan sebelum 'ませんか'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:3",
+          "status": "published",
+          "promptText": "つくえ の （　） に じしょ が あります 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "うえ",
+            "なか",
+            "うしろ",
+            "まえ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola '〜の上に〜があります' digunakan untuk menyatakan keberadaan suatu benda di atas benda lain. 'うえ' berarti atas.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:4",
+          "status": "published",
+          "promptText": "きょうしつ の なか で （　） 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "たばこ を すいます",
+            "たばこ を すわないでください",
+            "たばこ を すってください",
+            "たばこ を すいません"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pola '〜ないでください' digunakan untuk melarang seseorang melakukan sesuatu. 'すわないでください' berarti 'jangan merokok'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:5",
+          "status": "published",
+          "promptText": "あかい りんご を （　） ください 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "三つ",
+            "三人",
+            "三まい",
+            "三ほん"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kata bantu bilangan 'つ' digunakan untuk menghitung buah-buahan atau benda umum yang tidak memiliki satuan khusus. '三つ' berarti tiga buah.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:6",
+          "status": "published",
+          "promptText": "わたし は じかん が ない から 、 タクシー （　） かえります 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "を",
+            "で",
+            "に",
+            "が"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Partikel 'で' digunakan untuk menunjukkan alat atau sarana yang dipakai untuk melakukan suatu tindakan, dalam hal ini naik taksi. 'タクシーで' berarti 'dengan taksi'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:7",
+          "status": "published",
+          "promptText": "この りんご は あかくて （　） です。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "おおきかった",
+            "おおきくて",
+            "おおきく",
+            "おおきい"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "I-adjektiva (い形容詞) yang diletakkan langsung di depan noun atau di akhir kalimat dasar menggunakan bentuk keadaannya yang asli (kamus). おおきい berarti besar dan menerangkan noun 'desu' (meskipun kalimat ini predikat akhirnya desu, bentuk sebelum desu untuk i-adjektiva adalah bentuk dasarnya).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:8",
+          "status": "published",
+          "promptText": "きょうしつ に がくせい が （　） います。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "じゅうにん",
+            "じゅうさつ",
+            "じゅうにひき",
+            "じゅうだい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Untuk menghitung jumlah orang, digunakan kata penghitung \"〜人\" (nin). Kata \"じゅうにん\" berarti 10 orang.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:9",
+          "status": "published",
+          "promptText": "わたし は ざっし を （　） います。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "よみ",
+            "よむ",
+            "よんで",
+            "よんだ"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Pola tata bahasa 〜て います digunakan untuk menyatakan kegiatan yang sedang berlangsung. Kata kerja 'yomu' (membaca) harus diubah ke bentuk-te (yonde) agar sesuai dengan 'imasu'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:10",
+          "status": "published",
+          "promptText": "きょう は ＿＿ ＿★＿ ＿＿ ＿＿ 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "を 出ました",
+            "うち",
+            "に",
+            "10時"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Urutan benar: 10時・に・うち・を 出ました (★ = に). Kalimat lengkap: 「きょう は10時にうちを 出ました。」. Partikel 'ni' digunakan untuk menunjukkan keterangan waktu yang spesifik, yaitu '10-ji ni' (pada pukul 10).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:11",
+          "status": "published",
+          "promptText": "ごはん を ＿＿ ＿★＿ ＿＿ ＿＿ 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "を 洗います",
+            "手",
+            "まえに",
+            "食べる"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Urutan benar: 食べる・まえに・手・を 洗います (★ = まえに). Kalimat lengkap: 「ごはん を食べるまえに手を 洗います。」. Pola 'V-ru + mae ni' berarti 'sebelum melakukan sesuatu'. 'Taberu mae ni' berarti 'sebelum makan'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:12",
+          "status": "published",
+          "promptText": "あした ＿＿ ＿★＿ ＿＿ ＿＿ 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "デパート",
+            "へ",
+            "に 行きます",
+            "買い物"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Urutan benar: デパート・へ・買い物・に 行きます (★ = へ). Kalimat lengkap: 「あしたデパートへ買い物に 行きます。」. Pola 'N + ni ikimasu' menyatakan tujuan pergi ke suatu tempat untuk melakukan suatu hal. 'Kaimono ni ikimasu' berarti 'pergi untuk berbelanja'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:13",
+          "status": "published",
+          "promptText": "わたし は ＿＿ ＿＿ ＿★＿ ＿＿ ほん が あります 。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "に",
+            "つくえ",
+            "の",
+            "うえ"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Urutan benar: つくえ・の・うえ・に (★ = うえ). Kalimat lengkap: 「わたし はつくえのうえにほん が あります 。」. Pola 'N の うえ に あります' digunakan untuk menyatakan letak suatu benda (buku) di atas benda lain (meja). Partikel 'no' menghubungkan kata benda 'tsukue' dan 'ue'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:14",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "わたし は じぶん の へや で ほん （1） よみます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "で",
+            "に",
+            "を",
+            "と"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Partikel 'wo' (を) digunakan untuk menandai objek langsung dari kata kerja transitif, dalam hal ini membaca buku (hon o yomimasu).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:15",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "きのう デパート へ いって、あたらしい くつ （1） かいました。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "で",
+            "に",
+            "を",
+            "が"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Partikel 'wo' (を) digunakan untuk menunjukkan objek yang dibeli (kutsu o kaimashita).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n5-mock-02:bunpou:16",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "きょう は さむい です （1）、あたたかい コート を きます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "も",
+            "から",
+            "が",
+            "と"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pola 'kara' (から) digunakan untuk menyatakan alasan atau sebab, yaitu karena hari ini dingin.",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "DOKKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n5-mock-02:dokkai:1",
+          "status": "published",
+          "promptText": "きょう は なんようび です か。",
+          "passage": "きょう は げつようび です。あした は かようび です。あさって は すいようび です。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "げつようび",
+            "かようび",
+            "すいようび",
+            "もくようび"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Teks menyatakan 'kyou wa getsuyoubi desu' (hari ini adalah hari Senin). Kata yang diuji adalah nama-nama hari dalam bahasa Jepang.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n5-mock-02:dokkai:2",
+          "status": "published",
+          "promptText": "たなか さん は なに を たべます か。",
+          "passage": "わたし は あさごはん に パン と たまご を たべます。たなか さん は ごはん と さかな を たべます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ごはん と さかな",
+            "パン と たまご",
+            "パン",
+            "たまご"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Teks menyatakan 'Tanaka san wa gohan to sakana o tabemasu' (Tuan/Nyonya Tanaka makan nasi dan ikan). Pola yang diuji adalah pemahaman isi bacaan singkat terkait orang ketiga.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n5-mock-02:dokkai:3",
+          "status": "published",
+          "promptText": "きのう 、 なぜ たなか さん は はやく うち へ かえりました か 。",
+          "passage": "きのう 、 わたし は じかん が ありません でした 。 でした から 、 いそがしく しごと を しました 。 たなか さん も いそがしかった です 。 でも 、 たなか さん は あたま が いたかったです から 、 ごご よじ に うち へ かえりました 。 わたし は ごご ろくじ まで かいしゃ に いました 。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "しごと が おわった から",
+            "あたま が いたかった から",
+            "じかん が たくさん あった から",
+            "かいしゃ が すきだった から"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Teks menyatakan 'tanaka san mo isogashikasuta desu. demo, tanaka san wa atama ga itakatta desu kara, gogo yoji ni uchi e kaerimashita' (Tanaka-san juga sibuk. Tapi, karena Tanaka-san sakit kepala, dia pulang ke rumah jam 4 sore). Pola '~kara' di sini menanyakan alasan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n5-mock-02:dokkai:4",
+          "status": "published",
+          "promptText": "まい さん は なぜ きのう たくさん やさい を かい ました か。",
+          "passage": "きのう、わたし は ともだち と いっしょ に スーパー へ いきまし た。まい さん は あした の パーティー の ため に、たくさん の やさい と にく を かい まし た。わたし は あかい りんご を ふたつ かい まし た。スーパー の ひと は 「きょう は りんご が やすい です よ」 と いい まし た。とても うれしかっ た です。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "あした の パーティー の ため です",
+            "きょう りんご が やすい から です",
+            "あかい りんご が すき だ から です",
+            "ともだち と いっしょ に たべる から です"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Jawaban yang benar adalah karena untuk pesta besok, sesuai dengan kalimat 'ashita no pāti no tame ni... kai mashita'. Pola '〜no tame ni' digunakan untuk menyatakan tujuan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n5-mock-02:dokkai:5",
+          "status": "published",
+          "promptText": "どようび に なに を します か。",
+          "passage": "しゅうまつ の よてい\n・きんようび：とそかん で べんきょう を します。\n・どようび：きっさてん で ともだち と あいます。\n・にちようび：いえ で ゆっくり やすみます。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "いえ で ゆっくり やすみます",
+            "きっさてん で ともだち と あいます",
+            "こうえん で さんぽ を します",
+            "とそかん で べんきょう を します"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pada hari Sabtu (どようび), jadwalnya adalah bertemu teman di kedai kopi (きっさてん で ともだち と あいます). Soal ini menguji pemahaman hari dalam seminggu dan aktivitas.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n5-mock-02:dokkai:6",
+          "status": "published",
+          "promptText": "きっさてんは　なんじから　なんじまで　ですか。",
+          "passage": "[えきまえ　デパートの　あん내]\n・じかん：１０じ　〜　８じ\n・レストラン：１１じ　〜　９じ\n・きっさてん：１０じ　〜　７じ",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "１１じ　から　８じ　まで　です",
+            "１１じ　から　９じ　まで　です",
+            "１０じ　から　７じ　まで　です",
+            "１０じ　から　８じ　まで　です"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Berdasarkan pengumuman, jam buka kissaten (きっさてん) tertera pada baris terakhir yaitu dari pukul 10 sampai pukul 7 (１０じ　〜　７じ). Pola yang diuji adalah cara membaca jam dan keterangan tempat umum di department store.",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "CHOUKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:1",
+          "status": "published",
+          "promptText": "このあと なにを しますか。",
+          "passage": "あしたの テストの べんきょうを しましたか。いいえ、まだです。いっしょに としょかんへ いきませんか。はい、いきましょう。では、いまから でかけましょう。",
+          "audioScript": "あしたの テストの べんきょうを しましたか。いいえ、まだです。いっしょに としょかんへ いきませんか。はい、いきましょう。では、いまから でかけましょう。",
+          "imageUrl": null,
+          "options": [
+            "テストを します",
+            "うちで テレビを みます",
+            "としょかんへ いきます",
+            "かいものに いきます"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Mereka sepakat untuk pergi ke perpustakaan bersama-sama untuk belajar. Pola yang diuji adalah ajakan dengan '〜ませんか' dan '〜ましょう'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:2",
+          "status": "published",
+          "promptText": "このあと なにを しますか。",
+          "passage": "おなかかが すきましたね。レストランで なにか たべましょうか。そうですね。ラーメンは どうですか。いいですね。ラーメンを たべましょう。",
+          "audioScript": "おなかかが すきましたね。レストランで なにか たべましょうか。そうですね。ラーメンは どうですか。いいですね。ラーメンを たべましょう。",
+          "imageUrl": null,
+          "options": [
+            "にくを たべます",
+            "パンを たべます",
+            "すしを たべます",
+            "ラーメンを たべます"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Mereka memutuskan untuk makan ramen setelah sepakat dengan usulan 'ラーメンは どうですか'. Pola yang diuji adalah cara menawarkan sesuatu dengan '〜は どうですか'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:3",
+          "status": "published",
+          "promptText": "このあと なにを しますか。",
+          "passage": "あしたは えきの まえで あいましょう。なんじに あいますか。そうですね、じゅうじは どうですか。はい、じゃあ あした じゅうじに えきへ いきます。",
+          "audioScript": "あしたは えきの まえで あいましょう。なんじに あいますか。そうですね、じゅうじは どうですか。はい、じゃあ あした じゅうじに えきへ いきます。",
+          "imageUrl": null,
+          "options": [
+            "あさって えきへ いきます",
+            "きょう えきへ いきます",
+            "きのう えきへ いきます",
+            "あした えきへ いきます"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Percakapan membahas rencana untuk bertemu di stasiun besok jam sepuluh. Kata yang diuji adalah keterangan waktu 'あした' (besok).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:4",
+          "status": "published",
+          "promptText": "このあと何をしますか。",
+          "passage": "あしたの てすとわ つくえの うえに ありますか。いいえ、かばんの なかに あります。じゃ、いま かばんから だしてください。",
+          "audioScript": "あしたの てすとわ つくえの うえに ありますか。いいえ、かばんの なかに あります。じゃ、いま かばんから だしてください。",
+          "imageUrl": null,
+          "options": [
+            "つくえの うえを みる",
+            "かばんから だす",
+            "てすとを つくる",
+            "ねる"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Lawan bicara meminta untuk mengeluarkan tes dari dalam tas. Kata yang diuji adalah kata kerja dasar untuk mengeluarkan (だす).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:5",
+          "status": "published",
+          "promptText": "このあと何をしますか。",
+          "passage": "せんせい、この かんじの じが わかりますか。いいえ、じしょを みましょう。はい、そうします。",
+          "audioScript": "せんせい、この かんじの じが わかりますか。いいえ、じしょを みましょう。はい、そうします。",
+          "imageUrl": null,
+          "options": [
+            "べんきょうを やめる",
+            "かんじを かく",
+            "じしょを みる",
+            "せんせいと はなす"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Ketika ditanya tentang kanji, guru menyarankan untuk melihat kamus. Pola yang diuji adalah ajakan mari kita (Vましょう).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:6",
+          "status": "published",
+          "promptText": "このあとなにをしますか。",
+          "passage": "おんなのひと と おとこのひと が はなして います。おんなのひと は このあと なにを しますか。\n\nA: きょう は あつい ですね。\nB: そうですね。つめたい おちゃ を いれましょうか。\nA: ありがとう ございます。でも、わたし は いま コーヒー が のみたい です。\nB: じゃあ、コーヒー を いれますね。\nA: すみませんが、おゆ を わかして ください。わたし は じぶんで コーヒー を つくります。\nB: はい、わかりました。",
+          "audioScript": "おんなのひと と おとこのひと が はなして います。おんなのひと は このあと なにを しますか。\n\nA: きょう は あつい ですね。\nB: そうですね。つめたい おちゃ を いれましょうか。\nA: ありがとう ございます。でも、わたし は いま コーヒー が のみたい です。\nB: じゃあ、コーヒー を いれますね。\nA: すみませんが、おゆ を わかして ください。わたし は じぶんで コーヒー を つくります。\nB: はい、わかりました。",
+          "imageUrl": null,
+          "options": [
+            "おゆ を わかす",
+            "コーヒー を つくる",
+            "おちゃ を いれる",
+            "つめたい おちゃ を のむ"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Perempuan tersebut menolak teh dingin dan ingin membuat kopi sendiri, sehingga dia meminta air panas untuk diseduh sendiri. Pola yang diuji adalah ungkapan keinginan '〜たいです' dan permintaan '〜てください'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:7",
+          "status": "published",
+          "promptText": "このあとなにをしますか。",
+          "passage": "がくせい と せんせい が はなして います。がくせい は このあと なにを しますか。\n\nA: せんせい、この しゅくだい は いつ まで ですか。\nB: あした の あさ まで ですよ。\nA: わかりました。きょう の ゆうがた に もういちど もってきます。\nB: はい、まっています。\nA: じゃあ、いま から うち に かえって しゅくだい を やります。\nB: はい、がんばってください。",
+          "audioScript": "がくせい と せんせい が はなして います。がくせい は このあと なにを しますか。\n\nA: せんせい、この しゅくだい は いつ まで ですか。\nB: あした の あさ まで ですよ。\nA: わかりました。きょう の ゆうがた に もういちど もってきます。\nB: はい、まっています。\nA: じゃあ、いま から うち に かえって しゅくだい を やります。\nB: はい、がんばってください。",
+          "imageUrl": null,
+          "options": [
+            "しゅくだい を もういちど もらう",
+            "うち に かえって しゅくだい を やる",
+            "きょう の ゆうがた に かえる",
+            "あした の あさ まで まつ"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Murid tersebut mengatakan bahwa dia akan pulang ke rumah sekarang untuk mengerjakan PR. Pola yang diuji adalah bentuk gabungan kata kerja dengan 'て' (kaette ... yaru) yang menyatakan urutan kegiatan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:8",
+          "status": "published",
+          "promptText": "きょう なに を かい ます か。",
+          "passage": "きょう は スーパー で なに を かい ます か。おとこ の ひと と おんな の ひと が はなして います。おんな の ひと：きょう は りんご と みかん を かい ます。おとこ の ひと：じゃあ、バナナ は？ おんな の ひと：バナナ は きのう かいました。おとこ の ひと：そうですか。きょう は なに を かい ます か。",
+          "audioScript": "きょう は スーパー で なに を かい ます か。おとこ の ひと と おんな の ひと が はなして います。おんな の ひと：きょう は りんご と みかん を かい ます。おとこ の ひと：じゃあ、バナナ は？ おんな の ひと：バナナ は きのう かいました。おとこ の ひと：そうですか。きょう は なに を かい ます か。",
+          "imageUrl": null,
+          "options": [
+            "みかん と バナナ",
+            "りんご と みかん",
+            "りんご と みかん と バナナ",
+            "りんご と バナナ"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Perempuan tersebut mengatakan bahwa hari ini dia membeli apel (りんご) dan jeruk (みかん). Pisang (バナナ) dibeli kemarin, sehingga tidak dibeli hari ini.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:9",
+          "status": "published",
+          "promptText": "おんな の ひと の かばん は どれ です か。",
+          "passage": "おんな の ひと の かばん は どれ です か。おとこ の ひと と おんな の ひと が はなして います。おとこ の ひと：その あおい かばん は あなた の です か。おんな の ひと：いいえ、それは ともだち の です。わたし の は この あかい の です。おとこ の ひと：そうですか。おんな の ひと の かばん は どれ です か。",
+          "audioScript": "おんな の ひと の かばん は どれ です か。おとこ の ひと と おんな の ひと が はなして います。おとこ の ひと：その あおい かばん は あなた の です か。おんな の ひと：いいえ、それは ともだち の です。わたし の は この あかい の です。おとこ の ひと：そうですか。おんな の ひと の かばん は どれ です か。",
+          "imageUrl": null,
+          "options": [
+            "あおい かばん",
+            "あかい かばん",
+            "きいろい かばん",
+            "しろい かばん"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Perempuan itu menyatakan bahwa tas biru (あおい) adalah milik temannya, sedangkan tas miliknya adalah yang berwarna merah (あかい).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:10",
+          "status": "published",
+          "promptText": "にほんご の べんきょう は いつ です か。",
+          "passage": "にほんご の べんきょう は いつ です か。がくせい ふたり が はなして います。おとこ の ひと：きょう は すいようび です ね。にほんご の クラス は いつ です か。おんな の ひと：クラス は もくようび と きんようび です。おとこ の ひと：あした です か。おんな の ひと：いいえ、あした は もくようび です から、あさって も きんようび です。にほんご の べんきょう は いつ です か。",
+          "audioScript": "にほんご の べんきょう は いつ です か。がくせい ふたり が はなして います。おとこ の ひと：きょう は すいようび です ね。にほんご の クラス は いつ です か。おんな の ひと：クラス は もくようび と きんようび です。おとこ の ひと：あした です か。おんな の ひと：いいえ、あした は もくようび です から、あさって も きんようび です。にほんご の べんきょう は いつ です か。",
+          "imageUrl": null,
+          "options": [
+            "すいようび と きんようび",
+            "すいようび と もくようび",
+            "もくようび と きんようび",
+            "きんようび と どようび"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Perempuan tersebut menjelaskan bahwa kelas bahasa Jepang miliknya diadakan pada hari Kamis (もくようび) dan Jumat (きんようび).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:11",
+          "status": "published",
+          "promptText": "いぬ は どこ に い ます か。",
+          "passage": "いぬ は どこ に い ます か。こども と おかあさん が はなして います。こども：おかあさん、いぬ は どこ です か。ベッド の した です か。おかあさん：いいえ、ベッド の うえ で は ありません。つくえ の よこ です よ。こども：あ、まど の ちかく です ね。おかあさん：はい、そうです。いぬ は どこ に い ます か。",
+          "audioScript": "いぬ は どこ に い ます か。こども と おかあさん が はなして います。こども：おかあさん、いぬ は どこ です か。ベッド の した です か。おかあさん：いいえ、ベッド の うえ で は ありません。つくえ の よこ です よ。こども：あ、まど の ちかく です ね。おかあさん：はい、そうです。いぬ は どこ に い ます か。",
+          "imageUrl": null,
+          "options": [
+            "いす の うしろ",
+            "つくえ の よこ",
+            "ベッド の うえ",
+            "ベッド の した"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Ibu menjawab bahwa anjing tersebut berada di samping meja (つくえ の よこ).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:12",
+          "status": "published",
+          "promptText": "女の人は なにを かいます か。",
+          "passage": "おんなの ひと：きょうは りんごを ふたつ と みかんを いつ つ かいます。あ、みかんは よっつに します。おんなの ひと：りんごを ふたつ と みかんを よっつ かいますね。なにを かいます か。",
+          "audioScript": "おんなの ひと：きょうは りんごを ふたつ と みかんを いつ つ かいます。あ、みかんは よっつに します。おんなの ひと：りんごを ふたつ と みかんを よっつ かいますね。なにを かいます か。",
+          "imageUrl": null,
+          "options": [
+            "りんごが ふたつ と みかんが ふたつ",
+            "りんごが ふたつ と みかんが よっつ",
+            "りんごが みっつ と みかんが よっつ",
+            "りんごが みっつ と みかんが ふたつ"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Wanita tersebut awalnya ingin membeli dua buah apel dan lima buah jeruk, namun jumlah jeruk diubah menjadi empat buah. Jadi, jawaban yang benar adalah dua buah apel dan empat buah jeruk.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:13",
+          "status": "published",
+          "promptText": "男の人は きのう なにを しました か。",
+          "passage": "おとこの ひと：きのうは でんしゃに のりました。やまへ いきました か。いいえ、うみへ いきました。おとこの ひと：きのうは なにを しました か。",
+          "audioScript": "おとこの ひと：きのうは でんしゃに のりました。やまへ いきました か。いいえ、うみへ いきました。おとこの ひと：きのうは なにを しました か。",
+          "imageUrl": null,
+          "options": [
+            "いえに いました",
+            "でんしゃに のりませんでした",
+            "うみへ いきました",
+            "やまへ いきました"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Pria tersebut mengatakan bahwa kemarin dia naik kereta dan pergi ke laut, bukan ke gunung. Jadi, kegiatan yang dilakukan adalah pergi ke laut.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:14",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "すみませんが、トイレは どこですか。",
+          "audioScript": "すみませんが、トイレは どこですか。",
+          "imageUrl": null,
+          "options": [
+            "りんごです。",
+            "10じです。",
+            "きのうです。",
+            "あそこです。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Pertanyaan \"toilet wa doko desu ka\" menanyakan tempat. Jawaban yang paling sesuai adalah \"asoko desu\" (di sana). Pilihan lain menanyakan waktu, benda, dan waktu lampau yang tidak nyambung.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:15",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "きょうは なにを しますか。",
+          "audioScript": "きょうは なにを しますか。",
+          "imageUrl": null,
+          "options": [
+            "いえ、ちがいます。",
+            "べんきょうを します。",
+            "はい、そうです。",
+            "1ねんせいです。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pertanyaan \"kyou wa nani o shimasu ka\" menanyakan kegiatan yang akan dilakukan hari ini. Jawaban yang tepat adalah menyebutkan kegiatan, yaitu \"benkyou o shimasu\" (belajar).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:16",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "この かさは だれのですか。",
+          "audioScript": "この かさは だれのですか。",
+          "imageUrl": null,
+          "options": [
+            "わたしのです。",
+            "100えんです。",
+            "あかいです。",
+            "おおきいです。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertanyaan \"kono kasa wa dare no desu ka\" menanyakan kepemilikan (\"milik siapa\"). Jawaban yang benar adalah \"watashi no desu\" (milik saya).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:17",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "おげんきですか。",
+          "audioScript": "おげんきですか。",
+          "imageUrl": null,
+          "options": [
+            "はい、げんきです。",
+            "みずを のみます。",
+            "はちじです。",
+            "にほんじんです。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertanyaan \"ogenki desu ka\" adalah salam menanyakan kabar. Tanggapan yang wajar dan sopan adalah \"hai, genki desu\" (ya, sehat/baik).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:18",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "すみません、その かばん は いくら です か。",
+          "audioScript": "すみません、その かばん は いくら です か。",
+          "imageUrl": null,
+          "options": [
+            "はい、そうです。",
+            "さんぜん えん です。",
+            "ごぜん ごじ です。",
+            "あした かいます。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pertanyaan menanyakan harga tas dengan pola 'ikura desu ka' (berapa harganya). Jawaban yang paling tepat adalah menyebutkan harga, yaitu 'sanzen en desu' (3000 yen).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n5-mock-02:choukai:19",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "いま なんじ です か。",
+          "audioScript": "いま なんじ です か。",
+          "imageUrl": null,
+          "options": [
+            "じゅうじ はん です。",
+            "きょう は すようび です。",
+            "はい、おいしい です。",
+            "にく を たべます。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pertanyaan 'ima nanji desu ka' menanyakan jam berapa sekarang. Pilihan 'juuji han desu' (jam setengah sebelas) adalah jawaban yang tepat untuk menyatakan waktu.",
+          "difficulty": 1
+        }
+      ]
+    }
+  ]
+}

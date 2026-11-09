@@ -1,0 +1,1968 @@
+{
+  "examSlug": "jlpt-n1-mock-02",
+  "levelCode": "N1",
+  "variantIndex": 2,
+  "title": "Simulasi JLPT N1 - Paket 02",
+  "sections": [
+    {
+      "sectionType": "MOJI_GOI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:1",
+          "status": "published",
+          "promptText": "政治家は新たな経済政策の<u>提示</u>を求められた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ていじ",
+            "ていし",
+            "だいじ",
+            "だいし"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「提示」は「ていじ」と読み、考えや書類などを示し出すことを意味します。「ていし」や濁音の読み方は誤りです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:2",
+          "status": "published",
+          "promptText": "彼はその事件に関して異なる<u>異見</u>を述べた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "いげん",
+            "ちげん",
+            "ちけん",
+            "いけん"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「異見」は「いけん」と読み、他の人と異なる意見や異議を意味します。「いげん」や「ちけん」は誤読です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:3",
+          "status": "published",
+          "promptText": "山奥の温泉へ静養のために<u>赴く</u>。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "たどく",
+            "まねく",
+            "おもむく",
+            "そそく"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「赴く」は「おもむく」と読み、ある場所に向かって行くことや、ある状態に向かうことを意味します。「まねく」は「招く」です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:4",
+          "status": "published",
+          "promptText": "長年の研究の<u>成果</u>がようやく実を結んだ。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "せいか",
+            "しょうか",
+            "せいき",
+            "せうか"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「成果」は「せいか」と読み、成し遂げた結果や良い結果を意味します。「しょうか」などは誤った読み方です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:5",
+          "status": "published",
+          "promptText": "彼はどんな困難な状況でも<u>賢明</u>な判断を下す。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "けんめい",
+            "げんめい",
+            "げんみょう",
+            "けんみょう"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「賢明」は「けんめい」と読み、知恵が働いていて物事の判断が適切である様子を意味します。「げんめい」や「けんみょう」は誤りです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "KANJI_READING",
+          "section": "membaca",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:6",
+          "status": "published",
+          "promptText": "古い習慣や古い体制から<u>免れる</u>ことは難しい。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "まぬがれる",
+            "のがれる",
+            "くだれる",
+            "はなれる"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「免れる」は「まぬがれる」または「のガれる」と読みますが、文脈と送り仮名から「まぬがれる」が適切です。「のがれる」とも読みますが、ここでは送り仮名と字体の慣例に従います。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:7",
+          "status": "published",
+          "promptText": "長年の経済的不況により、社会の（　）が崩れつつあると指摘する専門家も少なくない。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "秩序",
+            "変動",
+            "均衡",
+            "密度"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「秩序」は社会や組織が保たれている整った状態を意味し、社会のバランスが崩れる文脈に最も適しています。ほかの選択肢は意味や文脈が合いません。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:8",
+          "status": "published",
+          "promptText": "今回の政策変更は、国民の生活に（　）な影響を及ぼすことが懸念されている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "細やか",
+            "貧弱",
+            "強烈",
+            "みすぼらしい"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「強烈」は勢いや影響などが非常に激しいさまを表し、政策変更がもたらす大きな影響を形容するのに適切です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:9",
+          "status": "published",
+          "promptText": "政府は市場の安定を図るため、外国為替の急激な（　）に対する警戒を強めている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "収支",
+            "立法",
+            "中枢",
+            "変動"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「変動」は価格や相場などが上下に動くことを意味し、「外国為替の急激な～」という文脈に完全に合致します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:10",
+          "status": "published",
+          "promptText": "日々の忙しさに追われず、時には自分の行動を静かに（　）することが大切である。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "省みる",
+            "脅す",
+            "凌ぐ",
+            "詰る"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「省みる」は自分のこれまでの言動を振り返って反省することを意味し、文意に最もよく適合します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:11",
+          "status": "published",
+          "promptText": "彼は長年の研究成果をまとめ、今度の学会で新しい理論を（　）する予定だ。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "発表",
+            "放出",
+            "解除",
+            "免除"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "学術的な研究成果や理論を多くの人の前で明らかにすることを表す場合、「発表」が最も自然で正確な表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:12",
+          "status": "published",
+          "promptText": "この地域は伝統的な文化や習慣を強く残しており、他所にはない（　）の魅力がある。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "限定",
+            "固有",
+            "国定",
+            "中立"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「固有」はそのものだけが持っている特有の性質や特徴を意味し、「他所にはない～の魅力」という表現に最適です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:13",
+          "status": "published",
+          "promptText": "長年の努力の末に計画を（　）、関係者一同は深い達成感を味わった。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "演じる",
+            "繕う",
+            "仕掛ける",
+            "やりとげる"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Jawaban yang benar adalah 「やりとげる」 (menyelesaikan / menuntaskan). Kata ini sangat tepat digunakan dalam konteks menyelesaikan suatu rencana atau tugas besar setelah melalui perjuangan panjang.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:14",
+          "status": "published",
+          "promptText": "新製品の開発計画は、社員たちの積極的な協力のおかげで順調に<u>捗る</u>。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "意見が対立して止まる",
+            "問題が次々と発生する",
+            "計画が完全に中止になる",
+            "物事がスムーズに進む"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「捗る（はかどる）」は、仕事や作業が順調に進むという意味である。したがって、「物事がスムーズに進む」が最も近い意味を持つ。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:15",
+          "status": "published",
+          "promptText": "その政治家は長年の支持母体の期待に<u>背く</u>行動をとり、厳しい批判を浴びている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "期待や約束などに違反する・裏切る",
+            "期待に応えて忠実に従う",
+            "過去の失敗を深く反省する",
+            "新しい方針を迅速に実行する"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「背く（そむく）」は、命令や期待、道徳などに違反する、あるいは裏切るという意味である。したがって、「期待や約束などに違反する・裏切る」が正解となる。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:16",
+          "status": "published",
+          "promptText": "急なトラブルが発生し、彼はどうしていいか分からず<u>まごつく</u>ばかりだった。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "怒りを抑えてじっと我慢する",
+            "周囲に指示を出して統率する",
+            "冷静に素早く状況を分析する",
+            "戸惑ってどうしてよいか分からなくなる"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「まごつく」は、どうしてよいか分からず、うろたえ戸惑う様子を指す。したがって、「戸惑ってどうしてよいか分からなくなる」が正しい言い換えである。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:17",
+          "status": "published",
+          "promptText": "今回のプロジェクトを成功させるためには、徹底的な市場調査を行うことが<u>前提</u>となる。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "すでに終わった過去の出来事の総称",
+            "結果として後からついてくる偶然の幸運",
+            "何かを行うにあたって、あらかじめ成り立っていなければならない条件",
+            "個人の勝手な思い込みや偏見"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「前提（ぜんてい）」は、ある物事が成り立つための基礎となる条件や仮定のことである。したがって、「何かを行うにあたって、あらかじめ成り立っていなければならない条件」が適切である。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:18",
+          "status": "published",
+          "promptText": "彼は慣れない手続きの連続に、<u>ようやく</u>必要書類をすべて揃えることができた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "長い時間や苦労の末に、どうにかこうにか",
+            "他人の助けを借りずに一瞬で",
+            "計画通りに非常にスムーズに",
+            "予想よりもはるか以前に"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「ようやく」は、困難な状況の中、長い時間や苦労の末についに物事が実現するさまを表す。したがって、「長い時間や苦労の末に、どうにかこうにか」が正しい。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "PARAPHRASE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:19",
+          "status": "published",
+          "promptText": "その国の経済発展には、いくつかの複雑な<u>要因</u>が絡み合っている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "重要な結果",
+            "原因となる要素",
+            "共通の目的",
+            "予想外の事件"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「要因」は、物事の結果を引き起こすもととなる原因や要素を意味します。したがって、「原因となる要素」が最も近い意味を持ちます。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:20",
+          "status": "published",
+          "promptText": "信任",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "彼は仕事で大きなミスを犯し、上司からの信任を失って昇進した。",
+            "警察は、行方不明になった子供の無事を信任して祈り続けた。",
+            "彼女は自分の実力を信任して、難関資格の試験に一発で合格した。",
+            "新しいリーダーは、その優れた手腕により多くの社員から厚い信任を得ている。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「信任」は、人に対して信頼を寄せ、任せることを意味します。1つ目の文が正しく使われており、信頼されている状況を表しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:21",
+          "status": "published",
+          "promptText": "脅迫",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "政府は自然災害に対抗するため、万全の脅迫体制を整えた。",
+            "犯人は秘密をバラすと言って男性を脅迫し、金銭を要求した。",
+            "彼は長年の努力の末に、ビジネスの世界で大きな脅迫を成し遂げた。",
+            "新商品の発売に向けて、社内で激しい脅迫が行われている。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「脅迫」は、おどして相手に恐怖心を抱かせることを意味します。犯罪行為や不正な要求に関連して使われることが多く、2つ目の文が適切な用法です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 22,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:22",
+          "status": "published",
+          "promptText": "原典",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "古い書類を整理していたら、祖父が遺した原典が出てきた。",
+            "外国語を学ぶときは、まず現地の文化を原典として学ぶべきだ。",
+            "この小説の映画化にあたっては、原典の雰囲気が忠実に再現されている。",
+            "彼は毎日ジョギングをして、健康的な原典を維持している。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「原典」は、翻訳や翻案などのもとになったもとの文書や文献を指します。文学作品や古い書物について語る際に使われます。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 23,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:23",
+          "status": "published",
+          "promptText": "失調",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "長引く不況の影響で、国内の経済バランスが完全に失調した。",
+            "その会社は経営陣の対立により、組織の失調をきたして倒産した。",
+            "季節の変わり目は、自律神経が失調しやすいため注意が必要だ。",
+            "彼は激しい運動をしたせいで、一時的に呼吸が失調を起こした。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「失調」は、体の機能や調子が正常でなくなること（自律神経失調症など）によく使われます。2つ目の文が最も自然な用法です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 24,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:24",
+          "status": "published",
+          "promptText": "不審",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "夜道で後ろを歩く不審な男に気づき、彼女は早足で歩いた。",
+            "彼の説明には多くの不審があり、誰もその話を信じなかった。",
+            "この料理は味が少し不審なので、食べるのをやめておこう。",
+            "長年勤めた会社を辞めることになった不審な理由を教えてほしい。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「不審」は、様子が怪しいこと、疑わしいことを意味します。「不審な人物」「不審な行動」のように使われ、1つ目の文が正解です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 25,
+          "questionType": "USAGE",
+          "section": "kosakata",
+          "sourceKey": "jlpt-n1-mock-02:moji_goi:25",
+          "status": "published",
+          "promptText": "煙る",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "彼は借金まみれの生活に煙るようにして、遠くの街へ引っ越した。",
+            "雨に煙る山並みの景色が、水墨画のように美しく広がっていた。",
+            "工場から出る排気ガスで、周囲の空気がすっかり煙ってしまった。",
+            "彼女は突然の悲しいニュースを聞いて、目を煙らせて泣き出した。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「煙る」は、煙や霧、雨などでかすんでぼんやり見えなくなることを意味します。自然の景色に対して使われることが多く、1つ目の文が適切です。",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "BUNPOU",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:1",
+          "status": "published",
+          "promptText": "新商品の開発チームは、数カ月にわたる試行錯誤（　）、ようやく納得のいく試作品を完成させた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "を皮切りに",
+            "をもって",
+            "極まりない",
+            "にとどまらず"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Pola 「〜をもって」 berarti 'dengan' atau 'melalui (cara/alat/waktu tertentu)', digunakan dalam konteks formal untuk menyatakan penyelesaian suatu usaha. Pilihan lain tidak sesuai secara semantik maupun sintaksis.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:2",
+          "status": "published",
+          "promptText": "今回の経済危機による失業者の増加は、一部の地域（　）日本全国の問題となっている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "にとどまらず",
+            "てやまない",
+            "極まる",
+            "を皮切りに"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola 「〜にとどまらず」 berarti 'tidak hanya ... melainkan juga ...', sangat tepat untuk menyatakan perluasan cakupan masalah dari satu area ke skala nasional.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:3",
+          "status": "published",
+          "promptText": "彼の独裁的な政治手法は、民主主義の根幹を揺るがすものであり、非難（　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "まじき",
+            "べく",
+            "に足る",
+            "を禁じ得ない"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Pola 「〜を禁じ得ない」 berarti 'tidak dapat menahan (perasaan/reaksi tertentu)', digunakan di sini untuk menyatakan ketidakmampuan menahan rasa kritik atau kecaman terhadap tindakan yang keterlaluan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:4",
+          "status": "published",
+          "promptText": "長年連れ添った伴侶を病気で亡くした彼の悲しみは、察する（　）ある。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "に足る",
+            "に余りある",
+            "ものがある",
+            "べく"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Ekspresi 「〜に余りある」 berarti 'sangat ... sampai-sampai melampaui batas', sering digunakan untuk menyatakan bahwa kesedihan atau sesuatu sangat mendalam hingga melampaui apa yang bisa diungkapkan.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:5",
+          "status": "published",
+          "promptText": "自然災害の被災者たちの苦境を目の当たりにして、一刻も早い復興を願う（　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "べくして",
+            "きらいがある",
+            "ずにはおかない",
+            "てやまない"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Pola 「〜てやまない」 menyatakan perasaan yang amat mendalam dan terus-menerus, sangat cocok dipasangkan dengan kata kerja keinginan seperti 'mendoakan' atau 'mengharapkan' (願う).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:6",
+          "status": "published",
+          "promptText": "彼ほどの優秀な研究者が、あのような初歩的な不正に手を染めるとは、愚か（　）。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "極まる",
+            "をよそに",
+            "にひきかえ",
+            "ならいざしらず"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola 「〜極まる」 (atau 極まりない) digunakan di akhir kalimat untuk menyatakan tingkat tertinggi dari suatu keadaan negatif, dalam hal ini 'sangat bodoh'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:7",
+          "status": "published",
+          "promptText": "彼は長年の努力が実を結び、念願の昇進を果たした（　）、慢心することなく一層業務に励んでいる。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ものを言う",
+            "ものだから",
+            "ものを",
+            "ものなら"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「〜ものを」は「〜のに」という意味を表し、不満や残念な気持ち、あるいは対比を表す文法です。ここでは「昇進を果たしたというのに、慢心せず励んでいる」という状況を自然に結びつけています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:8",
+          "status": "published",
+          "promptText": "予期せぬ経済の（　）と相まって、我が社の業績は今年度、大幅な減益となってしまった。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "低迷",
+            "繁栄",
+            "発展",
+            "向上"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜と相まって」は「〜と一緒になって（互いに影響し合って）」という意味のN1文法です。減益というマイナスの結果を説明するため、「経済の低迷」という語句が文脈上最も適切です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:9",
+          "status": "published",
+          "promptText": "いかに優れた指導者（　）、すべての問題を一筋縄で解決できるわけではない。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ずにはおかない",
+            "といえども",
+            "とはいえ",
+            "たるもの"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "「〜といえども」は「たとえ〜としても」という逆接の譲歩を表す文法です。優れた指導者であっても例外ではないという文脈に合致します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "GRAMMAR_FORM",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:10",
+          "status": "published",
+          "promptText": "近年の急激なデジタル化（　）、従来の紙媒体を中心とした出版業界は大きな変革を迫られている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "を皮切りに",
+            "をよそに",
+            "と相まって",
+            "にひきかえ"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「〜と相まって」は「〜と互いに影響し合って、効果や程度がさらに増す」という意味を表す。ここでは、デジタル化と出版業界の変革という事象が組み合わさっている文脈に最も適している。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:11",
+          "status": "published",
+          "promptText": "長年の研究成果が実を結び、この新薬の開発は、 ＿＿ ＿＿ ＿★＿ ＿＿ と確信している。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "病に苦しむ",
+            "救うに",
+            "足るものだ",
+            "世界中の患者を"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Urutan benar: 病に苦しむ・世界中の患者を・救うに・足るものだ (★ = 救うに). Kalimat lengkap: 「長年の研究成果が実を結び、この新薬の開発は、病に苦しむ世界中の患者を救うに足るものだと確信している。」. Pola 〜に足る digunakan untuk menyatakan bahwa sesuatu memiliki nilai atau kualifikasi yang cukup untuk dilakukan. Kalimat ini bermakna pengembangan obat baru tersebut sangat layak dan cukup untuk menyelamatkan pasien di seluruh dunia.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:12",
+          "status": "published",
+          "promptText": "彼は若手社員でありながら、 ＿＿ ＿＿ ＿＿ ＿★＿ 今回のプロジェクトを成功に導いた。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "凌駕する",
+            "ベテラン社員をも",
+            "もって",
+            "卓越した手腕を"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Urutan benar: ベテラン社員をも・凌駕する・卓越した手腕を・もって (★ = もって). Kalimat lengkap: 「彼は若手社員でありながら、ベテラン社員をも凌駕する卓越した手腕をもって今回のプロジェクトを成功に導いた。」. Pola 〜をもって digunakan untuk menunjukkan sarana, cara, atau sebab (dengan menggunakan...). Di sini bermakna 'dengan mengerahkan kemampuan yang luar biasa'.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:13",
+          "status": "published",
+          "promptText": "あんなに無責任な態度をとられたのでは、 ＿＿ ＿＿ ＿＿ ＿★＿ 怒りを禁じ得ない。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "水の泡になったと",
+            "彼の誠実さを",
+            "これまでの苦労が",
+            "信じていた"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Urutan benar: 彼の誠実さを・信じていた・これまでの苦労が・水の泡になったと (★ = 水の泡になったと). Kalimat lengkap: 「あんなに無責任な態度をとられたのでは、彼の誠実さを信じていたこれまでの苦労が水の泡になったと怒りを禁じ得ない。」. Pola 〜を禁じ得ない digunakan untuk menyatakan perasaan emosional yang tidak dapat ditahan atau dibendung lagi, dalam hal ini adalah rasa marah.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:14",
+          "status": "published",
+          "promptText": "今回の事故原因の究明にあたっては、 ＿＿ ＿＿ ＿★＿ ＿＿ 徹底的な調査が行われている。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "些細な証拠",
+            "も",
+            "見逃すまい",
+            "がため"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Urutan benar: 些細な証拠・も・見逃すまい・がため (★ = 見逃すまい). Kalimat lengkap: 「今回の事故原因の究明にあたっては、些細な証拠も見逃すまいがため徹底的な調査が行われている。」. Pola V-ない（tanpa ない）＋んがため(に) berarti 'demi untuk...', menyatakan tujuan dengan nuansa sastra atau formal.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "SENTENCE_COMPOSITION",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:15",
+          "status": "published",
+          "promptText": "長年研究を続けてきた彼女の業績は、 ＿＿ ＿★＿ ＿＿ ＿＿ と言っても過言ではない。",
+          "passage": null,
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "値する",
+            "もので",
+            "ある",
+            "賞賛に"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Urutan benar: 賞賛に・値する・もので・ある (★ = 値する). Kalimat lengkap: 「長年研究を続けてきた彼女の業績は、賞賛に値するものであると言っても過言ではない。」. 「〜に値する」は「その価値がある」という意味のN1文法です。「賞賛に値するものである」という自然な文を作ります。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:16",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "彼は長年の研究成果をまとめた論文を完成させるため、寝食を忘れて執筆に没頭した。研究者（　1　）、このような執筆にかける執念は当然のことかもしれないが、その健康状態を心配する者も多かった。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ならでは",
+            "ざるを得ない",
+            "まじき",
+            "たる者"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「〜たる者」は「〜という立場や資格を持つ人なら当然」という意味を表します。研究者という立場にある者として、この姿勢はふさわしいという文脈に合致します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:17",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "今回のプロジェクトは、失敗すれば会社全体の存続にかかわる重大なものである。社員たちは不安を抱え（　1　）、社長の決断を信じて一丸となって前へ進んだ。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "よそに",
+            "ひきかえ",
+            "ものともせず",
+            "ながらも"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「〜ながらも」は「〜という状態でありながら、実際は別のことをする／そうなる」という逆接を表します。不安を抱えているという事実と、前へ進んだという事実を結びつけています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:18",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "彼女の圧倒的な歌唱力と表現力は、音楽の専門家（　1　）、一般の聴衆をも深く感動させた。そのコンサートは今年の音楽界最大の話題となった。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "のみならず",
+            "といい〜といい",
+            "もさることながら",
+            "おろか"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「〜もさることながら」は「Aももちろんだが、それ以上にBもだ」という意味を表します。専門家はもちろん、一般の聴衆も感動させたという強調を表すのに最適です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:19",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "彼は幼い頃からの夢だった宇宙飛行士になるという目的を達成するため、日々の厳しい訓練を（　1　）。その強い意志が周囲の人々を動かした。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ものともせず",
+            "こととて",
+            "かわきりに",
+            "いたるまで"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "「〜をものともせず」は、困難や障害に負けず、それを気にとめないで行動する様子を表します。厳しい訓練という困難に立ち向かう姿勢を示しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "TEXT_GRAMMAR",
+          "section": "tata_bahasa",
+          "sourceKey": "jlpt-n1-mock-02:bunpou:20",
+          "status": "published",
+          "promptText": "（1）に入るのは何か。",
+          "passage": "近年の急激なデジタル化に伴い、私たちの生活は便利になった。しかし、その一方で、効率ばかりを追求するあまり、人間関係が希薄になっている（1）。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "ではすまされない",
+            "にほかならない",
+            "きらいがある",
+            "べくもない"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "「〜きらいがある」は、「良くない傾向・クセがある」という意味を表すN1の文法です。文脈に合致し、効率を優先するあまり人間関係が希薄になるという好ましくない傾向を指摘しています。",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "DOKKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:1",
+          "status": "published",
+          "promptText": "新製品の開発遅延に関して、プロジェクトマネージャーとしてどのような姿勢が求められているか。",
+          "passage": "関係各位\n\n平素より新製品の開発にご尽力いただき、ありがとうございます。さて、今回のリリース遅延につきましては、関係部署間の連携不足が主な要因として指摘されております。今後の再発防止に向け、単に責任の所在を追及するのではなく、開発プロセス全体の見直しを急務として進める所存です。各チームにおかれましては、現状の課題を直視し、積極的な改善提案を行っていただくようお願い申し上げます。\n\n開発部長",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "過去の失敗の責任を厳しく追及し、担当者を処分すること",
+            "開発プロセス全体を見直し、改善に向けた提案を行うこと",
+            "新製品のリリースを無期限に延期し、現状を維持すること",
+            "他部署との連携を一切断ち、自チームの作業だけに集中すること"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "文章では「責任の所在を追及するのではなく、開発プロセス全体の見直しを急務として進める」「積極的な改善提案を行っていただくよう」と述べられているため、2番が正解です。「所存」は「～するつもりだ」という自分の意志を表すフォーマルな表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:2",
+          "status": "published",
+          "promptText": "このお知らせから読み取れる、図書館の利用に関する変更点は何か。",
+          "passage": "利用者各位\n\n当館では、蔵書のデジタル化および館内設備の改修工事に伴い、来月一日より自習室の利用時間を変更いたします。これまでは夜九時まで開放しておりましたが、工事期間中は安全確保と作業進捗のため、一律で午後五時までの短縮営業とさせていただきます。利用者の皆様には多大なご不便をおかけいたしますが、ご理解とご協力を賜りますようお願い申し上げます。\n\n中央図書館長",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "蔵書のデジタル化に伴い、自習室が完全に閉鎖されること",
+            "改修工事の間、自習室の利用時間が午後五時までに短縮されること",
+            "利用者の要望を受けて、自習室の開放時間が夜九時まで延長されること",
+            "安全確保のため、来月から図書館全体の利用が休止されること"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "本文に「工事期間中は安全確保と作業進捗のため、一律で午後五時までの短縮営業とさせていただきます」と明記されているため、2番が正解です。「賜りますよう」は「～してください」の極めて丁寧な依頼の表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:3",
+          "status": "published",
+          "promptText": "筆者がこの新型ロボットについて最も言いたいことは何か。",
+          "passage": "今回開発された新型案内ロボットは、音声認識の精度が飛躍的に向上し、複雑な多言語の問い合わせにも即座に対応できるようになった。しかし、利用客が最も感嘆したのは、その流暢な会話能力ではなく、こちらの意図を汲み取ろうとする細やかな「間」の取り方であった。高度な技術の背後にある、人間味を感じさせる演出こそが、この機械の最大の価値なのである。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "多言語対応の速さこそが、このロボットの最大の魅力である。",
+            "技術の高さよりも、人間のような自然なやり取りができる点に価値がある。",
+            "音声認識の精度をさらに向上させることが今後の課題である。",
+            "利用客は流暢な会話能力に対して最も感銘を受けている。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は流暢な会話能力よりも「間」の取り方や人間味を感じさせる演出こそが最大の価値だと述べているため、2番が正解。「〜を汲み取る」は相手の気持ちや意図を察し理解するという意味の表現。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "SHORT_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:4",
+          "status": "published",
+          "promptText": "次世代のリーダーに最も求められる資質は何か。",
+          "passage": "変化の激しい現代のビジネス環境において、組織を率いるリーダーには、過去の成功体験にとらわれない柔軟な思考が不可欠である。いかに優れた戦略を描けたとしても、予期せぬ事態に直面した際、自らの方針を迅速に修正する決断力がなければ、組織を存続させることはかなわない。計画の綿密さ以上に、状況の変化に応じて舵を切る機敏さが問われているのだ。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "状況の変化に応じて方針を素早く変更できること",
+            "綿密な戦略を描き、最後までそれを貫き通すこと",
+            "過去の成功体験を忠実に再現し続けること",
+            "予期せぬ事態を事前にすべて予測して回避すること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "文章の後半で「状況の変化に応じて舵を切る機敏さが問われている」と述べられており、柔軟な方針修正の重要性を説く3番が正解。「不可欠である」は絶対に必要であるという意味の表現。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:5",
+          "status": "published",
+          "promptText": "筆者は、現代の都市化が進む中で伝統的な祭りが果たすべき役割について、どのように考えているか。",
+          "passage": "現代社会において、効率性と合理化が至上命題とされるあまり、私たちは目に見える成果ばかりを追い求めがちである。そのような風潮の中、地域社会に根ざした伝統的な祭りは、一見すると生産活動から乖離した非効率な営みに見えるかもしれない。しかし、まさにその「非効率さ」や「無駄」と称される部分にこそ、日々の生活で摩耗しがちな人間性を回復させる契機が潜んでいるのではなかろうか。祭りの準備や執行を通じて人々が協働し、世代を超えて一つの目的に向かうプロセスは、単なる娯楽を超えた深い社会的紐帯を再構築する力を持っている。経済的価値尺度のみで物事を測る現代において、こうした文化的不変性を保持し続けることは、社会全体の精神的均衡を保つうえで極めて重大な意味を持つといえる。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "効率性を最優先する現代社会において、伝統的な祭りは経済的発展に寄与する点で重要である。",
+            "伝統的な祭りは、現代の合理的な社会構造に適応するため、より効率的な運営方法へと変革すべきである。",
+            "祭りは単なる娯楽に過ぎず、経済的価値がないため、現代社会においてはその存続意義が薄れつつある。",
+            "祭りに見られる非効率な共同作業のプロセスこそが、人々の失われた人間性や絆を取り戻すために極めて重要である。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "筆者は祭りの「非効率さ」にこそ人間性を回復させる契機があり、社会的紐帯を再構築する力があると述べているため、2番が正解。「〜に過ぎず」や「変革すべきである」といった選択肢は筆者の主張に反する。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:6",
+          "status": "published",
+          "promptText": "筆者が指摘する「言葉の表層的なやり取り」の問題点とは何か。",
+          "passage": "情報技術の飛躍的な発展により、私たちはかつてないほど大量の言葉を瞬時に交わすことができるようになった。しかし、その利便性と引き換えに、言葉の重みが失われつつあることは否めない。画面上の文字や記号によるコミュニケーションは、相手の表情や声のトーン、さらにはその背景にある文脈を捨象しがちである。その結果、表層的な情報のやり取りだけで意思疎通が図れたかのような錯覚に陥り、真に深い相互理解に至る機会が損なわれている。言葉とは本来、人間の内面深くに存在する複雑な感情や思想を担う容器であるはずだ。それを単なる記号の伝達手段としてのみ扱うならば、人と人との繋がりは希薄化の一途をたどらざるを得ない。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "情報量が多すぎるあまり、相手の真意を読み取るための時間が十分に確保できないこと。",
+            "文字によるやり取りでは、文脈や感情が伝わらないため、誤解や対立が生じやすくなること。",
+            "便利なツールに依存することで、言葉が持つ本来の重みが忘れられ、表層的な繋がりにとどまってしまうこと。",
+            "言葉が単なる記号化された情報となり、言語表現の多様性や豊かさが失われていくこと。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "文章中では、表層的なやり取りによって「真に深い相互理解に至る機会が損なわれている」「繋がりは希薄化する」と述べられており、これが3番の選択肢と一致する。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:7",
+          "status": "published",
+          "promptText": "筆者は、現代の都市における記憶の継承についてどのように述べているか。",
+          "passage": "現代の都市空間は、効率性と経済的合理性を最優先して再開発される傾向が顕著である。その結果、かつてそこに存在した人々の営みや歴史的記憶が刻まれた場所は次々と姿を消し、どこも似通った風景へと均質化している。しかし、都市のアイデンティティとは、真新しい高層ビル群の群れにあるのではなく、過去から積み重ねられた時間の蓄積、すなわち固有の記憶の層にあるはずだ。物理的な痕跡が失われることは、単なる景観の変化にとどまらず、地域に生きる人々のアイデンティティの根幹を揺るがす危機的状況だといえる。私たちは、利便性の追求の陰で、取り返しのつかない大切な何かを静かに手放しているのではないだろうか。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "効率的な再開発を推し進めることで、都市の経済的な価値をさらに高めるべきだ。",
+            "物理的な景観の均質化を受け入れ、新しい時代の都市像を早急に構築する必要がある。",
+            "利便性を優先するあまり、都市の歴史的記憶が失われ、人々のアイデンティティが脅かされている。",
+            "過去の記憶を保持するためには、すべての古い建築物を現状のまま保存しなければならない。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "筆者は効率優先の再開発によって都市が均質化し、歴史的記憶が失われることが人々のアイデンティティの危機を招いていると主張しています。「〜にとどまらず」は「それだけでなくさらに」という意味の文法です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:8",
+          "status": "published",
+          "promptText": "筆者によれば、AI技術の急速な発展が人間社会にもたらす本質的な問題とは何か。",
+          "passage": "AI技術の飛躍的な進歩は、私たちの生活をかつてないほど便利にし、知的労働のあり方をも根底から覆しつつある。膨大なデータを瞬時に処理し、人間を凌駕する精度で結論を導き出す能力は驚異的である。だが、AIがどれほど高度な判断を下すようになったとしても、それはあくまで統計的な確率計算の産物にすぎない。効率や正解のみが重視される風潮が強まると、人間が本来持っているはずの「効率化できない迷い」や「論理では割り切れない感情」が軽視されるようになる。AIの導く「正解」に過度に依存することは、自ら思考し、責任を引き受けるという人間の主体性をじわじわと蝕んでいく危険性を孕んでいる。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "AIの処理能力が人間の能力を完全に超越することで、雇用の大部分が失われること。",
+            "AIの提示する効率的な正解に頼ることで、人間が自ら思考し判断する主体性を失うこと。",
+            "AI技術の複雑化に伴い、一般の人がその仕組みを理解できなくなること。",
+            "AIが感情を持つようになることで、人間との倫理的な対立が引き起こされること。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者はAIに依存しすぎることで、人間が自ら考え責任を持つ主体性が損なわれる危険性を指摘しています。「〜にすぎない」は「ただそれだけだ」と過小評価する表現、「蝕んでいく」は少しずつ害を及ぼすという意味です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:9",
+          "status": "published",
+          "promptText": "筆者が伝統的な職人の技について述べていることとして、最も適切なものはどれか。",
+          "passage": "近年のデジタル技術の発展は目覚ましく、かつては熟練の職人が長年の修練を経て習得していた繊細な技術も、今や機械やAIによって瞬時に再現できるようになった。効率や均一性を重視する現代において、非効率な手仕事は時代遅れの遺物として片隅に追いやられがちである。しかし、職人が素材と対話し、試行錯誤の末に生み出す製品には、数値化しえない独特の温かみと説得力が宿る。彼らの技は単なる作業の反復ではなく、失敗の歴史から学び取る知恵の結晶なのである。AIがどれほど高度な模倣を行おうとも、その背景にある身体感覚や倫理観までを代替することは不可能である。私たちは、効率の良さばかりにとらわれるあまり、手仕事が持つ根源的な価値を軽視してはならない。真の文化の継承とは、過去の技術をそのまま保存することではなく、その営みに込められた人間精神の軌跡を受け継ぐことなのだ。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "AIの発展により、職人の技の価値は完全に失われたため、今後はすべて機械化すべきである。",
+            "数値化できない試行錯誤のプロセスや人間精神にこそ、手仕事の本質的な価値がある。",
+            "伝統工芸の存続のためには、効率性を最優先して制作工程を完全にマニュアル化する必要がある。",
+            "職人の技術は単なる作業の反復にすぎず、デジタル技術に取って代わられるべきものである。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は、職人の技が「数値化しえない独特の温かみと説得力が宿る」「人間精神の軌跡を受け継ぐこと」だと主張しており、機械やAIには代替できない本質的価値があるとしています。「〜にこそ〜潜んでいる」などの禁止語句を避けながら、N1特有の抽象的なテーマと論理展開を正確に捉える設問としています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:10",
+          "status": "published",
+          "promptText": "筆者は、現代の都市における「便利さ」の本質についてどのように述べているか。",
+          "passage": "私たちが享受する現代の都市生活は、あらゆる手間や無駄を徹底的に排除することで成り立っている。ボタン一つで望みのものが手に入り、効率性が至上命題として掲げられる社会である。しかし、その過度な効率化は、人間が本来持っている身体感覚や、他者と向き合う際の繊細な機微を鈍らせているのではないか。効率の追求が行き着くところまで行くと、私たちは自らの手で物事を成し遂げる喜びや、予期せぬ出会いから生まれる感動の余白を奪われてしまう。便利さの裏側で失われているものに目を向けるとき、私たちは真の豊かさとは何かを改めて問う必要がある。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "予期せぬ出会いを排除することで、都市生活の効率性と利便性はさらに向上する。",
+            "他者との向き合い方を効率化すれば、真の豊かさを誰でも容易に手に入れることができる。",
+            "現代の都市生活における便利さは、人間の身体感覚を鋭く研ぎ澄ます役割を果たしている。",
+            "効率化を徹底するあまり、人間が本来得るべき豊かな体験や感動の機会が失われている。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "筆者は過度な効率化が身体感覚の鈍化や感動の余白を奪うと述べており、便利さの裏側で失われているものへの問題意識を示しているため、最初の選択肢が正しい。ここで使われている「〜にすぎない」や「〜きらいがある」などの文法要素に注意が必要である。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:11",
+          "status": "published",
+          "promptText": "文章によると、伝統文化の継承において最も重要なことは何か。",
+          "passage": "伝統文化の継承を語るとき、往々にして形式の厳格な保存ばかりが強調されがちである。もちろん、古い型を正確に伝えることは重要であるが、それだけでは文化は時代に取り残されてしまう。真に生き続ける伝統とは、時代の変化をしなやかに受け止め、現代の文脈に合わせた新たな意味を見出しながら再解釈されるものである。過去の遺物をただ博物館の中に封じ込めるのではなく、日々の営みの中に息づかせ続けることこそが、文化を次世代へ繋ぐための本質なのだ。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "伝統文化の価値を専門家だけに委ね、一般の営みから切り離すこと。",
+            "古い型を一切変えずに、当時のままの厳格な形式で保存し続けること。",
+            "時代に合わせて柔軟に解釈し直し、現代の生活の中に生かし続けること。",
+            "現代的な効率さを優先し、古い伝統の形式を思い切って捨てること。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "筆者は形式の保存だけでなく、時代の変化に合わせて再解釈し、日々の営みの中に息づかせることが本質であると主張しているため、これが正解となる。「〜にしがみつく」や「〜を踏まえる」といった高度な文脈理解を試みる問題である。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:12",
+          "status": "published",
+          "promptText": "筆者は、現代の都市における「利便性」についてどのように考えているか。",
+          "passage": "現代の都市生活は、あらゆるサービスが効率化され、住民にとって極めて快適な空間へと変貌を遂げた。ボタン一つで望むものが手に入り、移動の負担も最小限に抑えられている。しかし、この過剰なまでの快適さは、人々の間に予期せぬ弊害を生み出している。すなわち、手間や困難を排除しすぎるあまり、他者と協働して障害を乗り越える機会や、自ら工夫する余地が奪われているのだ。効率の追求は確かに時間的な余裕を生むが、それは同時に、人間の内発的な創造性や、予測不可能な事態に対処する靭性を静かに削ぎ落としていると言わざるを得ない。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "現代の都市における利便性は、住民同士の協力を促し、新たな価値を生み出している。",
+            "利便性を高めることによってのみ、人間は予測不可能な事態に対処する靭性を養うことができる。",
+            "過度な利便性の追求は、人間の創造性や困難に立ち向かう力を弱める結果につながっている。",
+            "効率的な都市生活は人々の時間を奪い、創造性を発揮する機会を完全に消滅させている。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "筆者は効率化や快適さが「人間の内発的な創造性や靭性を削ぎ落としている」と述べており、選択肢2がその内容を正確に言い換えています。「〜と言わざるを得ない」という表現を用いて、筆者の強い批判的な主張を示しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "MID_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:13",
+          "status": "published",
+          "promptText": "文章によると、グローバル化が進む社会において、言語の多様性を守る本当の意義はどこにあるか。",
+          "passage": "世界共通語の普及は、国際的な意思疎通を飛躍的にスムーズにした一方で、いわゆる「小言語」の急速な消滅を引き起こしている。経済的な合理性や情報の伝達効率を優先するならば、少数の言語が淘汰されるのは自然な現象として片付けられがちである。だが、言語とは単なる情報の伝達手段ではない。それは、世界をどのように認識し、自然や他者とどう関わるかという、独自の思考の枠組みそのものである。一つの言語が失われるということは、人類が培ってきた独自の知の体系や文化の土壌が、取り返しのつかない形で消失することを意味しているのだ。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "国際的な意思疎通を円滑にし、経済的な合理性を高めるために不可欠であるから。",
+            "少数の言語を残すことが、世界共通語の発展に大きく寄与するから。",
+            "情報の伝達効率を向上させ、世界規模での文化の均一化を推進できるから。",
+            "言語は独自の思考の枠組みであり、その消滅は人類の知の体系の喪失につながるから。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "筆者は言語が「独自の思考の枠組み」であり、言語の消滅が「知の体系や文化の土壌の消失」を意味すると主張しています。選択肢3はこの論旨を的確にまとめたものです。「〜というものは……を意味している」という構造の理解を問う問題です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:14",
+          "status": "published",
+          "promptText": "筆者は現代の都市景観についてどのように考えているか。",
+          "passage": "現代の都市景観は、効率性と利便性を最優先するあまり、画一的なコンクリートの建造物が乱立し、地域固有の歴史的文脈や文化的記憶が急速に失われつつある。かつて、路地裏の雑多な営みや古い建築物には、人々の生活の痕跡が刻まれ、それが都市に深みと独自の表情を与えていた。しかし、再開発という名の下に進められる均質化は、そうした多様な記憶を無慈悲に削ぎ落とし、どこに行っても同じような風景を作り出している。都市とは本来、多様な他者が交錯し、予期せぬ出会いが生まれる場であったはずだ。利便性の追求によって空間が管理され、予測可能なものに変貌するとき、都市が本来持っていた豊かさは音を立てて崩れていく。我々は、経済的合理性の観点からのみ都市を捉えるのではなく、そこに蓄積された時間的奥行きをいかに継承していくべきか、真剣に問い直さなければならない時期に来ている。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "都市の景観を維持するためには、古い建造物をすべて撤去し、新しい技術を導入すべきである。",
+            "画一的な再開発が都市の歴史的記憶や多様性を奪っており、その現状への反省が求められている。",
+            "予測可能な管理された空間こそが、現代の都市における新しい豊かさの形である。",
+            "効率的な再開発によって都市の利便性が高まり、住民の生活環境が劇的に改善されている。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は効率優先の再開発による都市の画一化を批判し、歴史的記憶や多様性が失われていることに警鐘を鳴らしています。したがって、現状への反省と問い直しを求める2番が正解です。「〜をあまり」は「過度に〜するあまり」という意味の文法項目です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:15",
+          "status": "published",
+          "promptText": "筆者が指摘する「情報過多の時代における人間の認知の変容」とはどのようなことか。",
+          "passage": "インターネットの普及により、我々はかつてないほど膨大な情報に常時アクセスできる環境を手に入れた。しかし、この情報過多の状況は、人間の思考のあり方に深刻な変容をもたらしている。次から次へと流れ込んでくる断片的なニュースやSNSの投稿を消費するうちに、一つの物事について深く考え抜く集中力や、文脈を丁寧に読み解く力が次第に衰えてきているのである。情報は氾濫しているものの、それらを体系化して自分の血肉とする時間が確保できないため、知識の量は増えても知性が深まっているという実感が得られない。私たちは、知を知るという本来の喜びから遠ざかり、情報の処理マシーンのような状態に陥っているといえる。この状況を克服するためには、絶えず流入する情報から意識的に身を引き、自らの内面と向き合う静寂の時間を確保することが不可欠なのである。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "情報量が増えたことで知識が体系化され、人間の知性がより一層深まっている。",
+            "断片的な情報の大量消費により、物事を深く考え抜く力が衰え、知性が形骸化している。",
+            "インターネットのおかげで、人々は文脈を丁寧に読み解く高い集中力を身につけた。",
+            "情報過多の時代であっても、人間の認知能力や思考の深さは昔と何ら変わっていない。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は情報過多によって断片的な情報にばかり触れ、深く考える力が衰えていると述べています。そのため、思考力の低下と知性の形骸化を指摘する2番が正解です。「〜しつつある」は、ある状態が現在進行形で変化していることを表す文法項目です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:16",
+          "status": "published",
+          "promptText": "筆者は現代のデジタル社会における人間関係についてどのように考えているか。",
+          "passage": "現代社会において、私たちは常に何らかのネットワークに接続され、膨大な情報と他者の存在に囲まれて生きている。しかし、この利便性の裏腹に、人と人とのつながりはむしろ希薄なものに変容しつつあるという指摘がある。かつては物理的な距離や時間の制約があったからこそ、限られた人間関係の中に深い意味や情緒を見出すことが可能であった。これに対し、ワンタップで誰とでも繋がれる現在、関係性の構築は容易になった半面、その絆はきわめて表層的なものにとどまりがちである。効率的に他者と交流できるがゆえに、摩擦を恐れ、衝突を避ける傾向が強まり、結果として孤独感を深めるパラドックスに陥っているのだ。私たちは、ただ数多くの人と繋がることの空疎さに気づき、質の高い関係性とは何かを根本から問い直す時期に来ているのではないだろうか。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "他者との衝突を恐れない強い意志があれば、現代でも深い関係を容易に築ける。",
+            "効率的な交流ができるようになった結果、人間関係が表層的になり孤独感が強まっている。",
+            "ネットワークの普及により、人々の絆はより深く強固なものになっている。",
+            "物理的な距離や制約をなくすことが、豊かな人間関係を築く唯一の方法である。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は、簡単に繋がれる現代の人間関係がかえって表層的になり、孤独感を深めていると論じています。正解は文意に最も合致する2番です。「〜の裏腹に」は「〜と表裏一体で」「〜の反面で」という意味を表す文型です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:17",
+          "status": "published",
+          "promptText": "筆者は芸術や表現活動における「わかりやすさ」について、どのような見解を持っているか。",
+          "passage": "近年の芸術や表現活動においては、鑑賞者にとっての「わかりやすさ」が過剰に求められる傾向が見受けられる。情報が氾濫し、人々の時間が細分化された現代において、一目見てすぐに意味が理解できるコンテンツが好まれるのは無理もないかもしれない。しかし、表現の本質とは、即座に消費される情報とは異なり、容易には割り切れない複雑さや曖昧さを内包している点にあるのではないか。あえて直感的な理解を拒むような作品や、解釈の余地を大きく残した表現こそが、人間の内面深くに働きかけ、想像力を喚起する力を秘めている。すべてを説明し尽くされた表現に慣れてしまうことは、私たちの感性を鈍らせ、物事の本質を見抜く目を曇らせることにつながりかねない。わかりやすさの追求は、表現の多様性と奥行きを損なう危うさを孕んでいるのである。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "わかりやすさばかりを追求すると、表現の奥行きが失われ感性が鈍る恐れがある。",
+            "情報が氾濫する社会では、芸術作品も迅速に消費されるべきである。",
+            "現代の芸術は複雑すぎるため、もっと鑑賞者に歩み寄ったわかりやすさが必要である。",
+            "すぐに理解できる表現こそが、人々の想像力を最も強く刺激する。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "筆者は、すべてを説明するような「わかりやすさ」の追求が表現の多様性や奥行きを損なうと警鐘を鳴らしています。したがって3番が正解です。「〜かねない」は「〜という悪い結果を引き起こす可能性がある」という意味を表す文型です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:18",
+          "status": "published",
+          "promptText": "筆者は現代のデジタル社会における人間関係について、どのように考えているか。",
+          "passage": "現代社会において、SNSをはじめとするデジタルコミュニケーションの普及は、人々のつながりを飛躍的に容易にした。遠く離れた者同士が瞬時に情報を共有し、互いの存在を確認し合うことができるのは、確かに技術的進歩の成果である。しかし、その利便性の陰で、私たちは深い対話の機会を次第に失いつつあるのではないか。画面上の文字や記号による交流は、他者の複雑な表情や声色、その背後にある文脈を捨象してしまう。その結果、他者を自己の都合のよい枠組みに押し込めて理解したつもりになりがちである。真の人間関係とは、他者の異質さや理解しがたさに直面し、摩擦を恐れずに自己を修正していくプロセスそのものである。効率性や摩擦の回避ばかりを追求する現代のコミュニケーションは、他者との真摯な向き合い方を空洞化させる危険性を孕んでいる。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "デジタルコミュニケーションの利便性を活かし、より多くの人と効率的につながるべきだ。",
+            "画面上の文字を通じた交流こそが、現代における最も理想的な人間関係の形態である。",
+            "効率ばかりを重視する現在の交流方法は、他者と向き合う本来の深みを失わせている。",
+            "遠くの人と瞬時に情報を共有できる技術的進歩によって、真の信頼関係が構築される。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "筆者は効率や摩擦の回避を優先する現代の交流が、他者との真摯な向き合い方を空洞化させると主張しています。「〜を孕んでいる」は、そうした悪い結果を引き起こす危険性を内包しているという意味を表す文法項目です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:19",
+          "status": "published",
+          "promptText": "筆者が考える「本当の教養」とはどのようなものか。",
+          "passage": "情報が氾濫する現代において、知識の量こそが教養の尺度であると誤解されがちである。インターネットで検索すればあらゆるデータが瞬手に入手できる現在、単なる知識の蓄積にどれほどの意味があるだろうか。私たちが真に身につけるべき教養とは、得られた情報をうのみにせず、その妥当性を根底から問い直す批判的思考力にほかならない。既成の価値観や権威ある説に対しても、安易に同調せず、自らの頭で多角的に検証し続ける姿勢こそが重要なのである。教養とは、いわば他者の意見に流されないための知的防壁であり、変化の激しい時代を主体的に生き抜くための羅針盤であると言える。したがって、どれほど多くの知識を暗記していても、そこに主体的な思考が伴わないのであれば、それは真の教養とは呼べないのだ。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "既成の価値観に疑問を持ち、自らの頭で多角的に検証する思考力のこと。",
+            "変化の激しい時代において、他者の意見を無批判に受け入れる柔軟性のこと。",
+            "権威ある説に素直に従い、社会の秩序を円滑に維持するための協調性のこと。",
+            "インターネットを活用して、膨大な知識を素早く正確に暗記する能力のこと。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "本文では、単なる知識の蓄積ではなく、情報をうのみにせず多角的に検証する批判的思考力こそが教養であると述べています。「〜にほかならぬ」は、それがまさに唯一のものであると断定する表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:20",
+          "status": "published",
+          "promptText": "筆者は現代社会におけるデジタル技術の普及について、どのように考えているか。",
+          "passage": "現代社会において、デジタル技術の浸透は私たちの生活様式を根底から覆しつつある。効率性や利便性が追求されるあまり、人間が本来持っていた内省的な時間や、他者との偶発的な触れ合いが急速に失われつつあるのは否めない。効率の追求自体は否定されるべきものではないが、すべてを数値化し、最適化しようとする姿勢は、人間の営みの中にある複雑怪奇な妙味をそぎ落としてしまう危険性を抱えている。私たちは、利便性の向上の陰で、不可視の大切な何かを切り捨てていないか、立ち止まって吟味する必要がある。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "デジタル技術の利便性をさらに高め、あらゆる社会活動の効率化を推し進めるべきだ。",
+            "効率ばかりを重視するあまり、人間本来の豊かな営みや偶発的な触れ合いが失われる危うさがある。",
+            "数値化できない人間の感情や営みこそが、経済発展の最大の障害となっている。",
+            "技術の普及による生活様式の変化は、人間関係をより強固なものに変えてきた。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "筆者は効率や利便性の追求によって、内省的な時間や偶発的な触れ合いが失われていると警鐘を鳴らしています。「〜の陰で〜切り捨てていないか」という部分が選択肢の「危うさがある」に呼応しています。目標言語表現「〜の陰で」は、ある物事の裏で別の事象が起きていることを表します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "LONG_PASSAGE",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:21",
+          "status": "published",
+          "promptText": "筆者が述べnている「真の教養」に関する考えとして最も適当なものはどれか。",
+          "passage": "現代社会において、効率性や即効性ばかりが重視される傾向が強まっている。知識さえも、すぐに役立つノウハウやスキルとして消費されがちである。しかし、本来の学びや教養とは、そのような打算的な目的から切り離されたところにあるのではないだろうか。\n\n効率よく得られた知識は、状況が変わればたちまち陳腐化する。それに対して、一見すると何の役に立つかわからない古典を読むことや、歴史的背景を深く探求することによって得られる知見は、目先の利益をもたらさないかもしれない。だが、それこそが予測不可能な困難に直面したとき、物事の本質を見極め、自分なりの判断を下すための揺るぎない土台となるのである。\n\nさらに言えば、真の教養とは、他者の痛みや異なる価値観に対する想像力を養うことでもある。自己の損得勘定を超えて世界を捉え直す視点を与えてくれるからこそ、教養は混迷を極める現代においてこそ、その真価を発揮するのである。効率化の波に呑み込まれ、私たちは今こそ「役に立たないもの」の価値を再評価すべきではないだろうか。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "他者の価値観を理解することよりも、自己の損得勘定に基づいて物事を合理的に判断する能力が重要である。",
+            "古典の読書や歴史の探求は、予測不可能な時代においては効率性を損なうため避けるべきである。",
+            "一見すると役に立たない深い学びや探求こそが、困難な状況で本質を見極めるための揺るぎない土台となる。",
+            "目先の利益に直結する実用的なスキルやノウハウを素早く習得することこそが現代の教養の本質である。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "第2段落で「一見すると何の役に立つかわからない…知見こそが、予測不可能な困難に直面したとき…揺るぎない土台となる」と述べられており、選択肢2が筆者の主張と完全に一致します。「陳腐化する」「打算的」「一見すると」といったN1特有の抽象的・論理的な語彙や表現が正確に理解できているかが問われています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 22,
+          "questionType": "INTEGRATED_READING",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:22",
+          "status": "published",
+          "promptText": "筆者Aと筆者Bは、人工知能の芸術創作についてどのように考えているか。",
+          "passage": "「A」\n人工知能が描いた絵画や紡いだ詩が人間の心を打つことが増えている。しかし、それはあくまで人間が作った膨大なデータの統計的処理の産物にすぎない。AIには意志や感情、人生経験の裏付けがないため、いかに巧妙であっても、そこに真の意味での創造性や魂が宿ることはありえないのである。\n\n「B」\nAIによる芸術創作を模倣にすぎないと切り捨てるのは短絡的だ。人間だって過去の文化や他者の影響を受けずに表現することはできない。AIが自ら学習し、人間の予想を超えた表現を生み出す現象は、新たな芸術の主体が誕生したと見るべきであり、従来の人間中心的な芸術観の転換が求められているのだ。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "筆者AはAIに感情がないため創造性はないとし、筆者Bは人間を超える新たな芸術の主体としてAIを積極的に評価している。",
+            "筆者AはAIの創作をデータの処理にすぎないと否定し、筆者Bは人間の影響から免れない点において人間もAIも同等だとみなしている。",
+            "筆者AはAIの創作に人間の意志が不可欠だと主張し、筆者BはAIが独自の人生経験を獲得しつつある点を称賛している。",
+            "筆者AはAIの作品の巧妙さを認める一方で、筆者BはAIの創作活動そのものが人間の模倣にすぎないと主張している。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "筆者Aは「意志や感情…がないため創造性や魂が宿ることはありえない」と述べ、筆者Bは「新たな芸術の主体が誕生した」と評価しているため、第2選択肢が正解です。「〜にすぎない」（単なる〜だ）や「切り捨てる」（頭から否定する）などの表現が問われています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 23,
+          "questionType": "INTEGRATED_READING",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:23",
+          "status": "published",
+          "promptText": "伝統芸能の継承と現代化について、筆者Aと筆者Bの主張の共通点または相違点として正しいものはどれか。",
+          "passage": "「A」\n伝統芸能は、何百年もの間、先人たちが守り抜いてきた型を寸分違わず継承することにその本質がある。現代の観客に迎合して新しい演出や解釈を取り入れることは、かえって伝統の持つ本来の重みや神秘性を損なう結果を招くため、厳に慎むべきである。\n\n「B」\n伝統とは固定化された遺物ではない。時代とともに生きる人々のものであり、常に変容し続けるからこそ現代に息づいているのだ。昔の形を頑なに守るあまり、現代人の感性から乖離してしまっては、芸能として滅びゆくのを待つようなものである。積極的に現代の要素を取り入れるべきだ。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "両者とも、現代の観客の迎合は伝統芸能の価値を低下させると批判している。",
+            "両者とも、伝統芸能は固定化されるべきではなく、常に新しい演出を取り入れるべきだと考えている。",
+            "筆者Aは現代的な解釈を認めており、筆者Bは過去の型の完全な保存を求めている。",
+            "筆者Aは形の維持を重視し、筆者Bは時代の変化に応じた変容を重視している。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "筆者Aは「型を寸分違わず継承することにその本質がある」と主張し、筆者Bは「常に変容し続けるからこそ現代に息づいている」と主張しているため、第1選択肢が正解です。「厳に慎むべきである」（絶対に控えるべきだ）や「乖離してしまって」（離れてしまって）などの語彙が理解の鍵となります。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 24,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:24",
+          "status": "published",
+          "promptText": "新しく開設される「先端技術特別研究講座」の受講条件として、次のうち正しいものはどれか。",
+          "passage": "【先端技術特別研究講座 募集要項】\n\n・対象：当大学院の博士前期課程に在籍する学生で、所属専攻の指導教員の推薦を受けた者。\n・定員：各専攻につき上位2名まで（選考は書類審査および面接による）。\n・必須条件：学部段階において情報科学または関連分野の単位を20単位以上修得していること。かつ、TOEFL iBT 80点以上または同等の英語試験のスコアを有すること。\n・履修期間：1年間（前期・後期）。ただし、研究成果が認められた場合に限り、最長1年間の延長を許可することがある。\n・注意事項：本講座の単位は修了要件単位に算入されないため、通常の修業年限および卒業要件には影響しない。",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "受講期間の延長は、いかなる理由があっても一切認められない。",
+            "本講座で修得した単位は、大学院の修了要件単位として算入される。",
+            "英語のスコア要件として、TOEFL iBT 80点以上が必須である。",
+            "所属専攻の教員の推薦があれば、学部生でも受講が認められる。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "条件文「かつ、TOEFL iBT 80点以上…」とあるため2番が正しい。他の選択肢は条件や規定に反している。「〜に限り」「算入されない」などの複雑な条件表現を正確に読み取る力を試している。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 25,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "section": "dokkai",
+          "sourceKey": "jlpt-n1-mock-02:dokkai:25",
+          "status": "published",
+          "promptText": "新製品開発セミナーへの参加を希望するAさんが、すべての条件を満たす日程を選ぶ場合、どれを選ぶべきか。",
+          "passage": "【新製品開発・実践セミナーのご案内】\n\n当セミナーは、管理職および主任職を対象とした3日間の集中プログラムです。\n\n■開催日程（全日程とも 10:00 〜 17:00）\n・第1クール：10月5日（木）、6日（金）、7日（土）\n・第2クール：10月12日（木）、13日（金）、14日（土）\n・第3クール：10月19日（木）、20日（金）、21日（土）\n\n■受講条件および注意事項\n1. 所属長（部長以上）の承認を得ていること。\n2. 過去に「基礎マーケティング講座」を受講していること。\n3. 原則として全日程に出席できること（遅刻・早退はいかなる理由でも認められません）。\n4. 第1クールおよび第2クールへの申し込みには、社歴3年以上が必須となります。\n5. 第3クールのみ、社歴に関わらず受講可能ですが、事前課題の提出が必須となります。\n\n【Aさんの状況】\n・役職：主任職（社歴2年）\n・「基礎マーケティング講座」受講済み\n・所属長の承認済み\n・事前課題未提出\n・10月19日〜21日の日程であれば全日業務の調整が可能",
+          "audioUrl": null,
+          "imageUrl": null,
+          "options": [
+            "いずれのクールも条件を満たさないため参加できない",
+            "第3クールに申し込む",
+            "第1クールに申し込む",
+            "第2クールに申し込む"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Aさんは社歴2年であるため、社歴3年以上が必須の第1・第2クールには申し込めません。また、第3クールは社歴不問ですが事前課題の提出が必須であるところ未提出のため参加できず、結果としてどのクールも条件を満たしません。複雑な条件と例外規定の正確な照合能力を測る問題です。",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "CHOUKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:1",
+          "status": "published",
+          "promptText": "このあと、女の人はどのような作業をしますか。",
+          "passage": "新商品のパッケージデザインの件ですが、修正案はできましたか。はい、ご指摘いただいた色合いの調整はすべて終えました。ただ、裏面の成分表示の数値に誤りがないか、もう一度確認が必要だと思います。それは重要ですね。では、私のほうで法規上のチェックをしておきますから、あなたは全体のレイアウトに崩れがないか再確認してください。承知いたしました。すぐに取りかかります。",
+          "audioScript": "新商品のパッケージデザインの件ですが、修正案はできましたか。はい、ご指摘いただいた色合いの調整はすべて終えました。ただ、裏面の成分表示の数値に誤りがないか、もう一度確認が必要だと思います。それは重要ですね。では、私のほうで法規上のチェックをしておきますから、あなたは全体のレイアウトに崩れがないか再確認してください。承知いたしました。すぐに取りかかります。",
+          "imageUrl": null,
+          "options": [
+            "色合いの調整をする",
+            "成分表示の数値を調べる",
+            "法規上のチェックをする",
+            "全体のレイアウトの再確認をする"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "男の人が法規上のチェックを担当すると言った後、女の人に対して全体のレイアウトに崩れがないか再確認するように指示しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:2",
+          "status": "published",
+          "promptText": "このあと、男の人は最初に対応すべきこととして何をしますか。",
+          "passage": "課長、先ほど取引先からシステムトラブルの連絡が入りました。顧客データにアクセスできないそうです。大変だな。原因はわかっているのか。それが、社内サーバーの障害か、回線の問題か、まだ切り分けできていない状態です。急ぎだな。まずはネットワークの状況を確認してくれ。そのあとで先方に状況報告のメールを入れます。承知しました。直ちにサーバー室を確認してきます。",
+          "audioScript": "課長、先ほど取引先からシステムトラブルの連絡が入りました。顧客データにアクセスできないそうです。大変だな。原因はわかっているのか。それが、社内サーバーの障害か、回線の問題か、まだ切り分けできていない状態です。急ぎだな。まずはネットワークの状況を確認してくれ。そのあとで先方に状況報告のメールを入れます。承知しました。直ちにサーバー室を確認してきます。",
+          "imageUrl": null,
+          "options": [
+            "ネットワークの状況を確認する",
+            "取引先に状況報告のメールを入れる",
+            "顧客データの修復作業を行う",
+            "社内サーバーの障害を直す"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "男の人が「まずはネットワークの状況を確認してくれ」と指示され、「直ちにサーバー室を確認してきます」と答えているためです。「まずは」は最初に行うべきことを示します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:3",
+          "status": "published",
+          "promptText": "このあと、二人はどのように進めますか。",
+          "passage": "来期の事業計画書案ですが、全体的に予算がオーバーしていますね。はい、特に広告宣伝費の割合が高くなっています。では、各部署の責任者を集めて再検討の会議を開くべきでしょうか。いや、いきなり全員集めるのは時間がかかる。まずは私と君の二人で不要な項目を削って、たたき台を修正しよう。その上で、来週部長会に諮りましょう。わかりました。今日の午後に時間をとりましょう。",
+          "audioScript": "来期の事業計画書案ですが、全体的に予算がオーバーしていますね。はい、特に広告宣伝費の割合が高くなっています。では、各部署の責任者を集めて再検討の会議を開くべきでしょうか。いや、いきなり全員集めるのは時間がかかる。まずは私と君の二人で不要な項目を削って、たたき台を修正しよう。その上で、来週部長会に諮りましょう。わかりました。今日の午後に時間をとりましょう。",
+          "imageUrl": null,
+          "options": [
+            "広告宣伝費の予算をそのまま承認してもらう",
+            "すぐに各部署の責任者を集めて会議を開く",
+            "二人で不要な項目を削って計画書のたたき台を修正する",
+            "直接部長会に現在の案を提出して承認をもらう"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "男の人が会議の前に「まずは私と君の二人で不要な項目を削って、たたき台を修正しよう」と提案し、女の人がそれに同意しているためです。「その上で」は順序を表す高度な接続表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:4",
+          "status": "published",
+          "promptText": "このあと、男の人はまず何をしなければなりませんか。",
+          "passage": "すみません、来週の会議の資料、まだできていないんですが。あ、部長、それなら私が半分引き受けますよ。助かりますね。それじゃあ、私は残りの部分を急いで仕上げます。あ、そうだ、その前に、さっき総務から頼まれた備品の発注書、今日中に提出しないといけないんでした。そうでしたね。では、それを先に済ませてから資料作成に取り掛かります。",
+          "audioScript": "すみません、来週の会議の資料、まだできていないんですが。あ、部長、それなら私が半分引き受けますよ。助かりますね。それじゃあ、私は残りの部分を急いで仕上げます。あ、そうだ、その前に、さっき総務から頼まれた備品の発注書、今日中に提出しないといけないんでした。そうでしたね。では、それを先に済ませてから資料作成に取り掛かります。",
+          "imageUrl": null,
+          "options": [
+            "総務に頼まれた備品の発注書を提出する",
+            "来週の会議の資料を全部一人で作り直す",
+            "男の人に会議の資料の残りの部分を頼む",
+            "部長と一緒に会議の資料を半分ずつ作る"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "会話の最後で男の人は「それを先に済ませてから資料作成に取り掛かります」と言っており、備品の発注を最初に行うことが明示されています。優先順位を正確に聞き取る能力を測る問題です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "TASK_BASED",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:5",
+          "status": "published",
+          "promptText": "このあと、女の人はどのような手順で作業を進めますか。",
+          "passage": "新商品のパンフレットのデザイン案ですが、修正点が多いですね。はい。では、指示があった箇所を直します。そのあとで印刷所に入稿する流れですね。いや、入稿の前に、必ず課長の最終確認をもらう決まりになっていますよ。あ、そうでした。じゃあ、修正が終わったら、まず課長に見せて、それから入稿ですね。わかりました。",
+          "audioScript": "新商品のパンフレットのデザイン案ですが、修正点が多いですね。はい。では、指示があった箇所を直します。そのあとで印刷所に入稿する流れですね。いや、入稿の前に、必ず課長の最終確認をもらう決まりになっていますよ。あ、そうでした。じゃあ、修正が終わったら、まず課長に見せて、それから入稿ですね。わかりました。",
+          "imageUrl": null,
+          "options": [
+            "デザインの修正をしてから、課長の確認をもらい、印刷所に入稿する",
+            "デザインの修正をしないで、すぐに印刷所に入稿する",
+            "先に課長の確認をもらってから、デザインの修正をする",
+            "印刷所に入稿したあとで、課長の確認をもらう"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "女の人は修正を行った後、課長の確認を得てから印刷所に入稿する手順を確認しています。業務の手順と条件反射的な誤りを避ける聞き取りを評価します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:6",
+          "status": "published",
+          "promptText": "男の人は、新しいプロジェクトの企画書について、一番改善すべき点は何だと言っていますか。",
+          "passage": "男の人と女の人が新しいプロジェクトの企画書について話しています。男の人、この企画書のどこを一番直すべきだと言っていますか。企画書の骨組み自体は悪くないんですが、ターゲット層の分析があまりにも表面的で、説得力に欠けるんですよね。競合他社の動きも考慮されていませんし。あ、構成の分かりやすさは問題ないですよ。やっぱり、根拠となるデータの裏付けが甘い点が最大の課題です。男の人は、この企画書のどこを一番直すべきだと言っていますか。",
+          "audioScript": "男の人と女の人が新しいプロジェクトの企画書について話しています。男の人、この企画書のどこを一番直すべきだと言っていますか。企画書の骨組み自体は悪くないんですが、ターゲット層の分析があまりにも表面的で、説得力に欠けるんですよね。競合他社の動きも考慮されていませんし。あ、構成の分かりやすさは問題ないですよ。やっぱり、根拠となるデータの裏付けが甘い点が最大の課題です。男の人は、この企画書のどこを一番直すべきだと言っていますか。",
+          "imageUrl": null,
+          "options": [
+            "ターゲット層の分析とデータの裏付けを強化すること",
+            "構成の分かりやすさをさらに高めること",
+            "プロジェクトの全体的なスケジュールを見直すこと",
+            "競合他社の最新の動向を詳しく網羅すること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "男の人は企画書の構成は認めているものの、ターゲット層の分析が表面的でありデータの裏付けが甘い点を最大の課題として挙げています。「裏付けが甘い」は根拠や証拠が不十分であるという意味の表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:7",
+          "status": "published",
+          "promptText": "女の人は、最近導入された人事評価制度について、どのような問題点があると考えていますか。",
+          "passage": "男の人と女の人が新しく導入された人事評価制度について話しています。女の人は、この制度のどこに問題があると考えていますか。社員のモチベーションを上げるという目的自体は理解できますが、評価基準が数字に偏りすぎていて、日々の地道な努力やチームワークへの貢献が見落とされがちなんですよね。フィードバックの回数が増えたことは評価しますが。女の人は、この制度のどこに問題があると考えていますか。",
+          "audioScript": "男の人と女の人が新しく導入された人事評価制度について話しています。女の人は、この制度のどこに問題があると考えていますか。社員のモチベーションを上げるという目的自体は理解できますが、評価基準が数字に偏りすぎていて、日々の地道な努力やチームワークへの貢献が見落とされがちなんですよね。フィードバックの回数が増えたことは評価しますが。女の人は、この制度のどこに問題があると考えていますか。",
+          "imageUrl": null,
+          "options": [
+            "評価を行う管理職の負担が大きすぎるということ",
+            "評価基準が定量的な成果に偏り、プロセスが評価されにくいこと",
+            "社員同士の競争を煽りすぎてチームワークが損なわれること",
+            "フィードバックの回数が少なすぎて改善につながりにくいこと"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "女の人は「数字に偏りすぎていて、日々の地道な努力やチームワークへの貢献が見落とされがち」と述べており、結果（定量）ばかりが重視され過程（プロセス）が評価されない点を問題視しています。「偏りすぎていて」はバランスを欠いている状態を表す表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:8",
+          "status": "published",
+          "promptText": "男の人は、企業の環境問題への取り組みにおいて、何が最も重要だと主張していますか。",
+          "passage": "男の人と女の人が企業の環境経営について話しています。男の人は、企業が環境問題に取り組む上で、何が最も重要だと主張していますか。単にイメージアップのためにCSR活動をアピールするだけでは意味がありません。サプライチェーン全体での徹底的な資源効率の改善や、製品のライフサイクルを考慮した設計こそが本質です。コストはかかりますが、そこから逃げては企業の社会的責任を果たしているとは言えません。男の人は、企業が環境問題に取り組む上で、何が最も重要だと主張していますか。",
+          "audioScript": "男の人と女の人が企業の環境経営について話しています。男の人は、企業が環境問題に取り組む上で、何が最も重要だと主張していますか。単にイメージアップのためにCSR活動をアピールするだけでは意味がありません。サプライチェーン全体での徹底的な資源効率の改善や、製品のライフサイクルを考慮した設計こそが本質です。コストはかかりますが、そこから逃げては企業の社会的責任を果たしているとは言えません。男の人は、企業が環境問題に取り組む上で、何が最も重要だと主張していますか。",
+          "imageUrl": null,
+          "options": [
+            "サプライチェーン全体を通じた本質的な環境負荷の低減",
+            "短期的なコスト削減を優先した効率的な生産体制の構築",
+            "環境保全に関する従業員向けの意識調査の実施",
+            "社会的なイメージアップのための積極的な広報活動"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "男の人は表面的なアピールではなく、サプライチェーン全体での資源効率の改善や製品設計といった本質的な取り組みこそが重要だと主張しています。「ライフサイクル」や「サプライチェーン」はビジネスや環境論で頻出する高度な概念です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:9",
+          "status": "published",
+          "promptText": "女の人は、リモートワークの定着に伴う社内コミュニケーションの課題について、どう述べていますか。",
+          "passage": "男の人と女の人がリモートワークの現状について話しています。女の人は、社内コミュニケーションのどのような点に課題を感じていますか。業務に関する連絡はチャットツールで円滑に行えていますが、雑談から生まれるような偶発的なアイデアの共有や、お互いの暗黙の了解を把握することが難しくなりました。会議の効率自体は上がっているんですけどね。女の人は、社内コミュニケーションのどのような点に課題を感じていますか。",
+          "audioScript": "男の人と女の人がリモートワークの現状について話しています。女の人は、社内コミュニケーションのどのような点に課題を感じていますか。業務に関する連絡はチャットツールで円滑に行えていますが、雑談から生まれるような偶発的なアイデアの共有や、お互いの暗黙の了解を把握することが難しくなりました。会議の効率自体は上がっているんですけどね。女の人は、社内コミュニケーションのどのような点に課題を感じていますか。",
+          "imageUrl": null,
+          "options": [
+            "会議の回数が多すぎて本来の業務に支障が出ていること",
+            "業務連絡のスピードが落ちて全体的な生産性が低下していること",
+            "社員同士のプライベートな干渉が増えてストレスになっていること",
+            "偶発的なアイデアの創出や細やかなニュアンスの共有が難しいこと"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "女の人はチャットで業務連絡はできているとしつつも、「雑談から生まれるような偶発的なアイデアの共有や、お互いの暗黙の了解」が難しくなったと述べています。「偶発的」は偶然に起こるさま、「暗黙の了解」は言葉にせずとも互いに理解していることを意味します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "POINT_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:10",
+          "status": "published",
+          "promptText": "男の人は、新しい事業計画の最大のリスクは何だと考えていますか。",
+          "passage": "新しい事業計画についてですが、今回の試みは市場の需要を先取りする点で魅力的です。ただ、収益化までに想定以上の時間がかかる点がネックになりかねません。競合他社の参入スピードも気になるところですが、それ以上に資金繰りの悪化が致命的な打撃となる恐れがあります。人材確保の難しさも指摘されていますが、計画の成否を分けるのはやはり初期投資の回収期間の長期化に対する耐性でしょう。",
+          "audioScript": "新しい事業計画についてですが、今回の試みは市場の需要を先取りする点で魅力的です。ただ、収益化までに想定以上の時間がかかる点がネックになりかねません。競合他社の参入スピードも気になるところですが、それ以上に資金繰りの悪化が致命的な打撃となる恐れがあります。人材確保の難しさも指摘されていますが、計画の成否を分けるのはやはり初期投資の回収期間の長期化に対する耐性でしょう。",
+          "imageUrl": null,
+          "options": [
+            "収益化が遅れ資金繰りが悪化する恐れがあること",
+            "初期投資の額が当初の予算を大きく上回ること",
+            "優秀な人材の確保ができず業務が停滞すること",
+            "競合他社の参入によって市場シェアを奪われること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "男性は人材確保や競合にも触れつつも、「資金繰りの悪化が致命的」「初期投資の回収期間の長期化に対する耐性」が計画の成否を分けると述べているため、3が正解です。「ネックになりかねません」「〜恐れがあります」は、N1でよく出題される懸念点やリスクを表す重要表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:11",
+          "status": "published",
+          "promptText": "スピーカーが最も言いたいことは何か。",
+          "passage": "近年、急速に普及が進む自動運転技術ですが、技術的な完全性を追求するあまり、人間側の能力低下を懸念する声があります。機械に依存しすぎると、緊急時の適切な介入が難しくなるという指摘です。しかし、システムがどれほど高度化しようとも、最終的な責任の所在や判断の主体は常に人間でなければなりません。自動化の恩恵を享受しつつも、主体性を手放さないこと、これがこれからの技術社会において不可欠な姿勢なのです。",
+          "audioScript": "近年、急速に普及が進む自動運転技術ですが、技術的な完全性を追求するあまり、人間側の能力低下を懸念する声があります。機械に依存しすぎると、緊急時の適切な介入が難しくなるという指摘です。しかし、システムがどれほど高度化しようとも、最終的な責任の所在や判断の主体は常に人間でなければなりません。自動化の恩恵を享受しつつも、主体性を手放さないこと、これがこれからの技術社会において不可欠な姿勢なのです。",
+          "imageUrl": null,
+          "options": [
+            "自動運転技術の完全性を高めるためには、人間の介入を一切排除すべきである。",
+            "技術が高度化しても、人間が主体性を維持し続けることが極めて重要である。",
+            "緊急時の対応をスムーズにするために、機械への完全な依存を目指すべきだ。",
+            "人間側の能力低下を防ぐため、自動運転の普及は一時的に中断されるべきだ。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "スピーカーは自動化の恩恵を認めつつも、最終的な判断の主体は常に人間であるべきだと主張しています。「〜でなければならない」「不可欠な姿勢」という強い断定表現が筆者の主張を示しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:12",
+          "status": "published",
+          "promptText": "講義で述べられている都市計画の課題は何か。",
+          "passage": "現代の都市づくりにおいて、効率性や経済性を優先するあまり、地域の歴史や文化的文脈が失われつつあります。画一的な高層ビルが立ち並び、どこも同じような景観になってしまっては、住民の愛着やコミュニティの絆は育まれません。私たちが目指すべきは、過去の遺産をただ保存することではなく、それらを現代の生活空間に巧みに組み込み、地域固有のアイデンティティを再構築することです。",
+          "audioScript": "現代の都市づくりにおいて、効率性や経済性を優先するあまり、地域の歴史や文化的文脈が失われつつあります。画一的な高層ビルが立ち並び、どこも同じような景観になってしまっては、住民の愛着やコミュニティの絆は育まれません。私たちが目指すべきは、過去の遺産をただ保存することではなく、それらを現代の生活空間に巧みに組み込み、地域固有のアイデンティティを再構築することです。",
+          "imageUrl": null,
+          "options": [
+            "経済性を重視するあまり、地域の歴史的景観や固有性が失われていること。",
+            "高層ビルの建設が進みすぎて、都市全体の人口収容能力が限界に達していること。",
+            "歴史的建造物の保存に固執するあまり、新しい生活インフラの整備が遅れていること。",
+            "住民同士のコミュニティの絆が強すぎて、新しい住民が定着しにくいこと。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "効率性や経済性を優先した結果、地域の歴史や文化的文脈が失われ、画一的な景観になっていることが課題として挙げられています。「〜するあまり」という表現を用いて過度な傾向への警鐘を鳴らしています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:13",
+          "status": "published",
+          "promptText": "学者が主張する科学的発見の本質は何か。",
+          "passage": "科学の歴史を振り返ると、偉大な発見の多くは、綿密に計画された実験の成果というよりも、むしろ予想外の失敗や偶然の産物から生まれています。研究者たちはしばしば、自らの仮説に固執し、矛盾するデータを無視しがちです。しかし、真のブレイクスルーは、その予期せぬノイズの中にこそ潜んでいるのです。常識を疑い、既存の枠組みにとらわれない柔軟な視点こそが、新たな扉を開くカギとなります。",
+          "audioScript": "科学の歴史を振り返ると、偉大な発見の多くは、綿密に計画された実験の成果というよりも、むしろ予想外の失敗や偶然の産物から生まれています。研究者たちはしばしば、自らの仮説に固執し、矛盾するデータを無視しがちです。しかし、真のブレイクスルーは、その予期せぬノイズの中にこそ潜んでいるのです。常識を疑い、既存の枠組みにとらわれない柔軟な視点こそが、新たな扉を開くカギとなります。",
+          "imageUrl": null,
+          "options": [
+            "既存の仮説に固執し、矛盾するデータを徹底的に排除することが重要である。",
+            "綿密な計画に基づいた実験を忠実に実行することでのみ、真の発見に至る。",
+            "予期せぬ失敗や偶然の中にこそ、新しい発見の契機が隠されている。",
+            "科学の発展には、過去の理論を完全に否定する強固な意志が必要である。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "筆者は計画的な成果よりも予想外の失敗や偶然から発見が生まれると述べています。「〜こそ」という強調表現を用いて、その重要性を際立たせています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "SUMMARY_COMPREHENSION",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:14",
+          "status": "published",
+          "promptText": "講話のなかで筆者が訴えている読書の本質とは何か。",
+          "passage": "情報が氾濫する現代社会において、私たちは手軽に要約された知識を得ることができるようになりました。しかし、それでは他者が切り取った結論をなぞるだけであり、自ら思考する力は養われません。書物と向き合うということは、行間にある著者の葛藤を追体験し、自分なりの問いを立てることです。効率よく知識を消費するのではなく、時間をかけて深く思索するプロセスにこそ、読書の真の価値があるのです。",
+          "audioScript": "情報が氾濫する現代社会において、私たちは手軽に要約された知識を得ることができるようになりました。しかし、それでは他者が切り取った結論をなぞるだけであり、自ら思考する力は養われません。書物と向き合うということは、行間にある著者の葛藤を追体験し、自分なりの問いを立てることです。効率よく知識を消費するのではなく、時間をかけて深く思索するプロセスにこそ、読書の真の価値があるのです。",
+          "imageUrl": null,
+          "options": [
+            "膨大な情報を短時間で効率よく処理し、要約する能力を磨くこと。",
+            "他者の意見を素直に受け入れ、知識を正確に記憶して蓄積すること。",
+            "専門的な書物を多読し、時代のトレンドを素早く把握すること。",
+            "要約された知識に頼らず、自ら問いを立てて深く思索するプロセスを経ること。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "単なる知識の消費ではなく、時間をかけて深く思索することが読書の価値であると主張しています。「〜にこそ…ある」という構文で筆者の最も言いたいことが強調されています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:15",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "近年の急速なデジタル化によって、かえって対面での議論の密度が薄れた気がするんですが。",
+          "audioScript": "近年の急速なデジタル化によって、かえって対面での議論の密度が薄れた気がするんですが。",
+          "imageUrl": null,
+          "options": [
+            "確かに、効率優先のあまり、本来の深みが失われがちですね。",
+            "いえ、デジタル化こそが全ての課題を解決するはずですよ。",
+            "そうですね、誰もがその便利さを手放そうとしていますね。",
+            "まさか、対面での議論ほど無駄なものはありませんから。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "相手の意見に共感しつつ、便利さの裏にある弊害を的確に指摘しているため適切。「〜のあまり」は「程度がはなはだしくてその結果になる」という意味の文法パターンです。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:16",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "今回の新規プロジェクトの失敗は、事前のリスク管理の甘さに起因していると言わざるを得ません。",
+          "audioScript": "今回の新規プロジェクトの失敗は、事前のリスク管理の甘さに起因していると言わざるを得ません。",
+          "imageUrl": null,
+          "options": [
+            "おっしゃる通り、想定外の事態への備えが不足していました。",
+            "それほどまでに、今回の計画は完璧に進められましたね。",
+            "誰もが、最初から成功すると確信していたわけですから。",
+            "失敗したおかげで、何の教訓も得られませんでしたね。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "相手の批判的な分析に対して率直に同意し、原因を認めているため自然。「〜と言わざるを得ません」は、心情や状況から見てそう言わざるを得ないという必然性を表します。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:17",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "彼は今回の人事異動について、不満を漏らすどころか、むしろ新たな挑戦の機会として前向きにとらえているようです。",
+          "audioScript": "彼は今回の人事異動について、不満を漏らすどころか、むしろ新たな挑戦の機会として前向きにとらえているようです。",
+          "imageUrl": null,
+          "options": [
+            "周囲の反対を押し切って、結局元の部署に戻ったわけですね。",
+            "やはり、慣れ親しえた環境を離れるのは苦痛でしかないのですね。",
+            "さすがですね、変化を恐れず成長の糧にする姿勢は見習うべきです。",
+            "彼ならどんな逆境であっても腐ってしまうでしょうね。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "前向きな姿勢を評価する文脈として最も論理的。「〜どころか」は、予想や程度からかけ離れていることを表すN1の代表的な表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:18",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "伝統的な職人の技というものは、一朝一夕に身につくものではないからこそ、継承が難しいと言われる所以ですね。",
+          "audioScript": "伝統的な職人の技というものは、一朝一夕に身につくものではないからこそ、継承が難しいと言われる所以ですね。",
+          "imageUrl": null,
+          "options": [
+            "その通りですね、長い年月をかけた修練の積み重ねが不可欠です。",
+            "わざわざ継承する必要など、現代においては全くありませんよ。",
+            "だからこそ、短期間で誰でもマスターできる仕組みが必要なのです。",
+            "それなのに、誰もが簡単にその技術を習得してしまっています。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "伝統技術の習得の難しさと時間の必要性に賛同しているため正しい。「〜所以（ゆえん）」は「そういう理由であること・わけ」を意味する漢語的表現です。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:19",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "近年の急激な物価高騰を受け、生活防衛のための節約志向が一層強まっているようですね。",
+          "audioScript": "近年の急激な物価高騰を受け、生活防衛のための節約志向が一層強まっているようですね。",
+          "imageUrl": null,
+          "options": [
+            "家計への負担を考えると、やむを得ない傾向と言えますね。",
+            "誰もが将来への不安を一切忘れて暮らしています。",
+            "贅沢品の売上が過去最高を更新しているそうです。",
+            "これほど景気が良いと、財布の紐も緩みがちになりますね。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "相手の「物価高騰と節約志向の強まり」という発言に対し、現状の経済的負担を考慮すれば当然の動きであると共感・同意する返答が最も自然です。文脈に適合する論理的な応答を評価しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:20",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "今回の新規プロジェクトの成否は、いかに初期段階で顧客の潜在的ニーズを把握できるかにかかっている。",
+          "audioScript": "今回の新規プロジェクトの成否は、いかに初期段階で顧客の潜在的ニーズを把握できるかにかかっている。",
+          "imageUrl": null,
+          "options": [
+            "すでに十分な利益が出ており、これ以上の対策は不要です。",
+            "おっしゃる通り、事前の綿密なリサーチが鍵になりますね。",
+            "そのためには、全社員の休暇を直ちに取得させるべきです。",
+            "顧客の意見など無視して、自分たちの信念を貫くべきです。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "プロジェクトの成功が初期段階のニーズ把握（リサーチ）にかかっているという発言に対し、その重要性に同意する返答が適切です。N1レベルのビジネス文脈における適切な相槌と同意の表現を問うています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:21",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "伝統工芸の技術を次世代に継承するためには、単に古い形を守るだけでなく、現代のライフスタイルに合わせた刷新が不可欠だ。",
+          "audioScript": "伝統工芸の技術を次世代に継承するためには、単に古い形を守るだけでなく、現代のライフスタイルに合わせた刷新が不可欠だ。",
+          "imageUrl": null,
+          "options": [
+            "時代遅れのまま放置することが、真の伝統を守ることになりますね。",
+            "まさにその通りで、変化を恐れない柔軟な姿勢が求められますね。",
+            "伝統とは形骸化してこそ、その価値が保たれるものですから。",
+            "現代の生活様式を取り入れると、技術の本質が完全に失われます。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "古い形を守るだけでなく現代に合わせて刷新すべきだという意見に対し、変化の必要性を肯定的に受け止める返答が論理的です。抽象的な議論に対する適切な賛同の表現をテストしています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 22,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:22",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "都市部の人口集中を緩和するため、地方移住を促進する施策が講じられているが、雇用創出が伴わなければ現実的ではない。",
+          "audioScript": "都市部の人口集中を緩和するため、地方移住を促進する施策が講じられているが、雇用創出が伴わなければ現実的ではない。",
+          "imageUrl": null,
+          "options": [
+            "地方の雇用はすでに飽和状態であり、これ以上の仕事は不要です。",
+            "仕事さえあれば移住したい人は多いはずなので、企業の地方誘致が急務ですね。",
+            "移住希望者全員に高級マンションが無償で提供されるべきです。",
+            "人口はすべて大都市に集まったほうが効率的であることは明白です。"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "地方移住には雇用の創出が伴わなければならないという課題提起に対し、雇用対策（企業の地方誘致）の必要性を具体的に補足する返答が最も噛み合っています。社会的な課題に対する建設的な意見の受け答えを評価しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 23,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:23",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "新しく導入されたプロジェクト管理システム、使い勝手が悪くてかえって業務効率が落ちている気がするよ。",
+          "audioScript": "新しく導入されたプロジェクト管理システム、使い勝手が悪くてかえって業務効率が落ちている気がするよ。",
+          "imageUrl": null,
+          "options": [
+            "そうでしょうか。十分にトレーニングを受ければ、そのうち慣れてくるものだと思いますが。",
+            "なるほど、効率が落ちているのであれば、いっそ以前の方法に戻すべきかどうか検討しましょう。",
+            "おっしゃる通りです。導入したものの、現場の混乱を招いただけで、早急な見直しが必要ですね。",
+            "確かに、これまでのやり方に固執するあまり、新しい手法の良さを見落としているのかもしれませんね。"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "相手の「効率が落ちている」というネガティブな意見に全面的に同調し、問題の深刻さと迅速な対応の必要性を述べているため、この応答が最も自然です。文脈に即した適切な相槌と意見の共有を評価しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 24,
+          "questionType": "QUICK_RESPONSE",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:24",
+          "status": "published",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "今回の市場調査のデータを見る限り、我が社の新商品は若年層には浸透しているものの、中高年層にはほとんど認知されていないようだね。",
+          "audioScript": "今回の市場調査のデータを見る限り、我が社の新商品は若年層には浸透しているものの、中高年層にはほとんど認知されていないようだね。",
+          "imageUrl": null,
+          "options": [
+            "認知度を高めるために、もっと若い世代向けの広告を増やしましょう。",
+            "データが正確かどうか、もう一度隅々まで調査し直したほうがよさそうですね。",
+            "若年層だけに絞ってマーケティングを展開していく方針で間違いありませんね。",
+            "中高年層に向けたアプローチを抜本的に見直す必要がありますね。"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "「中高年層にほとんど認知されていない」という課題に対して、その層に向けた対策を講じるべきだという指摘が最も論理的です。ターゲット層の偏りを解消するための適切な問題解決の姿勢を示しています。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 25,
+          "questionType": "INTEGRATED_LISTENING",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:25",
+          "status": "published",
+          "promptText": "3人はどの研究テーマに決定したか。",
+          "passage": "男1：来期の共同研究のテーマ、そろそろ決めないとね。僕は都市のヒートアイランド現象と緑化の相関関係について数値解析したいんだけど。女：それも興味深いけど、データ収集に何年もかかるから期間内に終わるか危惧されるわね。男2：それより、過疎地域における移動販売車の運行効率化と高齢者の買い物支援のモデルケースのほうが、即効性があって社会的意義も高いと思うな。男1：確かに地域貢献度という観点では優れているね。女：うん、それに自治体からの補助金も申請しやすいし、データもすぐに集められそう。男1：よし、じゃあその移動販売車の件で企画書をまとめようか。",
+          "audioScript": "男1：来期の共同研究のテーマ、そろそろ決めないとね。僕は都市のヒートアイランド現象と緑化の相関関係について数値解析したいんだけど。女：それも興味深いけど、データ収集に何年もかかるから期間内に終わるか危惧されるわね。男2：それより、過疎地域における移動販売車の運行効率化と高齢者の買い物支援のモデルケースのほうが、即効性があって社会的意義も高いと思うな。男1：確かに地域貢献度という観点では優れているね。女：うん、それに自治体からの補助金も申請しやすいし、データもすぐに集められそう。男1：よし、じゃあその移動販売車の件で企画書をまとめようか。",
+          "imageUrl": null,
+          "options": [
+            "都市のヒートアイランド現象と緑化の相関関係の数値解析",
+            "過疎地域における移動販売車の運行効率化と高齢者の買い物支援",
+            "自治体からの補助金を活用した新規ビジネスモデルの構築",
+            "高齢者の買い物支援を目的とした大規模なデータ収集"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "男1の最初の提案は期間の懸念から見送られ、男2が提案した移動販売車と高齢者支援のテーマについて、女も即効性と社会的意義に賛同し、最終的に男1もそれに同意したため。危惧される（懸念される・心配される）という表現が使われている。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 26,
+          "questionType": "INTEGRATED_LISTENING",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:26",
+          "status": "published",
+          "promptText": "3人はどのコスト削減策を実施することにしたか。",
+          "passage": "女1：我が社の今期の経費削減についてですが、全社員の給与や賞与を一律にカットするというのは、モラル低下を招くだけでなく優秀な人材の流出を招くゆえに避けるべきです。男：おっしゃる通りだね。では、オフィスのペーパーレス化を徹底して消耗品費を削るのはどうだろう。女2：それも重要ですが、効果が出るまでに時間がかかります。それよりも、現在利用しているクラウドサービスのプランを見直して、使っていない機能や過剰なストレージを解約するのが最も即効性がありますよ。女1：確かに、無駄な固定費を即座に削減できますね。男：そうだね、それではクラウドのプラン変更を直ちに手配しよう。",
+          "audioScript": "女1：我が社の今期の経費削減についてですが、全社員の給与や賞与を一律にカットするというのは、モラル低下を招くだけでなく優秀な人材の流出を招くゆえに避けるべきです。男：おっしゃる通りだね。では、オフィスのペーパーレス化を徹底して消耗品費を削るのはどうだろう。女2：それも重要ですが、効果が出るまでに時間がかかります。それよりも、現在利用しているクラウドサービスのプランを見直して、使っていない機能や過剰なストレージを解約するのが最も即効性がありますよ。女1：確かに、無駄な固定費を即座に削減できますね。男：そうだね、それではクラウドのプラン変更を直ちに手配しよう。",
+          "imageUrl": null,
+          "options": [
+            "優秀な人材を確保するために新規採用の予算を増やす",
+            "利用しているクラウドサービスのプランを見直して不要なコストを削る",
+            "オフィスのペーパーレス化を徹底して消耗品費を削る",
+            "全社員の給与や賞与を一律にカットする"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "給与カットは人材流出の懸念から否定され、ペーパーレス化は時間がかかると指摘されたため、即効性がある女2のクラウドサービスの見直し案に全員が賛成した。ゆえに（だから・その理由でという因果関係を表す表現）が使われている。",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 27,
+          "questionType": "INTEGRATED_LISTENING",
+          "section": "mendengar",
+          "sourceKey": "jlpt-n1-mock-02:choukai:27",
+          "status": "published",
+          "promptText": "3人はどのエネルギー政策を最優先事項として推進することに決定したか。",
+          "passage": "今後のエネルギー政策についてですが、再生可能エネルギーの導入拡大は不可欠としても、出力変動の課題を克服しなければ電力供給の安定性は担保できません。かといって、原子力発電の再稼働を即座に進めるのは社会的合意形成の観点から時期尚早です。となると、既存の火力の効率化を図りつつ、次世代型蓄電池のインフラ整備を国家プロジェクトとして最優先で進めるべきという結論になりますね。では、その方針で提案書をまとめましょう。",
+          "audioScript": "今後のエネルギー政策についてですが、再生可能エネルギーの導入拡大は不可欠としても、出力変動の課題を克服しなければ電力供給の安定性は担保できません。かといって、原子力発電の再稼働を即座に進めるのは社会的合意形成の観点から時期尚早です。となると、既存の火力の効率化を図りつつ、次世代型蓄電池のインフラ整備を国家プロジェクトとして最優先で進めるべきという結論になりますね。では、その方針で提案書をまとめましょう。",
+          "imageUrl": null,
+          "options": [
+            "電力供給の安定性を軽視して新エネルギー開発に専念する",
+            "火力発電の効率化と次世代型蓄電池のインフラ整備を進める",
+            "原子力発電所の再稼働を無条件で最優先事項とする",
+            "再生可能エネルギーの導入拡大のみを即時推進する"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "会話の中で3人は、再生ポテンシャルの限界や原子力の合意形成の難しさを指摘し最終的に火力の効率化と蓄電池のインフラ整備を最優先とすることに合意しています。「かといって」は前の事項を認めつつ別の側面を提示する表現です。",
+          "difficulty": 1
+        }
+      ]
+    }
+  ]
+}

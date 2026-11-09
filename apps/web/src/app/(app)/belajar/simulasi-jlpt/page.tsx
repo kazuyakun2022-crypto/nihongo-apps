@@ -1,21 +1,16 @@
 "use client";
 
-import { Suspense } from "react";
-import { useAuth } from "@/features/auth/application/AuthProvider";
-import { JlptSimulation } from "@/features/exam/ui/JlptSimulation";
-import { AdminLearnerNotice } from "@/shared/ui/AdminLearnerNotice";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function SimulasiJlptPage() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === "admin" || user?.role === "super_admin";
+export default function BelajarSimulasiRedirect() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  if (isAdmin) {
-    return <AdminLearnerNotice featureName="Simulasi JLPT" />;
-  }
+  useEffect(() => {
+    const query = searchParams ? searchParams.toString() : "";
+    router.replace(query ? `/simulasi?${query}` : "/simulasi");
+  }, [router, searchParams]);
 
-  return (
-    <Suspense>
-      <JlptSimulation />
-    </Suspense>
-  );
+  return null;
 }

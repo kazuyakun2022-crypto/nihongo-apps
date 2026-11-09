@@ -37,16 +37,9 @@
   font-size: var(--font-size-sm);
 }
 
-.grid {
-  list-style: none;
-  margin: 0;
-  padding: var(--space-3);
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: var(--space-2);
-}
-
 .item {
+  flex: 0 0 156px;
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -76,7 +69,8 @@
 }
 
 .date {
-  margin-top: 4px;
+  margin-top: auto;
+  padding-top: var(--space-2);
   font-size: 0.7rem;
   color: var(--color-text-muted);
 }
@@ -88,4 +82,109 @@
 .locked .icon,
 .locked .name {
   color: var(--color-text-muted);
+}
+
+.count {
+  margin-left: auto;
+}
+
+/* Baris lencana yang digulir ke samping; kartu berlebar tetap dan menempel (snap) di tepi kiri */
+.viewport {
+  position: relative;
+}
+
+.track {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--space-3);
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: -3px;
+}
+
+/* Tepi pudar sebagai isyarat masih ada lencana di luar layar; hilang saat sudah mentok */
+.viewport::before,
+.viewport::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--space-5);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 160ms ease;
+}
+
+.viewport::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--color-surface), transparent);
+}
+
+.viewport::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--color-surface), transparent);
+}
+
+.viewport[data-start]::before,
+.viewport[data-end]::after {
+  opacity: 0;
+}
+
+.arrows {
+  display: none;
+  gap: 4px;
+}
+
+.arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.arrow:hover:not(:disabled) {
+  color: var(--color-primary);
+  border-color: var(--color-primary-soft);
+}
+
+.arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.arrow:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Tombol panah hanya untuk perangkat dengan mouse; di layar sentuh cukup digeser */
+@media (hover: hover) and (pointer: fine) {
+  .arrows {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    scroll-behavior: auto;
+  }
 }

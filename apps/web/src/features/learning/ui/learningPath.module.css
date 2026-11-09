@@ -23,6 +23,13 @@
   }
 }
 
+/* Desktop: peta belajar memakai kanvas lebih lebar supaya pemandangan terasa lapang */
+@media (min-width: 900px) {
+  .page {
+    max-width: min(64rem, 100%);
+  }
+}
+
 .header {
   display: flex;
   flex-direction: column;

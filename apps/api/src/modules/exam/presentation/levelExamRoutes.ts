@@ -6,6 +6,7 @@ import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
 import { XP_REWARD, type ActivityRecorder } from "../../progress/domain/activity";
+import type { Notifier } from "../../notifications/domain/types";
 import { toChapterExercise } from "../../learning/infrastructure/PrismaLearningRepository";
 import { workbookPassed } from "./workbookGateRoutes";
 import { LATE_GRACE_MS, examTotal, parseSectionRules, pickQuestions, sectionMin, withUnanswered } from "../domain/SectionRules";
@@ -69,7 +70,7 @@ export const submitBody = z.object({
   })).max(200),
 });
 
-export function levelExamRoutes(activity: ActivityRecorder) {
+export function levelExamRoutes(activity: ActivityRecorder, notifier?: Notifier) {
   const r = Router();
 
   // GET /exam/readiness?levelId=N
@@ -293,11 +294,15 @@ export function levelExamRoutes(activity: ActivityRecorder) {
       const passed = totalScore >= config.passScore && sectionsPassed && !late;
 
       // Naik tahap: cari level berikutnya. Penempatan: hasilnya level tujuan itu sendiri.
-      let nextLevel: { id: number; isPremium: boolean } | null = null;
+      let nextLevel: { id: number; name: string; isPremium: boolean } | null = null;
       if (type === "level_up") {
         const currentLevel = await prisma.level.findUnique({ where: { id: levelId } });
         nextLevel = currentLevel
-          ? await prisma.level.findFirst({ where: { sortOrder: { gt: currentLevel.sortOrder } }, orderBy: { sortOrder: "asc" } })
+          ? await prisma.level.findFirst({
+              where: { sortOrder: { gt: currentLevel.sortOrder } },
+              orderBy: { sortOrder: "asc" },
+              select: { id: true, name: true, isPremium: true },
+            })
           : null;
       }
       const resultLevelId = passed ? (nextLevel?.id ?? levelId) : levelId;
@@ -323,6 +328,23 @@ export function levelExamRoutes(activity: ActivityRecorder) {
 
       const xp = type === "placement" ? XP_REWARD.placement : passed ? XP_REWARD.levelExamPassed : XP_REWARD.levelExamTried;
       const progress = await activity.record(user.id, type === "placement" ? "placement" : "level_exam", xp);
+
+      if (passed && notifier) {
+        await notifier
+          .notify(user.id, {
+            type: "exam",
+            title: type === "placement" ? "Tes penempatan selesai" : nextLevel ? "Naik tahap!" : "Tes naik tahap lulus",
+            body:
+              type === "placement"
+                ? "Selamat! Level awalmu sudah ditetapkan. Materi belajarmu sudah menyesuaikan hasil tes."
+                : nextLevel
+                  ? `Selamat! Kamu lulus dan naik ke ${nextLevel.name}. Materi baru sudah terbuka.`
+                  : "Selamat! Kamu menyelesaikan tes tahap ini.",
+            url: "/beranda",
+            dedupeKey: `exam:${attemptId}`,
+          })
+          .catch((err) => console.error("[notifications] gagal membuat notifikasi ujian", err instanceof Error ? err.message : err));
+      }
 
       res.json({ passed, totalScore, sectionScores, sectionMinScores, late, resultLevelId, nextLevelId: nextLevel?.id ?? null, cooldownUntil, progress });
     }));

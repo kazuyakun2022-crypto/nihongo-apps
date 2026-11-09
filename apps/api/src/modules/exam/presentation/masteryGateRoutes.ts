@@ -7,6 +7,7 @@ import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
 import { XP_REWARD, type ActivityRecorder } from "../../progress/domain/activity";
+import type { Notifier } from "../../notifications/domain/types";
 import { workbookPassed } from "./workbookGateRoutes";
 import { HIRAGANA_BASIC, MASTERY_GATE, buildGateItems, gradeGate, type GateItem } from "../domain/MasteryGate";
 
@@ -58,7 +59,7 @@ async function eligibility(userId: string, levelId: number) {
 }
 
 /** Mastery Gate Pre-N5 (dipasang di /api/exam/mastery-gate). */
-export function masteryGateRoutes(activity: ActivityRecorder) {
+export function masteryGateRoutes(activity: ActivityRecorder, notifier?: Notifier) {
   const r = Router();
 
   r.get("/status", asyncHandler(async (req, res) => {
@@ -165,6 +166,19 @@ export function masteryGateRoutes(activity: ActivityRecorder) {
     }
 
     const progress = await activity.record(user.id, "mastery_gate", passed ? XP_REWARD.gatePassed : XP_REWARD.gateTried);
+
+    if (passed && notifier) {
+      await notifier
+        .notify(user.id, {
+          type: "exam",
+          title: "Gerbang level terbuka!",
+          body: `Selamat! Kamu lulus Gerbang ${level.name}. Materi berikutnya sudah bisa diakses.`,
+          url: "/beranda",
+          dedupeKey: `exam:${attempt.id}`,
+        })
+        .catch((err) => console.error("[notifications] gagal membuat notifikasi gerbang", err instanceof Error ? err.message : err));
+    }
+
     res.json({ passed, accuracy, avgMs, results, weakMarked, nextLevel: passed ? next?.name ?? null : null, rules: MASTERY_GATE, progress });
   }));
 

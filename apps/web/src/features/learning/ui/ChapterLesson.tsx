@@ -22,7 +22,19 @@ import { ScoreScreen, useCountUp } from "./ScoreScreen";
 import { WarmupDeck } from "./WarmupDeck";
 import { JUST_COMPLETED_KEY } from "./WorldMap";
 import styles from "./chapter.module.css";
-import { CheckIcon, CloseIcon, MessageIcon, MinusIcon, VolumeIcon } from "@/shared/ui/icons";
+import {
+  ArrowRightIcon,
+  BookOpenIcon,
+  CheckIcon,
+  CloseIcon,
+  GraduationCapIcon,
+  MessageIcon,
+  MicIcon,
+  MinusIcon,
+  RotateCwIcon,
+  SparklesIcon,
+  VolumeIcon,
+} from "@/shared/ui/icons";
 import { SkillIcon } from "@/shared/ui/SkillIcon";
 
 const LABELS = ["A", "B", "C", "D", "E", "F"];
@@ -604,8 +616,13 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
   const { score, passed, xpEarned, passingScore, results, progress } = lesson.result!;
   const shownScore = useCountUp(score);
   const { updateUser, user } = useAuth();
+  const { speak } = useSpeech();
+
   // Layar nilai penuh tampil dulu; pembahasan soal dibuka dari sana
   const [showReview, setShowReview] = useState(false);
+  const [reviewTab, setReviewTab] = useState<"answers" | "learned" | "speak">("answers");
+  const [speakIndex, setSpeakIndex] = useState(0);
+  const [speakAnswer, setSpeakAnswer] = useState<string | null>(null);
 
   // Sekali per hasil: tambah XP di header dan beri tahu peta agar memutar animasi node terbuka
   useEffect(() => {
@@ -620,9 +637,29 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lesson.result]);
+
   const questionMap = new Map(lesson.quizQuestions.map((q) => [q.id, q]));
   const correct = results.filter((r) => r.correct).length;
   const graded = results.filter((r) => !r.skipped).length;
+
+  // Kandidat kalimat untuk latihan tes speak mandiri bersama Miu-chan
+  const speakCandidates = useMemo(() => {
+    const list: { text: string; meaning: string; variants?: string[] }[] = [];
+    lesson.quizQuestions.forEach((q) => {
+      if (q.type === "berbicara" && q.speakText) {
+        list.push({ text: q.speakText, meaning: q.question || "Ucapkan kalimat ini", variants: q.speakVariants });
+      }
+    });
+    if (lesson.chapter?.vocabularies) {
+      lesson.chapter.vocabularies.forEach((v) => {
+        list.push({ text: v.word, meaning: v.meaningId, variants: [v.reading] });
+      });
+    }
+    return list;
+  }, [lesson.quizQuestions, lesson.chapter]);
+
+  const learnedVocabs = lesson.chapter?.vocabularies ?? [];
+  const learnedKanji = lesson.chapter?.kanji ?? [];
 
   if (!showReview) {
     return (
@@ -640,6 +677,8 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
       />
     );
   }
+
+  const currentSpeak = speakCandidates[speakIndex] ?? null;
 
   return (
     <LessonShell
@@ -671,70 +710,241 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
         </Alert>
       )}
 
-      {lesson.chapter?.scenario && (
-        <Link href={`/ngobrol/skenario/${lesson.chapter.scenario.id}`} className={styles.scenarioCta}>
-          <MessageIcon size={22} />
-          <span>
-            <strong>Latihan ngobrol: {lesson.chapter.scenario.title}</strong>
-            <small>Praktikkan pola bab ini langsung bersama Miu-chan.</small>
-          </span>
-          <span aria-hidden>→</span>
-        </Link>
-      )}
+      {/* ── TAB NAVIGASI REVIEW ── */}
+      <div className={styles.reviewNavTabs} role="tablist" aria-label="Kategori Review">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={reviewTab === "answers"}
+          className={`${styles.reviewNavBtn} ${reviewTab === "answers" ? styles.reviewNavBtnActive : ""}`}
+          onClick={() => setReviewTab("answers")}
+        >
+          <span>📝 Pembahasan ({results.length})</span>
+        </button>
 
-      <div className={styles.resultActions}>
-        {passed ? (
-          <>
-            <Link href="/belajar">
-              <Button block>Lanjut ke bab berikutnya →</Button>
-            </Link>
-            <Button block variant="secondary" onClick={lesson.retryQuiz}>
-              Ulangi Latihan Kuis
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button block onClick={lesson.retryQuiz}>
-              Coba kuis lagi
-            </Button>
-            <Link href="/belajar">
-              <Button block variant="secondary">Kembali ke peta</Button>
-            </Link>
-          </>
-        )}
-        {lesson.studyCards.length > 0 && (
-          <Button block variant="ghost" onClick={lesson.restartStudy}>Pelajari Ulang Materi Bab</Button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={reviewTab === "learned"}
+          className={`${styles.reviewNavBtn} ${reviewTab === "learned" ? styles.reviewNavBtnActive : ""}`}
+          onClick={() => setReviewTab("learned")}
+        >
+          <span>📚 Yang Dipelajari ({learnedVocabs.length + learnedKanji.length})</span>
+        </button>
+
+        {speakCandidates.length > 0 && (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={reviewTab === "speak"}
+            className={`${styles.reviewNavBtn} ${reviewTab === "speak" ? styles.reviewNavBtnActive : ""}`}
+            onClick={() => setReviewTab("speak")}
+          >
+            <span>🎙️ Tes Speak Miu-chan ({speakCandidates.length})</span>
+          </button>
         )}
       </div>
 
-      <h3 className={styles.reviewHeading}>Pembahasan</h3>
-      <div className={styles.reviewList}>
-        {results.map((r) => {
-          const q = questionMap.get(r.questionId);
-          if (!q) return null;
-          return (
-            <div key={r.questionId} className={styles.reviewItem} data-correct={r.correct || r.skipped}>
-              <span className={styles.reviewIcon}>{r.skipped ? <MinusIcon size={18} strokeWidth={3} /> : r.correct ? <CheckIcon size={18} strokeWidth={3} /> : <CloseIcon size={18} strokeWidth={3} />}</span>
-              <div>
-                <p className={styles.reviewSkill}>
-                  <SkillIcon skill={EXERCISES[q.type].skill} /> {EXERCISES[q.type].label}
-                </p>
-                <p className={styles.reviewQ} lang="ja">{q.type === "berbicara" ? q.speakText : q.question}</p>
-                {r.skipped ? (
-                  <p className={styles.reviewAnswer}>Dilewati, tidak ikut dinilai.</p>
-                ) : (
-                  !r.correct && (
-                    <p className={styles.reviewAnswer}>
-                      {q.type === "berbicara" ? "Terdengar" : "Jawabanmu"}: <em lang="ja">{lesson.answers.get(r.questionId) || "—"}</em> · Jawaban benar:{" "}
-                      <strong lang="ja">{r.correctAnswer}</strong>
-                    </p>
-                  )
-                )}
-                {r.explanation && <p className={styles.reviewExplanation}>{r.explanation}</p>}
+      {/* ── TAB 1: PEMBAHASAN SOAL KUIS ── */}
+      {reviewTab === "answers" && (
+        <div className={styles.reviewList}>
+          {results.map((r) => {
+            const q = questionMap.get(r.questionId);
+            if (!q) return null;
+            return (
+              <div key={r.questionId} className={styles.reviewItem} data-correct={r.correct || r.skipped}>
+                <span className={styles.reviewIcon}>
+                  {r.skipped ? (
+                    <MinusIcon size={18} strokeWidth={3} />
+                  ) : r.correct ? (
+                    <CheckIcon size={18} strokeWidth={3} />
+                  ) : (
+                    <CloseIcon size={18} strokeWidth={3} />
+                  )}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p className={styles.reviewSkill}>
+                    <SkillIcon skill={EXERCISES[q.type].skill} /> {EXERCISES[q.type].label}
+                  </p>
+                  <p className={styles.reviewQ} lang="ja">
+                    {q.type === "berbicara" ? q.speakText : q.question}
+                  </p>
+                  {r.skipped ? (
+                    <p className={styles.reviewAnswer}>Dilewati, tidak ikut dinilai.</p>
+                  ) : (
+                    !r.correct && (
+                      <p className={styles.reviewAnswer}>
+                        {q.type === "berbicara" ? "Terdengar" : "Jawabanmu"}:{" "}
+                        <em lang="ja">{lesson.answers.get(r.questionId) || "—"}</em> · Jawaban benar:{" "}
+                        <strong lang="ja">{r.correctAnswer}</strong>
+                      </p>
+                    )
+                  )}
+                  {r.explanation && <p className={styles.reviewExplanation}>{r.explanation}</p>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── TAB 2: MATERI YANG DIPELAJARI ── */}
+      {reviewTab === "learned" && (
+        <div className={styles.learnedSection}>
+          <div className={styles.learnedSectionHeader}>
+            <h3 className={styles.learnedSectionTitle}>Kosakata & Pola yang Kamu Pelajari:</h3>
+            <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
+              {learnedVocabs.length} Kosakata · {learnedKanji.length} Kanji
+            </span>
+          </div>
+
+          <div className={styles.vocabGrid}>
+            {learnedVocabs.map((v) => (
+              <div key={v.id} className={styles.vocabCard}>
+                <div className={styles.vocabHead}>
+                  <div>
+                    <span className={styles.vocabWord} lang="ja">
+                      <FuriganaText text={v.word} />
+                    </span>
+                    <span className={styles.vocabRomaji}>{v.reading}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.vocabAudioBtn}
+                    onClick={() => speak(v.word)}
+                    title="Dengarkan pengucapan kata"
+                  >
+                    <VolumeIcon size={15} />
+                  </button>
+                </div>
+                <p className={styles.vocabMeaning}>{v.meaningId}</p>
+              </div>
+            ))}
+          </div>
+
+          {learnedKanji.length > 0 && (
+            <div style={{ marginTop: "16px" }}>
+              <h4 style={{ fontSize: "0.95rem", fontWeight: 800, margin: "0 0 10px" }}>Kanji Terkait:</h4>
+              <div className={styles.kanjiGrid}>
+                {learnedKanji.map((k) => (
+                  <div key={k.id} className={styles.kanjiCard}>
+                    <span className={styles.kanjiChar} lang="ja">{k.character}</span>
+                    <span className={styles.kanjiMeaning}>{k.meaningId}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          );
-        })}
+          )}
+        </div>
+      )}
+
+      {/* ── TAB 3: TES SPEAK MANDIRI DENGAN MIU-CHAN VOICE AI ── */}
+      {reviewTab === "speak" && currentSpeak && (
+        <div className={styles.speakPracticeCard}>
+          <div className={styles.speakPracticeHeader}>
+            <span className={styles.speakPracticeBadge}>
+              <SparklesIcon size={14} /> Tes Pelafalan Mandiri ({speakIndex + 1}/{speakCandidates.length})
+            </span>
+            <p className={styles.speakPracticeHint}>
+              Latih pengucapan kalimat berikut bersama Miu-chan Voice AI. Dengarkan contoh lalu rekam suaramu!
+            </p>
+          </div>
+
+          <SpeakingExercise
+            key={speakIndex}
+            text={currentSpeak.text}
+            variants={currentSpeak.variants}
+            answer={speakAnswer}
+            onAnswer={(ans) => setSpeakAnswer(ans)}
+            onSkip={() => {}}
+            skipped={false}
+          />
+
+          <div className={styles.speakPaginationRow}>
+            <button
+              type="button"
+              className={styles.speakNavBtn}
+              disabled={speakIndex === 0}
+              onClick={() => {
+                setSpeakIndex((i) => i - 1);
+                setSpeakAnswer(null);
+              }}
+            >
+              ← Kalimat Sebelumnya
+            </button>
+            <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", fontWeight: 700 }}>
+              {speakIndex + 1} / {speakCandidates.length}
+            </span>
+            <button
+              type="button"
+              className={styles.speakNavBtn}
+              disabled={speakIndex === speakCandidates.length - 1}
+              onClick={() => {
+                setSpeakIndex((i) => i + 1);
+                setSpeakAnswer(null);
+              }}
+            >
+              Kalimat Berikutnya →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── OPSI SETELAH REVIEW (MODERN ACTION HUB) ── */}
+      <div className={styles.enhancedResultActions}>
+        {passed ? (
+          <Link href="/belajar" className={styles.actionCardPrimary}>
+            <div className={styles.actionCardLeft}>
+              <span className={styles.actionCardIcon}><GraduationCapIcon size={24} /></span>
+              <div className={styles.actionCardTexts}>
+                <span className={styles.actionCardTag}>Langkah Selanjutnya</span>
+                <strong className={styles.actionCardTitle}>Lanjut ke Bab Berikutnya</strong>
+                <span className={styles.actionCardDesc}>Lanjutkan progres kurikulum dan raih lebih banyak XP</span>
+              </div>
+            </div>
+            <ArrowRightIcon size={20} className={styles.actionCardArrow} />
+          </Link>
+        ) : (
+          <button type="button" className={styles.actionCardPrimary} onClick={lesson.retryQuiz}>
+            <div className={styles.actionCardLeft}>
+              <span className={styles.actionCardIcon}><RotateCwIcon size={24} /></span>
+              <div className={styles.actionCardTexts}>
+                <span className={styles.actionCardTag}>Tantangan Ulang</span>
+                <strong className={styles.actionCardTitle}>Coba Kuis Sekali Lagi</strong>
+                <span className={styles.actionCardDesc}>Kerjakan kuis kembali untuk meraih batas kelulusan {passingScore}%</span>
+              </div>
+            </div>
+            <ArrowRightIcon size={20} className={styles.actionCardArrow} />
+          </button>
+        )}
+
+        {lesson.chapter?.scenario && (
+          <Link href={`/ngobrol/skenario/${lesson.chapter.scenario.id}`} className={styles.actionCardSecondary}>
+            <div className={styles.actionCardLeft}>
+              <span className={styles.actionCardIcon}><MessageIcon size={22} /></span>
+              <div className={styles.actionCardTexts}>
+                <span className={styles.actionCardTagScenario}>Latihan Situasi Nyata</span>
+                <strong className={styles.actionCardTitle}>{lesson.chapter.scenario.title}</strong>
+                <span className={styles.actionCardDesc}>Praktikkan pola bab ini dalam roleplay percakapan bersama Miu-chan</span>
+              </div>
+            </div>
+            <ArrowRightIcon size={18} className={styles.actionCardArrow} />
+          </Link>
+        )}
+
+        <div className={styles.actionRowBottom}>
+          <button type="button" className={styles.actionSubBtn} onClick={lesson.retryQuiz}>
+            <RotateCwIcon size={16} /> Ulangi Kuis Bab Ini
+          </button>
+          {lesson.studyCards.length > 0 && (
+            <button type="button" className={styles.actionSubBtn} onClick={lesson.restartStudy}>
+              <BookOpenIcon size={16} /> Pelajari Ulang Materi
+            </button>
+          )}
+          <Link href="/belajar" className={styles.actionSubBtn}>
+            Kembali ke Peta Belajar
+          </Link>
+        </div>
       </div>
     </LessonShell>
   );

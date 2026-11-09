@@ -51,43 +51,56 @@ else
 fi
 
 echo
-echo "== 1/5 Cek status migrasi =="
-# Tabel baru (kamus, blok materi, skenario, aturan ujian) harus sudah ada
-npx prisma migrate status --schema prisma/schema.prisma
+echo "== 1/5 Migrasi schema basis data =="
+# Jalankan migrasi Prisma untuk memastikan semua tabel dan kolom terbaru terpasang di database
+npx prisma migrate deploy --schema prisma/schema.prisma
 
 echo
-echo "== 2/5 Bab dataset JLPT + bank soal ujian (termasuk N1) =="
+echo "== 2/5 Bab dataset JLPT + bank soal ujian =="
 npx tsx prisma/scripts/importCurriculum.ts
 
 echo
-echo "== 3/5 Kurikulum utama Pre-N5 s.d. N1, skenario, prompt AI, aturan ujian =="
+echo "== 3/5 Kurikulum utama Pre-N5 s.d. N1, materi, prompt AI, aturan ujian =="
 npm run content:kurikulum
+
+echo
+echo "== 3b/5 Sinkronisasi 15 Skenario Gambar Situasi =="
+npx tsx prisma/scripts/seedAllImageScenarios.ts
 
 echo
 echo "== 4/5 Kamus (gambar, ungkapan, kosakata, kanji, tata bahasa) =="
 npm run content:kamus
 
 echo
-echo "== 4b/5 Paket soal Simulasi JLPT (prisma/data/jlpt-sim) =="
-npm run content:jlpt-sim
+echo "== 4b/5 Bank soal Simulasi JLPT (1.468 soal lengkap N5-N1 semua Daimon) =="
+# Validasi semua file dulu, tampilkan rencana, tulis per paket, lalu verifikasi.
+npx tsx prisma/scripts/jlptBank.ts injeksi --ya
 
 echo
-echo "== 5/5 Verifikasi isi kamus per level =="
-cat > prisma/scripts/_cek_kamus.ts <<'EOF'
+echo "== 5/5 Verifikasi menyeluruh data production =="
+cat > prisma/scripts/_cek_semua.ts <<'EOF'
 import { PrismaClient } from "@prisma/client";
 const db = new PrismaClient();
 (async () => {
   const levels = await db.level.findMany({ orderBy: { sortOrder: "asc" }, select: { id: true, code: true } });
+  console.log("\n--- REKAP KURIKULUM & KAMUS ---");
   for (const l of levels) {
-    const n = await db.dictionaryEntry.count({ where: { levelId: l.id, status: "published" } });
+    const kamus = await db.dictionaryEntry.count({ where: { levelId: l.id, status: "published" } });
     const bab = await db.chapter.count({ where: { levelId: l.id, status: "published" } });
-    console.log(`${l.code.padEnd(7)} kamus: ${String(n).padStart(5)}  bab terbit: ${bab}`);
+    console.log(`${l.code.padEnd(7)} kamus: ${String(kamus).padStart(5)}  bab terbit: ${bab}`);
   }
+  const scenarios = await db.scenario.count({ where: { status: "published" } });
+  const jlptSim = await db.examQuestion.count({ where: { examType: "jlpt_sim", status: "published" } });
+  const levelUp = await db.examQuestion.count({ where: { examType: "level_up" } });
+  console.log("\n--- REKAP SKENARIO & BANK SOAL ---");
+  console.log(`Skenario Gambar Percakapan : ${scenarios} skenario aktif`);
+  console.log(`Soal Simulasi JLPT (Resmi) : ${jlptSim} soal terbit (Daimon N5-N1)`);
+  console.log(`Soal Level-Up & Placement  : ${levelUp} soal`);
   await db.$disconnect();
 })();
 EOF
-npx tsx prisma/scripts/_cek_kamus.ts
-rm -f prisma/scripts/_cek_kamus.ts
+npx tsx prisma/scripts/_cek_semua.ts
+rm -f prisma/scripts/_cek_semua.ts
 
 unset DATABASE_URL PROD_URL
 echo

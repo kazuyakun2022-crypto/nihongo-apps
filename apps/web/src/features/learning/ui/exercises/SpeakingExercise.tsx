@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useSpeech } from "@/shared/lib/useSpeech";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { hasKana, toRomaji } from "@/shared/lib/kana";
 import { speechMatches } from "../../domain/speechMatch";
+import { NekoAvatar, type NekoEmotion, type NekoMode } from "@/shared/ui/neko/NekoAvatar";
+import { AudioMeter } from "@/shared/lib/audioMeter";
 import styles from "./exercises.module.css";
 import { CheckIcon, MicIcon, StopIcon, VolumeIcon } from "@/shared/ui/icons";
 
@@ -33,6 +34,14 @@ async function transcribeJapanese(audio: Blob): Promise<string> {
  * Berbicara: ketuk mic sekali lalu bicara. Rekaman berhenti sendiri saat siswa diam, transkrip langsung
  * dinilai di layar (aturan sama dengan server), dan bila belum pas cukup ketuk sekali lagi.
  * `feedback={false}` (ujian) hanya menampilkan transkrip tanpa penilaian.
+ *
+ * Miu-chan Avatar terintegrasi penuh dengan animasi Voice AI:
+ * - Idle: bernapas alami, berkedip ramah
+ * - Dengarkan contoh: berbicara dengan sinkronisasi bibir real-time
+ * - Mendengarkan: telinga bergerak reaktif mengikuti volume mikrofon siswa
+ * - Memeriksa: ekspresi berpikir dengan gelembung pikiran
+ * - Benar: ekspresi senang bersinar dan pujian suara
+ * - Belum pas: ekspresi bingung memotivasi untuk mencoba kembali
  */
 export function SpeakingExercise({
   text,
@@ -51,25 +60,37 @@ export function SpeakingExercise({
   skipped: boolean;
   feedback?: boolean;
 }) {
-  const { speak } = useSpeech();
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [heard, setHeard] = useState(false);
+
+  // Miu-chan Voice AI animation states
+  const [nekoMode, setNekoMode] = useState<NekoMode>("idle");
+  const [nekoEmotion, setNekoEmotion] = useState<NekoEmotion>("biasa");
+
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval>>();
   const levelRef = useRef<HTMLSpanElement | null>(null);
-  /** Ketukan ganda saat izin mikrofon diminta tidak boleh membuka dua aliran mikrofon. */
   const startingRef = useRef(false);
   const aliveRef = useRef(true);
-  /** Berhenti karena tidak ada suara sama sekali: rekaman dibuang, tidak dikirim. */
   const silentStopRef = useRef(false);
   const maxTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
+  // AudioMeter untuk animasi Avatar gerak bibir & telinga reaktif
+  const meterRef = useRef<AudioMeter | null>(null);
+  const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const getMicLevel = useCallback(() => meterRef.current?.micLevel() ?? 0, []);
+  const getVoiceLevel = useCallback(() => meterRef.current?.voiceLevel() ?? 0, []);
+
   useEffect(() => {
     aliveRef.current = true;
-    if (typeof window !== "undefined" && (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined")) setStatus("unavailable");
+    meterRef.current = new AudioMeter();
+    if (typeof window !== "undefined" && (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined")) {
+      setStatus("unavailable");
+    }
     return () => {
       aliveRef.current = false;
       clearTimeout(maxTimerRef.current);
@@ -79,8 +100,27 @@ export function SpeakingExercise({
         recorderRef.current.stop();
       }
       releaseMic();
+      if (activeAudioRef.current) {
+        activeAudioRef.current.pause();
+        activeAudioRef.current = null;
+      }
+      meterRef.current?.dispose();
+      meterRef.current = null;
     };
   }, []);
+
+  const matched = answer ? speechMatches(answer, [text, ...variants]) : false;
+  const showVerdict = feedback && !!answer && status === "idle";
+
+  // Sinkronkan emosi saat ada teks atau jawaban berubah
+  useEffect(() => {
+    if (answer) {
+      const ok = speechMatches(answer, [text, ...variants]);
+      setNekoEmotion(ok ? "senang" : "bingung");
+    } else {
+      setNekoEmotion("biasa");
+    }
+  }, [answer, text, variants]);
 
   function stopMonitor() {
     clearInterval(tickRef.current);
@@ -90,7 +130,6 @@ export function SpeakingExercise({
   }
 
   function releaseMic() {
-    // Lepas mikrofon begitu selesai merekam (indikator mikrofon di HP ikut mati)
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
   }
@@ -140,6 +179,78 @@ export function SpeakingExercise({
     }, TICK_MS);
   }
 
+  // ── Miu-chan mencontohkan pelafalan ──
+  const playSample = useCallback(async () => {
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      activeAudioRef.current = null;
+    }
+    meterRef.current?.resume();
+    setNekoMode("speaking");
+    setNekoEmotion("senang");
+    try {
+      const url = `/api/tts?v=13&text=${encodeURIComponent(text)}`;
+      const audio = new Audio(url);
+      activeAudioRef.current = audio;
+      meterRef.current?.attachVoice(audio);
+
+      audio.onended = () => {
+        setNekoMode("idle");
+        setNekoEmotion("biasa");
+        meterRef.current?.detachVoice();
+        activeAudioRef.current = null;
+      };
+      audio.onerror = () => {
+        setNekoMode("idle");
+        setNekoEmotion("biasa");
+        meterRef.current?.detachVoice();
+        activeAudioRef.current = null;
+      };
+      await audio.play();
+    } catch {
+      setNekoMode("idle");
+      setNekoEmotion("biasa");
+      meterRef.current?.detachVoice();
+    }
+  }, [text]);
+
+  // ── Miu-chan memuji saat jawaban benar ──
+  const playPraise = useCallback(async () => {
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      activeAudioRef.current = null;
+    }
+    meterRef.current?.resume();
+    setNekoMode("speaking");
+    setNekoEmotion("senang");
+    try {
+      const praises = ["すごい！", "よくできました！", "すばらしい！", "その調子！"];
+      const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+      const url = `/api/tts?v=13&text=${encodeURIComponent(randomPraise)}`;
+      const audio = new Audio(url);
+      activeAudioRef.current = audio;
+      meterRef.current?.attachVoice(audio);
+
+      audio.onended = () => {
+        setNekoMode("idle");
+        setNekoEmotion("senang");
+        meterRef.current?.detachVoice();
+        activeAudioRef.current = null;
+      };
+      audio.onerror = () => {
+        setNekoMode("idle");
+        setNekoEmotion("senang");
+        meterRef.current?.detachVoice();
+        activeAudioRef.current = null;
+      };
+      await audio.play();
+    } catch {
+      setNekoMode("idle");
+      setNekoEmotion("senang");
+      meterRef.current?.detachVoice();
+    }
+  }, []);
+
   async function start() {
     if (startingRef.current || recorderRef.current?.state === "recording") return;
     startingRef.current = true;
@@ -150,39 +261,64 @@ export function SpeakingExercise({
     } catch {
       setError("Izin mikrofon ditolak. Aktifkan mikrofon di pengaturan browser.");
       setStatus("unavailable");
+      setNekoMode("idle");
       return;
     } finally {
       startingRef.current = false;
     }
     if (!aliveRef.current) return releaseMic();
     const stream = streamRef.current;
+
+    // Hubungkan AudioMeter ke aliran mikrofon untuk mendeteksi suara bicara
+    meterRef.current?.resume();
+    meterRef.current?.attachMic(stream);
+    setNekoMode("listening");
+    setNekoEmotion("biasa");
+
     const mimeType = MIME_CANDIDATES.find((t) => MediaRecorder.isTypeSupported(t));
     const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
     const chunks: Blob[] = [];
     recorder.ondataavailable = (e) => e.data.size > 0 && chunks.push(e.data);
     recorder.onstop = async () => {
       stopMonitor();
+      meterRef.current?.detachMic();
       releaseMic();
       if (silentStopRef.current) {
         silentStopRef.current = false;
         setStatus("idle");
+        setNekoMode("idle");
         setError("Belum terdengar suara. Ketuk mic lalu ucapkan kalimatnya.");
         return;
       }
       setStatus("processing");
+      setNekoMode("processing");
       try {
         const transcript = await transcribeJapanese(new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" }));
         if (!aliveRef.current) return;
-        if (!transcript) setError("Suara tidak terdengar jelas. Ketuk mic dan ucapkan lagi lebih dekat ke mikrofon.");
-        else {
+        if (!transcript) {
+          setError("Suara tidak terdengar jelas. Ketuk mic dan ucapkan lagi lebih dekat ke mikrofon.");
+          setStatus("idle");
+          setNekoMode("idle");
+          setNekoEmotion("bingung");
+        } else {
           onAnswer(transcript);
           setHeard(true);
+          setStatus("idle");
+          const ok = speechMatches(transcript, [text, ...variants]);
+          if (ok) {
+            setNekoEmotion("senang");
+            void playPraise();
+          } else {
+            setNekoEmotion("bingung");
+            setNekoMode("idle");
+          }
         }
-        setStatus("idle");
       } catch (err) {
         if (!aliveRef.current) return;
         setError(err instanceof Error ? err.message : "Gagal mengenali suara.");
         setStatus((err as { unavailable?: boolean }).unavailable ? "unavailable" : "idle");
+        setNekoMode("idle");
+        setNekoEmotion("bingung");
       }
     };
     recorderRef.current = recorder;
@@ -199,19 +335,61 @@ export function SpeakingExercise({
     if (recorderRef.current?.state === "recording") recorderRef.current.stop();
   }
 
-  const matched = answer ? speechMatches(answer, [text, ...variants]) : false;
-  const showVerdict = feedback && !!answer && status === "idle";
-
   return (
     <div className={styles.speakWrap}>
+      {/* ── MIU-CHAN VOICE AI INTERACTIVE STAGE ── */}
+      <div className={styles.nekoStage}>
+        <div
+          className={styles.nekoStageAura}
+          data-mode={nekoMode}
+          data-emotion={nekoEmotion}
+          aria-hidden="true"
+        />
+        <NekoAvatar
+          mode={nekoMode}
+          emotion={nekoEmotion}
+          micLevel={getMicLevel}
+          voiceLevel={getVoiceLevel}
+          size={135}
+          className={styles.nekoAvatarInExercise}
+          onTap={() => void playSample()}
+        />
+        <div
+          className={styles.nekoStatusBadge}
+          data-mode={nekoMode}
+          data-matched={showVerdict && matched ? "true" : "false"}
+        >
+          {nekoMode === "listening" ? (
+            <span>🐾 Miu-chan mendengarkan…</span>
+          ) : nekoMode === "processing" ? (
+            <span>💭 Memeriksa pelafalan…</span>
+          ) : nekoMode === "speaking" ? (
+            <span>🔊 Dengarkan contoh pelafalan…</span>
+          ) : showVerdict && matched ? (
+            <span>🎉 Hebat! Pelafalanmu tepat!</span>
+          ) : showVerdict && !matched ? (
+            <span>🐾 Belum pas, ayo coba lagi!</span>
+          ) : (
+            <span>🐾 Ketuk mic untuk bicara ke Miu-chan</span>
+          )}
+        </div>
+      </div>
+
+      {/* ── TARGET SENTENCE CARD ── */}
       <div className={styles.speakTarget}>
         <p className={styles.speakText} lang="ja">{text}</p>
         {hasKana(text) && <p className={styles.romaji}>{toRomaji(text)}</p>}
-        <button type="button" className={styles.linkBtn} onClick={() => speak(text)}>
+        <button
+          type="button"
+          className={styles.linkBtn}
+          onClick={() => void playSample()}
+          disabled={status === "recording" || nekoMode === "speaking"}
+        >
           <VolumeIcon size={16} /> Dengarkan contoh
         </button>
       </div>
 
+      {/* ── MIC ACTION BUTTON ── */}
       {status !== "unavailable" && (
         <button
           type="button"
@@ -221,7 +399,9 @@ export function SpeakingExercise({
           disabled={status === "processing"}
           aria-label={status === "recording" ? "Berhenti merekam" : "Mulai bicara"}
         >
-          <span aria-hidden className={styles.micIcon}>{status === "recording" ? <StopIcon size={18} /> : <MicIcon size={18} />}</span>
+          <span aria-hidden className={styles.micIcon}>
+            {status === "recording" ? <StopIcon size={18} /> : <MicIcon size={18} />}
+          </span>
           {status === "recording" ? (
             <>
               Mendengarkan…
@@ -236,7 +416,9 @@ export function SpeakingExercise({
           )}
         </button>
       )}
-      {status === "recording" && <p className={styles.muted}>Rekaman berhenti sendiri saat kamu selesai bicara.</p>}
+      {status === "recording" && (
+        <p className={styles.muted}>Rekaman berhenti sendiri saat kamu selesai bicara.</p>
+      )}
 
       {answer && status !== "recording" && (
         <p className={styles.transcript}>

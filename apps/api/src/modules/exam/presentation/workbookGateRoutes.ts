@@ -7,6 +7,7 @@ import { currentUser } from "../../../shared/http/auth";
 import { parseBody } from "../../../shared/http/validate";
 import { prisma } from "../../../shared/infrastructure/prisma";
 import { XP_REWARD, type ActivityRecorder } from "../../progress/domain/activity";
+import type { Notifier } from "../../notifications/domain/types";
 import { issueHistory, logIssues, takeCheckQuota } from "../../tulis/checkUsage";
 import { checkDrawnGrid, checkHandwriting } from "../../tulis/handwritingCheck";
 import { kanjiVgStrokes } from "../../tulis/kanjiVg";
@@ -164,6 +165,19 @@ async function finishAttempt(attemptId: string, levelId: number, details: Workbo
   return { score, passed, passScore: config.passScore, results, cooldownUntil };
 }
 
+function notifyWorkbookPass(notifier: Notifier | undefined, userId: string, attemptId: string): Promise<unknown> {
+  if (!notifier) return Promise.resolve();
+  return notifier
+    .notify(userId, {
+      type: "exam",
+      title: "Gerbang Tulis lulus!",
+      body: "Tulisan tanganmu lolos. Lanjut ke materi berikutnya dan terus latih kanjimu.",
+      url: "/beranda",
+      dedupeKey: `exam:${attemptId}`,
+    })
+    .catch((err) => console.error("[notifications] gagal membuat notifikasi gerbang tulis", err instanceof Error ? err.message : err));
+}
+
 /** Satu kisi bisa berisi hiragana, katakana, dan kanji sekaligus: aksaranya disebut di petunjuk untuk penilai. */
 function drawnCharInfo(c: GateChar) {
   const hint = c.script === "kanji" ? c.meaning : c.script;
@@ -182,7 +196,7 @@ const canvasBody = z.object({
     .max(60),
 });
 
-export function workbookGateRoutes(geminiApiKey: string, activity: ActivityRecorder) {
+export function workbookGateRoutes(geminiApiKey: string, activity: ActivityRecorder, notifier?: Notifier) {
   const r = Router();
 
   // GET /exam/workbook/status?levelId=N
@@ -307,6 +321,7 @@ export function workbookGateRoutes(geminiApiKey: string, activity: ActivityRecor
     const results = details.sheets.flatMap((s) => details.sheetResults[s.index].results);
     const outcome = await finishAttempt(attempt.id, attempt.levelId, details, results);
     const progress = await activity.record(user.id, "workbook_gate", outcome.passed ? XP_REWARD.gatePassed : XP_REWARD.gateTried);
+    if (outcome.passed) await notifyWorkbookPass(notifier, user.id, attempt.id);
     res.json({ ...outcome, progress });
   }));
 
@@ -327,6 +342,7 @@ export function workbookGateRoutes(geminiApiKey: string, activity: ActivityRecor
     details.canvasResults = results;
     const outcome = await finishAttempt(attempt.id, attempt.levelId, details, results);
     const progress = await activity.record(user.id, "workbook_gate", outcome.passed ? XP_REWARD.gatePassed : XP_REWARD.gateTried);
+    if (outcome.passed) await notifyWorkbookPass(notifier, user.id, attempt.id);
     res.json({ ...outcome, progress });
   }));
 

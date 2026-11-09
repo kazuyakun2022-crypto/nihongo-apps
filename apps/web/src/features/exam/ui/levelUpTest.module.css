@@ -10,11 +10,6 @@
   gap: var(--space-4);
 }
 
-/* Simulasi JLPT: layar hasil dan pembahasan butuh ruang lebih lebar */
-.wrapWide {
-  max-width: 46rem;
-}
-
 /* ── Error ── */
 .errorBox {
   padding: var(--space-5);
@@ -435,36 +430,3 @@
   color: var(--color-accent);
 }
 
-/* Ujian bersesi (Simulasi JLPT): nama sesi di atas bar progres */
-.sessionLabel {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Teks bacaan Dokkai: dibatasi tingginya supaya soal dan pilihan tetap terlihat, sisanya digulir */
-.passage {
-  margin: 0;
-  padding: var(--space-4);
-  max-height: 45vh;
-  overflow-y: auto;
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-left: 4px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-md);
-  line-height: 1.9;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-.passage:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
-}
-.question u {
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.2em;
-}

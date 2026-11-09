@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { contentApi, type ContentLevel, type ExamConfig, type ExamQuestionItem, type ExamSection, type ExamType } from "@/features/admin/data/contentApi";
+import { contentApi, type ContentLevel, type ExamConfig, type ExamPackageSummary, type ExamQuestionItem, type ExamSection, type ExamType } from "@/features/admin/data/contentApi";
 import adminStyles from "@/app/(app)/admin/admin.module.css";
 import { Skeleton, SkeletonRegion, SkeletonTableRows } from "@/shared/ui/Skeleton";
 import { Field, type FieldDef, type FormValues } from "./FormModal";
@@ -106,11 +106,21 @@ const SIM_FIELDS: typeof CONFIG_FIELDS = [
   { key: "cooldownHours", label: "Jeda ulang setelah gagal (jam)", hint: "0 = boleh langsung mengulang.", min: 0, max: 720 },
 ];
 
+const PACKAGE_NUMBERS = Array.from({ length: 10 }, (_, i) => i + 1);
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
 /** Isian khusus ujian; isi soalnya (jenis, pertanyaan, jawaban) diatur ExerciseForm. */
 function examFields(sim: boolean, section: string): FieldDef[] {
   if (!sim) return EXAM_FIELDS;
   return [
     { name: "section", label: "Bagian", type: "select", options: SIM_SECTIONS },
+    {
+      name: "packageNo",
+      label: "Paket",
+      type: "select",
+      options: [{ value: "", label: "Campuran (diambil acak)" }, ...PACKAGE_NUMBERS.map((n) => ({ value: String(n), label: `Paket ${pad2(n)}` }))],
+      hint: "Soal berpaket hanya keluar saat siswa memilih paket itu.",
+    },
     {
       name: "category",
       label: "Tipe soal JLPT",
@@ -157,7 +167,15 @@ export function ExamManager() {
   const [resetting, setResetting] = useState(false);
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(25);
-  const [filter, setFilter] = useState<{ section?: ExamSection; search: string; page: number }>({ search: "", page: 1 });
+  const [filter, setFilter] = useState<{
+    section?: ExamSection;
+    search: string;
+    page: number;
+    paket?: number | "campuran";
+    status?: "published" | "draft";
+  }>({ search: "", page: 1 });
+  const [packages, setPackages] = useState<ExamPackageSummary[]>([]);
+  const [publishing, setPublishing] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<ExamQuestionItem | "new" | null>(null);
   const requestRef = useRef(0);
@@ -183,6 +201,7 @@ export function ExamManager() {
       setSavedConfig(r.config);
       setDefaultConfig(r.defaultConfig ?? null);
       setBorrowed(r.borrowedPerSection ?? {});
+      setPackages(r.packages ?? []);
       setQuestions(r.questions.map((q) => ({ ...q, options: q.options as string[] })));
       setPerSection(r.publishedPerSection);
       setTotal(r.total);
@@ -285,24 +304,58 @@ export function ExamManager() {
     }
   }
 
-  async function importPackage(file: File) {
-    if (!levelId || importing) return;
+  /** Impor satu atau banyak file paket (format bank). File untuk tingkat lain dilewati dengan keterangan. */
+  async function importPackages(files: File[]) {
+    if (!levelId || importing || !files.length) return;
     setImporting(true);
-    try {
-      let pkg: unknown;
+    const done: string[] = [];
+    const failed: string[] = [];
+    let created = 0;
+    let updated = 0;
+    for (const file of files) {
       try {
-        pkg = JSON.parse(await file.text());
-      } catch {
-        throw new Error("File ini bukan JSON yang valid.");
+        let pkg: unknown;
+        try {
+          pkg = JSON.parse(await file.text());
+        } catch {
+          throw new Error("bukan JSON yang valid");
+        }
+        const r = await contentApi.importJlptPackage(levelId, pkg);
+        created += r.created;
+        updated += r.updated;
+        done.push(r.examSlug);
+      } catch (err) {
+        failed.push(`${file.name}: ${err instanceof Error ? err.message : String(err)}`);
       }
-      const r = await contentApi.importJlptPackage(levelId, pkg);
-      flash.ok(`Paket ${r.examSlug} diimpor: ${r.created} soal baru, ${r.updated} soal diperbarui.`);
+    }
+    if (done.length) flash.ok(`${done.length} paket diimpor (${created} soal baru, ${updated} diperbarui).`);
+    if (failed.length) flash.fail(new Error(`${failed.length} file gagal: ${failed.join(" | ")}`));
+    setImporting(false);
+    if (importRef.current) importRef.current.value = "";
+    await load();
+  }
+
+  async function setPackageStatus(no: number, status: "published" | "draft") {
+    if (!levelId || publishing !== null) return;
+    const ok = await askConfirm({
+      title: status === "published" ? `Terbitkan Paket ${pad2(no)}?` : `Tarik Paket ${pad2(no)} ke draft?`,
+      description:
+        status === "published"
+          ? "Semua soal paket ini langsung bisa dipilih siswa. Pastikan sudah diperiksa: kunci jawaban, bahasa, dan audio."
+          : "Siswa tidak bisa memilih paket ini lagi sampai diterbitkan kembali. Riwayat nilai siswa tetap tersimpan.",
+      confirmText: status === "published" ? "Terbitkan" : "Tarik ke draft",
+      tone: status === "published" ? "primary" : "danger",
+    });
+    if (!ok) return;
+    setPublishing(no);
+    try {
+      const r = await contentApi.publishJlptPackage(levelId, no, status);
+      flash.ok(`Paket ${pad2(no)}: ${r.updated} soal ${status === "published" ? "diterbitkan" : "ditarik ke draft"}.`);
       await load();
     } catch (err) {
       flash.fail(err);
     } finally {
-      setImporting(false);
-      if (importRef.current) importRef.current.value = "";
+      setPublishing(null);
     }
   }
 
@@ -327,6 +380,7 @@ export function ExamManager() {
     setSavedConfig(null);
     setDefaultConfig(null);
     setBorrowed({});
+    setPackages([]);
     setFilter({ search: "", page: 1 });
     setSearch("");
     router.replace(`?${sp}`, { scroll: false });
@@ -409,7 +463,7 @@ export function ExamManager() {
             {isPlacement && (
               <p className={styles.muted}>
                 Dikerjakan siswa yang memilih mulai di {level?.name} saat mendaftar. Atur apakah titik mulai ini wajib tes di tab{" "}
-                <Link href="/admin/konten/pendaftaran">Pendaftaran</Link>.
+                <Link href="/admin/materi/pendaftaran">Pendaftaran</Link>.
               </p>
             )}
             {!config && (
@@ -555,6 +609,80 @@ export function ExamManager() {
         </>
       )}
 
+      {isJlptSim && !noJlptSim && (
+        <section className={adminStyles.panel}>
+          <div className={styles.toolbar}>
+            <h2 className={adminStyles.panelTitle}>Paket simulasi</h2>
+          </div>
+          <p className={styles.muted}>
+            Siswa bisa memilih Paket 01–10 (soal tetap, cocok untuk mengukur kemajuan) atau paket acak dari seluruh bank. Paket buatan AI
+            masuk sebagai draft. Periksa soalnya lewat tombol Lihat soal, lalu terbitkan.
+          </p>
+          {packages.filter((p) => p.no !== null).length === 0 ? (
+            <p className={adminStyles.emptyState}>Belum ada paket untuk level ini.</p>
+          ) : (
+            <div className={adminStyles.tableWrap}>
+              <table className={adminStyles.table}>
+                <thead>
+                  <tr>
+                    <th>Paket</th>
+                    <th>Terbit</th>
+                    <th>Draft</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {packages
+                    .filter((p): p is ExamPackageSummary & { no: number } => p.no !== null)
+                    .map((p) => (
+                      <tr key={p.no}>
+                        <td><strong>Paket {pad2(p.no)}</strong></td>
+                        <td>{p.published}</td>
+                        <td>{p.draft > 0 ? <span className={styles.warn}>{p.draft}</span> : 0}</td>
+                        <td style={{ width: 1 }}>
+                          <div className={adminStyles.actionGroup} style={{ flexWrap: "nowrap" }}>
+                            <button
+                              type="button"
+                              className={`${adminStyles.btnSm} ${adminStyles.btnSecondary}`}
+                              onClick={() => setFilter((f) => ({ ...f, paket: p.no, status: undefined, page: 1 }))}
+                            >
+                              Lihat soal
+                            </button>
+                            {p.draft > 0 && (
+                              <button
+                                type="button"
+                                className={`${adminStyles.btnSm} ${adminStyles.btnPrimary}`}
+                                disabled={publishing !== null}
+                                onClick={() => void setPackageStatus(p.no, "published")}
+                              >
+                                {publishing === p.no ? "Menyimpan…" : "Terbitkan"}
+                              </button>
+                            )}
+                            {p.published > 0 && p.draft === 0 && (
+                              <button
+                                type="button"
+                                className={`${adminStyles.btnSm} ${adminStyles.btnDanger}`}
+                                disabled={publishing !== null}
+                                onClick={() => void setPackageStatus(p.no, "draft")}
+                              >
+                                {publishing === p.no ? "Menyimpan…" : "Tarik ke draft"}
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <p className={styles.hint}>
+            Membuat paket baru dengan AI (dari laptop admin, folder apps/api):{" "}
+            <code>npm run content:jlpt-generate -- {level?.code ?? "N5"} {Math.min(10, Math.max(0, ...packages.map((p) => p.no ?? 0)) + 1)}</code>
+          </p>
+        </section>
+      )}
+
       {!isWorkbook && !isTopLevel && !noJlptSim && (
       <section className={adminStyles.panel}>
         <div className={styles.toolbar}>
@@ -568,11 +696,9 @@ export function ExamManager() {
                   ref={importRef}
                   type="file"
                   accept="application/json,.json"
+                  multiple
                   hidden
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) void importPackage(f);
-                  }}
+                  onChange={(e) => void importPackages([...(e.target.files ?? [])])}
                 />
                 <button
                   type="button"
@@ -602,6 +728,35 @@ export function ExamManager() {
               <option key={s.value} value={s.value}>{s.label}</option>
             ))}
           </select>
+          {isJlptSim && (
+            <>
+              <select
+                className={adminStyles.selectInput}
+                value={filter.paket === undefined ? "" : String(filter.paket)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setFilter((f) => ({ ...f, paket: v === "" ? undefined : v === "campuran" ? "campuran" : Number(v), page: 1 }));
+                }}
+                aria-label="Filter paket"
+              >
+                <option value="">Semua paket</option>
+                <option value="campuran">Campuran (tanpa paket)</option>
+                {PACKAGE_NUMBERS.map((n) => (
+                  <option key={n} value={n}>Paket {pad2(n)}</option>
+                ))}
+              </select>
+              <select
+                className={adminStyles.selectInput}
+                value={filter.status ?? ""}
+                onChange={(e) => setFilter((f) => ({ ...f, status: (e.target.value || undefined) as "published" | "draft" | undefined, page: 1 }))}
+                aria-label="Filter status"
+              >
+                <option value="">Semua status</option>
+                <option value="published">Terbit</option>
+                <option value="draft">Draft</option>
+              </select>
+            </>
+          )}
         </div>
 
         {!config ? (
@@ -631,6 +786,7 @@ export function ExamManager() {
                   <tr key={q.id}>
                     <td>
                       <ExerciseSummary item={q} />
+                      {isJlptSim && q.packageNo && <span className={adminStyles.badge}>Paket {pad2(q.packageNo)}</span>}
                       {q.status !== "published" && <span className={`${adminStyles.badge} ${styles.status_draft}`}>{STATUS_LABEL[q.status]}</span>}
                     </td>
                     <td className={styles.hideMobile}>{sectionLabel(q.section)}</td>
@@ -655,6 +811,7 @@ export function ExamManager() {
           item={editing === "new" ? undefined : editing}
           defaultSection={filter.section ?? "kosakata"}
           sim={isJlptSim}
+          defaultPackage={typeof filter.paket === "number" ? filter.paket : undefined}
           onClose={() => setEditing(null)}
           onSubmit={async (data) => {
             if (editing === "new") await contentApi.createExamQuestion(levelId, examType, data);
@@ -673,12 +830,15 @@ function ExamQuestionForm({
   item,
   defaultSection,
   sim,
+  defaultPackage,
   onSubmit,
   onClose,
 }: {
   item?: ExamQuestionItem;
   defaultSection: ExamSection;
   sim: boolean;
+  /** Paket yang sedang difilter, dipakai sebagai nilai awal soal baru. */
+  defaultPackage?: number;
   onSubmit: (data: Omit<ExamQuestionItem, "id">) => Promise<void>;
   onClose: () => void;
 }) {
@@ -688,6 +848,7 @@ function ExamQuestionForm({
     difficulty: item?.difficulty ?? 1,
     category: item?.category ?? "",
     passage: item?.passage ?? "",
+    packageNo: item?.packageNo ? String(item.packageNo) : defaultPackage ? String(defaultPackage) : "",
   });
   const section = String(meta.section);
   return (
@@ -706,6 +867,7 @@ function ExamQuestionForm({
                 // Tipe soal yang tidak cocok lagi dengan bagian (bagian baru dipilih) dikosongkan
                 category: JLPT_CATEGORIES.some((c) => c.value === meta.category && c.section === section) ? String(meta.category) : null,
                 passage: String(meta.passage ?? "").trim() || null,
+                packageNo: meta.packageNo ? Number(meta.packageNo) : null,
               }
             : {}),
         })

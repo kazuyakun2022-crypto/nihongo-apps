@@ -1,6 +1,5 @@
 "use client";
 
-import { PageHeader } from "@/shared/ui/PageHeader";
 import { useScreenContext } from "@/features/navigator/application/NavigatorProvider";
 import Link from "next/link";
 import { useState, useCallback, useMemo, useEffect } from "react";
@@ -806,22 +805,6 @@ export function HurufBrowser({ kanjiLevel }: { kanjiLevel: JlptLevel }) {
     <div className={styles.wrap}>
       {/* Top Header */}
       <header className={styles.header}>
-        {/* Saat latihan menulis/kuis, judul & deskripsi disembunyikan supaya kanvas muat di layar ponsel */}
-        {mode === "table" && (
-          <PageHeader
-            className={styles.headerTitles}
-            seal="字"
-            jp="もじ"
-            title="Tabel Huruf"
-            subtitle={
-              <>
-                <span className={styles.badgeCount}>{currentTabInfo?.count} karakter</span> Dengarkan pelafalan, latihan
-                menulis, dan uji hafalanmu dengan kuis.
-              </>
-            }
-          />
-        )}
-
         <div className={styles.headerControls}>
           {mode === "table" ? (
             <>

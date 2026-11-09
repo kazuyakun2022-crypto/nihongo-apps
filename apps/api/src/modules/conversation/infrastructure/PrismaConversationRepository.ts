@@ -24,21 +24,43 @@ export class PrismaConversationRepository implements ConversationRepository {
   constructor(private readonly db: Db) {}
 
   async listScenarios(userId: string): Promise<ScenarioListItem[]> {
-    const user = await this.db.user.findUnique({ where: { id: userId }, select: { currentLevel: { select: { sortOrder: true } } } });
-    const ceiling = user?.currentLevel?.sortOrder ?? 1;
     const rows = await this.db.scenario.findMany({
-      where: { status: "published", level: { sortOrder: { lte: ceiling } } },
+      where: { status: "published" },
       orderBy: [{ level: { sortOrder: "asc" } }, { sortOrder: "asc" }, { title: "asc" }],
-      select: { id: true, title: true, goal: true, targetGrammar: true, chapterId: true, level: { select: { code: true } }, chapter: { select: { title: true } } },
+      select: {
+        id: true,
+        title: true,
+        goal: true,
+        mascotRole: true,
+        userRole: true,
+        location: true,
+        keigoType: true,
+        imageUrl: true,
+        initialMessage: true,
+        targetGrammar: true,
+        chapterId: true,
+        dialogueScript: true,
+        systemPrompt: true,
+        level: { select: { code: true } },
+        chapter: { select: { title: true } },
+      },
     });
     return rows.map((r) => ({
       id: r.id,
       title: r.title,
       goal: r.goal,
+      mascotRole: r.mascotRole,
+      userRole: r.userRole,
+      location: r.location,
+      keigoType: r.keigoType,
+      imageUrl: r.imageUrl,
+      initialMessage: r.initialMessage,
       levelCode: r.level.code,
       chapterId: r.chapterId,
       chapterTitle: r.chapter?.title ?? null,
       targetGrammar: stringList(r.targetGrammar),
+      dialogueScript: r.dialogueScript,
+      systemPrompt: r.systemPrompt,
     }));
   }
 
@@ -99,9 +121,15 @@ export class PrismaConversationRepository implements ConversationRepository {
             title: scenario.title,
             goal: scenario.goal,
             mascotRole: scenario.mascotRole,
+            userRole: scenario.userRole,
+            location: scenario.location,
+            keigoType: scenario.keigoType,
+            imageUrl: scenario.imageUrl,
             maxTurns: scenario.maxTurns,
             initialMessage: scenario.initialMessage,
             targetGrammar: stringList(scenario.targetGrammar),
+            dialogueScript: scenario.dialogueScript,
+            systemPrompt: scenario.systemPrompt,
           }
         : null,
       memories: { interests, weakTopics, facts },

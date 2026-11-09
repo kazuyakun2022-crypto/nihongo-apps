@@ -236,7 +236,7 @@ export function ChapterEditor({ chapterId }: { chapterId: string }) {
     void load();
   }, [load]);
 
-  const backHref = `/admin/konten?level=${level ?? chapter?.levelId ?? ""}`;
+  const backHref = `/admin/materi?level=${level ?? chapter?.levelId ?? ""}`;
 
   if (!chapter && flash.node) return <div className={adminStyles.emptyState}>{flash.node}</div>;
   if (!chapter) {

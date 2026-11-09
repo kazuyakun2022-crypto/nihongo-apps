@@ -271,6 +271,35 @@
   transform: translateY(3px);
 }
 
+.reviewFeaturedBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: 12px 18px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid color-mix(in srgb, var(--fg) 40%, transparent);
+  background: color-mix(in srgb, var(--fg) 12%, transparent);
+  color: var(--fg);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.reviewFeaturedBtn:hover {
+  background: color-mix(in srgb, var(--fg) 22%, transparent);
+  transform: translateY(-2px);
+}
+
+.reviewFeaturedBtn:active {
+  transform: translateY(1px);
+}
+
 .reviewLink {
   min-height: 2.75rem;
   border: 0;

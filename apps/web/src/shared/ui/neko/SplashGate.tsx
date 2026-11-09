@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { SplashScreen } from "./SplashScreen";
 
 /**
@@ -60,12 +60,20 @@ export function SplashGate({ children, initialSeen = false }: SplashGateProps) {
     setShow(false);
   };
 
+  // Fail-safe timeout: pastikan splash otomatis hilang maksimal dalam 1800ms
+  // sehingga aplikasi tidak akan pernah macet di layar splash apapun yang terjadi.
+  useEffect(() => {
+    if (!show) return;
+    const fallbackTimer = setTimeout(() => {
+      finish();
+    }, 1800);
+    return () => clearTimeout(fallbackTimer);
+  }, [show]);
+
   return (
     <>
-      {/* Sembunyikan konten halaman sepenuhnya selama splash aktif agar tidak ada kebocoran visual */}
-      <div suppressHydrationWarning style={show ? { display: "none" } : undefined}>
-        {children}
-      </div>
+      {/* Konten aplikasi selalu ter-render di DOM di balik overlay splash */}
+      {children}
       {show && <SplashScreen onFinish={finish} />}
     </>
   );

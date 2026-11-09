@@ -1,0 +1,960 @@
+/* ── Super Admin AI Engine CSS Module ── */
+
+.aiContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5, 20px);
+  width: 100%;
+}
+
+/* ── STATS BAR ── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.statCard {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: var(--radius-lg, 14px);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+}
+
+.statVal {
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-text, #1f1a1c);
+  letter-spacing: -0.02em;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #736b6e);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── TABS NAVIGATION ── */
+.tabsNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid var(--color-border, #e5e0dc);
+  padding-bottom: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px 10px 0 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted, #736b6e);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  position: relative;
+}
+
+.tabBtn:hover {
+  color: var(--color-primary, #b91c1c);
+  background: rgba(185, 28, 28, 0.04);
+}
+
+.tabBtnActive {
+  color: var(--color-primary, #b91c1c);
+  background: var(--color-surface, #fff);
+  box-shadow: 0 -2px 0 var(--color-primary, #b91c1c) inset;
+}
+
+.tabCountBadge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--color-bg, #f7f5f2);
+  color: var(--color-text-muted, #736b6e);
+}
+
+.tabBtnActive .tabCountBadge {
+  background: rgba(185, 28, 28, 0.1);
+  color: var(--color-primary, #b91c1c);
+}
+
+/* ── TOOLBAR / ACTIONS BAR ── */
+.toolbarRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+  margin: 0;
+}
+
+.sectionDesc {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #736b6e);
+  margin: 2px 0 0;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: var(--color-primary, #b91c1c);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(185, 28, 28, 0.25);
+}
+
+.btnPrimary:hover {
+  background: #991b1b;
+  transform: translateY(-1px);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e0dc);
+  color: var(--color-text, #1f1a1c);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+  background: var(--color-bg, #f7f5f2);
+  border-color: #d1cbc7;
+}
+
+/* ── KEY VAULT CARDS ── */
+.providerSection {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: var(--radius-lg, 16px);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.04));
+}
+
+.providerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border, #f0ebe6);
+}
+
+.providerBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.providerIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.providerName {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+}
+
+.keysGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.keyCard {
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--color-bg, #faf8f5);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.keyCard:hover {
+  border-color: #d1cbc7;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.keyCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.keyPriorityBadge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #1f1a1c;
+  color: #fff;
+  letter-spacing: 0.03em;
+}
+
+.keyLabel {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text, #1f1a1c);
+  margin: 0;
+}
+
+.keyHintBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e0dc);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.keyHintCode {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #4b5563;
+  letter-spacing: 0.05em;
+}
+
+/* Status Badges */
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid transparent;
+}
+
+.statusActive {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.statusStandby {
+  background: #fefce8;
+  color: #854d0e;
+  border-color: #fef08a;
+}
+
+.statusDegraded {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.statusExhausted {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.statusRevoked {
+  background: #f4f4f5;
+  color: #52525b;
+  border-color: #e4e4e7;
+}
+
+.keyMetricsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--color-text-muted, #736b6e);
+  padding: 4px 0;
+  border-top: 1px dashed var(--color-border, #e5e0dc);
+}
+
+.keyActionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* ── MODEL DISCOVERY TABLE ── */
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--color-surface, #fff);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.table th {
+  background: var(--color-bg, #faf8f5);
+  padding: 12px 16px;
+  font-weight: 700;
+  color: var(--color-text-muted, #736b6e);
+  border-bottom: 1px solid var(--color-border, #e5e0dc);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border, #f0ebe6);
+  color: var(--color-text, #1f1a1c);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+/* Capabilities Badges */
+.capsCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.capBadge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.capText {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.capVision {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.capStt {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.capTts {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+/* ── FEATURE ROUTING MATRIX ── */
+.routingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+}
+
+.routeCard {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: var(--radius-lg, 16px);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.04));
+}
+
+.routeCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.routeIconBadge {
+  min-width: 52px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(185, 28, 28, 0.08);
+  color: var(--color-primary, #b91c1c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+  border: 1px solid rgba(185, 28, 28, 0.18);
+}
+
+.routeTitle {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+  margin: 0;
+}
+
+.routeDesc {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #736b6e);
+  margin: 3px 0 0;
+}
+
+.routeStageBox {
+  background: var(--color-bg, #faf8f5);
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.routeStageLabel {
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.routeSelectRow {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 8px;
+}
+
+.formSelect {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--color-border, #d1cbc7);
+  border-radius: 8px;
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #1f1a1c);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.formSelect:focus {
+  outline: none;
+  border-color: var(--color-primary, #b91c1c);
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.15);
+}
+
+/* ── MODAL DIALOG ── */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 10, 12, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modalCard {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e0dc);
+  border-radius: var(--radius-lg, 18px);
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modalHead {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--color-border, #f0ebe6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+  margin: 0;
+}
+
+.modalBody {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.modalFoot {
+  padding: 14px 22px;
+  border-top: 1px solid var(--color-border, #f0ebe6);
+  background: var(--color-bg, #faf8f5);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text, #1f1a1c);
+  display: flex;
+  justify-content: space-between;
+}
+
+.formInput {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border, #d1cbc7);
+  border-radius: 8px;
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #1f1a1c);
+  font-size: 0.88rem;
+  box-sizing: border-box;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: var(--color-primary, #b91c1c);
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.15);
+}
+
+.noticeAlert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.noticeAlertOk {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.noticeAlertError {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+/* ── TAB 5: SYSTEM PROMPTS PER LEVEL JLPT ── */
+.promptsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.promptCard {
+  background: var(--color-surface, #ffffff);
+  border: 1.5px solid var(--color-border, #e5e0dc);
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.promptCard:hover {
+  border-color: rgba(185, 28, 28, 0.35);
+  box-shadow: 0 4px 16px rgba(185, 28, 28, 0.06);
+}
+
+.promptCardDirty {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 1px #f59e0b, 0 4px 14px rgba(245, 158, 11, 0.12);
+}
+
+.promptHead {
+  padding: 14px 20px;
+  background: var(--palette-washi, #faf8f5);
+  border-bottom: 1px solid var(--color-border, #e5e0dc);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.promptHeadLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.promptKanjiBadge {
+  font-family: var(--font-japanese, inherit);
+  font-weight: 800;
+  font-size: 0.76rem;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill, 999px);
+  background: var(--palette-beni-100, #fee2e2);
+  color: var(--palette-beni-700, #b91c1c);
+  border: 1px solid rgba(185, 28, 28, 0.2);
+  line-height: 1.2;
+}
+
+.promptLevelTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.promptLevelSub {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #736b6e);
+}
+
+.promptHeadRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.promptUpdatedBy {
+  font-size: 0.76rem;
+  color: var(--color-text-muted, #736b6e);
+}
+
+.promptStatusPill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill, 999px);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.promptStatusClean {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.promptStatusDirty {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.promptCardBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.promptFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.promptLabelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.promptLabel {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+}
+
+.promptHelper {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #736b6e);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.promptTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 130px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--color-border, #d1cbc7);
+  border-radius: 10px;
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #1f1a1c);
+  font-size: 0.88rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  line-height: 1.55;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.promptTextarea:focus {
+  border-color: var(--color-primary, #b91c1c);
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12);
+}
+
+.promptTextarea[readonly] {
+  background: var(--palette-washi, #faf8f5);
+  color: var(--color-text-muted, #736b6e);
+  cursor: default;
+}
+
+/* Responsive 3-Kolom Pengaturan Kontrol */
+.promptControlsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  background: var(--palette-washi, #faf8f5);
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border, #e5e0dc);
+}
+
+.promptControlCol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.promptControlLabel {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.promptControlSub {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #736b6e);
+  font-weight: 400;
+}
+
+.promptNumberInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 1.5px solid var(--color-border, #d1cbc7);
+  border-radius: 8px;
+  background: var(--color-surface, #ffffff);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text, #1f1a1c);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.promptNumberInput:focus {
+  border-color: var(--color-primary, #b91c1c);
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
+}
+
+.promptSelect {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 1.5px solid var(--color-border, #d1cbc7);
+  border-radius: 8px;
+  background: var(--color-surface, #ffffff);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-text, #1f1a1c);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.promptSelect:focus {
+  border-color: var(--color-primary, #b91c1c);
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
+}
+
+.promptSliderWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promptSlider {
+  width: 100%;
+  accent-color: var(--color-primary, #b91c1c);
+  cursor: pointer;
+}
+
+.promptSpeedPresets {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.promptSpeedPresetBtn {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill, 999px);
+  border: 1px solid var(--color-border, #d1cbc7);
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text-muted, #736b6e);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.promptSpeedPresetBtn:hover {
+  border-color: var(--color-primary, #b91c1c);
+  color: var(--color-primary, #b91c1c);
+}
+
+.promptSpeedPresetBtnActive {
+  background: var(--palette-beni-100, #fee2e2);
+  border-color: var(--color-primary, #b91c1c);
+  color: var(--color-primary, #b91c1c);
+}
+
+.promptSpeedBadge {
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill, 999px);
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #d1cbc7);
+  color: var(--color-primary, #b91c1c);
+}
+
+.promptFoot {
+  padding: 12px 20px;
+  background: var(--palette-washi, #faf8f5);
+  border-top: 1px solid var(--color-border, #e5e0dc);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.promptFootNotice {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.promptFootNoticeOk {
+  color: #15803d;
+}
+
+.promptFootNoticeError {
+  color: #b91c1c;
+}
+
+.promptFootActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+

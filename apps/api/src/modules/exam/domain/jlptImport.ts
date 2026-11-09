@@ -6,8 +6,16 @@ import { JLPT_CATEGORIES, isJlptCode, type JlptCode, type SimSection } from "./J
  * Tambahan di luar format dasar:
  * - passage: teks bacaan Dokkai (tampil di atas soal) atau skrip percakapan Choukai (hanya tampil di pembahasan).
  * - audioScript: bila audioUrl kosong, audio Choukai dibuat dari teks ini lewat /api/tts.
+ * - variantIndex: nomor paket 1-10. Bila kosong, diambil dari angka di akhir examSlug (jlpt-n5-mock-04 -> 4).
+ * - Per soal (dipakai file hasil ekspor bank, lihat jlptBank.ts):
+ *   sourceKey: identitas tetap soal (impor ulang memperbarui, bukan menggandakan);
+ *   status: "published" | "draft"; section: bagian (wajib bila questionType kosong di MOJI_GOI).
+ *   questionType boleh kosong untuk soal tanpa tipe Daimon.
  * durationMinutes, passingScore, dan sectionalMinimums dicatat tapi tidak menimpa aturan di admin.
  */
+
+/** Jumlah paket simulasi per level. */
+export const JLPT_PACKAGE_COUNT = 10;
 
 /** questionType di file -> tipe soal (Daimon) di aplikasi. */
 export const QUESTION_TYPE_MAP: Record<string, string> = {
@@ -47,10 +55,13 @@ const optionSchema = z.union([
 
 const questionSchema = z.object({
   questionNumber: z.number().int().min(1),
-  questionType: z.string().trim().toUpperCase(),
+  questionType: z.string().trim().toUpperCase().nullish(),
+  sourceKey: z.string().trim().regex(/^[\w:.-]{3,100}$/, "sourceKey hanya huruf, angka, dan : . - _ (3-100 karakter).").optional(),
+  status: z.enum(["published", "draft"]).optional(),
+  section: z.enum(["membaca", "kosakata", "tata_bahasa", "dokkai", "mendengar"]).optional(),
   promptText: z.string().trim().min(1).max(2000),
   passage: z.string().trim().max(6000).nullish(),
-  audioUrl: z.string().trim().max(500).nullish(),
+  audioUrl: z.string().trim().max(2000).nullish(),
   audioScript: z.string().trim().max(1500).nullish(),
   imageUrl: z.string().trim().max(500).nullish(),
   options: z.array(optionSchema).min(2).max(6),
@@ -63,6 +74,7 @@ const questionSchema = z.object({
 export const jlptPackageSchema = z.object({
   examSlug: z.string().trim().regex(/^[a-z0-9-]{3,60}$/, "examSlug hanya huruf kecil, angka, dan tanda hubung (3-60 karakter)."),
   levelCode: z.string().trim().toUpperCase(),
+  variantIndex: z.number().int().min(1).max(JLPT_PACKAGE_COUNT).optional(),
   title: z.string().trim().max(200).optional(),
   durationMinutes: z.number().int().positive().optional(),
   passingScore: z.number().int().positive().optional(),
@@ -82,9 +94,14 @@ export type JlptPackage = z.infer<typeof jlptPackageSchema>;
 
 export interface ImportedQuestion {
   sourceKey: string;
+  /** Nomor paket 1-10, atau null untuk bank campuran. */
+  packageNo: number | null;
   section: SimSection;
-  category: string;
+  /** Tipe soal Daimon; null bila soal tidak diberi tipe. */
+  category: string | null;
   type: "pilihan_ganda" | "mendengar";
+  /** Status dari file (hasil ekspor); null bila file tidak menentukan. */
+  status: "published" | "draft" | null;
   question: string;
   passage: string | null;
   options: string[];
@@ -103,6 +120,13 @@ function safeMediaUrl(url: string | null | undefined): string | null {
 
 export const ttsUrl = (text: string) => `/api/tts?text=${encodeURIComponent(text)}`;
 
+/** Nomor paket dari variantIndex, atau dari angka di akhir examSlug; di luar 1-10 berarti bank campuran. */
+export function packageNumber(pkg: Pick<JlptPackage, "variantIndex" | "examSlug">): number | null {
+  if (pkg.variantIndex) return pkg.variantIndex;
+  const n = Number(/-(\d{1,2})$/.exec(pkg.examSlug)?.[1]);
+  return n >= 1 && n <= JLPT_PACKAGE_COUNT ? n : null;
+}
+
 /**
  * Ubah satu paket menjadi baris soal. Error dikumpulkan per soal (bukan berhenti di soal pertama),
  * supaya penulis paket bisa memperbaiki semuanya sekaligus.
@@ -114,6 +138,8 @@ export function mapJlptPackage(pkg: JlptPackage): { level: JlptCode; questions: 
     return { level: "N5", questions, errors: [`levelCode "${pkg.levelCode}" tidak dikenal; pakai N5, N4, N3, N2, atau N1.`] };
   }
   const level = pkg.levelCode;
+  const packageNo = packageNumber(pkg);
+  const seenKeys = new Set<string>();
 
   for (const section of pkg.sections) {
     const allowed = SECTION_TYPES[section.sectionType];
@@ -123,16 +149,33 @@ export function mapJlptPackage(pkg: JlptPackage): { level: JlptCode; questions: 
     }
     for (const q of section.questions) {
       const where = `${section.sectionType} no. ${q.questionNumber}`;
-      const category = QUESTION_TYPE_MAP[q.questionType];
-      const cat = JLPT_CATEGORIES.find((c) => c.key === category);
-      if (!cat) {
-        errors.push(`${where}: questionType "${q.questionType}" tidak dikenal.`);
+      // Bagian & tipe soal: dari questionType bila ada; bila kosong, dari field section (atau satu-satunya bagian sectionType)
+      let target: { section: SimSection; category: string | null };
+      if (q.questionType) {
+        const cat = JLPT_CATEGORIES.find((c) => c.key === QUESTION_TYPE_MAP[q.questionType!]);
+        if (!cat) {
+          errors.push(`${where}: questionType "${q.questionType}" tidak dikenal.`);
+          continue;
+        }
+        if (!allowed.includes(cat.section) || (q.section && q.section !== cat.section)) {
+          errors.push(`${where}: questionType ${q.questionType} tidak termasuk bagian ${q.section ?? section.sectionType}.`);
+          continue;
+        }
+        target = { section: cat.section, category: cat.key };
+      } else {
+        const sec = q.section ?? (allowed.length === 1 ? allowed[0] : undefined);
+        if (!sec || !allowed.includes(sec)) {
+          errors.push(`${where}: tanpa questionType, isi section (${allowed.join(" atau ")}).`);
+          continue;
+        }
+        target = { section: sec, category: null };
+      }
+      const sourceKey = q.sourceKey ?? `${pkg.examSlug}:${section.sectionType.toLowerCase()}:${q.questionNumber}`.slice(0, 100);
+      if (seenKeys.has(sourceKey)) {
+        errors.push(`${where}: sourceKey ${sourceKey} dipakai lebih dari sekali dalam paket ini.`);
         continue;
       }
-      if (!allowed.includes(cat.section)) {
-        errors.push(`${where}: questionType ${q.questionType} tidak termasuk bagian ${section.sectionType}.`);
-        continue;
-      }
+      seenKeys.add(sourceKey);
       const options = q.options.map((o) => (typeof o === "string" ? o : o.text));
       // Opsi berbentuk { index, text } diurutkan menurut index; jawaban benar dirujuk lewat nomor 1..n
       const ordered =
@@ -148,17 +191,19 @@ export function mapJlptPackage(pkg: JlptPackage): { level: JlptCode; questions: 
         errors.push(`${where}: correctOptionIndex ${q.correctOptionIndex} di luar jumlah pilihan (${ordered.length}).`);
         continue;
       }
-      const listening = cat.section === "mendengar";
+      const listening = target.section === "mendengar";
       const audioUrl = safeMediaUrl(q.audioUrl) ?? (q.audioScript ? ttsUrl(q.audioScript) : null);
       if (listening && !audioUrl) {
         errors.push(`${where}: soal Choukai butuh audioUrl (http/https) atau audioScript.`);
         continue;
       }
       questions.push({
-        sourceKey: `${pkg.examSlug}:${section.sectionType.toLowerCase()}:${q.questionNumber}`.slice(0, 100),
-        section: cat.section,
-        category: cat.key,
+        sourceKey,
+        packageNo,
+        section: target.section,
+        category: target.category,
         type: listening ? "mendengar" : "pilihan_ganda",
+        status: q.status ?? null,
         question: q.promptText,
         // Skrip dengar disimpan sebagai passage supaya muncul di pembahasan
         passage: q.passage ?? (listening ? q.audioScript ?? null : null),

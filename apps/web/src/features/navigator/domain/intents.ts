@@ -20,22 +20,6 @@ export const INTENTS: NavIntent[] = [
     keywords: ["halaman ini", "jelaskan halaman", "jelasin halaman", "layar ini", "cara pakai aplikasi", "cara pakainya", "cara menggunakan aplikasi", "tunjukkan fitur", "fitur apa", "tombol apa", "panduan aplikasi", "tur", "tour"],
   },
   {
-    tour: "kana-writing",
-    keywords: ["menulis huruf", "latihan menulis", "belajar menulis", "nulis huruf", "tulis hiragana", "tulis katakana", "latihan nulis", "goresan", "kanvas", "かく", "kaku"],
-  },
-  {
-    tour: "kana-quiz",
-    keywords: ["kuis huruf", "quiz huruf", "tes huruf", "uji hafalan huruf", "kuis hiragana", "kuis katakana"],
-  },
-  {
-    tour: "kana-table",
-    keywords: ["tabel huruf", "daftar huruf", "huruf jepang", "tabel hiragana", "tabel katakana", "belajar huruf", "lihat huruf", "hiragana", "katakana", "kana", "ひらがな", "カタカナ"],
-  },
-  {
-    tour: "workbook",
-    keywords: ["lembar kerja", "buku tulis", "tulis tangan", "tulisan tangan", "foto tulisan", "scan tulisan", "cetak lembar", "tulis di buku", "menulis di buku", "nulis di buku", "di buku", "di kertas", "pakai pensil", "pensil", "kertas", "pindai", "workbook"],
-  },
-  {
     tour: "review",
     keywords: ["kartu hafalan", "ulang kosakata", "mengulang kata", "review kosakata", "flashcard", "review", "hafalan", "srs", "ふくしゅう", "fukushuu"],
   },
@@ -62,23 +46,6 @@ export const INTENTS: NavIntent[] = [
   {
     tour: "ask",
     keywords: ["tanya ai", "tanya sensei", "nanya tertulis", "chat ai"],
-  },
-  {
-    tour: "dict-kanji",
-    keywords: ["kamus kanji", "cari kanji"],
-  },
-  {
-    tour: "dict-grammar",
-    keywords: ["kamus tata bahasa", "daftar tata bahasa", "pola kalimat", "daftar partikel"],
-  },
-  {
-    tour: "dict-phrases",
-    keywords: ["kamus ungkapan", "daftar ungkapan", "ungkapan sehari"],
-  },
-  {
-    tour: "dictionary",
-    // Sengaja tanpa "artinya"/"arti kata": pertanyaan arti lebih baik dijawab langsung oleh Miu-chan
-    keywords: ["buka kamus", "cari kata", "cari arti", "kamus", "じしょ", "jisho"],
   },
   {
     tour: "progress",
@@ -158,6 +125,6 @@ export function bandForLevel(levelId: number | null | undefined): LevelBand {
 }
 
 /** Rute ujian: widget dibekukan total (tak terlihat, mikrofon & suara dihentikan). */
-export const EXAM_ROUTES = [/^\/belajar\/tes-naik-tahap/, /^\/belajar\/simulasi-jlpt/, /^\/belajar\/gerbang-tulis/, /^\/belajar\/gerbang-hiragana/, /^\/mulai\/tes-penempatan/];
+export const EXAM_ROUTES = [/^\/belajar\/tes-naik-tahap/, /^\/simulasi/, /^\/belajar\/simulasi-jlpt/, /^\/belajar\/gerbang-tulis/, /^\/belajar\/gerbang-hiragana/, /^\/mulai\/tes-penempatan/];
 /** Rute yang sudah punya Miu-chan sendiri (obrolan suara/teks): widget disembunyikan supaya tidak ganda. */
 export const OWN_MASCOT_ROUTES = [/^\/suara/, /^\/tanya/, /^\/ngobrol\/skenario\//];

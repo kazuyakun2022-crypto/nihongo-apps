@@ -94,13 +94,11 @@
   z-index: -1;
   pointer-events: none;
   animation: backdropIn 500ms ease-out both;
+  /* Warna langit mengisi ruang di luar SVG (letterbox) */
+  background: linear-gradient(to bottom, var(--sky-top, #ffd6c4), var(--sky-bottom, #fff3e6));
 }
 
-@media (min-width: 900px) {
-  .backdrop {
-    left: var(--sidebar-width);
-  }
-}
+/* Sidebar sekarang overlay (menimpa), backdrop tetap left:0 di semua ukuran layar */
 
 @keyframes backdropIn {
   from {

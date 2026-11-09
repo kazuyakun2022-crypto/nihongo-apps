@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
@@ -8,57 +9,194 @@ import { MascotNavigator } from "@/features/navigator/ui/MascotNavigator";
 import { SpotlightOverlay } from "@/features/navigator/ui/SpotlightOverlay";
 import { MiuStage } from "@/features/navigator/ui/MiuStage";
 import { InstallPrompt } from "./InstallPrompt";
+import { NotificationBell } from "@/features/notifications/ui/NotificationBell";
+import { InAppNotificationBanner } from "@/features/notifications/ui/InAppNotificationBanner";
 import styles from "./shell.module.css";
 import { ConfirmHost } from "@/shared/ui/confirmDialog";
+import {
+  SidebarToggleIcon,
+  NavHomeIcon,
+  NavLearnIcon,
+  NavChatIcon,
+  NavProfileIcon,
+  DashboardIcon,
+  UsersIcon,
+  BookOpenIcon,
+  ImageIcon,
+  BotIcon,
+  TrendingUpIcon,
+  type IconProps,
+} from "@/shared/ui/icons";
 
-const studentNav = [
-  { href: "/beranda", label: "Beranda", icon: "M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z" },
-  { href: "/belajar", label: "Belajar", icon: "M4 5 H11 V20 H4 Z M13 5 H20 V20 H13 Z" },
-  { href: "/huruf",   label: "Huruf",   icon: "M4 6 H20 M4 12 H16 M4 18 H12" },
-  { href: "/ngobrol", label: "Ngobrol", icon: "M4 5 H20 V16 H10 L6 20 V16 H4 Z" },
-  { href: "/kamus",   label: "Kamus",   icon: "M4 5 H20 V19 H4 Z M4 15 L9 10 L13 14 L15 12 L20 17 M15 8.5 A0.5 0.5 0 1 0 15 9.5 A0.5 0.5 0 1 0 15 8.5 Z" },
-  { href: "/profil",  label: "Profil",  icon: "M12 12 A4 4 0 1 0 12 4 A4 4 0 1 0 12 12 Z M4 20 C5 15 19 15 20 20" },
+function useSidebarCollapse() {
+  // Desktop terbuka secara bawaan (muncul), menimpa konten tanpa menggeser.
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("nihongo_sidebar_collapsed_v4");
+      if (saved === "1") setCollapsed(true);
+      else if (saved === "0") setCollapsed(false);
+    } catch {
+      // Abaikan jika localStorage tidak tersedia
+    }
+  }, []);
+
+  const toggle = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("nihongo_sidebar_collapsed_v4", next ? "1" : "0");
+      } catch {
+        // Abaikan jika localStorage gagal
+      }
+      return next;
+    });
+  };
+
+  return [collapsed, toggle] as const;
+}
+
+interface NavItem {
+  href: string;
+  label: string;
+  short?: string;
+  superAdminOnly?: boolean;
+  Icon: React.ComponentType<IconProps>;
+}
+
+const studentNav: NavItem[] = [
+  { href: "/beranda", label: "Beranda", Icon: NavHomeIcon },
+  { href: "/belajar", label: "Belajar", Icon: NavLearnIcon },
+  { href: "/ngobrol", label: "Ngobrol", Icon: NavChatIcon },
+  { href: "/profil",  label: "Profil",  Icon: NavProfileIcon },
 ];
 
-const adminNav = [
+/** Nama layar ringkas untuk topbar. Mengakomodasi halaman siswa, admin, dan super admin. */
+function screenTitle(pathname: string, isSuperAdmin?: boolean): string | null {
+  // Rute Siswa
+  switch (pathname) {
+    case "/beranda":
+      return "Beranda";
+    case "/belajar":
+      return "Belajar";
+    case "/huruf":
+      return "Huruf";
+    case "/kamus":
+      return "Kamus";
+    case "/review":
+      return "Review Kosakata";
+    case "/belajar/tulis-buku":
+      return "Tulis di Buku";
+    case "/profil":
+      return "Profil";
+    case "/notifikasi":
+      return "Notifikasi";
+    case "/profil/notifikasi":
+      return "Pengaturan Notifikasi";
+    case "/scan":
+      return "Kamera Scanner";
+    case "/simulasi":
+      return "Simulasi JLPT";
+  }
+
+  if (pathname.startsWith("/belajar")) return "Belajar";
+  if (pathname.startsWith("/simulasi")) return "Simulasi JLPT";
+  if (pathname.startsWith("/kamus")) return "Kamus";
+
+  // Rute Admin & Super Admin
+  if (pathname === "/admin") {
+    return isSuperAdmin ? "Dashboard Super Admin" : "Dashboard Admin";
+  }
+  if (pathname.startsWith("/admin/pengguna")) {
+    return "Kelola Pengguna";
+  }
+  if (pathname.startsWith("/admin/materi/bab")) {
+    return "Editor Bab Pelajaran";
+  }
+  if (pathname.startsWith("/admin/materi/ujian")) {
+    return "Ujian & Tes Penempatan";
+  }
+  if (pathname.startsWith("/admin/materi/kamus")) {
+    return "Kamus Kosakata";
+  }
+  if (pathname.startsWith("/admin/materi/pendaftaran")) {
+    return "Tes Penempatan";
+  }
+  if (pathname.startsWith("/admin/materi/skenario")) {
+    return "Skenario Percakapan AI";
+  }
+  if (pathname.startsWith("/admin/materi")) {
+    return "Materi Pelajaran";
+  }
+  if (pathname.startsWith("/admin/konten")) {
+    return "Konten & Iklan Beranda";
+  }
+  if (pathname.startsWith("/admin/ai")) {
+    return "Konfigurasi AI";
+  }
+  if (pathname.startsWith("/admin/pantau/") && pathname !== "/admin/pantau") {
+    return "Detail Pantau Siswa";
+  }
+  if (pathname.startsWith("/admin/pantau")) {
+    return "Pantau Belajar";
+  }
+  if (pathname.startsWith("/admin/notifikasi")) {
+    return "Kirim Pengumuman";
+  }
+  if (pathname.startsWith("/admin/ringkasan")) {
+    return isSuperAdmin ? "Dashboard Super Admin" : "Dashboard Admin";
+  }
+
+  return null;
+}
+
+const adminNav: NavItem[] = [
   {
     href: "/admin",
     label: "Dashboard",
     short: "Dasbor",
-    icon: "M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z",
+    Icon: DashboardIcon,
   },
   {
     href: "/admin/pengguna",
     label: "Pengguna",
     short: "Akun",
-    icon: "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z",
+    Icon: UsersIcon,
+  },
+  {
+    href: "/admin/materi",
+    label: "Materi",
+    short: "Materi",
+    Icon: BookOpenIcon,
   },
   {
     href: "/admin/konten",
     label: "Konten",
-    icon: "M4 5 H11 V20 H4 Z M13 5 H20 V20 H13 Z",
+    short: "Konten",
+    Icon: ImageIcon,
   },
   {
     href: "/admin/ai",
     label: "Konfig AI",
     short: "AI",
-    icon: "M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2zM7.5 13a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z",
+    Icon: BotIcon,
   },
   {
     href: "/admin/pantau",
     label: "Pantau",
-    icon: "M4 20 V4 M4 20 H20 M8 16 V12 M12 16 V8 M16 16 V11",
+    Icon: TrendingUpIcon,
     superAdminOnly: true,
   },
   {
     href: "/ngobrol",
     label: "Uji AI",
-    icon: "M4 5 H20 V16 H10 L6 20 V16 H4 Z",
+    Icon: NavChatIcon,
   },
   {
     href: "/profil",
     label: "Profil",
-    icon: "M12 12 A4 4 0 1 0 12 4 A4 4 0 1 0 12 12 Z M4 20 C5 15 19 15 20 20",
+    Icon: NavProfileIcon,
   },
 ];
 
@@ -74,10 +212,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isChatPage = pathname.startsWith("/ngobrol") || pathname.startsWith("/suara");
   // Panel admin berisi tabel & data padat, jadi memakai seluruh lebar layar
   const isWidePage = pathname.startsWith("/admin");
+  const pageTitle = isChatPage ? null : screenTitle(pathname, isSuperAdmin);
+  const [collapsed, toggleSidebar] = useSidebarCollapse();
 
   return (
     <NavigatorProvider>
-      <div className={styles.shell}>
+      <div className={`${styles.shell} ${collapsed ? styles.sidebarCollapsed : ""}`}>
         <nav className={styles.nav} aria-label="Menu utama">
           <span className={styles.brand}>
             <span className={styles.brandSeal} aria-hidden="true" lang="ja">
@@ -93,36 +233,97 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <ul className={styles.navList} style={{ "--nav-cols": nav.length } as React.CSSProperties}>
             {nav.map((item) => {
               const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+              const NavIcon = item.Icon;
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={styles.navLink}
                     aria-current={active ? "page" : undefined}
+                    aria-label={item.label}
+                    title={item.label}
                     data-spotlight={`nav-${item.href.slice(1)}`}
                   >
-                    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-                      <path d={item.icon} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-                    </svg>
-                    {/* Navigasi bawah ponsel (7 menu untuk super admin) memakai label pendek supaya tidak terpotong */}
-                    {(item as { short?: string }).short ? (
-                      <>
-                        <span className={styles.navLabelFull}>{item.label}</span>
-                        <span className={styles.navLabelShort} aria-hidden="true">
-                          {(item as { short?: string }).short}
-                        </span>
-                      </>
-                    ) : (
-                      <span>{item.label}</span>
-                    )}
+                    <span className={styles.navIconWrap}>
+                      <NavIcon size={22} strokeWidth={active ? 2.4 : 2} />
+                    </span>
+                    {/* Nama layar: terlihat jelas di ponsel maupun sidebar desktop */}
+                    <span className={styles.navLabel}>
+                      {(item as { short?: string }).short ? (
+                        <>
+                          <span className={styles.navLabelFull}>{item.label}</span>
+                          <span className={styles.navLabelShort} aria-hidden="true">
+                            {(item as { short?: string }).short}
+                          </span>
+                        </>
+                      ) : (
+                        <span className={styles.navLabelText}>{item.label}</span>
+                      )}
+                    </span>
                   </Link>
                 </li>
               );
             })}
           </ul>
+
         </nav>
+
+        {/* Tombol panah setengah lingkaran — di LUAR nav agar tidak ikut translateX saat collapsed */}
+        <button
+          type="button"
+          className={styles.collapseBtn}
+          onClick={toggleSidebar}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? "Buka menu samping" : "Sembunyikan menu samping"}
+          title={collapsed ? "Buka menu samping" : "Sembunyikan menu samping"}
+        >
+          <span className={styles.collapseIconWrap}>
+            <SidebarToggleIcon size={20} strokeWidth={2.4} />
+          </span>
+        </button>
+        {/* Bilah atas terpadu: logo aplikasi, judul halaman aktif, & akses lonceng notifikasi */}
+        {!isChatPage && (
+          <header className={styles.topBar}>
+            <div className={styles.topBarInner}>
+              <div className={styles.topBarLeft}>
+                <Link href={isAdmin ? "/admin" : "/beranda"} className={styles.topBarBrand} title="Ke Beranda">
+                  <span className={styles.topBarSeal} aria-hidden="true" lang="ja">
+                    日
+                  </span>
+                  <span className={styles.topBarBrandText}>
+                    <span className={styles.topBarName} lang="ja">
+                      にほんご
+                    </span>
+                    <span className={styles.topBarTag}>
+                      {isAdmin ? "Panel pengelola" : "Belajar bersama Miu-chan"}
+                    </span>
+                  </span>
+                </Link>
+                {pageTitle && (
+                  <>
+                    <span className={styles.topBarDivider} aria-hidden="true">
+                      /
+                    </span>
+                    <span className={styles.topBarScreen} title={pageTitle}>
+                      {pageTitle}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <div className={styles.topBarActions}>
+                {isAdmin && (
+                  <span className={isSuperAdmin ? styles.topBarSuperBadge : styles.topBarAdminBadge}>
+                    {isSuperAdmin ? "Super Admin" : "Admin"}
+                  </span>
+                )}
+                <NotificationBell inline />
+              </div>
+            </div>
+          </header>
+        )}
+
         <main className={`${styles.main} ${isChatPage ? styles.mainChat : ""} ${isWidePage ? styles.mainWide : ""}`}>
-          {!isChatPage && <InstallPrompt />}
           {children}
         </main>
         {/* Miu-chan pemandu: widget melayang + sorotan (disembunyikan otomatis saat ujian) */}
@@ -130,6 +331,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <MiuStage />
         <ConfirmHost />
         <SpotlightOverlay />
+        <InAppNotificationBanner />
+        {!isChatPage && <InstallPrompt />}
       </div>
     </NavigatorProvider>
   );

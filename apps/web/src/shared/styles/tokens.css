@@ -107,6 +107,7 @@
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 22px;
+  --radius-xl: 24px;
   --radius-pill: 999px;
   --border-width: 1.5px;
   --shadow-raised: 0 2px 0 var(--color-border);
@@ -118,6 +119,7 @@
   --content-narrow: 44rem;
   --nav-height: 3.75rem;
   --sidebar-width: 15rem;
+  --sidebar-rail: 4.5rem;
 
   --motion-fast: 150ms;
   --motion-base: 250ms;

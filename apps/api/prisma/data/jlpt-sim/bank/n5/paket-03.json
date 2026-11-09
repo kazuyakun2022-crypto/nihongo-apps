@@ -1,0 +1,1330 @@
+{
+  "examSlug": "jlpt-n5-mock-03",
+  "levelCode": "N5",
+  "variantIndex": 3,
+  "title": "Simulasi JLPT N5 - Paket 03",
+  "sections": [
+    {
+      "sectionType": "MOJI_GOI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:1",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>花</u>が さきました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "はな",
+            "き",
+            "くさ",
+            "はっぱ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「花」dibaca「はな」(bunga).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:2",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>耳</u>が いたいです。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "みみ",
+            "め",
+            "はな",
+            "くち"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「耳」dibaca「みみ」(telinga).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:3",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>目</u>を とじてください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "め",
+            "みみ",
+            "て",
+            "あし"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「目」dibaca「め」(mata).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:4",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>手</u>を あらいました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "て",
+            "あし",
+            "かお",
+            "からだ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「手」dibaca「て」(tangan).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:5",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>足</u>が はやいです。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "あし",
+            "て",
+            "くび",
+            "かた"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「足」dibaca「あし」(kaki).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:6",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "この <u>店</u>は ゆうめいです。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "みせ",
+            "いえ",
+            "へや",
+            "まち"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「店」dibaca「みせ」(toko).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "KANJI_READING",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:7",
+          "status": "published",
+          "section": "membaca",
+          "promptText": "<u>門</u>の まえに 車が あります。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "もん",
+            "いえ",
+            "まど",
+            "とびら"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kanji「門」dibaca「もん」(gerbang).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:8",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "あしたの <u>あさ</u> 8じに おきます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "朝",
+            "昼",
+            "夜",
+            "夕"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Huruf hiragana「あさ」ditulis dengan kanji「朝」(pagi).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:9",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "<u>みず</u>を ください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "水",
+            "木",
+            "火",
+            "土"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Huruf hiragana「みず」ditulis dengan kanji「水」(air).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:10",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "ともだちと <u>はなし</u>ます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "話し",
+            "聞き",
+            "読み",
+            "書き"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Huruf hiragana「はなし」ditulis dengan kanji「話し」(berbicara).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:11",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "<u>くるま</u>を かいました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "車",
+            "電車",
+            "自転車",
+            "飛行機"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Huruf hiragana「くるま」ditulis dengan kanji「車」(mobil).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "ORTHOGRAPHY",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:12",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "すこし <u>やすみ</u>ましょう。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "休み",
+            "歩き",
+            "走り",
+            "止まり"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Huruf hiragana「やすみ」ditulis dengan kanji「休み」(istirahat).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:13",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "のどが かわきました。（　）を のみたいです。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ジュース",
+            "パン",
+            "ケーキ",
+            "くだもの"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Haus (のどがかわきました), ingin minum jus (ジュース).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:14",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "えきまで （　）で 10ぷん かかります。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "あるいて",
+            "のんで",
+            "たべて",
+            "みて"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Ke stasiun jalan kaki (あるいて) 10 menit.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:15",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "ともだちに たんじょうびの （　）を あげました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "プレゼント",
+            "しゅくだい",
+            "きっぷ",
+            "てがみ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Memberikan hadiah (プレゼント) ulang tahun ke teman.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:16",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "あさ （　）を みがいてから、ごはんを たべます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "は",
+            "め",
+            "て",
+            "かお"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menyikat gigi (はをみがく) di pagi hari.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:17",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "おなかが すきましたから、（　）を たべましょう。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ごはん",
+            "おちゃ",
+            "みず",
+            "くすり"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Lapar (おなかがすきました), jadi makan nasi/makanan (ごはん).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "CONTEXTUAL_EXPRESSION",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:18",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "へやが くらいですから、（　）を つけてください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "でんき",
+            "テレビ",
+            "ラジオ",
+            "ドア"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kamar gelap, jadi menyalakan lampu (でんき).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "PARAPHRASE",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:19",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "<u>だんだん</u> さむく なります。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "すこしずつ",
+            "すぐに",
+            "ぜんぜん",
+            "いつも"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Berangsur-angsur (だんだん) setara dengan sedikit demi sedikit (すこしずつ).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 20,
+          "questionType": "PARAPHRASE",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:20",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "あの ひとは <u>しんせつ</u>です。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "やさしい",
+            "こわい",
+            "つめたい",
+            "いそがしい"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Ramah/baik hati (しんせつ) setara dengan「やさしい」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 21,
+          "questionType": "PARAPHRASE",
+          "sourceKey": "jlpt-n5-mock-03:moji_goi:21",
+          "status": "published",
+          "section": "kosakata",
+          "promptText": "あしたは <u>やすみ</u>です。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "しごとが ありません",
+            "がっこうへ いきます",
+            "しごとを します",
+            "べんきょうします"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Libur (やすみ) artinya tidak ada pekerjaan/sekolah (しごとがありません).",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "BUNPOU",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:1",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "わたしは 毎朝 7時（　）起きます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "に",
+            "で",
+            "を",
+            "へ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Partikel「に」menandai waktu spesifik (7-ji ni).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:2",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "図書館（　）本を 借りました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "で",
+            "に",
+            "を",
+            "へ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Partikel「で」menandai tempat terjadinya aksi aktif.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:3",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "バス（　）学校へ 行きます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "で",
+            "に",
+            "を",
+            "から"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Partikel「で」menandai sarana transportasi.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:4",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "これは 兄（　）もらった 時計です。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "から",
+            "まで",
+            "へ",
+            "で"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Partikel「から」menunjukkan asal pemberian.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:5",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "雨が 降って います（　）、傘を さします。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "から",
+            "けど",
+            "ので",
+            "のに"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Partikel「から」menyatakan alasan sebab akibat langsung.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:6",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "日曜日、どこ（　）行きませんでした。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "へも",
+            "にも",
+            "でも",
+            "をも"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Bentuk menyangkal total tujuan tempat menggunakan「へも」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:7",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "この部屋は 静か（　）きれいです。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "で",
+            "に",
+            "くて",
+            "な"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menghubungkan kata sifat-na (静か) menggunakan「で」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:8",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "ケーキを 3（　）買いました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "つ",
+            "枚",
+            "本",
+            "台"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Penghitung umum untuk kue potong adalah「つ」(mittsu).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "GRAMMAR_FORM",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:9",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "映画を（　）ながら ポップコーンを 食べます。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "見",
+            "見て",
+            "見ない",
+            "見る"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola simultan「〜ながら」menggunakan bentuk Masu-stem (見).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "SENTENCE_COMPOSITION",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:10",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "きのう ＿＿ ＿★＿ ＿＿ ＿＿ かいました。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ほんやで",
+            "おもしろい",
+            "まんがを",
+            "ともだちと"
+          ],
+          "correctOptionIndex": 2,
+          "explanation": "Urutan benar: ともだちと ほんやで まんがを おもしろい (★ = ほんやで).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "SENTENCE_COMPOSITION",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:11",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "わたしは ＿＿ ＿★＿ ＿＿ ＿＿ すきです。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "スポーツの",
+            "テニスが",
+            "なかで",
+            "いちばん"
+          ],
+          "correctOptionIndex": 3,
+          "explanation": "Urutan benar: スポーツの なかで テニスが いちばん (★ = なかで).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "SENTENCE_COMPOSITION",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:12",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "すみませんが ＿＿ ＿★＿ ＿＿ ＿＿ ください。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ボールペンを",
+            "この",
+            "かして",
+            "いっぽん"
+          ],
+          "correctOptionIndex": 4,
+          "explanation": "Urutan benar: この ボールペンを いっぽん かして (★ = かして).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "SENTENCE_COMPOSITION",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:13",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "あした ＿＿ ＿★＿ ＿＿ ＿＿ いきませんか。",
+          "passage": null,
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "えいがを",
+            "いっしょに",
+            "みに",
+            "えきまえへ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Urutan benar: えっしょに えきまえへ えいがを みに (★ = えいがを).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "TEXT_GRAMMAR",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:14",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "（1）に入る最もよいものを選んでください。",
+          "passage": "わたしは まいあさ 6じに おきます。あさごはんを たべてから、（1） 学校へ いきます。学校では ともだちと にほんごを べんきょうします。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "自転車で",
+            "自転車を",
+            "自転車に",
+            "自転車へ"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Transportasi menggunakan partikel で (自転車で).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "TEXT_GRAMMAR",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:15",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "（2）に入る最もよいものを選んでください。",
+          "passage": "きのうの日曜日は とても いいてんきでした。（2） ともだちと こうえんへ いきました。こうえんで サッカーを しました。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "ですから",
+            "でも",
+            "しかし",
+            "または"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Konjungsi sebab akibat: cuaca cerah oleh karena itu (ですから) pergi ke taman.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "TEXT_GRAMMAR",
+          "sourceKey": "jlpt-n5-mock-03:bunpou:16",
+          "status": "published",
+          "section": "tata_bahasa",
+          "promptText": "（3）に入る最もよいものを選んでください。",
+          "passage": "あしたは ははの たんじょうびです。きれいな はなを （3） と おもっています。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "かおう",
+            "かう",
+            "かった",
+            "かわない"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pola niat/maksud: bentuk kehendak (Ikoukei) + と思っています (かおう).",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "DOKKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "SHORT_PASSAGE",
+          "sourceKey": "jlpt-n5-mock-03:dokkai:1",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "田中さんは あした 何時に どこで 会いますか。",
+          "passage": "【メモ】\n山田さんへ\nあしたの えいがは 2時から はじまります。1時30分に えきの 西口の かいさつぐちで まち合わせましょう。切符は わたしが 買っておきます。\n田中より",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "1時30分に 駅の西口",
+            "2時に 映画館",
+            "1時30分に 映画館",
+            "2時に 駅の改札口"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Memo tertulis jelas: bertemu pukul 1:30 di pintu keluar barat stasiun.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "SHORT_PASSAGE",
+          "sourceKey": "jlpt-n5-mock-03:dokkai:2",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "このメールで 一番 言いたいことは 何ですか。",
+          "passage": "学生のみなさんへ\n来週の月曜日は 祝日ですから、学校は 休みです。授業は ありません。火曜日の じゅぎょうの じゅんびを してきてください。\n日本語学校 事務室",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "来週の月曜日は 休みだということ",
+            "火曜日に テストがあること",
+            "月曜日に 授業があること",
+            "学校へ 来なければならないこと"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Pemberitahuan bahwa hari Senin minggu depan sekolah libur.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "MID_PASSAGE",
+          "sourceKey": "jlpt-n5-mock-03:dokkai:3",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "留学生のスミスさんは なぜ 日本へ 来ましたか。",
+          "passage": "わたしは アメリカから 来た スミスです。子どものころから 日本の アニメが 大好きでした。アニメの セリフを 日本語で 理解したいと 思って、大学で 日本語の べんきょうを はじめました。いまは 東京の 日本語学校で まいにち 一生懸命 べんきょうしています。将来は 日本の アニメ会社で 働きたいです。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "アニメのセリフを日本語で理解し、将来アニメ会社で働きたいから",
+            "アメリカの大学を卒業したから",
+            "東京の町を観光したいから",
+            "友達に会いに来たから"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Disebutkan ingin memahami dialog anime dalam bahasa Jepang dan kelak bekerja di perusahaan anime.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "MID_PASSAGE",
+          "sourceKey": "jlpt-n5-mock-03:dokkai:4",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "スミスさんの 将来の 夢は 何ですか。",
+          "passage": "わたしは アメリカから 来た スミスです。子どものころから 日本の アニメが 大好きでした。アニメの セリフを 日本語で 理解したいと 思って、大学で 日本語の べんきょうを はじめました。いまは 東京の 日本語学校で まいにち 一生懸命 べんきょうしています。将来は 日本の アニメ会社で 働きたいです。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "日本のアニメ会社で働くこと",
+            "アメリカへすぐ帰ること",
+            "日本語の先生になること",
+            "大学を新しく作ること"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Cita-citanya adalah bekerja di perusahaan anime Jepang (将来は日本のアニメ会社で働きたい).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "sourceKey": "jlpt-n5-mock-03:dokkai:5",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "日曜日の午後に 泳ぎたいです。いくらですか。",
+          "passage": "【市民プールの利用案内】\n・平日（月〜金）：500円（午前 9:00〜12:00）、600円（午後 13:00〜21:00）\n・土・日・祝日：700円（午前・午後とも共通）\n・休館日：毎週火曜日\n※高校生以下は半額です。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "700円",
+            "600円",
+            "500円",
+            "無料"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Untuk hari Minggu (土・日・祝日) tarifnya adalah 700 yen.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "INFORMATION_RETRIEVAL",
+          "sourceKey": "jlpt-n5-mock-03:dokkai:6",
+          "status": "published",
+          "section": "dokkai",
+          "promptText": "火曜日に プールへ 行くことができますか。",
+          "passage": "【市民プールの利用案内】\n・平日（月〜金）：500円（午前 9:00〜12:00）、600円（午後 13:00〜21:00）\n・土・日・祝日：700円（午前・午後とも共通）\n・休館日：毎週火曜日\n※高校生以下は半額です。",
+          "audioUrl": null,
+          "audioScript": null,
+          "imageUrl": null,
+          "options": [
+            "休館日なので行けない",
+            "午後なら行ける",
+            "700円払えば行ける",
+            "午前中だけ行ける"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Hari Selasa adalah hari libur pengelola (休館日：毎週火曜日), sehingga tidak bisa masuk.",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "sectionType": "CHOUKAI",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n5-mock-03:choukai:1",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人は このあと 何を しますか。",
+          "passage": "男の人と 女の人が 話しています。\n男：「レポートを 書き終わりました。」\n女：「お疲れ様でした。じゃあ、まず コピーを 3まい 取ってください。」\n男：「はい、わかりました。会議室へ 持っていきますか。」\n女：「いいえ、それは わたしが やりますから、コピーを 先生の 机に 置いておいてください。」\n男の人は このあと 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "男の人と 女の人が 話しています。\n男：「レポートを 書き終わりました。」\n女：「お疲れ様でした。じゃあ、まず コピーを 3まい 取ってください。」\n男：「はい、わかりました。会議室へ 持っていきますか。」\n女：「いいえ、それは わたしが やりますから、コピーを 先生の 机に 置いておいてください。」\n男の人は このあと 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "コピーを 3まい 取る",
+            "会議室へ 行く",
+            "レポートを 書く",
+            "先生に 電話を かける"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Instruksi pertama dari wanita: tolong fotokopi dulu 3 lembar (まずコピーを3まい取ってください).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 2,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n5-mock-03:choukai:2",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "女の人は 明日の 朝 何時に 来ますか。",
+          "passage": "会社で 男の人と 女の人が 明日の 出張について 話しています。\n男：「明日の 電車は 8時発だから、7時45分に 駅に 集合しよう。」\n女：「わかりました。切符は 買ってありますか。」\n男：「まだだよ。だから、10分早く 来て 切符を 買ってくれる？」\n女：「はい、じゃあ 7時35分に 行きますね。」\n女の人は 明日の 朝 何時に 来ますか。",
+          "audioUrl": null,
+          "audioScript": "会社で 男の人と 女の人が 明日の 出張について 話しています。\n男：「明日の 電車は 8時発だから、7時45分に 駅に 集合しよう。」\n女：「わかりました。切符は 買ってありますか。」\n男：「まだだよ。だから、10分早く 来て 切符を 買ってくれる？」\n女：「はい、じゃあ 7時35分に 行きますね。」\n女の人は 明日の 朝 何時に 来ますか。",
+          "imageUrl": null,
+          "options": [
+            "7時35分",
+            "7時45分",
+            "8時00分",
+            "7時00分"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Diminta datang 10 menit lebih awal dari 7:45, jadi wanita datang pukul 7:35.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 3,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n5-mock-03:choukai:3",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "二人は どこで 昼ごはんを 食べますか。",
+          "passage": "男の人と 女の人が 話しています。\n男：「もう 12時ですね。お昼を 食べに行きませんか。」\n女：「そうですね。駅前の ラーメン屋は どうですか。」\n男：「きょうは 火曜日だから 休みですよ。隣の カレー屋に しましょうか。」\n女：「いいですね。そうしましょう。」\n二人は どこで 昼ごはんを 食べますか。",
+          "audioUrl": null,
+          "audioScript": "男の人と 女の人が 話しています。\n男：「もう 12時ですね。お昼を 食べに行きませんか。」\n女：「そうですね。駅前の ラーメン屋は どうですか。」\n男：「きょうは 火曜日だから 休みですよ。隣の カレー屋に しましょうか。」\n女：「いいですね。そうしましょう。」\n二人は どこで 昼ごはんを 食べますか。",
+          "imageUrl": null,
+          "options": [
+            "カレー屋",
+            "ラーメン屋",
+            "コンビニ",
+            "会社の食堂"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Kedai ramen tutup hari Selasa, jadi mereka sepakat ke kedai kari sebelahnya (カレー屋).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 4,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n5-mock-03:choukai:4",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人は 何を 買いに行きますか。",
+          "passage": "夫婦が 話しています。\n女：「今夜は カレーに しようと思うんだけど、人参と 牛乳が ないの。」\n男：「じゃあ、スーパーで 買ってこようか。」\n女：「ありがとう。あ、牛乳は まだ 冷蔵庫に 1本あったわ。人参だけ お願い。」\n男：「わかった、行ってくるよ。」\n男の人は 何を 買いに行きますか。",
+          "audioUrl": null,
+          "audioScript": "夫婦が 話しています。\n女：「今夜は カレーに しようと思うんだけど、人参と 牛乳が ないの。」\n男：「じゃあ、スーパーで 買ってこようか。」\n女：「ありがとう。あ、牛乳は まだ 冷蔵庫に 1本あったわ。人参だけ お願い。」\n男：「わかった、行ってくるよ。」\n男の人は 何を 買いに行きますか。",
+          "imageUrl": null,
+          "options": [
+            "人参",
+            "牛乳",
+            "人参と 牛乳",
+            "カレールー"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Susu ternyata masih ada di kulkas, jadi pria hanya diminta membeli wortel (人参だけお願い).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 5,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n5-mock-03:choukai:5",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "学生は 先生に 何を 出しますか。",
+          "passage": "先生と 学生が 話しています。\n先生：「山田くん、作文と 宿題の プリントは できましたか。」\n学生：「作文は 終わりましたが、プリントは 家に 忘れてしまいました。」\n先生：「じゃあ、作文だけ 今 出してください。プリントは 明日の 朝 出してくださいね。」\n学生：「すみません、わかりました。」\n学生は 今 先生に 何を 出しますか。",
+          "audioUrl": null,
+          "audioScript": "先生と 学生が 話しています。\n先生：「山田くん、作文と 宿題の プリントは できましたか。」\n学生：「作文は 終わりましたが、プリントは 家に 忘れてしまいました。」\n先生：「じゃあ、作文だけ 今 出してください。プリントは 明日の 朝 出してくださいね。」\n学生：「すみません、わかりました。」\n学生は 今 先生に 何を 出しますか。",
+          "imageUrl": null,
+          "options": [
+            "作文",
+            "宿題のプリント",
+            "作文と プリント",
+            "教科書"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Murid lupa membawa lembar tugas, sehingga hanya mengumpulkan karangan (作文だけ).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 6,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n5-mock-03:choukai:6",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人は このあと 何を しますか。",
+          "passage": "男の人と 女の人が 話しています。\n男：「レポートを 書き終わりました。」\n女：「お疲れ様でした。じゃあ、まず コピーを 3まい 取ってください。」\n男：「はい、わかりました。会議室へ 持っていきますか。」\n女：「いいえ、それは わたしが やりますから、コピーを 先生の 机に 置いておいてください。」\n男の人は このあと 何を しますか。",
+          "audioUrl": null,
+          "audioScript": "男の人と 女の人が 話しています。\n男：「レポートを 書き終わりました。」\n女：「お疲れ様でした。じゃあ、まず コピーを 3まい 取ってください。」\n男：「はい、わかりました。会議室へ 持っていきますか。」\n女：「いいえ、それは わたしが やりますから、コピーを 先生の 机に 置いておいてください。」\n男の人は このあと 何を しますか。",
+          "imageUrl": null,
+          "options": [
+            "コピーを 3まい 取る",
+            "会議室へ 行く",
+            "レポートを 書く",
+            "先生に 電話を かける"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Instruksi pertama dari wanita: tolong fotokopi dulu 3 lembar (まずコピーを3まい取ってください).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 7,
+          "questionType": "TASK_BASED",
+          "sourceKey": "jlpt-n5-mock-03:choukai:7",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "女の人は 明日の 朝 何時に 来ますか。",
+          "passage": "会社で 男の人と 女の人が 明日の 出張について 話しています。\n男：「明日の 電車は 8時発だから、7時45分に 駅に 集合しよう。」\n女：「わかりました。切符は 買ってありますか。」\n男：「まだだよ。だから、10分早く 来て 切符を 買ってくれる？」\n女：「はい、じゃあ 7時35分に 行きますね。」\n女の人は 明日の 朝 何時に 来ますか。",
+          "audioUrl": null,
+          "audioScript": "会社で 男の人と 女の人が 明日の 出張について 話しています。\n男：「明日の 電車は 8時発だから、7時45分に 駅に 集合しよう。」\n女：「わかりました。切符は 買ってありますか。」\n男：「まだだよ。だから、10分早く 来て 切符を 買ってくれる？」\n女：「はい、じゃあ 7時35分に 行きますね。」\n女の人は 明日の 朝 何時に 来ますか。",
+          "imageUrl": null,
+          "options": [
+            "7時35分",
+            "7時45分",
+            "8時00分",
+            "7時00分"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Diminta datang 10 menit lebih awal dari 7:45, jadi wanita datang pukul 7:35.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 8,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n5-mock-03:choukai:8",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人は なぜ きのう 会社を 休みましたか。",
+          "passage": "男の人と 女の人が 話しています。\n女：「田中さん、きのうは どうしたんですか。風邪ですか。」\n男：「いいえ、熱は なかったんですが、急に 歯が 痛くなって、歯医者へ 行っていたんです。」\n女：「そうでしたか。大変でしたね。今は 大丈夫ですか。」\n男：「はい、薬を 飲んだので もう 痛くありません。」\n男の人は なぜ きのう 会社を 休みましたか。",
+          "audioUrl": null,
+          "audioScript": "男の人と 女の人が 話しています。\n女：「田中さん、きのうは どうしたんですか。風邪ですか。」\n男：「いいえ、熱は なかったんですが、急に 歯が 痛くなって、歯医者へ 行っていたんです。」\n女：「そうでしたか。大変でしたね。今は 大丈夫ですか。」\n男：「はい、薬を 飲んだので もう 痛くありません。」\n男の人は なぜ きのう 会社を 休みましたか。",
+          "imageUrl": null,
+          "options": [
+            "歯が 痛かったから",
+            "熱が 出たから",
+            "お腹が 痛かったから",
+            "寝坊したから"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Sakit gigi mendadak dan pergi ke dokter gigi (歯が痛くなって).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 9,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n5-mock-03:choukai:9",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "passage": "女の人と 男の人が 話しています。\n男：「新しい アパートは どう？」\n女：「とても 静かで 気に入っているよ。」\n男：「前の アパートは 駅から 近かったのに、どうして 引っ越したの？」\n女：「家賃が 高すぎたのよ。今度の ところは 駅から 少し遠いけど、家賃が 安いの。」\n女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "audioUrl": null,
+          "audioScript": "女の人と 男の人が 話しています。\n男：「新しい アパートは どう？」\n女：「とても 静かで 気に入っているよ。」\n男：「前の アパートは 駅から 近かったのに、どうして 引っ越したの？」\n女：「家賃が 高すぎたのよ。今度の ところは 駅から 少し遠いけど、家賃が 安いの。」\n女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "imageUrl": null,
+          "options": [
+            "家賃が 安いから",
+            "駅に 近いから",
+            "部屋が 広いから",
+            "静かだから"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Apartemen lama terlalu mahal, jadi pindah karena sewa yang baru lebih murah (家賃が安いの).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 10,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n5-mock-03:choukai:10",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人は なぜ きのう 会社を 休みましたか。",
+          "passage": "男の人と 女の人が 話しています。\n女：「田中さん、きのうは どうしたんですか。風邪ですか。」\n男：「いいえ、熱は なかったんですが、急に 歯が 痛くなって、歯医者へ 行っていたんです。」\n女：「そうでしたか。大変でしたね。今は 大丈夫ですか。」\n男：「はい、薬を 飲んだので もう 痛くありません。」\n男の人は なぜ きのう 会社を 休みましたか。",
+          "audioUrl": null,
+          "audioScript": "男の人と 女の人が 話しています。\n女：「田中さん、きのうは どうしたんですか。風邪ですか。」\n男：「いいえ、熱は なかったんですが、急に 歯が 痛くなって、歯医者へ 行っていたんです。」\n女：「そうでしたか。大変でしたね。今は 大丈夫ですか。」\n男：「はい、薬を 飲んだので もう 痛くありません。」\n男の人は なぜ きのう 会社を 休みましたか。",
+          "imageUrl": null,
+          "options": [
+            "歯が 痛かったから",
+            "熱が 出たから",
+            "お腹が 痛かったから",
+            "寝坊したから"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Sakit gigi mendadak dan pergi ke dokter gigi (歯が痛くなって).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 11,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n5-mock-03:choukai:11",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "passage": "女の人と 男の人が 話しています。\n男：「新しい アパートは どう？」\n女：「とても 静かで 気に入っているよ。」\n男：「前の アパートは 駅から 近かったのに、どうして 引っ越したの？」\n女：「家賃が 高すぎたのよ。今度の ところは 駅から 少し遠いけど、家賃が 安いの。」\n女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "audioUrl": null,
+          "audioScript": "女の人と 男の人が 話しています。\n男：「新しい アパートは どう？」\n女：「とても 静かで 気に入っているよ。」\n男：「前の アパートは 駅から 近かったのに、どうして 引っ越したの？」\n女：「家賃が 高すぎたのよ。今度の ところは 駅から 少し遠いけど、家賃が 安いの。」\n女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "imageUrl": null,
+          "options": [
+            "家賃が 安いから",
+            "駅に 近いから",
+            "部屋が 広いから",
+            "静かだから"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Apartemen lama terlalu mahal, jadi pindah karena sewa yang baru lebih murah (家賃が安いの).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 12,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n5-mock-03:choukai:12",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "男の人は なぜ きのう 会社を 休みましたか。",
+          "passage": "男の人と 女の人が 話しています。\n女：「田中さん、きのうは どうしたんですか。風邪ですか。」\n男：「いいえ、熱は なかったんですが、急に 歯が 痛くなって、歯医者へ 行っていたんです。」\n女：「そうでしたか。大変でしたね。今は 大丈夫ですか。」\n男：「はい、薬を 飲んだので もう 痛くありません。」\n男の人は なぜ きのう 会社を 休みましたか。",
+          "audioUrl": null,
+          "audioScript": "男の人と 女の人が 話しています。\n女：「田中さん、きのうは どうしたんですか。風邪ですか。」\n男：「いいえ、熱は なかったんですが、急に 歯が 痛くなって、歯医者へ 行っていたんです。」\n女：「そうでしたか。大変でしたね。今は 大丈夫ですか。」\n男：「はい、薬を 飲んだので もう 痛くありません。」\n男の人は なぜ きのう 会社を 休みましたか。",
+          "imageUrl": null,
+          "options": [
+            "歯が 痛かったから",
+            "熱が 出たから",
+            "お腹が 痛かったから",
+            "寝坊したから"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Sakit gigi mendadak dan pergi ke dokter gigi (歯が痛くなって).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 13,
+          "questionType": "POINT_COMPREHENSION",
+          "sourceKey": "jlpt-n5-mock-03:choukai:13",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "passage": "女の人と 男の人が 話しています。\n男：「新しい アパートは どう？」\n女：「とても 静かで 気に入っているよ。」\n男：「前の アパートは 駅から 近かったのに、どうして 引っ越したの？」\n女：「家賃が 高すぎたのよ。今度の ところは 駅から 少し遠いけど、家賃が 安いの。」\n女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "audioUrl": null,
+          "audioScript": "女の人と 男の人が 話しています。\n男：「新しい アパートは どう？」\n女：「とても 静かで 気に入っているよ。」\n男：「前の アパートは 駅から 近かったのに、どうして 引っ越したの？」\n女：「家賃が 高すぎたのよ。今度の ところは 駅から 少し遠いけど、家賃が 安いの。」\n女の人は なぜ 新しい アパートに 引っ越しましたか。",
+          "imageUrl": null,
+          "options": [
+            "家賃が 安いから",
+            "駅に 近いから",
+            "部屋が 広いから",
+            "静かだから"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Apartemen lama terlalu mahal, jadi pindah karena sewa yang baru lebih murah (家賃が安いの).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 14,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n5-mock-03:choukai:14",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "いってきます。",
+          "audioUrl": null,
+          "audioScript": "いってきます。",
+          "imageUrl": null,
+          "options": [
+            "いってらっしゃい。",
+            "おかえりなさい。",
+            "ただいま。",
+            "はじめまして。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Balasan untuk「いってきます」(saya berangkat) adalah「いってらっしゃい」(hati-hati di jalan).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 15,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n5-mock-03:choukai:15",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "ごちそうさまでした。",
+          "audioUrl": null,
+          "audioScript": "ごちそうさまでした。",
+          "imageUrl": null,
+          "options": [
+            "おそまつさまでした。",
+            "いただきます。",
+            "ごめんなさい。",
+            "どういたしまして。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Balasan santun tuan rumah untuk「ごちそうさまでした」adalah「お粗末様でした」.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 16,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n5-mock-03:choukai:16",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "お名前は 何ですか。",
+          "audioUrl": null,
+          "audioScript": "お名前は 何ですか。",
+          "imageUrl": null,
+          "options": [
+            "山田です。",
+            "日本人です。",
+            "学生です。",
+            "元気です。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menanyakan nama (お名前は), dijawab dengan nama (山田です).",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 17,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n5-mock-03:choukai:17",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "すみません、ペンを 忘れてしまいました。",
+          "audioUrl": null,
+          "audioScript": "すみません、ペンを 忘れてしまいました。",
+          "imageUrl": null,
+          "options": [
+            "これ、使ってください。",
+            "ペンです。",
+            "おめでとうございます。",
+            "どうもありがとう。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Merelakan pinjaman saat lawan bicara lupa membawa pena.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 18,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n5-mock-03:choukai:18",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "コーヒーは いかがですか。",
+          "audioUrl": null,
+          "audioScript": "コーヒーは いかがですか。",
+          "imageUrl": null,
+          "options": [
+            "はい、いただきます。",
+            "いいえ、コーヒーです。",
+            "ごちそうさまでした。",
+            "さようなら。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Menerima tawaran minuman dengan sopan: はい、いただきます.",
+          "difficulty": 1
+        },
+        {
+          "questionNumber": 19,
+          "questionType": "QUICK_RESPONSE",
+          "sourceKey": "jlpt-n5-mock-03:choukai:19",
+          "status": "published",
+          "section": "mendengar",
+          "promptText": "最もよい返事を選んでください。",
+          "passage": "お疲れ様でした。",
+          "audioUrl": null,
+          "audioScript": "お疲れ様でした。",
+          "imageUrl": null,
+          "options": [
+            "お疲れ様でした。",
+            "失礼します。",
+            "おめでとう。",
+            "いらっしゃいませ。"
+          ],
+          "correctOptionIndex": 1,
+          "explanation": "Balasan umum sesama rekan kerja: お疲れ様でした.",
+          "difficulty": 1
+        }
+      ]
+    }
+  ]
+}

@@ -194,7 +194,7 @@ export function ChapterManager() {
                     <tr key={c.id}>
                       <td className={styles.muted}>{index + 1}</td>
                       <td>
-                        <Link href={`/admin/konten/bab/${c.id}?level=${levelId}`} className={styles.chapterTitle}>
+                        <Link href={`/admin/materi/bab/${c.id}?level=${levelId}`} className={styles.chapterTitle}>
                           {c.title}
                         </Link>
                       </td>
@@ -217,7 +217,7 @@ export function ChapterManager() {
                           <button type="button" className={styles.iconBtn} aria-label="Turunkan urutan" disabled={isFiltered || index === chapters.length - 1} onClick={() => move(index, 1)}>
                             ↓
                           </button>
-                          <button type="button" className={`${adminStyles.btnSm} ${adminStyles.btnSecondary}`} onClick={() => router.push(`/admin/konten/bab/${c.id}?level=${levelId}`)}>
+                          <button type="button" className={`${adminStyles.btnSm} ${adminStyles.btnSecondary}`} onClick={() => router.push(`/admin/materi/bab/${c.id}?level=${levelId}`)}>
                             Edit
                           </button>
                           {c.status === "published" ? (
@@ -255,7 +255,7 @@ export function ChapterManager() {
           onClose={() => setCreating(false)}
           onSubmit={async (v) => {
             const { chapter } = await contentApi.createChapter(levelId, { title: v.title as string, explanation: (v.explanation as string) || undefined });
-            router.push(`/admin/konten/bab/${chapter.id}?level=${levelId}`);
+            router.push(`/admin/materi/bab/${chapter.id}?level=${levelId}`);
           }}
         />
       )}

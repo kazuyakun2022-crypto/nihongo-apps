@@ -31,6 +31,16 @@ export interface SessionReport {
   summary: string;
 }
 
+export interface DialogueStep {
+  step: number;
+  speaker: "AI" | "USER";
+  japaneseText?: string;
+  romaji?: string;
+  indonesianText?: string;
+  expectedKeyPhrases?: string[];
+  hintText?: string;
+}
+
 /** Skenario latihan ngobrol yang bisa dipilih siswa. */
 export interface ScenarioItem {
   id: string;
@@ -40,6 +50,14 @@ export interface ScenarioItem {
   chapterId: string | null;
   chapterTitle: string | null;
   targetGrammar: string[];
+  imageUrl?: string | null;
+  userRole?: string | null;
+  mascotRole?: string | null;
+  location?: string | null;
+  keigoType?: string | null;
+  initialMessage?: string | null;
+  dialogueScript?: DialogueStep[] | null;
+  systemPrompt?: string | null;
 }
 
 export interface ConversationRepository {

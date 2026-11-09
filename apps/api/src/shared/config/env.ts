@@ -19,6 +19,13 @@ const schema = z.object({
   // Email production lewat Resend. Kosong = link dicetak ke log (development)
   RESEND_API_KEY: z.string().optional().default(""),
   EMAIL_FROM: z.string().optional().default("Nihongo <onboarding@resend.dev>"),
+  // Web Push. Kosong = push dimatikan, notifikasi in-app tetap berjalan.
+  VAPID_PUBLIC_KEY: z.string().optional().default(""),
+  VAPID_PRIVATE_KEY: z.string().optional().default(""),
+  VAPID_SUBJECT: z.string().default("mailto:admin@nihongo.local"),
+  PUSH_TTL_SECONDS: z.coerce.number().default(86_400),
+  // Rahasia endpoint cron pengingat. Kosong = endpoint cron ditolak.
+  CRON_SECRET: z.string().optional().default(""),
 });
 
 export type Env = z.infer<typeof schema>;

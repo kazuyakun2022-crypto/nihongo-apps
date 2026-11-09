@@ -9,8 +9,8 @@ import { prisma } from "../../../shared/infrastructure/prisma";
 import { EXERCISE_TYPES, exerciseProblem, type ExerciseType } from "../../learning/domain/Exercise";
 import { withLevels } from "../../learning/domain/Onboarding";
 import { loadOnboardingConfig, saveOnboardingConfig } from "../../learning/infrastructure/onboardingSettings";
-import { JLPT_CATEGORIES, defaultJlptSimConfig, isJlptCode } from "../../exam/domain/JlptSim";
-import { jlptPackageSchema, mapJlptPackage } from "../../exam/domain/jlptImport";
+import { JLPT_CATEGORIES, SIM_QUESTION_TYPES, defaultJlptSimConfig, isJlptCode } from "../../exam/domain/JlptSim";
+import { JLPT_PACKAGE_COUNT, jlptPackageSchema, mapJlptPackage } from "../../exam/domain/jlptImport";
 
 /** Semua bagian bank soal. dokkai hanya dipakai simulasi JLPT. */
 const EXAM_SECTION_VALUES = ["kosakata", "tata_bahasa", "membaca", "mendengar", "dokkai"] as const;
@@ -117,10 +117,15 @@ async function checkExercise(scope: { chapterId: string } | { levelId: number },
 }
 
 /** Tipe soal JLPT dan bagian Dokkai hanya berlaku di bank simulasi; tipe soal harus cocok dengan bagiannya. */
-function checkSimFields(examType: string, data: { section: string; category?: string | null }) {
+function checkSimFields(examType: string, data: { section: string; type: string; category?: string | null; packageNo?: number | null }) {
   if (examType !== "jlpt_sim") {
     if (data.section === "dokkai") throw Errors.validation("Bagian Dokkai hanya untuk Simulasi JLPT.");
+    if (data.packageNo) throw Errors.validation("Nomor paket hanya untuk Simulasi JLPT.");
     return;
+  }
+  // Lembar jawaban simulasi berbentuk bulatan 1-4, jadi hanya soal pilihan
+  if (!(SIM_QUESTION_TYPES as readonly string[]).includes(data.type)) {
+    throw Errors.validation("Soal Simulasi JLPT harus berjenis Pilihan ganda atau Mendengar.");
   }
   if (!data.category) return;
   const cat = JLPT_CATEGORIES.find((c) => c.key === data.category);
@@ -196,6 +201,8 @@ const examQuestionSchema = z
     category: opt(40),
     /** Teks bacaan Dokkai atau skrip Choukai. */
     passage: opt(6000),
+    /** Simulasi JLPT: nomor paket 1-10; kosong = bank campuran. */
+    packageNo: z.number().int().min(1).max(JLPT_PACKAGE_COUNT).nullish().transform((v) => v ?? null),
     difficulty: z.number().int().min(1).max(5).default(1),
     status: statusSchema.default("published"),
     ...exerciseFields,
@@ -205,12 +212,18 @@ const scenarioSchema = z.object({
   title: z.string().trim().min(1, "Judul wajib diisi.").max(150),
   goal: z.string().trim().min(1, "Tujuan wajib diisi.").max(1000),
   mascotRole: z.string().trim().min(1, "Peran Miu-chan wajib diisi.").max(200),
+  userRole: opt(100),
+  location: opt(150),
+  keigoType: opt(100),
+  imageUrl: z.string().trim().max(1000).nullish().or(z.literal("")).transform((v) => v || null),
   initialMessage: opt(1000),
   targetGrammar: z.array(z.string().trim().min(1).max(100)).max(10).default([]),
   chapterId: z.string().uuid().nullish().or(z.literal("")).transform((v) => v || null),
   maxTurns: z.number().int().min(4).max(50).default(20),
   status: statusSchema.default("draft"),
   sortOrder: z.number().int().min(0).max(1000).default(0),
+  systemPrompt: opt(5000),
+  dialogueScript: z.any().optional().nullable(),
 });
 
 /** Bab yang dikaitkan harus berada di level yang sama dengan skenarionya. */
@@ -392,12 +405,18 @@ export function contentAdminRoutes() {
       title: current.title,
       goal: current.goal,
       mascotRole: current.mascotRole,
+      userRole: current.userRole,
+      location: current.location,
+      keigoType: current.keigoType,
+      imageUrl: current.imageUrl,
       initialMessage: current.initialMessage,
       targetGrammar: current.targetGrammar ?? [],
       chapterId: current.chapterId,
       maxTurns: current.maxTurns,
       status: current.status,
       sortOrder: current.sortOrder,
+      systemPrompt: current.systemPrompt,
+      dialogueScript: current.dialogueScript,
       ...(req.body ?? {}),
     };
     const data = parseBody(scenarioSchema, merged);
@@ -444,6 +463,9 @@ export function contentAdminRoutes() {
         search: z.string().trim().max(100).optional(),
         page: z.coerce.number().int().min(1).default(1),
         type: z.string().optional(),
+        /** Simulasi: nomor paket, atau "campuran" untuk soal tanpa paket. */
+        paket: z.union([z.literal("campuran"), z.coerce.number().int().min(1).max(JLPT_PACKAGE_COUNT)]).optional(),
+        status: z.enum(["published", "draft"]).optional(),
       }),
       req.query,
     );
@@ -451,13 +473,15 @@ export function contentAdminRoutes() {
       levelId,
       examType,
       ...(q.section ? { section: q.section } : {}),
+      ...(q.paket === "campuran" ? { packageNo: null } : q.paket ? { packageNo: q.paket } : {}),
+      ...(q.status ? { status: q.status } : {}),
       ...(q.search ? { OR: [{ question: { contains: q.search, mode: "insensitive" } }, { correctAnswer: { contains: q.search, mode: "insensitive" } }] } : {}),
     };
     const pageSize = 25;
     const [config, total, questions, sections, borrowed, defaultConfig] = await Promise.all([
       prisma.levelExam.findUnique({ where: { levelId_type: { levelId, type: examType } } }),
       prisma.examQuestion.count({ where }),
-      prisma.examQuestion.findMany({ where, orderBy: [{ section: "asc" }, { id: "asc" }], skip: (q.page - 1) * pageSize, take: pageSize }),
+      prisma.examQuestion.findMany({ where, orderBy: [{ packageNo: "asc" }, { section: "asc" }, { sourceKey: "asc" }, { id: "asc" }], skip: (q.page - 1) * pageSize, take: pageSize }),
       prisma.examQuestion.groupBy({ by: ["section"], where: { levelId, examType, status: "published" }, _count: { _all: true } }),
       // Simulasi JLPT menutup kekurangan soal dengan bank tes naik tahap level yang sama
       examType === "jlpt_sim"
@@ -465,6 +489,17 @@ export function contentAdminRoutes() {
         : Promise.resolve([]),
       examType === "jlpt_sim" ? jlptSimDefault(levelId) : Promise.resolve(null),
     ]);
+    // Ringkasan paket simulasi: jumlah soal terbit dan draft per paket, untuk ditinjau sebelum diterbitkan
+    const packageRows = examType === "jlpt_sim"
+      ? await prisma.examQuestion.groupBy({ by: ["packageNo", "status"], where: { levelId, examType }, _count: { _all: true } })
+      : [];
+    const packages = [...new Set(packageRows.map((r) => r.packageNo))]
+      .sort((a, b) => (a ?? 99) - (b ?? 99))
+      .map((no) => ({
+        no,
+        published: packageRows.find((r) => r.packageNo === no && r.status === "published")?._count._all ?? 0,
+        draft: packageRows.filter((r) => r.packageNo === no && r.status !== "published").reduce((n, r) => n + r._count._all, 0),
+      }));
     res.json({
       config,
       defaultConfig,
@@ -474,7 +509,21 @@ export function contentAdminRoutes() {
       pageSize,
       publishedPerSection: Object.fromEntries(sections.map((s) => [s.section, s._count._all])),
       borrowedPerSection: Object.fromEntries(borrowed.map((s) => [s.section, s._count._all])),
+      packages,
     });
+  }));
+
+  // POST /levels/:levelId/exam/packages/:no/publish { status }: terbitkan (atau tarik ke draft) satu paket simulasi sekaligus
+  r.post("/levels/:levelId/exam/packages/:no/publish", asyncHandler(async (req, res) => {
+    const levelId = levelIdParam(req.params.levelId);
+    const no = Number(req.params.no);
+    if (!Number.isInteger(no) || no < 1 || no > JLPT_PACKAGE_COUNT) throw Errors.validation("Nomor paket tidak valid.");
+    const { status } = parseBody(z.object({ status: z.enum(["published", "draft"]).default("published") }), req.body ?? {});
+    const result = await prisma.examQuestion.updateMany({
+      where: { levelId, examType: "jlpt_sim", packageNo: no, type: { in: [...SIM_QUESTION_TYPES] } },
+      data: { status },
+    });
+    res.json({ updated: result.count, status });
   }));
 
   // Hapus aturan yang disimpan admin: simulasi JLPT kembali ke rasio JLPT asli, tes penempatan ke bawaan server
@@ -532,7 +581,8 @@ export function contentAdminRoutes() {
     );
     await prisma.$transaction(
       questions.map((q) => {
-        const data = { ...q, levelId, examType: "jlpt_sim" as const, status: "published", options: q.options };
+        // File hasil ekspor membawa status (terbit/draft); file tanpa status langsung terbit
+        const data = { ...q, levelId, examType: "jlpt_sim" as const, status: q.status ?? "published", options: q.options };
         return prisma.examQuestion.upsert({ where: { sourceKey: q.sourceKey }, create: data, update: data });
       }),
     );
@@ -543,7 +593,7 @@ export function contentAdminRoutes() {
   r.patch("/exam/questions/:id", asyncHandler(async (req, res) => {
     const current = await prisma.examQuestion.findUnique({ where: { id: req.params.id } });
     if (!current) throw Errors.notFound("Soal");
-    const merged = { section: current.section, difficulty: current.difficulty, status: current.status, type: current.type, question: current.question, hint: current.hint, options: current.options, correctAnswer: current.correctAnswer, audioUrl: current.audioUrl, imageUrl: current.imageUrl, explanation: current.explanation, category: current.category, passage: current.passage, ...(req.body ?? {}) };
+    const merged = { section: current.section, difficulty: current.difficulty, status: current.status, type: current.type, question: current.question, hint: current.hint, options: current.options, correctAnswer: current.correctAnswer, audioUrl: current.audioUrl, imageUrl: current.imageUrl, explanation: current.explanation, category: current.category, passage: current.passage, packageNo: current.packageNo, ...(req.body ?? {}) };
     const data = parseBody(examQuestionSchema, merged);
     await checkExercise({ levelId: current.levelId }, data);
     checkSimFields(current.examType, data);
