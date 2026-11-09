@@ -137,10 +137,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-height: 2.1em;
-}
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   transition: color 0.15s ease;
 }
 
