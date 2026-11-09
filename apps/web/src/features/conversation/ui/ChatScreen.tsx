@@ -152,7 +152,7 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
     if (scenario) {
       const imgUrl = scenario.imageUrl || "/images/scenarios/01_Misi_Pertama_di_Konbini.png";
       return (
-        <div style={{ overflowY: "auto", flex: 1, width: "100%", height: "100%" }}>
+        <div className={styles.scenarioIntroScroller}>
           <section className={styles.scenarioIntroWrap} aria-label={`Skenario: ${scenario.title}`}>
             <div className={styles.scenarioCard}>
               {/* Cover Banner Hero */}
@@ -161,13 +161,27 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
                 <img src={imgUrl} alt={scenario.title} className={styles.scenarioCoverImg} />
                 <div className={styles.scenarioCoverOverlay} />
                 <div className={styles.scenarioCoverBadges}>
-                  <span className={styles.scenarioCoverLevel}>{scenario.levelCode}</span>
-                  {scenario.location && (
-                    <span className={styles.scenarioCoverLoc}>📍 {scenario.location}</span>
-                  )}
-                  {scenario.keigoType && (
-                    <span className={styles.scenarioCoverLoc}>🗣️ {scenario.keigoType}</span>
-                  )}
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Link
+                      href="/ngobrol?tab=skenario"
+                      className={styles.scenarioCoverBackBtn}
+                      aria-label="Kembali ke daftar skenario"
+                      title="Kembali ke daftar skenario"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </Link>
+                    <span className={styles.scenarioCoverLevel}>{scenario.levelCode}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    {scenario.location && (
+                      <span className={styles.scenarioCoverLoc}>📍 {scenario.location}</span>
+                    )}
+                    {scenario.keigoType && (
+                      <span className={styles.scenarioCoverLoc}>🗣️ {scenario.keigoType}</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -293,7 +307,7 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
 
     // Default non-scenario chat intro
     return (
-      <div style={{ overflowY: "auto", flex: 1, width: "100%", height: "100%" }}>
+      <div className={styles.scenarioIntroScroller}>
         <section className={styles.intro}>
           <Mascot mood="semangat" size={130} />
           <h1 className={styles.introTitle}>Ngobrol Santai dengan Miu-chan</h1>
