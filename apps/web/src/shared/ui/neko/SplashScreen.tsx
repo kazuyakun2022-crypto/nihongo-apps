@@ -151,12 +151,10 @@ export function SplashScreen({
   }, []);
 
   const handleSkip = () => {
-    if (fadeOut || done) return;
+    if (done) return;
     setFadeOut(true);
-    setTimeout(() => {
-      setDone(true);
-      finishRef.current?.();
-    }, FADE_MS);
+    setDone(true);
+    finishRef.current?.();
   };
 
   if (done) return null;
@@ -164,23 +162,55 @@ export function SplashScreen({
   return (
     <div
       className={`${styles.overlay} ${fadeOut ? styles.fadeOut : ""}`}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        background: "radial-gradient(ellipse at 50% 40%, #fff0f3 0%, transparent 70%), linear-gradient(160deg, #fce8ea 0%, #faf7f5 40%, #fff0f3 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        opacity: fadeOut ? 0 : 1,
+        transition: "opacity 0.35s ease-out",
+        fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
+      }}
       role="status"
       aria-label="Memuat aplikasi Nihongo"
       onClick={handleSkip}
       title="Ketuk untuk lewati"
     >
       <div className={styles.bg} />
-      <div className={styles.center}>
-        <div className={styles.avatar}>
+      <div className={styles.center} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+        <div className={styles.avatar} style={{ position: "relative", width: "min(280px, 68vw)", aspectRatio: "1/1" }}>
           {/* Poster awal agar karakter langsung tampak tanpa jeda muat tekstur */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={resolveAsset("splash/miu-open.webp")}
             alt="Miu-chan"
             className={styles.poster}
-            style={{ opacity: isReady ? 0 : 1 }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              opacity: isReady ? 0 : 1,
+              transition: "opacity 0.2s ease",
+            }}
           />
-          <canvas ref={canvasRef} className={styles.canvas} style={{ opacity: isReady ? 1 : 0 }} />
+          <canvas
+            ref={canvasRef}
+            className={styles.canvas}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              display: "block",
+              opacity: isReady ? 1 : 0,
+            }}
+          />
 
           <div className={styles.starsLayer} aria-hidden="true">
             {sparks.map((s) => (
@@ -220,12 +250,12 @@ export function SplashScreen({
           </div>
         </div>
 
-        <h1 className={styles.title}>
-          <span className={styles.titleJp}>にほんご</span>
-          <span className={styles.titleSub}>bersama Miu-chan</span>
+        <h1 className={styles.title} style={{ margin: "10px 0 0", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
+          <span className={styles.titleJp} style={{ fontSize: "1.45rem", fontWeight: 800, color: "var(--color-primary, #b91c1c)" }}>にほんご</span>
+          <span className={styles.titleSub} style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--color-text-muted, #736b6e)" }}>bersama Miu-chan</span>
         </h1>
 
-        <p className={styles.skipHint} aria-hidden="true">
+        <p className={styles.skipHint} aria-hidden="true" style={{ fontSize: "0.76rem", color: "var(--color-text-muted, #736b6e)", margin: "4px 0 0", textAlign: "center", opacity: 0.8 }}>
           Ketuk untuk lewati
         </p>
       </div>
