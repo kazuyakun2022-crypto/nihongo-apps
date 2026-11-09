@@ -529,10 +529,10 @@
 .composerWrap {
   flex-shrink: 0;
   margin-top: auto;
-  padding: 6px 10px;
+  padding: 8px 12px calc(14px + max(env(safe-area-inset-bottom, 0px), 4px));
   background: var(--color-surface, #ffffff);
   border-top: 1px solid var(--color-border, #e2e8f0);
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
   width: 100%;
   box-sizing: border-box;
 }
@@ -543,7 +543,7 @@
 
 @media (min-width: 900px) {
   .composerWrap {
-    padding: 10px 32px 14px;
+    padding: 10px 32px 16px;
   }
   .composerInner {
     max-width: 1120px;

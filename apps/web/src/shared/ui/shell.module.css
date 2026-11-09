@@ -264,8 +264,8 @@
   gap: 0 !important;
   padding: 0 !important;
   max-width: 100% !important;
-  height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px));
-  max-height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px));
+  height: calc(100dvh - var(--nav-height) - max(env(safe-area-inset-bottom, 0px), 8px) - env(safe-area-inset-top, 0px));
+  max-height: calc(100dvh - var(--nav-height) - max(env(safe-area-inset-bottom, 0px), 8px) - env(safe-area-inset-top, 0px));
   overflow: hidden;
   overscroll-behavior: none;
   animation: none;
