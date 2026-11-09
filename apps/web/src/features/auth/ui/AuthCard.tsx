@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ArrowLeftIcon, PawIcon } from "@/shared/ui/icons";
 import { ChibiMascot } from "@/shared/ui/neko/ChibiMascot";
+import { SakuraPetals } from "@/shared/ui/SakuraPetals";
 import { TransitionLink } from "@/shared/ui/ViewTransitions";
 import styles from "./auth.module.css";
 
@@ -62,14 +63,7 @@ export function AuthCard({
 
   return (
     <main className={styles.page}>
-      <div className={styles.sakuraContainer} aria-hidden="true">
-        <span className={styles.petal} style={{ left: "6%", animationDuration: "11s, 3.2s", animationDelay: "0s" }} />
-        <span className={styles.petal} style={{ left: "20%", animationDuration: "14s, 4s", animationDelay: "2.5s" }} />
-        <span className={styles.petal} style={{ left: "42%", animationDuration: "12s, 3.8s", animationDelay: "1.2s" }} />
-        <span className={styles.petal} style={{ left: "64%", animationDuration: "13s, 3.5s", animationDelay: "0.5s" }} />
-        <span className={styles.petal} style={{ left: "78%", animationDuration: "15s, 4.5s", animationDelay: "3s" }} />
-        <span className={styles.petal} style={{ left: "92%", animationDuration: "10s, 2.8s", animationDelay: "1.8s" }} />
-      </div>
+      <SakuraPetals />
 
       {/* ──────── Panel maskot (desktop) ──────── */}
       <aside className={styles.stage}>
@@ -91,10 +85,10 @@ export function AuthCard({
         </div>
 
         <TransitionLink href="/" className={styles.stageBrand} title="Kembali ke halaman utama">
-          <Image src="/app-icon.png" alt="" width={40} height={40} className={styles.stageBrandIcon} />
+          <Image src="/app-icon.png" alt="日本語" width={40} height={40} className={styles.stageBrandIcon} />
           <span className={styles.stageBrandText}>
-            <strong>Nihongo</strong>
-            <span lang="ja">日本語 × ミウちゃん</span>
+            <strong>日本語</strong>
+            <span lang="ja">Nihongo × ミウちゃん</span>
           </span>
         </TransitionLink>
 
@@ -146,9 +140,9 @@ export function AuthCard({
             <ArrowLeftIcon size={16} />
             <span>Beranda</span>
           </TransitionLink>
-          <TransitionLink href="/" className={styles.brandBadge} title="Nihongo">
-            <Image src="/app-icon.png" alt="Nihongo" width={32} height={32} className={styles.brandIcon} />
-            <span className={styles.brandText}>Nihongo</span>
+          <TransitionLink href="/" className={styles.brandBadge} title="日本語">
+            <Image src="/app-icon.png" alt="日本語" width={32} height={32} className={styles.brandIcon} />
+            <span className={styles.brandText}>日本語</span>
           </TransitionLink>
         </header>
 

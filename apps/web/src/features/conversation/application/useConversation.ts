@@ -77,5 +77,14 @@ export function useConversation(repo: ConversationRepository = conversationApi) 
     }
   }, [repo, session]);
 
-  return { phase, session, messages, turnsLeft, report, error, emotion, start, send, end };
+  const reset = useCallback(() => {
+    setPhase("idle");
+    setSession(null);
+    setMessages([]);
+    setTurnsLeft(null);
+    setReport(null);
+    setError(null);
+  }, []);
+
+  return { phase, session, messages, turnsLeft, report, error, emotion, start, send, end, reset };
 }

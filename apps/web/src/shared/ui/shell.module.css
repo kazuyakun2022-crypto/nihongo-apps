@@ -42,6 +42,46 @@
   min-width: 0;
 }
 
+.topBarBackBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 35%, var(--color-border));
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: all var(--motion-fast);
+}
+
+.topBarBackBtn:hover {
+  background: var(--palette-beni-100);
+  border-color: var(--color-primary-soft);
+  transform: translateX(-2px);
+}
+
+.topBarBackLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .topBarBackLabel {
+    display: none;
+  }
+  .topBarBackBtn {
+    width: 36px;
+    padding: 0;
+  }
+}
+
 .topBarBrand {
   display: inline-flex;
   align-items: center;
@@ -54,6 +94,38 @@
 
 .topBarBrand:hover {
   opacity: 0.88;
+}
+
+.topBarLogoImg {
+  display: block;
+  flex: none;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(186, 38, 62, 0.28));
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.topBarBrand:hover .topBarLogoImg {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.brandLogoImg {
+  display: block;
+  flex: none;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 8px rgba(186, 38, 62, 0.32));
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.sidebarCollapsed .brandLogoImg {
+  width: 2.2rem;
+  height: 2.2rem;
+  margin: 0 auto;
 }
 
 .topBarSeal {
@@ -264,8 +336,8 @@
   gap: 0 !important;
   padding: 0 !important;
   max-width: 100% !important;
-  height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px));
-  max-height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px));
+  height: calc(100dvh - var(--nav-height) - max(env(safe-area-inset-bottom, 0px), 8px) - env(safe-area-inset-top, 0px));
+  max-height: calc(100dvh - var(--nav-height) - max(env(safe-area-inset-bottom, 0px), 8px) - env(safe-area-inset-top, 0px));
   overflow: hidden;
   overscroll-behavior: none;
   animation: none;

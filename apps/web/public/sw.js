@@ -5,7 +5,7 @@
  * - /api tidak pernah di-cache di sini agar data pribadi dan token aman.
  * Naikkan VERSION setiap mengubah file ini.
  */
-const VERSION = "v7";
+const VERSION = "v8";
 const STATIC_CACHE = `nihongo-static-${VERSION}`;
 const PAGE_CACHE = `nihongo-pages-${VERSION}`;
 const PRECACHE = [
@@ -107,10 +107,9 @@ self.addEventListener("push", (event) => {
         body: data.body || "Yuk latihan 5 menit hari ini!",
         icon: "/icons/icon-192.png",
         badge: "/icons/icon-192.png",
-        tag: data.tag || "nihongo-reminder",
+        tag: data.tag || `nihongo-notif-${Date.now()}`,
         renotify: true,
-        silent: true, // Matikan suara bawaan sistem operasi agar tidak membunyikan chime default device
-        vibrate: [150, 80, 150],
+        vibrate: [200, 100, 200],
         data: { url },
         actions: [
           { action: "open", title: "Mulai Belajar" },

@@ -14,14 +14,23 @@ function Reset() {
   const token = useSearchParams().get("token") ?? "";
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!token) {
+      setError("Token reset tidak ditemukan. Silakan minta link baru.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
     try {
       await authApi.resetPassword(token, String(new FormData(e.currentTarget).get("password")));
       setDone(true);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Tidak bisa terhubung ke server.");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -32,7 +41,16 @@ function Reset() {
       lead="Masukkan password baru yang kuat untuk akun Nihongo milikmu."
       bubbleText="もう少し！(Tinggal selangkah lagi!)"
     >
-      {done ? (
+      {!token ? (
+        <div style={{ display: "grid", gap: "var(--space-4)" }}>
+          <Alert tone="danger">
+            Tautan reset kata sandi tidak valid atau tidak memuat token. Pastikan kamu membuka link lengkap dari email atau minta link baru.
+          </Alert>
+          <Button variant="secondary" block onClick={() => (window.location.href = "/lupa-password")}>
+            Minta Link Reset Baru
+          </Button>
+        </div>
+      ) : done ? (
         <div style={{ display: "grid", gap: "var(--space-4)" }}>
           <Alert tone="success">Password berhasil diganti. Semua sesi di perangkat lain sudah dikeluarkan demi keamanan.</Alert>
           <Button variant="primary" block onClick={() => (window.location.href = "/masuk")}>
@@ -51,8 +69,8 @@ function Reset() {
             hint="Gunakan minimal 8 karakter dengan kombinasi angka dan huruf."
             required
           />
-          <Button type="submit" block>
-            Simpan Password Baru
+          <Button type="submit" block disabled={busy}>
+            {busy ? "Menyimpan…" : "Simpan Password Baru"}
           </Button>
         </form>
       )}

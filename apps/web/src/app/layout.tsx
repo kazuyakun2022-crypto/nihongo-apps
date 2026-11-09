@@ -8,10 +8,10 @@ import { SplashGate } from "@/shared/ui/neko/SplashGate";
 import "@/shared/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Nihongo bersama Miu-chan", template: "%s · Nihongo" },
+  title: { default: "日本語 · Nihongo bersama Miu-chan", template: "%s · 日本語 (Nihongo)" },
   description: "Belajar bahasa Jepang dari nol sampai JLPT, dengan maskot AI untuk latihan ngobrol sesuai levelmu.",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Nihongo", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "日本語", statusBarStyle: "default" },
   icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
 };
 
@@ -37,7 +37,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         {!splashSeen && (
           <>
-            <script dangerouslySetInnerHTML={{ __html: "window.__splashT0 = Date.now();" }} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.__splashT0 = Date.now();
+                  setTimeout(function() {
+                    try {
+                      var splash = document.getElementById('app-splash-overlay');
+                      if (splash) {
+                        splash.style.transition = 'opacity 0.35s ease-out';
+                        splash.style.opacity = '0';
+                        splash.style.pointerEvents = 'none';
+                        setTimeout(function() { if (splash && splash.parentNode) splash.parentNode.removeChild(splash); }, 400);
+                      }
+                    } catch (e) {}
+                  }, 2400);
+                `,
+              }}
+            />
             <link rel="preload" as="image" href="/neko/splash/miu-open.webp" type="image/webp" />
             <link rel="preload" as="image" href="/neko/splash/miu-wink.webp" type="image/webp" />
             <link rel="preload" as="image" href="/neko/splash/miu-closed.webp" type="image/webp" />

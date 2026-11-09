@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { Mascot, type MascotMood } from "@/shared/ui/Mascot";
 import {
+  ArrowLeftIcon,
   ArrowRightIcon,
   CloseIcon,
   MicIcon,
@@ -17,6 +19,7 @@ import {
   VolumeIcon,
 } from "@/shared/ui/icons";
 import { useSpeech } from "@/shared/lib/useSpeech";
+import { useLayerBack } from "@/shared/lib/useLayerBack";
 import { useConversation } from "../application/useConversation";
 import type { ConversationEmotion, DialogueStep, ScenarioItem } from "../domain/types";
 import { FuriganaText, stripFurigana } from "./FuriganaText";
@@ -45,7 +48,8 @@ const MOOD: Record<ConversationEmotion, MascotMood> = {
 };
 
 export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null }) {
-  const { phase, session, messages, turnsLeft, report, error, emotion, start, send, end } = useConversation();
+  const router = useRouter();
+  const { phase, session, messages, turnsLeft, report, error, emotion, start, send, end, reset } = useConversation();
   const { speak } = useSpeech();
   const scenarioId = scenario?.id ?? null;
 
@@ -53,6 +57,31 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
   const [showGuide, setShowGuide] = useState(false);
   const [showInChatGuide, setShowInChatGuide] = useState(false);
   const [revealedTranslations, setRevealedTranslations] = useState<Record<string, boolean>>({});
+
+  // ── LAYER BACK HANDLERS (Per-step layer navigation) ──
+  // 1. Layer Panduan Dialog di dalam chat
+  useLayerBack(showInChatGuide, () => setShowInChatGuide(false), "chat-guide");
+
+  // 2. Layer Percakapan Aktif -> mundur ke Ringkasan Misi (Briefing Cover)
+  const handleBackFromChat = useCallback(() => {
+    if (messages.length > 1) {
+      if (window.confirm("Tinggalkan simulasi percakapan dan kembali ke ringkasan misi?")) {
+        reset();
+      }
+    } else {
+      reset();
+    }
+  }, [messages.length, reset]);
+
+  useLayerBack(phase === "chatting" || phase === "waiting", handleBackFromChat, "chat-active");
+
+  // 3. Layer Laporan Akhir -> mundur ke Ringkasan Misi
+  useLayerBack(phase === "ended" && report !== null, () => reset(), "chat-report");
+
+  // 4. Layer Briefing Cover -> mundur ke Daftar Skenario di navigasi
+  const handleBackFromBriefing = useCallback(() => {
+    router.push("/ngobrol?tab=skenario");
+  }, [router]);
 
   // Voice recording states
   const [isRecording, setIsRecording] = useState(false);
@@ -152,7 +181,7 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
     if (scenario) {
       const imgUrl = scenario.imageUrl || "/images/scenarios/01_Misi_Pertama_di_Konbini.png";
       return (
-        <div style={{ overflowY: "auto", flex: 1, width: "100%", height: "100%" }}>
+        <div className={styles.scenarioIntroScroller}>
           <section className={styles.scenarioIntroWrap} aria-label={`Skenario: ${scenario.title}`}>
             <div className={styles.scenarioCard}>
               {/* Cover Banner Hero */}
@@ -161,13 +190,26 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
                 <img src={imgUrl} alt={scenario.title} className={styles.scenarioCoverImg} />
                 <div className={styles.scenarioCoverOverlay} />
                 <div className={styles.scenarioCoverBadges}>
-                  <span className={styles.scenarioCoverLevel}>{scenario.levelCode}</span>
-                  {scenario.location && (
-                    <span className={styles.scenarioCoverLoc}>📍 {scenario.location}</span>
-                  )}
-                  {scenario.keigoType && (
-                    <span className={styles.scenarioCoverLoc}>🗣️ {scenario.keigoType}</span>
-                  )}
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <button
+                      type="button"
+                      onClick={handleBackFromBriefing}
+                      className={styles.scenarioCoverBackBtn}
+                      aria-label="Kembali ke daftar skenario"
+                      title="Kembali ke daftar skenario"
+                    >
+                      <ArrowLeftIcon size={16} strokeWidth={2.4} />
+                    </button>
+                    <span className={styles.scenarioCoverLevel}>{scenario.levelCode}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    {scenario.location && (
+                      <span className={styles.scenarioCoverLoc}>📍 {scenario.location}</span>
+                    )}
+                    {scenario.keigoType && (
+                      <span className={styles.scenarioCoverLoc}>🗣️ {scenario.keigoType}</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -293,7 +335,7 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
 
     // Default non-scenario chat intro
     return (
-      <div style={{ overflowY: "auto", flex: 1, width: "100%", height: "100%" }}>
+      <div className={styles.scenarioIntroScroller}>
         <section className={styles.intro}>
           <Mascot mood="semangat" size={130} />
           <h1 className={styles.introTitle}>Ngobrol Santai dengan Miu-chan</h1>
@@ -375,17 +417,45 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
             )}
 
             {/* Aksi Selesai */}
-            <div className={styles.reportActionBtns}>
+            <div className={styles.reportActionBtns} style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "center" }}>
               <Button onClick={() => start(scenarioId)}>
                 <SparklesIcon size={16} /> {scenario ? "Ulangi Skenario Ini" : "Ngobrol Lagi"}
               </Button>
               {scenario && (
-                <Link
-                  href="/ngobrol?tab=skenario"
-                  style={{ fontWeight: 700, color: "var(--color-primary)", textDecoration: "none", fontSize: "0.88rem" }}
+                <button
+                  type="button"
+                  onClick={() => reset()}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    color: "var(--color-primary)",
+                    fontSize: "0.88rem",
+                    padding: "6px",
+                  }}
                 >
-                  ← Pilih Skenario Situasi Lain
-                </Link>
+                  <ArrowLeftIcon size={16} /> Kembali ke Ringkasan Misi
+                </button>
+              )}
+              {scenario && (
+                <button
+                  type="button"
+                  onClick={handleBackFromBriefing}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    color: "var(--color-text-muted)",
+                    fontSize: "0.82rem",
+                  }}
+                >
+                  Daftar Skenario Lain →
+                </button>
               )}
             </div>
           </div>
@@ -401,6 +471,15 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
       <header className={styles.chatHeader}>
         <div className={headerMetaStyles(styles)}>
           <div className={styles.headerLeft}>
+            <button
+              type="button"
+              className={styles.headerBackBtn}
+              onClick={handleBackFromChat}
+              aria-label="Kembali ke ringkasan misi"
+              title="Kembali ke ringkasan misi"
+            >
+              <ArrowLeftIcon size={18} strokeWidth={2.4} />
+            </button>
             {scenario?.imageUrl ? (
               <div className={styles.headerThumb}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}

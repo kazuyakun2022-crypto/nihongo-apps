@@ -52,15 +52,26 @@ export class ResendEmailSender implements EmailSender {
   }
 
   private async send(to: string, subject: string, html: string, text: string) {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${this.apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: this.from, to: [to], subject, html, text }),
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      throw new Error(`Resend menolak email (${res.status}): ${detail.slice(0, 200)}`);
+    try {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${this.apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ from: this.from, to: [to], subject, html, text }),
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!res.ok) {
+        const detail = await res.text().catch(() => "");
+        console.error(`[email][resend-error] Gagal mengirim email ke <${to}> (HTTP ${res.status}):`, detail);
+        if (res.status === 403) {
+          console.error(
+            `[email][resend-help] PENTING: Pengirim bawaan 'onboarding@resend.dev' hanya boleh mengirim ke email terdaftar pemilik akun Resend. Untuk mengirim ke semua email pengguna, tambahkan domain di https://resend.com/domains dan atur EMAIL_FROM="Nihongo <no-reply@domainmu.com>".`
+          );
+        }
+        throw new Error(`Resend menolak email (${res.status}): ${detail.slice(0, 200)}`);
+      }
+    } catch (err: unknown) {
+      console.error(`[email][resend-failure] Error saat mengirim email ke <${to}>:`, err);
+      throw err;
     }
   }
 }

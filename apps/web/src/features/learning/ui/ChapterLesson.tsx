@@ -2,7 +2,9 @@
 
 import { QuestionAudio } from "./exercises/QuestionAudio";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useLayerBack } from "@/shared/lib/useLayerBack";
 import { FuriganaText, stripFurigana } from "@/features/conversation/ui/FuriganaText";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
@@ -208,6 +210,7 @@ function isTypingTarget(target: EventTarget | null): boolean {
 }
 
 export function ChapterLesson({ chapterId }: { chapterId: string }) {
+  const router = useRouter();
   const lesson = useChapterLesson(chapterId);
   // Latihan & kuis bab: Miu-chan tetap boleh menjelaskan dan memberi petunjuk, tapi tidak memberi jawaban
   const inQuiz = (lesson.phase === "quiz" || lesson.phase === "submitting") && !!lesson.currentQuestion;
@@ -219,6 +222,32 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
 
   // Pintasan ← → untuk pindah kartu/soal (berguna di desktop)
   const { phase, studyIndex, quizIndex, currentAnswer, currentSkipped, isLastQuiz } = lesson;
+
+  // ── LAYER BACK HANDLERS (Per-step layer navigation) ──
+  // 1. Mundur per-kartu materi saat belajar
+  useLayerBack(
+    phase === "study" && studyIndex > 0,
+    () => lesson.prevStudy(),
+    `lesson-study-${studyIndex}`
+  );
+
+  // 2. Mundur per-soal kuis
+  useLayerBack(
+    phase === "quiz" && quizIndex > 0,
+    () => lesson.prevQuiz(),
+    `lesson-quiz-${quizIndex}`
+  );
+
+  // 3. Konfirmasi jika menekan back di awal kuis agar tidak hilang progres tanpa sengaja
+  useLayerBack(
+    phase === "quiz" && quizIndex === 0,
+    () => {
+      if (window.confirm("Keluar dari kuis bab ini? Progres kuis sesi ini tidak akan tersimpan.")) {
+        router.push("/belajar");
+      }
+    },
+    "lesson-quiz-root"
+  );
   // Kartu/soal/tahap baru selalu dibuka dari atas (audio soal berhenti sendiri lewat QuestionAudio)
   useEffect(() => {
     window.scrollTo({ top: 0 });

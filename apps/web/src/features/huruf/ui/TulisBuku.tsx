@@ -309,7 +309,7 @@ function PrintWorksheet({ sheet, exam }: { sheet: Sheet; exam?: ExamPrint }) {
           <small>Stempel / paraf</small>
         </div>
       </footer>
-      <p className={styles.pBrand}>Nihongo bersama Miu-chan · Foto lembar ini dari atas dengan cahaya terang supaya bisa diperiksa.</p>
+      <p className={styles.pBrand}>日本語 (Nihongo) bersama Miu-chan · Foto lembar ini dari atas dengan cahaya terang supaya bisa diperiksa.</p>
     </div>
   );
 }

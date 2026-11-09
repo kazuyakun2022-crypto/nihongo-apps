@@ -11,6 +11,7 @@ import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { BookOpenIcon, ChevronDownIcon, GraduationCapIcon, NotebookIcon, ScanCameraIcon } from "@/shared/ui/icons";
 import { HomeBannerCarousel } from "@/features/banner/ui/HomeBannerCarousel";
 import { HomeScenarioCarousel } from "@/features/conversation/ui/HomeScenarioCarousel";
+import { StreakBadge } from "@/shared/ui/StreakFlame";
 import styles from "./beranda.module.css";
 
 /** Salam Jepang sesuai jam lokal. */
@@ -121,13 +122,16 @@ export default function BerandaPage() {
           {/* Baris utama: Sapaan di kiri, Foto Profil di kanan */}
           <div className={styles.heroTop}>
             <div className={styles.heroGreeting}>
-              <h1 id="hero-greeting" lang="ja" className={styles.heroGreetingJa}>
-                <span className={styles.heroSalutation}>{salam.ja}、</span>
-                <span className={styles.heroUserWrap}>
-                  <span className={styles.heroUserName}>{user?.displayName}</span>
-                  <span className={styles.heroHonorific}>さん!</span>
-                </span>
-              </h1>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                <h1 id="hero-greeting" lang="ja" className={styles.heroGreetingJa}>
+                  <span className={styles.heroSalutation}>{salam.ja}、</span>
+                  <span className={styles.heroUserWrap}>
+                    <span className={styles.heroUserName}>{user?.displayName}</span>
+                    <span className={styles.heroHonorific}>さん!</span>
+                  </span>
+                </h1>
+                <StreakBadge count={user?.streakCount ?? 0} href="/profil" flameSize={18} />
+              </div>
               <span className={styles.heroGreetingId}>
                 {salam.id}. Siap belajar hari ini?
               </span>

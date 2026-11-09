@@ -101,7 +101,7 @@ export function InstallPrompt() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/icons/icon-192.png"
-            alt="Logo Nihongo"
+            alt="Logo 日本語"
             className={styles.appIcon}
             onError={(e) => {
               (e.currentTarget as HTMLElement).style.display = "none";

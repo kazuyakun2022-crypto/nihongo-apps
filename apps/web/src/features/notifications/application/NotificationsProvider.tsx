@@ -61,9 +61,16 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
   useEffect(() => {
     if (prevUnreadRef.current !== null && unreadCount > prevUnreadRef.current) {
       void playNotificationSound();
+      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+        const newest = items[0];
+        const title = newest?.title || "Miu-chan (Nihongo)";
+        const body = newest?.body || "Ada pengingat belajar baru untukmu!";
+        const url = newest?.url || "/beranda";
+        void triggerDeviceNotification(title, body, url);
+      }
     }
     prevUnreadRef.current = unreadCount;
-  }, [unreadCount]);
+  }, [unreadCount, items]);
 
   useEffect(() => {
     mounted.current = true;

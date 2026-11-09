@@ -132,8 +132,18 @@ export function authRoutes(uc: AuthUseCases, verifier: AccessTokenVerifier, opts
   }));
 
   r.post("/forgot-password", asyncHandler(async (req, res) => {
-    await uc.requestPasswordReset.execute(parseBody(forgotSchema, req.body).email, req.ip ?? null);
-    res.json({ message: "Jika email terdaftar, link reset sudah dikirim." });
+    try {
+      await uc.requestPasswordReset.execute(parseBody(forgotSchema, req.body).email, req.ip ?? null);
+      res.json({ message: "Jika email terdaftar, link reset sudah dikirim." });
+    } catch (err: unknown) {
+      console.error("[auth][forgot-password] Terjadi kendala saat memproses permintaan reset password:", err);
+      res.status(502).json({
+        error: {
+          code: "EMAIL_SERVICE_ERROR",
+          message: "Layanan pengiriman email sedang bermasalah di server. Silakan hubungi admin atau periksa konfigurasi email.",
+        },
+      });
+    }
   }));
 
   r.post("/reset-password", asyncHandler(async (req, res) => {

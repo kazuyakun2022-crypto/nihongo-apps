@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useLayerBack } from "@/shared/lib/useLayerBack";
 import { workbookGateApi, type WorkbookStatus } from "@/features/exam/data/workbookGateApi";
 import { NekoAvatar } from "@/shared/ui/neko/NekoAvatar";
 import { SceneProp } from "./MapScenery";
@@ -137,6 +138,7 @@ type Selected = { kind: "chapter"; chapter: ChapterSummary; index: number; state
 
 export function WorldMap({ units, nextId, level }: { units: MapUnit[]; nextId: string | null; level: Level }) {
   const [selected, setSelected] = useState<Selected | null>(null);
+  useLayerBack(selected !== null, () => setSelected(null), "map-sheet");
   const [gate, setGate] = useState<WorkbookStatus | null>(null);
   const [just, setJust] = useState<{ done: string; unlock: string | null } | null>(null);
   const mapRef = useRef<HTMLElement>(null);

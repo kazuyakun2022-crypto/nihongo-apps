@@ -1,6 +1,6 @@
 {
-  "name": "Nihongo bersama Miu-chan",
-  "short_name": "Nihongo",
+  "name": "日本語 (Nihongo) bersama Miu-chan",
+  "short_name": "日本語",
   "description": "Belajar bahasa Jepang dengan maskot AI untuk latihan ngobrol.",
   "lang": "id",
   "start_url": "/beranda",
