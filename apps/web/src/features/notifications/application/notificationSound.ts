@@ -105,22 +105,18 @@ export async function playNotificationSound(): Promise<void> {
 /**
  * Memicu notifikasi sistem langsung di layar perangkat (HP/Laptop)
  * menggunakan Service Worker atau Notification API browser.
- * Diberikan opsi silent: true agar tidak membunyikan suara bawaan sistem operasi (Windows/Android),
- * melainkan memainkan audio resmi Nihongo via HTML5/Web Audio.
  */
 export async function triggerDeviceNotification(title: string, body: string, url = "/beranda"): Promise<boolean> {
   if (typeof window === "undefined" || !("Notification" in window)) {
-    throw new Error("Perangkat atau browser ini tidak mendukung notifikasi sistem.");
+    return false;
   }
 
   let permission = Notification.permission;
   if (permission === "default") {
-    permission = await Notification.requestPermission();
+    permission = await Notification.requestPermission().catch(() => "denied");
   }
   if (permission !== "granted") {
-    throw new Error(
-      "Izin notifikasi belum diizinkan atau diblokir di browser. Klik ikon gembok/setelan di sebelah alamat web browser Anda, lalu izinkan Notifikasi.",
-    );
+    return false;
   }
 
   // Putar suara audio resmi bawaan Nihongo (1 kali)
@@ -128,13 +124,14 @@ export async function triggerDeviceNotification(title: string, body: string, url
 
   const uniqueTag = "nihongo-device-" + Date.now();
 
-  // Coba lewat service worker terlebih dahulu (standar PWA modern dengan silent: true)
+  // Coba lewat service worker terlebih dahulu (standar PWA modern di Android/Desktop)
   let shownViaSW = false;
   if ("serviceWorker" in navigator) {
     try {
-      const regPromise = navigator.serviceWorker.getRegistration();
-      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 600));
-      const reg = await Promise.race([regPromise, timeoutPromise]);
+      let reg = await navigator.serviceWorker.getRegistration().catch(() => null);
+      if (!reg || !reg.active) {
+        reg = await navigator.serviceWorker.ready.catch(() => null);
+      }
       if (reg && "showNotification" in reg) {
         await reg.showNotification(title, {
           body,
@@ -142,8 +139,7 @@ export async function triggerDeviceNotification(title: string, body: string, url
           badge: "/icons/icon-192.png",
           tag: uniqueTag,
           renotify: true,
-          silent: true, // Bungkam suara default sistem operasi perangkat
-          vibrate: [150, 80, 150],
+          vibrate: [200, 100, 200],
           data: { url },
         } as unknown as NotificationOptions);
         shownViaSW = true;
@@ -160,7 +156,6 @@ export async function triggerDeviceNotification(title: string, body: string, url
         body,
         icon: "/icons/icon-192.png",
         tag: uniqueTag,
-        silent: true, // Bungkam suara default sistem operasi perangkat
       });
     } catch (err) {
       console.warn("[notification] Fallback new Notification gagal:", err);

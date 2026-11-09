@@ -31,20 +31,15 @@ export default function NotificationSettingsPage() {
     pushServerEnabled,
     enablePush,
     disablePush,
-    sendTestNotification,
     soundEnabled,
     toggleSound,
     playSound,
-    triggerDevice,
   } = useNotifications();
 
   const [form, setForm] = useState<NotificationPreferences | null>(preferences);
   const [saving, setSaving] = useState(false);
-  const [testing, setTesting] = useState(false);
-  const [triggeringDevice, setTriggeringDevice] = useState(false);
   const [status, setStatus] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
   const [pushMessage, setPushMessage] = useState<string | null>(null);
-  const [deviceNotice, setDeviceNotice] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     if (preferences) setForm(preferences);
@@ -66,7 +61,7 @@ export default function NotificationSettingsPage() {
     try {
       const next = await savePreferences(form);
       setForm(next);
-      setStatus({ kind: "ok", text: "Pengaturan notifikasi tersimpan." });
+      setStatus({ kind: "ok", text: "Pengaturan notifikasi berhasil disimpan." });
     } catch (err) {
       setStatus({ kind: "error", text: err instanceof Error ? err.message : "Gagal menyimpan pengaturan." });
     } finally {
@@ -79,182 +74,44 @@ export default function NotificationSettingsPage() {
     try {
       if (pushState === "subscribed") {
         await disablePush();
-        setPushMessage("Push dimatikan di perangkat ini.");
+        setPushMessage("Notifikasi di perangkat ini telah dinonaktifkan.");
       } else {
         await enablePush();
-        setPushMessage("Push aktif. Notifikasi akan muncul di perangkat ini.");
+        setPushMessage("Notifikasi perangkat berhasil diaktifkan. Pengingat akan muncul di layar HP / laptop Anda.");
       }
     } catch (err) {
-      setPushMessage(err instanceof Error ? err.message : "Gagal mengatur push.");
-    }
-  };
-
-  const handleTest = async () => {
-    setTesting(true);
-    setStatus(null);
-    try {
-      const res = await sendTestNotification();
-      setStatus({
-        kind: "ok",
-        text: `Notifikasi uji coba berhasil dikirim! Periksa ikon lonceng di atas.${
-          res.pushSent > 0 ? " (Push sistem juga terkirim ke perangkat ini)" : ""
-        }`,
-      });
-    } catch (err) {
-      setStatus({ kind: "error", text: err instanceof Error ? err.message : "Gagal mengirim notifikasi uji coba." });
-    } finally {
-      setTesting(false);
-    }
-  };
-
-  const handleTriggerDevice = async () => {
-    setTriggeringDevice(true);
-    setDeviceNotice(null);
-    try {
-      await triggerDevice(
-        "Miu-chan (Nihongo) 🔔",
-        "Waktunya belajar sebentar! Latihan 5 menit hari ini sudah cukup untuk menjaga kebiasaanmu.",
-      );
-      setDeviceNotice({
-        kind: "ok",
-        text: "Notifikasi berhasil dipicu di layar perangkat dan di aplikasi dengan efek suara resmi Nihongo!",
-      });
-    } catch (err) {
-      setDeviceNotice({
-        kind: "error",
-        text:
-          err instanceof Error
-            ? err.message
-            : "Gagal memunculkan notifikasi perangkat. Pastikan izin notifikasi diizinkan di browser Anda.",
-      });
-    } finally {
-      setTriggeringDevice(false);
+      setPushMessage(err instanceof Error ? err.message : "Gagal mengaktifkan notifikasi perangkat. Pastikan izin notifikasi diberikan pada browser Anda.");
     }
   };
 
   return (
     <div className={styles.page}>
-      {/* ── KARTU 1: Tombol Langsung Memunculkan Notifikasi di Layar Perangkat + Desain Preview ── */}
-      <section className={`${styles.card} ${styles.deviceCard}`}>
-        <div className={styles.cardHead}>
-          <h2 className={styles.cardTitle}>Munculkan Notifikasi di Perangkat</h2>
-          <p className={styles.cardHint}>
-            Tekan tombol di bawah untuk langsung memunculkan pop-up notifikasi di layar perangkat Anda (Windows / HP) serta banner aplikasi bernuansa Jepang, lengkap dengan efek suara resmi tanpa nada dering bawaan sistem.
-          </p>
-        </div>
-
-        {/* Desain Tampilan Notifikasi Aplikasi */}
-        <div className={styles.devicePreview}>
-          <div className={styles.devicePreviewHeader}>
-            <span className={styles.devicePreviewBrand}>
-              <span className={styles.devicePreviewSeal} aria-hidden="true" lang="ja">日</span>
-              <span>Nihongo PWA</span>
-            </span>
-            <span>Baru saja</span>
-          </div>
-          <div className={styles.devicePreviewBody}>
-            <span className={styles.devicePreviewTitle}>Miu-chan (Nihongo) 🔔</span>
-            <span className={styles.devicePreviewText}>
-              Waktunya belajar sebentar! Latihan 5 menit hari ini sudah cukup untuk menjaga kebiasaanmu.
-            </span>
-          </div>
-          <div className={styles.devicePreviewActions}>
-            <span className={styles.devicePreviewBtn}>Buka sekarang →</span>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className={styles.deviceTriggerBtn}
-          onClick={() => void handleTriggerDevice()}
-          disabled={triggeringDevice}
-        >
-          <span aria-hidden="true">🔔</span>
-          <span>{triggeringDevice ? "Memunculkan notifikasi…" : "Munculkan Notifikasi di Perangkat Sekarang"}</span>
-        </button>
-
-        {deviceNotice && (
-          <p
-            className={`${styles.status} ${
-              deviceNotice.kind === "ok" ? styles.statusOk : styles.statusError
-            }`}
-            style={{ marginTop: 10 }}
-          >
-            {deviceNotice.text}
-          </p>
-        )}
-      </section>
-
-      {/* ── KARTU 2: Suara Notifikasi Resmi Bawaan ── */}
+      {/* ── KARTU 1: Notifikasi di Perangkat (HP / Laptop) ── */}
       <section className={styles.card}>
         <div className={styles.cardHead}>
-          <h2 className={styles.cardTitle}>Suara Notifikasi</h2>
+          <h2 className={styles.cardTitle}>Notifikasi di Layar Perangkat</h2>
           <p className={styles.cardHint}>
-            Suara pengingat resmi bawaan aplikasi (diatur oleh developer).
-          </p>
-        </div>
-
-        <label className={styles.row}>
-          <span className={styles.rowText}>
-            <span className={styles.rowLabel}>Aktifkan suara notifikasi</span>
-            <span className={styles.rowHint}>Putar efek suara saat notifikasi dan pengingat masuk.</span>
-          </span>
-          <input
-            type="checkbox"
-            className={styles.toggle}
-            checked={soundEnabled}
-            onChange={(e) => toggleSound(e.target.checked)}
-          />
-        </label>
-
-        <div className={styles.divider} />
-
-        <div className={styles.row}>
-          <span className={styles.rowText}>
-            <span className={styles.rowLabel}>Suara Resmi: Lonceng Jepang (Kettei Chime)</span>
-            <span className={styles.rowHint}>
-              Audio default resmi yang dipasang oleh developer di aset aplikasi.
-            </span>
-          </span>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => void playSound()}
-            disabled={!soundEnabled}
-            title="Dengarkan suara resmi saat ini"
-          >
-            🔊 Uji Suara
-          </Button>
-        </div>
-      </section>
-
-      {/* ── KARTU 3: Pengaturan Push Perangkat ── */}
-      <section className={styles.card}>
-        <div className={styles.cardHead}>
-          <h2 className={styles.cardTitle}>Notifikasi di perangkat ini</h2>
-          <p className={styles.cardHint}>
-            Push hanya aktif di aplikasi yang dibuka dari layar utama (PWA). Di iOS perlu iOS 16.4+ dan
-            &ldquo;Tambahkan ke Layar Utama&rdquo;. Notifikasi dalam aplikasi tetap masuk tanpa push.
+            Aktifkan agar pengingat belajar harian, peringatan streak, dan informasi penting muncul langsung di layar notifikasi HP atau komputer Anda.
           </p>
         </div>
 
         {!pushServerEnabled && (
           <p className={`${styles.notice} ${styles.noticeError}`}>
-            Server belum mengatur kunci VAPID, jadi push dimatikan. Notifikasi in-app tetap berjalan.
+            Server belum mengatur kunci Web Push VAPID. Notifikasi dalam aplikasi tetap aktif.
           </p>
         )}
 
         <div className={styles.row}>
           <span className={styles.rowText}>
             <span className={styles.rowLabel}>
-              {pushState === "subscribed" ? "Push aktif di perangkat ini" : "Push perangkat"}
+              {pushState === "subscribed" ? "Notifikasi Perangkat Aktif ✅" : "Pemberitahuan Sistem"}
             </span>
             <span className={styles.rowHint}>
-              {pushState === "unsupported" && "Browser tidak mendukung Web Push."}
-              {pushState === "denied" && "Izin notifikasi diblokir. Ubah lewat pengaturan situs di browser."}
-              {pushState === "inactive" && "Aktifkan agar pengingat muncul meski aplikasi tertutup."}
-              {pushState === "subscribed" && "Pengingat akan muncul sebagai notifikasi sistem."}
-              {pushState === "loading" && "Memeriksa status langganan…"}
+              {pushState === "unsupported" && "Browser Anda belum mendukung notifikasi Web Push."}
+              {pushState === "denied" && "Izin notifikasi diblokir di browser. Buka setelan izin situs browser Anda untuk mengizinkan notifikasi."}
+              {pushState === "inactive" && "Aktifkan agar pengingat harian tetap muncul saat aplikasi sedang tertutup."}
+              {pushState === "subscribed" && "Pengingat belajar akan muncul sebagai notifikasi pop-up di layar perangkat Anda."}
+              {pushState === "loading" && "Memeriksa status perangkat…"}
             </span>
           </span>
           <Button
@@ -268,35 +125,61 @@ export default function NotificationSettingsPage() {
               !pushServerEnabled
             }
           >
-            {pushState === "subscribed" ? "Matikan push" : "Aktifkan push"}
-          </Button>
-        </div>
-
-        <div className={styles.divider} />
-
-        <div className={styles.row}>
-          <span className={styles.rowText}>
-            <span className={styles.rowLabel}>Uji coba in-app</span>
-            <span className={styles.rowHint}>Kirim notifikasi ke inbox lonceng akun ini untuk memastikan data tersimpan.</span>
-          </span>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => void handleTest()}
-            disabled={testing}
-          >
-            {testing ? "Mengirim…" : "Kirim Uji Coba Lonceng"}
+            {pushState === "subscribed" ? "Nonaktifkan" : "Aktifkan di Perangkat"}
           </Button>
         </div>
 
         {pushMessage && <p className={styles.status}>{pushMessage}</p>}
       </section>
 
-      {/* ── KARTU 4: Jam Pengingat Harian ── */}
+      {/* ── KARTU 2: Suara Notifikasi ── */}
       <section className={styles.card}>
         <div className={styles.cardHead}>
-          <h2 className={styles.cardTitle}>Pengingat harian</h2>
-          <p className={styles.cardHint}>Pilih jam dan zona waktu. Pengingat dikirim sekali sehari bila kamu belum belajar.</p>
+          <h2 className={styles.cardTitle}>Suara Notifikasi</h2>
+          <p className={styles.cardHint}>
+            Pemberitahuan audio bernuansa khas Jepang saat pengingat atau pesan baru masuk.
+          </p>
+        </div>
+
+        <label className={styles.row}>
+          <span className={styles.rowText}>
+            <span className={styles.rowLabel}>Bunyikan suara notifikasi</span>
+            <span className={styles.rowHint}>Putar efek audio lonceng saat notifikasi masuk.</span>
+          </span>
+          <input
+            type="checkbox"
+            className={styles.toggle}
+            checked={soundEnabled}
+            onChange={(e) => toggleSound(e.target.checked)}
+          />
+        </label>
+
+        <div className={styles.divider} />
+
+        <div className={styles.row}>
+          <span className={styles.rowText}>
+            <span className={styles.rowLabel}>Lonceng Khas Jepang (Kettei Chime)</span>
+            <span className={styles.rowHint}>
+              Dengarkan contoh nada pemberitahuan resmi Nihongo.
+            </span>
+          </span>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => void playSound()}
+            disabled={!soundEnabled}
+            title="Dengarkan contoh nada suara"
+          >
+            🔊 Dengarkan Nada
+          </Button>
+        </div>
+      </section>
+
+      {/* ── KARTU 3: Jam Pengingat Harian & Kategori ── */}
+      <section className={styles.card}>
+        <div className={styles.cardHead}>
+          <h2 className={styles.cardTitle}>Jadwal Pengingat Harian</h2>
+          <p className={styles.cardHint}>Tentukan jam dan zona waktu belajar yang paling nyaman untuk Anda.</p>
         </div>
 
         {form ? (
@@ -312,7 +195,7 @@ export default function NotificationSettingsPage() {
                 value={form.reminderTime}
                 onChange={(event) => update({ reminderTime: event.target.value })}
               />
-              <span className={styles.fieldHint}>Waktu setempat sesuai zona di bawah.</span>
+              <span className={styles.fieldHint}>Waktu setempat pengingat dikirim jika Anda belum belajar.</span>
             </div>
 
             <div className={styles.field}>
@@ -335,6 +218,10 @@ export default function NotificationSettingsPage() {
 
             <div className={styles.divider} />
 
+            <h3 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "16px 0 8px 0" }}>
+              Pilih Jenis Notifikasi
+            </h3>
+
             {TYPE_ROWS.map((row) => (
               <label key={row.key} className={styles.row}>
                 <span className={styles.rowText}>
@@ -353,7 +240,7 @@ export default function NotificationSettingsPage() {
 
             <div className={styles.saveBar}>
               <Button type="button" onClick={() => void save()} disabled={saving}>
-                {saving ? "Menyimpan…" : "Simpan pengaturan"}
+                {saving ? "Menyimpan…" : "Simpan Pengaturan"}
               </Button>
               {status && (
                 <span className={`${styles.status} ${status.kind === "ok" ? styles.statusOk : styles.statusError}`}>

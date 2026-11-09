@@ -64,6 +64,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mode, setMode] = useState<NekoMode>("idle");
   const [emotion, setEmotion] = useState<NekoEmotion>("biasa");
+  const [liveTranscript, setLiveTranscript] = useState("");
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [scores, setScores] = useState<Record<number, number>>({});
   const [isCompleted, setIsCompleted] = useState(false);
@@ -116,7 +117,6 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     setEmotion("senang");
 
     try {
-      // Prioritaskan /api/tts endpoint pelafalan cepat
       const audioUrl = `/api/tts?text=${encodeURIComponent(target)}&voice=nanami`;
       const audio = new Audio(audioUrl);
       activeAudioRef.current = audio;
@@ -157,21 +157,20 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     let tip = "";
 
     if (finalScore >= 85) {
-      tip = "Bagus banget! Pelafalan dan intonasi penutur aslimu sangat tepat!";
+      tip = "Bagus sekali! Pelafalan dan intonasi penutur aslimu sangat tepat!";
       setEmotion("senang");
-      // Miu-chan memuji dengan suara
       void playSample("すごい！上手！");
     } else if (finalScore >= 55) {
-      tip = `Hampir tepat! Miu-chan mendengar "${spoken}". Perhatikan panjang vokal dan ketukan kata.`;
+      tip = "Hampir tepat! Perhatikan panjang vokal dan ketukan kata.";
       setEmotion("biasa");
     } else {
-      tip = `Kurang tepat. Coba dengarkan lagi contoh pelafalan Miu-chan dan ulangi ya.`;
+      tip = "Belum pas. Dengarkan contoh pelafalan Miu-chan dan coba lagi.";
       setEmotion("bingung");
     }
 
     setEvaluation({
       score: finalScore,
-      spokenText: spoken || "(Tidak terdengar)",
+      spokenText: spoken || "(Tidak terdengar jelas)",
       isCorrect,
       tip,
     });
@@ -184,7 +183,9 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
   const startListening = useCallback(async () => {
     if (isListeningRef.current) return;
     isListeningRef.current = true;
+    // Bersihkan hasil evaluasi lama seketika saat mic mulai ditahan
     setEvaluation(null);
+    setLiveTranscript("");
     setMode("listening");
     setEmotion("biasa");
 
@@ -208,7 +209,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
       console.warn("Mikrofon tidak diizinkan atau tidak tersedia:", err);
     }
 
-    // 2. Setup SpeechRecognition (Web Speech API) jika tersedia di browser
+    // 2. Setup SpeechRecognition (Web Speech API) jika didukung browser
     const SpeechRec =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
@@ -216,17 +217,30 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
       try {
         const recognition = new SpeechRec();
         recognitionRef.current = recognition;
-        recognition.lang = "ja-JP"; // Kenali bahasa Jepang
-        recognition.interimResults = false;
+        recognition.lang = "ja-JP";
+        recognition.interimResults = true; // Streaming teks langsung saat bicara
         recognition.maxAlternatives = 1;
 
         recognition.onresult = (event: any) => {
-          const transcript = event.results[0]?.[0]?.transcript || "";
-          evaluateSpeech(transcript);
+          let interim = "";
+          let final = "";
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              final += event.results[i][0].transcript;
+            } else {
+              interim += event.results[i][0].transcript;
+            }
+          }
+          const spoken = (final || interim).trim();
+          if (spoken) {
+            setLiveTranscript(spoken);
+          }
+          if (final) {
+            evaluateSpeech(final);
+          }
         };
 
         recognition.onerror = () => {
-          // Jika Web Speech API timeout / error, fallback ke transkripsi server
           stopListening();
         };
 
@@ -267,7 +281,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
           streamRef.current = null;
         }
 
-        // Jika evaluasi belum terisi oleh Web Speech API, kirim ke server transcriber
+        // Jika evaluasi belum diisi oleh Web Speech API, panggil endpoint transkripsi server
         if (!evaluation) {
           try {
             const res = await fetch("/api/ask/transcribe?lang=ja", {
@@ -277,6 +291,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
             });
             const data = await res.json();
             if (data?.text) {
+              setLiveTranscript(data.text);
               evaluateSpeech(data.text);
             } else {
               evaluateSpeech("");
@@ -298,6 +313,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     if (currentIndex < list.length - 1) {
       setCurrentIndex((i) => i + 1);
       setEvaluation(null);
+      setLiveTranscript("");
       setEmotion("biasa");
       setMode("idle");
     } else {
@@ -311,6 +327,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     if (currentIndex > 0) {
       setCurrentIndex((i) => i - 1);
       setEvaluation(null);
+      setLiveTranscript("");
       setEmotion("biasa");
       setMode("idle");
     }
@@ -343,7 +360,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
 
         <h2 className={styles.resultTitle}>Pelafalanmu Keren Banget!</h2>
         <p className={styles.resultDesc}>
-          Kamu telah melatih pelafalan untuk {list.length} kosakata hari ini bersama Miu-chan. Semakin sering kamu latih, lidahmu akan semakin terbiasa!
+          Kamu telah melatih pengucapan lisan langsung dengan Voice AI Miu-chan.
         </p>
 
         <div className={styles.resultScoreCard}>
@@ -373,6 +390,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
               setCurrentIndex(0);
               setIsCompleted(false);
               setEvaluation(null);
+              setLiveTranscript("");
               setScores({});
             }}
           >
@@ -417,7 +435,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
         </div>
       </div>
 
-      {/* Panggung Maskot Miu-chan */}
+      {/* Panggung Maskot Miu-chan & Subtitle Pintar */}
       <div className={styles.mascotStage}>
         <div className={styles.avatarBox}>
           <NekoAvatar
@@ -425,29 +443,53 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
             emotion={emotion}
             micLevel={getMicLevel}
             voiceLevel={getVoiceLevel}
-            size={170}
+            size={160}
             label="Miu-chan Voice AI"
           />
         </div>
 
-        <div
-          className={`${styles.soundwavePill} ${
-            mode === "speaking"
-              ? styles.statusSpeaking
-              : mode === "listening"
-              ? styles.statusListening
-              : mode === "processing"
-              ? styles.statusProcessing
-              : ""
-          }`}
-        >
-          {mode === "speaking"
-            ? "Miu-chan sedang berbicara…"
-            : mode === "listening"
-            ? "Miu-chan mendengarkan suaramu…"
-            : mode === "processing"
-            ? "Miu-chan mengevaluasi ucapanmu…"
-            : "Tekan tombol mic untuk bicara"}
+        {/* ── SUBTITLE LANGSUNG DI BAWAH MIU-CHAN (TANPA KOTAK POPUP KAKU) ── */}
+        <div className={styles.subtitleWrapper}>
+          {mode === "listening" ? (
+            <div className={styles.listeningSubtitle}>
+              <span className={styles.livePulseDot} aria-hidden="true" />
+              <span className={styles.subtitleText} lang="ja">
+                {liveTranscript ? `"${liveTranscript}"` : "Mendengarkan ucapanmu…"}
+              </span>
+            </div>
+          ) : mode === "processing" ? (
+            <div className={styles.processingSubtitle}>
+              <span aria-hidden="true">💭</span>
+              <span className={styles.subtitleText}>Miu-chan memeriksa ucapanmu…</span>
+            </div>
+          ) : mode === "speaking" ? (
+            <div className={styles.speakingSubtitle}>
+              <span aria-hidden="true">🔊</span>
+              <span className={styles.subtitleText} lang="ja">
+                "{currentCard?.reading || currentCard?.front}"
+              </span>
+            </div>
+          ) : evaluation ? (
+            <div
+              className={`${styles.resultSubtitle} ${
+                evaluation.isCorrect ? styles.resultSubtitleCorrect : styles.resultSubtitleWrong
+              }`}
+            >
+              <div className={styles.resultSubtitleBadge}>
+                {evaluation.isCorrect ? "✨ Tepat!" : "🐾 Belum pas"} ({evaluation.score}%)
+              </div>
+              <p className={styles.resultSubtitleCaptured} lang="ja">
+                "{evaluation.spokenText}"
+              </p>
+              {evaluation.tip && (
+                <p className={styles.resultSubtitleTip}>{evaluation.tip}</p>
+              )}
+            </div>
+          ) : (
+            <div className={styles.idleSubtitle}>
+              <span>🐾 Tahan tombol mic untuk mengucapkan kata ini</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -472,27 +514,6 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
           >
             🔊 Dengarkan Contoh Pelafalan
           </button>
-        </div>
-      )}
-
-      {/* Box Feedback Evaluasi */}
-      {evaluation && (
-        <div
-          className={`${styles.feedbackBox} ${
-            evaluation.score >= 80
-              ? styles.feedbackPerfect
-              : evaluation.score >= 50
-              ? styles.feedbackGood
-              : styles.feedbackTryAgain
-          }`}
-        >
-          <div className={styles.feedbackScore}>
-            {evaluation.score >= 80 ? "⭐ Pelafalan Sempurna" : evaluation.score >= 50 ? "👍 Hampir Benar" : "💡 Perlu Latihan"} ({evaluation.score}%)
-          </div>
-          <p className={styles.feedbackSpokenText}>
-            Kamu mengucapkan: <span lang="ja">"{evaluation.spokenText}"</span>
-          </p>
-          <p className={styles.feedbackTip}>{evaluation.tip}</p>
         </div>
       )}
 
@@ -543,4 +564,3 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     </div>
   );
 }
-
