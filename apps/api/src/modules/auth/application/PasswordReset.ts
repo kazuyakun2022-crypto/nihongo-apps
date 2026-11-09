@@ -26,12 +26,21 @@ export class RequestPasswordReset {
 
   async execute(email: string, ip: string | null): Promise<void> {
     const user = await this.deps.users.findByEmail(email.trim().toLowerCase());
-    if (!user || !user.email || user.isGuest) return;
+    if (!user || !user.email || user.isGuest) {
+      console.info(`[auth][password-reset] Permintaan reset untuk email yang tidak ditemukan atau akun tamu: ${email}`);
+      return;
+    }
 
     const { token, hash } = this.deps.tokens.generate();
     const expiresAt = addMinutes(this.deps.clock.now(), AuthPolicy.passwordResetMinutes);
     await this.deps.oneTimeTokens.createPasswordReset(user.id, hash, expiresAt, ip);
-    await this.deps.email.sendPasswordReset(user.email, `${this.deps.webOrigin}/reset-password?token=${token}`);
+    try {
+      await this.deps.email.sendPasswordReset(user.email, `${this.deps.webOrigin}/reset-password?token=${token}`);
+      console.info(`[auth][password-reset] Tautan reset kata sandi berhasil dikirim ke: ${user.email}`);
+    } catch (err) {
+      console.error(`[auth][password-reset] Gagal mengirim email reset ke <${user.email}>:`, err);
+      throw err;
+    }
   }
 }
 

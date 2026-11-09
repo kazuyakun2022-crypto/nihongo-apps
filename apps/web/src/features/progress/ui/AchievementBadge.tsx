@@ -371,3 +371,4 @@ function renderBadgeArt(code: string, earned: boolean) {
       );
   }
 }
+

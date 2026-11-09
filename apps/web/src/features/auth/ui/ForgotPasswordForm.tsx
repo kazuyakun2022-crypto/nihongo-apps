@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ApiError } from "@/core/http/apiClient";
 import { Alert } from "@/shared/ui/Alert";
 import { Button } from "@/shared/ui/Button";
 import { TextField } from "@/shared/ui/TextField";
@@ -12,13 +13,24 @@ import styles from "./auth.module.css";
 export function ForgotPasswordForm() {
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
-    await authApi.forgotPassword(String(new FormData(e.currentTarget).get("email"))).catch(() => undefined);
-    setSent(true);
-    setBusy(false);
+    setError(null);
+    try {
+      await authApi.forgotPassword(String(new FormData(e.currentTarget).get("email")));
+      setSent(true);
+    } catch (err: unknown) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("Gagal menghubungi server. Pastikan koneksi internet stabil.");
+      }
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -39,6 +51,7 @@ export function ForgotPasswordForm() {
         </div>
       ) : (
         <form className={styles.form} onSubmit={onSubmit}>
+          {error && <Alert tone="danger">{error}</Alert>}
           <TextField
             label="Alamat Email"
             name="email"
