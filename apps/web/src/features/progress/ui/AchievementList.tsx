@@ -1,19 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeftIcon, ArrowRightIcon, LockIcon, TrophyIcon } from "@/shared/ui/icons";
+import { ArrowLeftIcon, ArrowRightIcon, CloseIcon } from "@/shared/ui/icons";
 import { progressApi, type Achievement } from "../data/progressApi";
+import { AchievementBadge } from "./AchievementBadge";
 import styles from "./achievementList.module.css";
 
 const dateFmt = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" });
 
 /**
- * Daftar lencana dalam satu baris yang digulir ke samping (geser jari di ponsel, tombol panah di desktop).
- * Yang sudah didapat di depan, sisanya tampil terkunci beserta syaratnya.
+ * Daftar lencana medali bergaya Jepang interaktif:
+ * Tampil dalam baris horizontal yang dapat digeser / di-scroll.
+ * Setiap lencana memiliki ikon medali 3D SVG bergradasi tinggi, status pencapaian,
+ * dan dapat diklik untuk membuka modal rincian syarat perolehan.
  */
 export function AchievementList() {
   const [items, setItems] = useState<Achievement[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [selected, setSelected] = useState<Achievement | null>(null);
   const trackRef = useRef<HTMLUListElement>(null);
   const [edge, setEdge] = useState({ start: true, end: true });
 
@@ -28,7 +32,6 @@ export function AchievementList() {
     };
   }, []);
 
-  // Tombol panah dimatikan saat sudah mentok di ujung; tepi pudar juga mengikuti
   const updateEdge = useCallback(() => {
     const el = trackRef.current;
     if (!el) return;
@@ -58,8 +61,11 @@ export function AchievementList() {
   return (
     <section className={styles.card} aria-labelledby="lencana-title">
       <div className={styles.header}>
-        <h3 id="lencana-title" className={styles.title}>Lencana</h3>
-        {items && <span className={styles.count}>{earned.length} dari {items.length}</span>}
+        <div className={styles.titleGroup}>
+          <span aria-hidden="true">🎖️</span>
+          <h3 id="lencana-title" className={styles.title}>Lencana & Prestasi</h3>
+        </div>
+        {items && <span className={styles.count}>{earned.length} dari {items.length} diraih</span>}
         {scrollable && (
           <span className={styles.arrows}>
             <button type="button" className={styles.arrow} onClick={() => scrollBy(-1)} disabled={edge.start} aria-label="Lencana sebelumnya">
@@ -71,23 +77,106 @@ export function AchievementList() {
           </span>
         )}
       </div>
+
       {!items ? (
-        <p className={styles.loading}>Memuat lencana...</p>
+        <p className={styles.loading}>Memuat koleksi lencana...</p>
       ) : (
-        <div className={styles.viewport} data-start={edge.start || undefined} data-end={edge.end || undefined}>
+        <div className={styles.viewport}>
           <ul ref={trackRef} className={styles.track} onScroll={updateEdge} tabIndex={0} aria-label="Daftar lencana, gulir ke samping">
-            {sorted.map((a) => (
-              <li key={a.code} className={a.earnedAt ? styles.item : `${styles.item} ${styles.locked}`}>
-                <span className={styles.icon} aria-hidden="true">
-                  {a.earnedAt ? <TrophyIcon size={20} /> : <LockIcon size={18} />}
-                </span>
-                <span className={styles.name}>{a.name}</span>
-                <span className={styles.desc}>{a.description}</span>
-                <span className={styles.date}>{a.earnedAt ? dateFmt.format(new Date(a.earnedAt)) : "Belum didapat"}</span>
-                <span className="visually-hidden">{a.earnedAt ? "Sudah didapat" : ""}</span>
-              </li>
-            ))}
+            {sorted.map((a) => {
+              const isEarned = Boolean(a.earnedAt);
+              return (
+                <li
+                  key={a.code}
+                  className={`${styles.item} ${isEarned ? styles.itemEarned : styles.itemLocked}`}
+                  onClick={() => setSelected(a)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelected(a);
+                    }
+                  }}
+                  aria-label={`${a.name}: ${isEarned ? "Sudah diraih" : "Terkunci"}`}
+                >
+                  <div className={styles.badgeWrap}>
+                    <AchievementBadge code={a.code} earned={isEarned} size={58} />
+                  </div>
+                  <span className={styles.name}>{a.name}</span>
+                  <span className={styles.desc}>{a.description}</span>
+                  {isEarned ? (
+                    <span className={styles.datePill}>
+                      ✓ {dateFmt.format(new Date(a.earnedAt!))}
+                    </span>
+                  ) : (
+                    <span className={styles.lockedPill}>🔒 Belum diraih</span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
+        </div>
+      )}
+
+      {/* ── MODAL RINCIAN LENCANA ── */}
+      {selected && (
+        <div
+          className={styles.modalBackdrop}
+          onClick={() => setSelected(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-lencana-title"
+        >
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className={styles.modalClose}
+              onClick={() => setSelected(null)}
+              aria-label="Tutup rincian lencana"
+            >
+              <CloseIcon size={18} />
+            </button>
+
+            <div className={styles.modalBadgeStage}>
+              <AchievementBadge code={selected.code} earned={Boolean(selected.earnedAt)} size={92} />
+            </div>
+
+            <h4 id="modal-lencana-title" className={styles.modalTitle}>
+              {selected.name}
+            </h4>
+            <p className={styles.modalDesc}>{selected.description}</p>
+
+            <div
+              className={`${styles.modalStatusCard} ${
+                selected.earnedAt ? styles.modalStatusEarned : styles.modalStatusLocked
+              }`}
+            >
+              {selected.earnedAt ? (
+                <>
+                  <span>🎉 Berhasil Diraih!</span>
+                  <span style={{ fontSize: "0.75rem", fontWeight: 500, opacity: 0.9 }}>
+                    Dibuka pada {dateFmt.format(new Date(selected.earnedAt))}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span>🔒 Lencana Masih Terkunci</span>
+                  <span style={{ fontSize: "0.75rem", fontWeight: 500, opacity: 0.85 }}>
+                    Selesaikan target belajar di atas untuk membuka lencana ini.
+                  </span>
+                </>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className={styles.modalDoneBtn}
+              onClick={() => setSelected(null)}
+            >
+              Tutup
+            </button>
+          </div>
         </div>
       )}
     </section>

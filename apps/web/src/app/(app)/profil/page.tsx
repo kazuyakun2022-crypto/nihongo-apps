@@ -10,7 +10,7 @@ import { Alert } from "@/shared/ui/Alert";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 import type { Gender } from "@/features/auth/domain/types";
 import styles from "./profil.module.css";
-import { BookOpenIcon, BellIcon, CheckIcon, FileTextIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
+import { BookOpenIcon, BellIcon, CheckIcon, FileTextIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, SettingsIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
 import { learningApi } from "@/features/learning/data/learningApi";
 import { AchievementList } from "@/features/progress/ui/AchievementList";
 import { askConfirm } from "@/shared/ui/confirmDialog";
@@ -244,6 +244,18 @@ export default function ProfilPage() {
 
   return (
     <section className={styles.wrap} aria-label="Profil Pengguna">
+      {/* ── TOP HEADER BAR WITH SETTINGS ACTION ── */}
+      <div className={styles.topHeader}>
+        <div>
+          <span className={styles.topHeaderSubtitle}>Pusat Pembelajar</span>
+          <h1 className={styles.topHeaderTitle}>Profil Pengguna</h1>
+        </div>
+        <Link href="/profil/pengaturan" className={styles.settingsHeaderBtn} aria-label="Buka Pengaturan Akun & Profil">
+          <SettingsIcon size={18} />
+          <span>Pengaturan</span>
+        </Link>
+      </div>
+
       {pageNotice && <Alert tone="success">{pageNotice}</Alert>}
 
       <div className={styles.contentGrid}>
@@ -477,42 +489,61 @@ export default function ProfilPage() {
             )}
           </div>
 
-          {/* Quick shortcuts */}
-          <div className={styles.shortcutsCard}>
-            <h3 className={styles.shortcutTitle}>Akses Cepat</h3>
-            <div className={styles.shortcutLinks}>
-              <Link href="/belajar" className={styles.shortcutBtn}>
-                <BookOpenIcon size={14} /> Mulai Belajar
+          {/* Menu Pengaturan Cepat */}
+          <div className={styles.settingsNavigationCard}>
+            <h3 className={styles.cardHeaderTitle}>Pengaturan & Preferensi</h3>
+            <p className={styles.settingsNavDesc}>Sesuaikan data diri, akun, dan notifikasi pengingat harian.</p>
+            <div className={styles.settingsNavList}>
+              <Link href="/profil/pengaturan" className={styles.settingsNavTile}>
+                <div className={styles.settingsNavIconWrap} style={{ background: "var(--palette-beni-100)", color: "var(--color-primary)" }}>
+                  <PencilIcon size={16} />
+                </div>
+                <div className={styles.settingsNavText}>
+                  <span className={styles.settingsNavTitle}>Profil Pengguna</span>
+                  <span className={styles.settingsNavSub}>Foto profil, nama panggilan & panggilan</span>
+                </div>
+                <span className={styles.settingsNavChevron}>→</span>
               </Link>
-              <Link href="/huruf" className={styles.shortcutBtn}>
-                <TypeIcon size={14} /> Latihan Huruf
+
+              <Link href="/profil/pengaturan" className={styles.settingsNavTile}>
+                <div className={styles.settingsNavIconWrap} style={{ background: "#f3e8ff", color: "#7e22ce" }}>
+                  <LockIcon size={16} />
+                </div>
+                <div className={styles.settingsNavText}>
+                  <span className={styles.settingsNavTitle}>Akun & Keamanan</span>
+                  <span className={styles.settingsNavSub}>Email, kata sandi & status sesi</span>
+                </div>
+                <span className={styles.settingsNavChevron}>→</span>
               </Link>
-              <Link href="/review" className={styles.shortcutBtn}>
-                <RepeatIcon size={14} /> Review Kartu
+
+              <Link href="/profil/notifikasi" className={styles.settingsNavTile}>
+                <div className={styles.settingsNavIconWrap} style={{ background: "#dbeafe", color: "#1d4ed8" }}>
+                  <BellIcon size={16} />
+                </div>
+                <div className={styles.settingsNavText}>
+                  <span className={styles.settingsNavTitle}>Notifikasi & Pengingat</span>
+                  <span className={styles.settingsNavSub}>Jam pengingat & suara notifikasi</span>
+                </div>
+                <span className={styles.settingsNavChevron}>→</span>
               </Link>
-              <Link href="/simulasi" className={styles.shortcutBtn}>
-                <FileTextIcon size={14} /> Simulasi JLPT
-              </Link>
-              <Link href="/ngobrol" className={styles.shortcutBtn}>
-                <MessageIcon size={14} /> Tanya Miu-chan
-              </Link>
-              <Link href="/suara" className={styles.shortcutBtn}>
-                <MicIcon size={14} /> Ngobrol Suara
-              </Link>
-              <Link href="/profil/notifikasi" className={styles.shortcutBtn}>
-                <BellIcon size={14} /> Pengaturan Notifikasi
-              </Link>
+
               {(user.role === "admin" || user.role === "super_admin") && (
                 <Link
                   href="/admin"
-                  className={styles.shortcutBtn}
+                  className={styles.settingsNavTile}
                   style={{
-                    background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-strong) 100%)",
-                    color: "#ffffff",
-                    fontWeight: 700,
+                    border: "1.5px solid var(--color-primary-soft)",
+                    background: "radial-gradient(circle at 10% 50%, var(--palette-beni-100) 0%, var(--color-surface) 90%)",
                   }}
                 >
-                  <ShieldIcon size={16} /> Portal Admin
+                  <div className={styles.settingsNavIconWrap} style={{ background: "var(--color-primary)", color: "#ffffff" }}>
+                    <ShieldIcon size={16} />
+                  </div>
+                  <div className={styles.settingsNavText}>
+                    <span className={styles.settingsNavTitle}>Portal Admin Sistem</span>
+                    <span className={styles.settingsNavSub}>Dashboard moderasi & manajemen konten</span>
+                  </div>
+                  <span className={styles.settingsNavChevron}>→</span>
                 </Link>
               )}
             </div>

@@ -1014,3 +1014,136 @@
   background: var(--color-gold-soft);
   color: var(--color-gold);
 }
+
+
+/* ── Top Header with Settings Button ── */
+.topHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+}
+
+.topHeaderSubtitle {
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+}
+
+.topHeaderTitle {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.settingsHeaderBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all var(--motion-fast);
+}
+
+.settingsHeaderBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--palette-beni-100);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.1);
+}
+
+/* ── Settings Navigation Card ── */
+.settingsNavigationCard {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.settingsNavDesc {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.settingsNavList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settingsNavTile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: all var(--motion-fast);
+}
+
+.settingsNavTile:hover {
+  border-color: var(--color-primary-soft);
+  background: color-mix(in srgb, var(--palette-beni-100) 25%, var(--color-surface));
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.settingsNavIconWrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+}
+
+.settingsNavText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.settingsNavTitle {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.settingsNavSub {
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+}
+
+.settingsNavChevron {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text-muted);
+  transition: transform var(--motion-fast);
+}
+
+.settingsNavTile:hover .settingsNavChevron {
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
