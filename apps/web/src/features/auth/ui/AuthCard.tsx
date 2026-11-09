@@ -91,10 +91,10 @@ export function AuthCard({
         </div>
 
         <TransitionLink href="/" className={styles.stageBrand} title="Kembali ke halaman utama">
-          <Image src="/app-icon.png" alt="" width={40} height={40} className={styles.stageBrandIcon} />
+          <Image src="/app-icon.png" alt="日本語" width={40} height={40} className={styles.stageBrandIcon} />
           <span className={styles.stageBrandText}>
-            <strong>Nihongo</strong>
-            <span lang="ja">日本語 × ミウちゃん</span>
+            <strong>日本語</strong>
+            <span lang="ja">Nihongo × ミウちゃん</span>
           </span>
         </TransitionLink>
 
@@ -146,9 +146,9 @@ export function AuthCard({
             <ArrowLeftIcon size={16} />
             <span>Beranda</span>
           </TransitionLink>
-          <TransitionLink href="/" className={styles.brandBadge} title="Nihongo">
-            <Image src="/app-icon.png" alt="Nihongo" width={32} height={32} className={styles.brandIcon} />
-            <span className={styles.brandText}>Nihongo</span>
+          <TransitionLink href="/" className={styles.brandBadge} title="日本語">
+            <Image src="/app-icon.png" alt="日本語" width={32} height={32} className={styles.brandIcon} />
+            <span className={styles.brandText}>日本語</span>
           </TransitionLink>
         </header>
 

@@ -8,10 +8,10 @@ import { SplashGate } from "@/shared/ui/neko/SplashGate";
 import "@/shared/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Nihongo bersama Miu-chan", template: "%s · Nihongo" },
+  title: { default: "日本語 · Nihongo bersama Miu-chan", template: "%s · 日本語 (Nihongo)" },
   description: "Belajar bahasa Jepang dari nol sampai JLPT, dengan maskot AI untuk latihan ngobrol sesuai levelmu.",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Nihongo", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "日本語", statusBarStyle: "default" },
   icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
 };
 

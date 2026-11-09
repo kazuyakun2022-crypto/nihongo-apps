@@ -56,6 +56,38 @@
   opacity: 0.88;
 }
 
+.topBarLogoImg {
+  display: block;
+  flex: none;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(186, 38, 62, 0.28));
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.topBarBrand:hover .topBarLogoImg {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.brandLogoImg {
+  display: block;
+  flex: none;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 8px rgba(186, 38, 62, 0.32));
+  transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+.sidebarCollapsed .brandLogoImg {
+  width: 2.2rem;
+  height: 2.2rem;
+  margin: 0 auto;
+}
+
 .topBarSeal {
   display: grid;
   place-items: center;

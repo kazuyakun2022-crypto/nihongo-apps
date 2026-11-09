@@ -251,7 +251,7 @@ export function SplashScreen({
         </div>
 
         <h1 className={styles.title} style={{ margin: "10px 0 0", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
-          <span className={styles.titleJp} style={{ fontSize: "1.45rem", fontWeight: 800, color: "var(--color-primary, #b91c1c)" }}>にほんご</span>
+          <span className={styles.titleJp} style={{ fontSize: "1.45rem", fontWeight: 800, color: "var(--color-primary, #b91c1c)" }}>日本語</span>
           <span className={styles.titleSub} style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--color-text-muted, #736b6e)" }}>bersama Miu-chan</span>
         </h1>
 

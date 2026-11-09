@@ -220,12 +220,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className={`${styles.shell} ${collapsed ? styles.sidebarCollapsed : ""}`}>
         <nav className={styles.nav} aria-label="Menu utama">
           <span className={styles.brand}>
-            <span className={styles.brandSeal} aria-hidden="true" lang="ja">
-              日
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/app-icon.png" alt="日本語" className={styles.brandLogoImg} />
             <span className={styles.brandText}>
               <span className={styles.brandName} lang="ja">
-                にほんご
+                日本語
               </span>
               <span className={styles.brandTag}>{isAdmin ? "Panel pengelola" : "Belajar bersama Miu-chan"}</span>
             </span>
@@ -287,12 +286,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className={styles.topBarInner}>
               <div className={styles.topBarLeft}>
                 <Link href={isAdmin ? "/admin" : "/beranda"} className={styles.topBarBrand} title="Ke Beranda">
-                  <span className={styles.topBarSeal} aria-hidden="true" lang="ja">
-                    日
-                  </span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/app-icon.png" alt="日本語" className={styles.topBarLogoImg} />
                   <span className={styles.topBarBrandText}>
                     <span className={styles.topBarName} lang="ja">
-                      にほんご
+                      日本語
                     </span>
                     <span className={styles.topBarTag}>
                       {isAdmin ? "Panel pengelola" : "Belajar bersama Miu-chan"}

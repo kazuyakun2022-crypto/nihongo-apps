@@ -336,8 +336,8 @@ export default function LandingPage() {
               />
             </div>
             <div className={styles.brandText}>
-              <span className={styles.brandTitle}>Nihongo</span>
-              <span className={styles.brandSubtitle}>日本語 × ミウちゃん</span>
+              <span className={styles.brandTitle}>日本語</span>
+              <span className={styles.brandSubtitle}>Nihongo × ミウちゃん</span>
             </div>
           </Link>
 
@@ -781,9 +781,9 @@ export default function LandingPage() {
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
           <div className={styles.footerBrand}>
-            <Image src="/app-icon.png" alt="Miu-chan" width={32} height={32} style={{ borderRadius: "50%" }} />
+            <Image src="/app-icon.png" alt="日本語" width={32} height={32} style={{ borderRadius: "50%" }} />
             <span className={styles.footerBrandText}>
-              © 2026 Nihongo bersama Miu-chan. Aplikasi E-learning Bahasa Jepang & PWA.
+              © 2026 日本語 (Nihongo) bersama Miu-chan. Aplikasi E-learning Bahasa Jepang & PWA.
             </span>
           </div>
 
