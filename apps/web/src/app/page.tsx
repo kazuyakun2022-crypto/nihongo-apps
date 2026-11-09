@@ -23,6 +23,7 @@ import {
   StarIcon,
 } from "@/shared/ui/icons";
 import { ChibiMascot } from "@/shared/ui/neko/ChibiMascot";
+import { SakuraPetals } from "@/shared/ui/SakuraPetals";
 import { TransitionLink } from "@/shared/ui/ViewTransitions";
 import fujiBg from "../../public/images/fuji-bg.webp";
 import styles from "./landing.module.css";
@@ -312,14 +313,7 @@ export default function LandingPage() {
   return (
     <div className={styles.pageWrapper}>
       {/* ──────── Falling Sakura Petals Background ──────── */}
-      <div className={styles.sakuraContainer} aria-hidden="true">
-        <span className={styles.petal} style={{ left: "8%", animationDuration: "9s, 3s", animationDelay: "0s" }} />
-        <span className={styles.petal} style={{ left: "22%", animationDuration: "12s, 4s", animationDelay: "2s" }} />
-        <span className={styles.petal} style={{ left: "38%", animationDuration: "10s, 3.5s", animationDelay: "1s" }} />
-        <span className={styles.petal} style={{ left: "55%", animationDuration: "13s, 4.5s", animationDelay: "3s" }} />
-        <span className={styles.petal} style={{ left: "72%", animationDuration: "11s, 3.2s", animationDelay: "0.5s" }} />
-        <span className={styles.petal} style={{ left: "88%", animationDuration: "14s, 4s", animationDelay: "2.5s" }} />
-      </div>
+      <SakuraPetals />
 
       {/* ──────── Navigation Header ──────── */}
       <header className={styles.navbar}>

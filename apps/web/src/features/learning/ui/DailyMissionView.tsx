@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSpeech } from "@/shared/lib/useSpeech";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { Mascot } from "@/shared/ui/Mascot";
+import { StreakFlame } from "@/shared/ui/StreakFlame";
 import styles from "./dailyMission.module.css";
 
 // ── Types ──
@@ -203,9 +204,7 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             <div className={styles.mapHeader}>
               <h1 className={styles.mapTitle}>Misi hari ini</h1>
               <div className={styles.streakPill}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-                </svg>
+                <StreakFlame count={streak} size={16} />
                 <span>{streak} hari berturut</span>
               </div>
             </div>
@@ -395,10 +394,13 @@ export function DailyMissionView({ onBackToCatalog }: DailyMissionProps) {
             {/* Streak & Discipline Widget */}
             <div className={styles.sidebarCard}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h3 className={styles.sidebarCardTitle}>
+                <h3 className={styles.sidebarCardTitle} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <StreakFlame count={streak} size={20} />
                   <span>Streak {streak} Hari</span>
                 </h3>
-                <span style={{ fontSize: "0.75rem", color: "#3f7d32", fontWeight: "bold" }}>Konsisten!</span>
+                <span style={{ fontSize: "0.75rem", color: streak > 0 ? "#ea580c" : "var(--color-text-muted)", fontWeight: "bold" }}>
+                  {streak > 0 ? "Berkobar! 🔥" : "Mulai yuk!"}
+                </span>
               </div>
               <p style={{ margin: 0, fontSize: "var(--font-size-xs)", color: "var(--color-text-muted)" }}>
                 Belajar 10 menit setiap hari membantu daya ingat jangka panjang bertahan hingga 85% lebih kuat.

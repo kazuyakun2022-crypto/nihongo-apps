@@ -24,44 +24,6 @@
   }
 }
 
-/* ──────── Falling Sakura Petals ──────── */
-.sakuraContainer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 3;
-  contain: strict;
-}
-
-.petal {
-  position: absolute;
-  top: -30px;
-  width: 14px;
-  height: 20px;
-  background: linear-gradient(135deg, rgba(255, 192, 203, 0.75) 0%, rgba(242, 135, 160, 0.85) 100%);
-  opacity: 0.6;
-  border-radius: 12px 2px 14px 2px;
-  animation: sakuraFall linear infinite, sakuraDrift ease-in-out infinite alternate;
-  filter: drop-shadow(0 2px 4px rgba(242, 135, 160, 0.2));
-}
-
-@keyframes sakuraFall {
-  0% {
-    top: -5%;
-    transform: rotate(0deg) scale(0.85);
-  }
-  100% {
-    top: 105%;
-    transform: rotate(360deg) scale(1.1);
-  }
-}
-
-@keyframes sakuraDrift {
-  0% { margin-left: -12px; }
-  100% { margin-left: 12px; }
-}
-
 /* ═════════════════ PANEL MASKOT (DESKTOP) ═════════════════ */
 .stage {
   display: none;
@@ -1015,7 +977,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .petal,
   .mascotImg,
   .mascotAura,
   .card,

@@ -11,6 +11,7 @@ import { MiuStage } from "@/features/navigator/ui/MiuStage";
 import { InstallPrompt } from "./InstallPrompt";
 import { NotificationBell } from "@/features/notifications/ui/NotificationBell";
 import { InAppNotificationBanner } from "@/features/notifications/ui/InAppNotificationBanner";
+import { StreakBadge } from "@/shared/ui/StreakFlame";
 import styles from "./shell.module.css";
 import { ConfirmHost } from "@/shared/ui/confirmDialog";
 import {
@@ -352,6 +353,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <span className={isSuperAdmin ? styles.topBarSuperBadge : styles.topBarAdminBadge}>
                     {isSuperAdmin ? "Super Admin" : "Admin"}
                   </span>
+                )}
+                {!isAdmin && user && (
+                  <StreakBadge count={user.streakCount ?? 0} href="/profil" flameSize={18} />
                 )}
                 <NotificationBell inline />
               </div>

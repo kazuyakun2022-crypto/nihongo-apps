@@ -13,47 +13,6 @@
   position: relative;
 }
 
-/* ──────── Sakura Falling Petals Background ──────── */
-.sakuraContainer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.petal {
-  position: absolute;
-  top: -40px;
-  width: 14px;
-  height: 20px;
-  background: var(--color-sakura);
-  opacity: 0.65;
-  border-radius: 12px 1px 14px 1px;
-  animation: sakuraFall linear infinite, sakuraDrift ease-in-out infinite alternate;
-  filter: drop-shadow(0 2px 4px rgba(248, 114, 141, 0.2));
-}
-
-@keyframes sakuraFall {
-  0% {
-    top: -5%;
-    transform: rotate(0deg) scale(0.9);
-  }
-  100% {
-    top: 105%;
-    transform: rotate(360deg) scale(1.1);
-  }
-}
-
-@keyframes sakuraDrift {
-  0% {
-    margin-left: -24px;
-  }
-  100% {
-    margin-left: 24px;
-  }
-}
-
 /* ──────── Navigation Header ──────── */
 .navbar {
   position: sticky;
@@ -1370,7 +1329,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .petal,
   .mascotAura,
   .orbitBadge1,
   .orbitBadge2 {
