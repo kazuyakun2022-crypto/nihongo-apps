@@ -37,7 +37,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         {!splashSeen && (
           <>
-            <script dangerouslySetInnerHTML={{ __html: "window.__splashT0 = Date.now();" }} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.__splashT0 = Date.now();
+                  setTimeout(function() {
+                    try {
+                      var splash = document.getElementById('app-splash-overlay');
+                      if (splash) {
+                        splash.style.transition = 'opacity 0.35s ease-out';
+                        splash.style.opacity = '0';
+                        splash.style.pointerEvents = 'none';
+                        setTimeout(function() { if (splash && splash.parentNode) splash.parentNode.removeChild(splash); }, 400);
+                      }
+                    } catch (e) {}
+                  }, 2400);
+                `,
+              }}
+            />
             <link rel="preload" as="image" href="/neko/splash/miu-open.webp" type="image/webp" />
             <link rel="preload" as="image" href="/neko/splash/miu-wink.webp" type="image/webp" />
             <link rel="preload" as="image" href="/neko/splash/miu-closed.webp" type="image/webp" />

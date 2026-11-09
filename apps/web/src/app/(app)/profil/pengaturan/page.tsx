@@ -16,6 +16,7 @@ import {
   CircleCheckIcon,
   CircleXIcon,
   LockIcon,
+  LogoutIcon,
   PencilIcon,
   ShieldIcon,
   UserIcon,
@@ -394,8 +395,20 @@ export default function PengaturanPage() {
               Amankan akun jika kamu baru saja menggunakan komputer umum atau mendeteksi aktivitas mencurigakan.
             </p>
             <div className={styles.logoutSection}>
-              <Button variant="secondary" onClick={() => handleLogout(false)}>
-                Keluar dari Perangkat Ini
+              <Button
+                variant="secondary"
+                onClick={() => handleLogout(false)}
+                style={{
+                  color: "#dc2626",
+                  borderColor: "#fecaca",
+                  background: "#fef2f2",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  fontWeight: 700,
+                }}
+              >
+                <LogoutIcon size={16} strokeWidth={2.4} /> Keluar dari Perangkat Ini
               </Button>
               {!user.isGuest && (
                 <Button variant="ghost" onClick={() => handleLogout(true)} style={{ color: "#dc2626" }}>

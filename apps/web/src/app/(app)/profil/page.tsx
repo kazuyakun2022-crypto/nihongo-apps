@@ -10,7 +10,7 @@ import { Alert } from "@/shared/ui/Alert";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 import type { Gender } from "@/features/auth/domain/types";
 import styles from "./profil.module.css";
-import { BookOpenIcon, BellIcon, CheckIcon, FileTextIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, SettingsIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
+import { BookOpenIcon, BellIcon, CheckIcon, FileTextIcon, CircleCheckIcon, CircleXIcon, CloseIcon, HourglassIcon, LockIcon, LogoutIcon, MessageIcon, MicIcon, PencilIcon, RepeatIcon, SettingsIcon, ShieldIcon, TypeIcon } from "@/shared/ui/icons";
 import { learningApi } from "@/features/learning/data/learningApi";
 import { AchievementList } from "@/features/progress/ui/AchievementList";
 import { askConfirm } from "@/shared/ui/confirmDialog";
@@ -547,20 +547,36 @@ export default function ProfilPage() {
                 </Link>
               )}
             </div>
-          </div>
 
-          {/* Logout Actions */}
-          <div className={styles.actionsCard}>
-            <h3 className={styles.cardHeaderTitle}>Sesi Masuk</h3>
-            <p className={styles.actionsSub}>Keluar dari sesi browser ini atau amankan akun dengan keluar dari semua perangkat.</p>
-            <div className={styles.actions}>
-              <Button variant="secondary" type="button" onClick={() => handleTriggerLogout(false)}>
-                Keluar dari Akun Ini
-              </Button>
+            {/* Logout Terintegrasi */}
+            <div className={styles.logoutSection}>
+              <button
+                type="button"
+                className={styles.logoutTile}
+                onClick={() => handleTriggerLogout(false)}
+                aria-label="Keluar dari akun ini"
+              >
+                <div className={styles.logoutIconWrap}>
+                  <LogoutIcon size={18} strokeWidth={2.4} />
+                </div>
+                <div className={styles.logoutTileText}>
+                  <span className={styles.logoutTileTitle}>Keluar dari Akun</span>
+                  <span className={styles.logoutTileSub}>Akhiri sesi belajar di browser ini</span>
+                </div>
+                <span className={styles.logoutBadgeBtn}>
+                  <LogoutIcon size={14} strokeWidth={2.4} />
+                  <span>Keluar</span>
+                </span>
+              </button>
+
               {!user.isGuest && (
-                <Button variant="ghost" type="button" onClick={() => handleTriggerLogout(true)}>
-                  Keluar dari Semua Perangkat
-                </Button>
+                <button
+                  type="button"
+                  className={styles.logoutAllBtn}
+                  onClick={() => handleTriggerLogout(true)}
+                >
+                  Keluar dari semua perangkat aktif
+                </button>
               )}
             </div>
           </div>

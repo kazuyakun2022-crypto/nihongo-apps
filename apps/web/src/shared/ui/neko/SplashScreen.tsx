@@ -161,6 +161,7 @@ export function SplashScreen({
 
   return (
     <div
+      id="app-splash-overlay"
       className={`${styles.overlay} ${fadeOut ? styles.fadeOut : ""}`}
       style={{
         position: "fixed",

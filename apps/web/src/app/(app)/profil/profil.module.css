@@ -1147,3 +1147,112 @@
   color: var(--color-primary);
   transform: translateX(2px);
 }
+
+/* ── Integrated Logout Action ── */
+.logoutSection {
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.logoutTile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all var(--motion-fast);
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.05);
+}
+
+.logoutTile:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12);
+}
+
+.logoutIconWrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: #fee2e2;
+  color: #dc2626;
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+  transition: all var(--motion-fast);
+}
+
+.logoutTile:hover .logoutIconWrap {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.logoutTileText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.logoutTileTitle {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #dc2626;
+}
+
+.logoutTileSub {
+  font-size: 0.74rem;
+  color: #991b1b;
+  opacity: 0.9;
+}
+
+.logoutBadgeBtn {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #dc2626;
+  background: #ffffff;
+  border: 1px solid #fca5a5;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.08);
+  transition: all var(--motion-fast);
+}
+
+.logoutTile:hover .logoutBadgeBtn {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.logoutAllBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 6px 8px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-fast), background var(--motion-fast);
+}
+
+.logoutAllBtn:hover {
+  color: #dc2626;
+  background: #fef2f2;
+}
