@@ -8,6 +8,8 @@ import { Button } from "@/shared/ui/Button";
 import { Mascot } from "@/shared/ui/Mascot";
 import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { NekoAvatar } from "@/shared/ui/neko/NekoAvatar";
+import { AchievementUnlockModal } from "@/features/progress/ui/AchievementUnlockModal";
+import { useCountUp } from "@/features/learning/ui/ScoreScreen";
 import { useReview, type ReviewedRecord } from "../application/useReview";
 import { useDailyReview } from "../application/DailyReviewContext";
 import { ReviewSpeakTest } from "./ReviewSpeakTest";
@@ -34,17 +36,21 @@ export function ReviewDeck() {
     revealed,
     reveal,
     grade,
-    reviewedItems,
     summary,
     reviewAgain,
+    latestProgress,
+    unlockedAchievements,
   } = useReview();
+
+  const [dismissedAchievements, setDismissedAchievements] = useState(false);
+  const expEarned = summary.total ? summary.total * 10 : 50;
+  const shownXp = useCountUp(current ? 0 : expEarned, 800, 200);
 
   const { completeObligation } = useDailyReview();
   const [speakTestCards, setSpeakTestCards] = useState<DueCard[] | null>(null);
   useLayerBack(speakTestCards !== null, () => setSpeakTestCards(null), "review-speak-test");
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
   const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
-  const [showRecap, setShowRecap] = useState(false);
 
   // Saat seluruh kartu habis / selesai, tandai kewajiban harian tuntas
   useEffect(() => {
@@ -144,214 +150,81 @@ export function ReviewDeck() {
     );
   }
 
-  // ── TAMPILAN SETELAH SELESAI (COMPLETION HUB SUPER MENARIK) ──
+  // ── TAMPILAN SETELAH SELESAI (SIMPLE & CLEAN COMPLETION) ──
   if (!current) {
-    const itemsToShow: ReviewedRecord[] = reviewedItems;
     const accuracy =
       summary.total > 0
         ? Math.round(((summary.bisa + summary.mudah) / summary.total) * 100)
         : 100;
+    const expEarned = summary.total ? summary.total * 10 : 50;
+    const difficultCount = summary.lupa + summary.sulit;
 
     return (
-      <div className={styles.hubContainer} data-spotlight="review-selesai">
-        {/* Hero Card */}
-        <div className={styles.heroCard}>
-          <div style={{ width: 140, height: 140, display: "grid", placeContent: "center" }}>
+      <div className={styles.simpleCompleteWrap} data-spotlight="review-selesai">
+        <div className={styles.simpleCompleteCard}>
+          <div className={styles.simpleAvatarWrap}>
             <NekoAvatar
               mode="idle"
               emotion="senang"
-              size={135}
+              size={110}
               label="Miu-chan Selamat!"
             />
           </div>
 
-          <span className={styles.heroBadge}>
-            KEWAJIBAN HARIAN TUNTAS 🎉 · STREAK AKTIF
+          <span className={styles.simpleBadge}>
+            🎉 Review Hari Ini Selesai!
           </span>
 
-          <h1 className={styles.heroTitle}>Sesi Review Berhasil Tuntas!</h1>
-          <p className={styles.heroDesc}>
-            Kerja bagus! Seluruh kosakata jatuh tempo hari ini telah kamu perkuat. Seluruh materi, bab, dan fitur belajar kini terbuka bebas.
+          <h1 className={styles.simpleTitle}>Kerja Bagus!</h1>
+          <p className={styles.simpleDesc}>
+            Semua kosakata jatuh tempo hari ini telah berhasil kamu latih. Materi dan bab belajar kini terbuka bebas!
           </p>
 
-          {/* Stats 4-Grid */}
-          <div className={styles.statsGrid}>
-            <div className={styles.statCard}>
-              <span className={styles.statValue}>{summary.total || "Tuntas"}</span>
-              <span className={styles.statLabel}>Total Kartu</span>
+          {/* 3 Metrik Esensial Ringkas */}
+          <div className={styles.simpleStatsRow}>
+            <div className={styles.simpleStatItem}>
+              <span className={styles.simpleStatNum}>{summary.total}</span>
+              <span className={styles.simpleStatLabel}>Kartu Selesai</span>
             </div>
-            <div className={styles.statCard}>
-              <span className={styles.statValue} style={{ color: "#16a34a" }}>
-                {accuracy}%
-              </span>
-              <span className={styles.statLabel}>Penguasaan</span>
+            <div className={styles.simpleStatDivider} />
+            <div className={styles.simpleStatItem}>
+              <span className={styles.simpleStatNum} style={{ color: "#16a34a" }}>{accuracy}%</span>
+              <span className={styles.simpleStatLabel}>Penguasaan</span>
             </div>
-            <div className={styles.statCard}>
-              <span className={styles.statValue} style={{ color: "#ea580c" }}>
-                +{summary.total ? summary.total * 10 : 50}
-              </span>
-              <span className={styles.statLabel}>EXP Didapat</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statValue} style={{ color: "#2563eb" }}>
-                100%
-              </span>
-              <span className={styles.statLabel}>Target Hari Ini</span>
+            <div className={styles.simpleStatDivider} />
+            <div className={styles.simpleStatItem}>
+              <span className={styles.simpleStatNum} style={{ color: "#ea580c" }}>+{shownXp}</span>
+              <span className={styles.simpleStatLabel}>XP Didapat</span>
             </div>
           </div>
-        </div>
 
-        {/* ── PILIHAN AKSI UTAMA DI ATAS (MUDAH DIAKSES TANPA SCROLL) ── */}
-        <div className={styles.optionsSection}>
-          <div className={styles.optionsGrid}>
-            <Link href="/beranda" className={`${styles.actionTile} ${styles.actionTilePrimary}`}>
-              <div className={styles.actionTileIcon} style={{ background: "#dcfce7", color: "#15803d" }}>
-                🏠
-              </div>
-              <div className={styles.actionTileText}>
-                <span className={styles.actionTileTitle}>Kembali ke Beranda</span>
-                <span className={styles.actionTileDesc}>Selesai & cek statistik harian</span>
-              </div>
+          {/* Tombol Aksi Simpel & Fokus */}
+          <div className={styles.simpleActionCol}>
+            <Link href="/belajar" className={styles.simpleBtnPrimary}>
+              Lanjut Belajar Materi Bab →
             </Link>
 
-            {summary.lupa + summary.sulit > 0 ? (
+            {difficultCount > 0 && (
               <button
                 type="button"
-                className={styles.actionTile}
+                className={styles.simpleBtnSecondary}
                 onClick={() => reviewAgain(true)}
               >
-                <div className={styles.actionTileIcon} style={{ background: "#fef3c7", color: "#b45309" }}>
-                  🔄
-                </div>
-                <div className={styles.actionTileText}>
-                  <span className={styles.actionTileTitle}>Review Ulang Kata Sulit</span>
-                  <span className={styles.actionTileDesc}>
-                    {summary.lupa + summary.sulit} kata perlu dimantapkan lagi
-                  </span>
-                </div>
-              </button>
-            ) : (
-              <button
-                type="button"
-                className={styles.actionTile}
-                onClick={() => reviewAgain(false)}
-              >
-                <div className={styles.actionTileIcon} style={{ background: "#f3e8ff", color: "#7e22ce" }}>
-                  🔄
-                </div>
-                <div className={styles.actionTileText}>
-                  <span className={styles.actionTileTitle}>Review Ulang Semua</span>
-                  <span className={styles.actionTileDesc}>Latih memori jangka panjang</span>
-                </div>
+                🔄 Ulangi Kata Sulit ({difficultCount})
               </button>
             )}
 
-            <Link href="/belajar" className={styles.actionTile}>
-              <div className={styles.actionTileIcon}>📖</div>
-              <div className={styles.actionTileText}>
-                <span className={styles.actionTileTitle}>Lanjut Materi Bab</span>
-                <span className={styles.actionTileDesc}>Buka kurikulum dan bab baru</span>
-              </div>
+            <Link href="/beranda" className={styles.simpleBtnGhost}>
+              Kembali ke Beranda
             </Link>
           </div>
         </div>
 
-        {/* ── VIP FEATURED ACTION: TES SPEAK BERSAMA MIU-CHAN ── */}
-        <button
-          type="button"
-          className={styles.vipCard}
-          onClick={() => {
-            const cardsForSpeak =
-              itemsToShow.length > 0
-                ? itemsToShow.map((r) => r.card)
-                : [];
-            setSpeakTestCards(cardsForSpeak);
-          }}
-          aria-label="Mulai Tes Speak Bersama Miu-chan"
-        >
-          <div className={styles.vipContent}>
-            <span className={styles.vipBadge}>Fitur Unggulan Interaktif</span>
-            <h3 className={styles.vipTitle}>🎙️ Tes Speak Bersama Miu-chan</h3>
-            <p className={styles.vipDesc}>
-              Uji langsung pelafalan lisanmu dengan Voice AI Miu-chan untuk kosakata yang baru kamu review. Interaktif, tidak kaku, dan langsung dievaluasi!
-            </p>
-          </div>
-          <div className={styles.vipIconWrap} aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm7 9a1 1 0 0 1 1 1 8 8 0 0 1-7 7.93V21h2a1 1 0 0 1 0 2H9a1 1 0 0 1 0-2h2v-2.07A8 8 0 0 1 4 11a1 1 0 0 1 2 0 6 6 0 0 0 12 0 1 1 0 0 1 1-1z" />
-            </svg>
-          </div>
-        </button>
-
-        {/* ── KOSAKATA YANG BARU DIPELAJARI / DIREVIEW (COLLAPSIBLE) ── */}
-        {itemsToShow.length > 0 && (
-          <div className={styles.recapSection}>
-            <button
-              type="button"
-              className={styles.recapToggleBtn}
-              onClick={() => setShowRecap((prev) => !prev)}
-              aria-expanded={showRecap}
-            >
-              <div className={styles.recapToggleLeft}>
-                <span className={styles.recapToggleIcon}>📚</span>
-                <span className={styles.recapToggleText}>
-                  Rincian Kosakata yang Direview
-                </span>
-                <span className={styles.recapCountBadge}>{itemsToShow.length} kata</span>
-              </div>
-              <span className={styles.recapToggleAction}>
-                {showRecap ? "Tutup ▲" : "Lihat Daftar ▼"}
-              </span>
-            </button>
-
-            {showRecap && (
-              <div className={styles.recapGrid}>
-                {itemsToShow.map(({ card, grade: g }) => (
-                  <div key={card.id} className={styles.recapCard}>
-                    <div className={styles.recapWordInfo}>
-                      <span className={styles.recapFront} lang="ja">
-                        {card.front}
-                      </span>
-                      {card.reading && (
-                        <span className={styles.recapReading} lang="ja">
-                          {card.reading}
-                        </span>
-                      )}
-                      <span className={styles.recapMeaning}>{card.meaning}</span>
-                    </div>
-
-                    <div className={styles.recapRightActions}>
-                      <span
-                        className={`${styles.recapGradeBadge} ${
-                          g === "lupa"
-                            ? styles.badgeLupa
-                            : g === "sulit"
-                            ? styles.badgeSulit
-                            : g === "bisa"
-                            ? styles.badgeBisa
-                            : styles.badgeMudah
-                        }`}
-                      >
-                        {g}
-                      </span>
-
-                      <button
-                        type="button"
-                        className={styles.iconBtn}
-                        onClick={() =>
-                          playWordAudio(card.reading || card.front, card.id)
-                        }
-                        aria-label={`Dengarkan pelafalan ${card.front}`}
-                        title="Dengarkan pelafalan"
-                      >
-                        {playingAudioId === card.id ? "🔊" : "🔈"}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        {!dismissedAchievements && unlockedAchievements && unlockedAchievements.length > 0 && (
+          <AchievementUnlockModal
+            achievements={unlockedAchievements}
+            onClose={() => setDismissedAchievements(true)}
+          />
         )}
       </div>
     );

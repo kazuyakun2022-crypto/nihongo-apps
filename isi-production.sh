@@ -53,7 +53,7 @@ fi
 echo
 echo "== 1/5 Migrasi schema basis data =="
 # Jalankan migrasi Prisma untuk memastikan semua tabel dan kolom terbaru terpasang di database
-npx prisma migrate deploy --schema prisma/schema.prisma
+npx --yes prisma@5 migrate deploy --schema prisma/schema.prisma
 
 echo
 echo "== 2/5 Bab dataset JLPT + bank soal ujian =="

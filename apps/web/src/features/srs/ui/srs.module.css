@@ -321,6 +321,180 @@
 }
 
 /* ==============================================================================
+   ── COMPLETION SCREEN (SIMPLE & CLEAN) ──
+   ============================================================================== */
+.simpleCompleteWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-4) var(--space-2);
+  animation: var(--kf-fadeInUp) var(--motion-entrance) var(--ease-entrance) backwards;
+}
+
+.simpleCompleteCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 26rem;
+  padding: var(--space-6) var(--space-5);
+  border-radius: 24px;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+.simpleAvatarWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.simpleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border: 1px solid rgba(21, 128, 61, 0.2);
+}
+
+.simpleTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.simpleDesc {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  max-width: 22rem;
+}
+
+.simpleStatsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--color-bg-subtle, #f8fafc);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg, 16px);
+  margin: var(--space-2) 0;
+  box-sizing: border-box;
+}
+
+.simpleStatItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.simpleStatNum {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.15;
+}
+
+.simpleStatLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.simpleStatDivider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-border);
+}
+
+.simpleActionCol {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-2);
+}
+
+.simpleBtnPrimary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary, #b91c1c);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.28);
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.simpleBtnPrimary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(185, 28, 28, 0.38);
+}
+
+.simpleBtnSecondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.simpleBtnSecondary:hover {
+  background: var(--color-bg-subtle, #f8fafc);
+  border-color: color-mix(in srgb, var(--color-border) 60%, var(--color-text));
+}
+
+.simpleBtnGhost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 12px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.simpleBtnGhost:hover {
+  color: var(--color-text);
+}
+
+/* ==============================================================================
    ── COMPLETION HUB (OPSI SETELAH REVIEW SUPER LENGKAP & MENARIK) ──
    ============================================================================== */
 .hubContainer {

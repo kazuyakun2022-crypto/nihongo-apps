@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { srsApi } from "../data/srsApi";
-import type { DueCard, ReviewGrade } from "../domain/types";
+import type { DueCard, ReviewGrade, ReviewResult } from "../domain/types";
+import { useAuth } from "@/features/auth/application/AuthProvider";
 
 export interface ReviewedRecord {
   card: DueCard;
@@ -12,12 +13,17 @@ export interface ReviewedRecord {
 
 /** Tampilkan kartu jatuh tempo, nilai diri, lalu jadwalkan ulang dengan pencatatan riwayat sesi. */
 export function useReview() {
+  const { updateUser } = useAuth();
   const [cards, setCards] = useState<DueCard[] | null>(null);
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [reviewedItems, setReviewedItems] = useState<ReviewedRecord[]>([]);
+  const [unlockedAchievements, setUnlockedAchievements] = useState<
+    { code: string; name: string; description?: string }[]
+  >([]);
+  const [latestProgress, setLatestProgress] = useState<ReviewResult["progress"] | null>(null);
 
   /** Ketukan ganda pada tombol nilai tidak boleh mengirim dua kali (dan melompati kartu berikutnya). */
   const pendingRef = useRef(false);
@@ -28,6 +34,8 @@ export function useReview() {
     setIndex(0);
     setRevealed(false);
     setReviewedItems([]);
+    setUnlockedAchievements([]);
+    setLatestProgress(null);
     srsApi
       .due()
       .then((r) => setCards(r.cards))
@@ -47,7 +55,14 @@ export function useReview() {
     setPending(true);
     const itemBeingGraded = current;
     try {
-      await srsApi.review(itemBeingGraded.id, g).catch(() => undefined);
+      const res = await srsApi.review(itemBeingGraded.id, g).catch(() => undefined);
+      if (res?.progress) {
+        setLatestProgress(res.progress);
+        updateUser({ xpTotal: res.progress.xpTotal, streakCount: res.progress.streak });
+        if (res.progress.newAchievements?.length) {
+          setUnlockedAchievements((prev) => [...prev, ...res.progress!.newAchievements]);
+        }
+      }
       setReviewedItems((prev) => [...prev, { card: itemBeingGraded, grade: g, timestamp: Date.now() }]);
       setRevealed(false);
       setIndex((i) => i + 1);
@@ -95,5 +110,7 @@ export function useReview() {
     reviewedItems,
     summary,
     reviewAgain,
+    latestProgress,
+    unlockedAchievements,
   };
 }

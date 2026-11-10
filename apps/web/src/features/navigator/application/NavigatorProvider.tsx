@@ -72,6 +72,8 @@ interface NavigatorContextValue {
   endTour: (completed?: boolean) => void;
   /** Bacakan satu kalimat langkah tur (memotong suara sebelumnya). */
   speakLine: (text: string) => void;
+  /** Muat lebih awal audio ucapan ke cache browser agar pemutaran instan tanpa jeda. */
+  prefetchSpeak: (text: string) => void;
   /** Dipanggil komponen ujian di dalam halaman biasa (mis. kuis bab) selama ujian berlangsung. */
   lockForExam: (key: string, locked: boolean) => void;
   /** Detail layar saat ini (mis. bab & langkah) untuk konteks jawaban Miu-chan. */
@@ -248,7 +250,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /** Bacakan teks dengan suara Miu-chan; audio disimpan supaya langkah yang diulang tidak meminta suara lagi. */
-  const speak = useCallback(async (text: string, run: number, after: VoiceState) => {
+  const speak = useCallback(async (text: string, run: number, after: VoiceState, engine: "auto" | "edge" = "edge") => {
     audioRef.current?.pause();
     if (mutedRef.current || !text) {
       setVoiceState(after);
@@ -261,7 +263,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
         const res = await fetch("/api/ask/speak", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ text, emotion: "senang", rate: 1 }),
+          body: JSON.stringify({ text, emotion: "senang", rate: 1, engine }),
         });
         if (!res.ok) throw new Error("tts");
         url = URL.createObjectURL(await res.blob());
@@ -287,6 +289,29 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
     } catch {
       if (run === runRef.current) setVoiceState(after);
     }
+  }, []);
+
+  /** Prefetch audio langkah selanjutnya ke cache browser agar bicara seketika tanpa jeda. */
+  const prefetchSpeak = useCallback((text: string) => {
+    if (!text || audioCache.current.has(text) || mutedRef.current) return;
+    void fetch("/api/ask/speak", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ text, emotion: "senang", rate: 1, engine: "edge" }),
+    })
+      .then((res) => (res.ok ? res.blob() : null))
+      .then((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const cache = audioCache.current;
+        if (cache.size >= AUDIO_CACHE_MAX) {
+          const oldest = cache.keys().next().value as string;
+          URL.revokeObjectURL(cache.get(oldest)!);
+          cache.delete(oldest);
+        }
+        cache.set(text, url);
+      })
+      .catch(() => {});
   }, []);
 
   /* ── Tur ── */
@@ -607,6 +632,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       tourBack,
       endTour,
       speakLine,
+      prefetchSpeak,
       lockForExam,
       setScreenDetail,
       assessment,
@@ -620,7 +646,7 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
       getMicLevel,
       getVoiceLevel,
     }),
-    [isWidgetVisible, examLocked, isMuted, captionsOn, voiceState, caption, micError, band, tour, toggleListening, sendCommand, setMuted, setCaptionsOn, dismissCaption, startTour, tourNext, tourBack, endTour, speakLine, lockForExam, setScreenDetail, assessment, setAssessment, stage, openStage, closeStage, welcome, acceptWelcome, skipWelcome, getMicLevel, getVoiceLevel],
+    [isWidgetVisible, examLocked, isMuted, captionsOn, voiceState, caption, micError, band, tour, toggleListening, sendCommand, setMuted, setCaptionsOn, dismissCaption, startTour, tourNext, tourBack, endTour, speakLine, prefetchSpeak, lockForExam, setScreenDetail, assessment, setAssessment, stage, openStage, closeStage, welcome, acceptWelcome, skipWelcome, getMicLevel, getVoiceLevel],
   );
 
   return <NavigatorContext.Provider value={value}>{children}</NavigatorContext.Provider>;

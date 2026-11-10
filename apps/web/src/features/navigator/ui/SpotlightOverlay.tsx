@@ -30,7 +30,7 @@ const sameRect = (a: Rect | null, b: Rect | null) =>
  */
 export function SpotlightOverlay() {
   const nav = useNavigator();
-  const { tour, tourNext, endTour, speakLine, band } = nav;
+  const { tour, tourNext, endTour, speakLine, prefetchSpeak, band } = nav;
   const step = tour ? tour.steps[tour.index] : null;
 
   const [status, setStatus] = useState<Status>("finding");
@@ -147,12 +147,24 @@ export function SpotlightOverlay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tour?.seq]);
 
-  // Bacakan langkah begitu targetnya ketemu (atau dinyatakan tidak ada), sekali per langkah
+  // Bacakan langkah segera saat langkah aktif tanpa menunggu pencarian target di DOM selesai
   useEffect(() => {
-    if (!tour || status === "finding" || spokenSeq.current === tour.seq) return;
+    if (!tour || !lines?.speech || spokenSeq.current === tour.seq) return;
     spokenSeq.current = tour.seq;
-    speakLine(status === "missing" ? missingText : lines?.speech ?? "");
-  }, [tour, status, lines?.speech, missingText, speakLine]);
+    speakLine(lines.speech);
+  }, [tour?.seq, lines?.speech, speakLine]);
+
+  // Muat di latar belakang suara langkah selanjutnya agar saat tombol Lanjut ditekan suaranya instan
+  useEffect(() => {
+    if (!tour) return;
+    const nextStep = tour.steps[tour.index + 1];
+    if (nextStep) {
+      const nextLines = linesFor(nextStep.say, band);
+      if (nextLines?.speech) {
+        prefetchSpeak(nextLines.speech);
+      }
+    }
+  }, [tour?.index, tour?.steps, band, prefetchSpeak]);
 
   useEffect(() => {
     if (!tour) return;

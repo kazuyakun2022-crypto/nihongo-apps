@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Mascot } from "@/shared/ui/Mascot";
+import { StreakFlame } from "@/shared/ui/StreakFlame";
+import { AchievementUnlockModal, type UnlockedAchievement } from "@/features/progress/ui/AchievementUnlockModal";
 import { starsFor } from "./WorldMap";
 import styles from "./scoreScreen.module.css";
 import { StarIcon } from "@/shared/ui/icons";
@@ -46,6 +48,8 @@ export function ScoreScreen({
   correct,
   graded,
   chapterTitle,
+  streak,
+  newAchievements,
   onRestartStudy,
   onRetryQuiz,
   onShowReview,
@@ -57,11 +61,15 @@ export function ScoreScreen({
   correct: number;
   graded: number;
   chapterTitle: string;
+  streak?: number;
+  newAchievements?: UnlockedAchievement[];
   onRestartStudy: () => void;
   onRetryQuiz: () => void;
   onShowReview: () => void;
 }) {
   const shown = useCountUp(score, 1200, 350);
+  const shownXp = useCountUp(xpEarned, 800, 300);
+  const [dismissedAchievements, setDismissedAchievements] = useState(false);
   const stars = passed ? starsFor(score) : 0;
   const gap = Math.max(0, passingScore - score);
   const passAngle = (passingScore / 100) * 360;
@@ -85,14 +93,24 @@ export function ScoreScreen({
         </div>
       )}
 
-      <div className={styles.inner}>
+      <div className={styles.cardModal}>
+        <div className={styles.mascotTop}>
+          <Mascot mood={passed ? "senang" : "berpikir"} size={88} title="" />
+        </div>
+
+        <span className={styles.badgePill} data-passed={passed || undefined}>
+          {passed ? "🎉 Bab Selesai!" : "💪 Belum Lulus"}
+        </span>
+
+        <h2 id="score-heading" className={styles.heading}>
+          {passed ? "Luar Biasa, Kamu Berhasil!" : "Hampir Berhasil!"}
+        </h2>
         <p className={styles.chapter}>{chapterTitle}</p>
 
         <div className={styles.ringWrap}>
           <svg className={styles.ring} viewBox="0 0 180 180" aria-hidden>
             <circle cx="90" cy="90" r={R} className={styles.ringTrack} />
             <circle cx="90" cy="90" r={R} className={styles.ringFill} strokeDasharray={C} strokeDashoffset={C * (1 - shown / 100)} />
-            {/* Penanda batas lulus */}
             <line x1="90" y1="8" x2="90" y2="30" className={styles.passTick} transform={`rotate(${passAngle} 90 90)`} />
           </svg>
           <div className={styles.ringCenter}>
@@ -104,62 +122,88 @@ export function ScoreScreen({
               {correct}/{graded} benar
             </span>
           </div>
-          <span className={styles.mascot} aria-hidden>
-            <Mascot mood={passed ? "senang" : "berpikir"} size={72} title="" />
-          </span>
         </div>
 
-        <div className={styles.verdict}>
-          <h2 id="score-heading" className={styles.heading}>
-            {passed ? "Bab Selesai!" : "Belum Lulus"}
-          </h2>
+        {passed ? (
+          <div className={styles.verdict}>
+            <div className={styles.stars} aria-label={`${stars} dari 3 bintang`}>
+              {[0, 1, 2].map((i) => (
+                <span key={i} data-on={i < stars || undefined} style={{ "--si": i } as React.CSSProperties}>
+                  <StarIcon filled size={34} strokeWidth={1.5} />
+                </span>
+              ))}
+            </div>
 
-          {passed ? (
-            <>
-              <p className={styles.stars} aria-label={`${stars} dari 3 bintang`}>
-                {[0, 1, 2].map((i) => (
-                  <span key={i} data-on={i < stars || undefined} style={{ "--si": i } as React.CSSProperties}>
-                    <StarIcon filled size={36} strokeWidth={1.5} />
-                  </span>
-                ))}
-              </p>
-              <p className={styles.meta}>
-                Batas lulus {passingScore}% · <strong>+{xpEarned} XP</strong>
-              </p>
-              <div className={styles.actions}>
-                <button type="button" className={styles.btnGhost} onClick={onRestartStudy}>
-                  Ulang pembelajaran
-                </button>
-                <Link href="/belajar" className={styles.btnPrimary}>
-                  Lanjut ke bab berikutnya →
-                </Link>
+            <div className={styles.quickStatsRow}>
+              <div className={styles.statPill}>
+                <span className={styles.statPillLabel}>Poin XP</span>
+                <span className={`${styles.statPillVal} ${styles.statPillValXp}`}>+{shownXp} XP</span>
               </div>
+              <div className={styles.statPill}>
+                <span className={styles.statPillLabel}>Akurasi</span>
+                <span className={styles.statPillVal}>{Math.round((correct / Math.max(graded, 1)) * 100)}%</span>
+              </div>
+              <div className={styles.statPill}>
+                <span className={styles.statPillLabel}>Batas Lulus</span>
+                <span className={styles.statPillVal}>{passingScore}%</span>
+              </div>
+            </div>
 
-              <button type="button" className={styles.reviewFeaturedBtn} onClick={onShowReview}>
-                <span>📖</span>
-                <span>Lihat Pembahasan, Yang Dipelajari & Tes Speak →</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <div className={styles.notice} role="alert">
-                <strong>
-                  Butuh {passingScore}% untuk lulus, nilaimu kurang {gap} poin.
-                </strong>
-                <span>Bab berikutnya masih terkunci. Kerjakan kuisnya sekali lagi; materinya tidak perlu diulang.</span>
+            {streak !== undefined && streak > 0 && (
+              <div className={styles.streakCard}>
+                <div className={styles.streakFlameWrap}>
+                  <StreakFlame count={streak} size={26} />
+                </div>
+                <div className={styles.streakInfo}>
+                  <span className={styles.streakTitle}>🔥 Streak {streak} Hari Aktif!</span>
+                  <span className={styles.streakSub}>Semangat belajarmu terus berkobar hari ini.</span>
+                </div>
               </div>
-              <div className={styles.actions}>
-                <button type="button" className={styles.btnPrimary} onClick={onRetryQuiz}>
-                  Coba kuis lagi
-                </button>
+            )}
+
+            <div className={styles.actions}>
+              <Link href="/belajar" className={styles.btnPrimary}>
+                Lanjut ke Bab Berikutnya →
+              </Link>
+              <div className={styles.actionRowSecondary}>
                 <button type="button" className={styles.btnGhost} onClick={onShowReview}>
-                  Lihat pembahasan soal
+                  📝 Pembahasan Soal
+                </button>
+                <button type="button" className={styles.btnGhost} onClick={onRestartStudy}>
+                  🔄 Ulang Materi
                 </button>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.verdict}>
+            <div className={styles.notice} role="alert">
+              <strong>Butuh {passingScore}% untuk lulus (kurang {gap}% lagi).</strong>
+              <span>Bab berikutnya masih terkunci. Yuk coba kuisnya sekali lagi!</span>
+            </div>
+            <div className={styles.actions}>
+              <button type="button" className={styles.btnPrimary} onClick={onRetryQuiz}>
+                Coba Kuis Lagi →
+              </button>
+              <div className={styles.actionRowSecondary}>
+                <button type="button" className={styles.btnGhost} onClick={onShowReview}>
+                  📝 Lihat Pembahasan
+                </button>
+                <button type="button" className={styles.btnGhost} onClick={onRestartStudy}>
+                  🔄 Pelajari Ulang
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {!dismissedAchievements && newAchievements && newAchievements.length > 0 && (
+        <AchievementUnlockModal
+          achievements={newAchievements}
+          onClose={() => setDismissedAchievements(true)}
+        />
+      )}
     </div>,
     document.body,
   );
