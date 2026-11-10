@@ -672,6 +672,8 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
         correct={correct}
         graded={graded}
         chapterTitle={title}
+        streak={progress?.streak}
+        newAchievements={progress?.newAchievements}
         onRestartStudy={lesson.restartStudy}
         onRetryQuiz={lesson.retryQuiz}
         onShowReview={() => setShowReview(true)}

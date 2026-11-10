@@ -74,7 +74,7 @@ if (-not $AutoYes) {
 }
 
 Write-Host "`n== 1/5 Migrasi schema basis data production ==" -ForegroundColor Cyan
-npx prisma migrate deploy --schema prisma/schema.prisma
+npx --yes prisma@5 migrate deploy --schema prisma/schema.prisma
 
 Write-Host "`n== 2/5 Bab dataset JLPT + bank soal ujian ==" -ForegroundColor Cyan
 npx tsx prisma/scripts/importCurriculum.ts

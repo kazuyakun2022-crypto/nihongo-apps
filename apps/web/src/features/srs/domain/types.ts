@@ -8,7 +8,18 @@ export interface DueCard {
   meaning: string;
 }
 
+export interface ReviewResult {
+  nextReviewInDays: number;
+  isWeak?: boolean;
+  progress?: {
+    xpEarned: number;
+    xpTotal: number;
+    streak: number;
+    newAchievements: { code: string; name: string; description?: string }[];
+  };
+}
+
 export interface SrsRepository {
   due(): Promise<{ total: number; cards: DueCard[] }>;
-  review(cardId: string, grade: ReviewGrade): Promise<{ nextReviewInDays: number }>;
+  review(cardId: string, grade: ReviewGrade): Promise<ReviewResult>;
 }

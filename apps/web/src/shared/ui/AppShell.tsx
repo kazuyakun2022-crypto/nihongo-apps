@@ -11,7 +11,6 @@ import { MiuStage } from "@/features/navigator/ui/MiuStage";
 import { InstallPrompt } from "./InstallPrompt";
 import { NotificationBell } from "@/features/notifications/ui/NotificationBell";
 import { InAppNotificationBanner } from "@/features/notifications/ui/InAppNotificationBanner";
-import { StreakBadge } from "@/shared/ui/StreakFlame";
 import styles from "./shell.module.css";
 import { ConfirmHost } from "@/shared/ui/confirmDialog";
 import {
@@ -73,85 +72,6 @@ const studentNav: NavItem[] = [
   { href: "/ngobrol", label: "Ngobrol", Icon: NavChatIcon },
   { href: "/profil",  label: "Profil",  Icon: NavProfileIcon },
 ];
-
-/** Nama layar ringkas untuk topbar. Mengakomodasi halaman siswa, admin, dan super admin. */
-function screenTitle(pathname: string, isSuperAdmin?: boolean): string | null {
-  // Rute Siswa
-  switch (pathname) {
-    case "/beranda":
-      return "Beranda";
-    case "/belajar":
-      return "Belajar";
-    case "/huruf":
-      return "Huruf";
-    case "/kamus":
-      return "Kamus";
-    case "/review":
-      return "Review Kosakata";
-    case "/belajar/tulis-buku":
-      return "Tulis di Buku";
-    case "/profil":
-      return "Profil";
-    case "/notifikasi":
-      return "Notifikasi";
-    case "/profil/notifikasi":
-      return "Pengaturan Notifikasi";
-    case "/scan":
-      return "Kamera Scanner";
-    case "/simulasi":
-      return "Simulasi JLPT";
-  }
-
-  if (pathname.startsWith("/belajar")) return "Belajar";
-  if (pathname.startsWith("/simulasi")) return "Simulasi JLPT";
-  if (pathname.startsWith("/kamus")) return "Kamus";
-
-  // Rute Admin & Super Admin
-  if (pathname === "/admin") {
-    return isSuperAdmin ? "Dashboard Super Admin" : "Dashboard Admin";
-  }
-  if (pathname.startsWith("/admin/pengguna")) {
-    return "Kelola Pengguna";
-  }
-  if (pathname.startsWith("/admin/materi/bab")) {
-    return "Editor Bab Pelajaran";
-  }
-  if (pathname.startsWith("/admin/materi/ujian")) {
-    return "Ujian & Tes Penempatan";
-  }
-  if (pathname.startsWith("/admin/materi/kamus")) {
-    return "Kamus Kosakata";
-  }
-  if (pathname.startsWith("/admin/materi/pendaftaran")) {
-    return "Tes Penempatan";
-  }
-  if (pathname.startsWith("/admin/materi/skenario")) {
-    return "Skenario Percakapan AI";
-  }
-  if (pathname.startsWith("/admin/materi")) {
-    return "Materi Pelajaran";
-  }
-  if (pathname.startsWith("/admin/konten")) {
-    return "Konten & Iklan Beranda";
-  }
-  if (pathname.startsWith("/admin/ai")) {
-    return "Konfigurasi AI";
-  }
-  if (pathname.startsWith("/admin/pantau/") && pathname !== "/admin/pantau") {
-    return "Detail Pantau Siswa";
-  }
-  if (pathname.startsWith("/admin/pantau")) {
-    return "Pantau Belajar";
-  }
-  if (pathname.startsWith("/admin/notifikasi")) {
-    return "Kirim Pengumuman";
-  }
-  if (pathname.startsWith("/admin/ringkasan")) {
-    return isSuperAdmin ? "Dashboard Super Admin" : "Dashboard Admin";
-  }
-
-  return null;
-}
 
 function getParentRoute(pathname: string, isAdmin: boolean): string | null {
   if (pathname.startsWith("/profil/")) return "/profil";
@@ -239,7 +159,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isChatPage = pathname.startsWith("/ngobrol") || pathname.startsWith("/suara");
   // Panel admin berisi tabel & data padat, jadi memakai seluruh lebar layar
   const isWidePage = pathname.startsWith("/admin");
-  const pageTitle = isChatPage ? null : screenTitle(pathname, isSuperAdmin);
   const [collapsed, toggleSidebar] = useSidebarCollapse();
 
   return (
@@ -336,16 +255,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </span>
                   </span>
                 </Link>
-                {pageTitle && (
-                  <>
-                    <span className={styles.topBarDivider} aria-hidden="true">
-                      /
-                    </span>
-                    <span className={styles.topBarScreen} title={pageTitle}>
-                      {pageTitle}
-                    </span>
-                  </>
-                )}
               </div>
 
               <div className={styles.topBarActions}>
@@ -353,9 +262,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <span className={isSuperAdmin ? styles.topBarSuperBadge : styles.topBarAdminBadge}>
                     {isSuperAdmin ? "Super Admin" : "Admin"}
                   </span>
-                )}
-                {!isAdmin && user && (
-                  <StreakBadge count={user.streakCount ?? 0} href="/profil" flameSize={18} />
                 )}
                 <NotificationBell inline />
               </div>

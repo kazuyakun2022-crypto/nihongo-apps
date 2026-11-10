@@ -309,15 +309,15 @@ export default function ProfilPage() {
           {/* Stats Summary */}
           <div className={styles.statsGrid}>
             <div className={styles.statCard}>
-              <span className={styles.statIcon} aria-hidden="true" style={{ background: "transparent", border: "none" }}>
-                <StreakFlame count={user.streakCount ?? 0} size={24} />
+              <span className={`${styles.statIcon} ${styles.statIconStreak}`} aria-hidden="true">
+                <StreakFlame count={user.streakCount ?? 0} size={22} />
               </span>
               <span className={styles.statVal}>{user.streakCount ?? 0}</span>
               <span className={styles.statLabel}>Hari Streak</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statIcon} aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <span className={`${styles.statIcon} ${styles.statIconXp}`} aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#f59e0b" stroke="#d97706" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
               </span>
@@ -325,10 +325,10 @@ export default function ProfilPage() {
               <span className={styles.statLabel}>Total XP</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statIcon} aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
+              <span className={`${styles.statIcon} ${styles.statIconTarget}`} aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="9.5" fill="#e0f2fe" stroke="#0284c7" strokeWidth="2" />
+                  <polyline points="12 6.5 12 12 15.5 13.5" stroke="#0369a1" strokeWidth="2.4" />
                 </svg>
               </span>
               <span className={styles.statVal}>{user.dailyTargetMin ?? 10}m</span>
