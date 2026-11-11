@@ -1,3 +1,5 @@
+import { normalizePhoneticSpeech } from "./speakingTarget";
+
 /**
  * Jenis latihan dalam bab dan cara menilainya.
  * - pilihan_ganda / mendengar: options = pilihan, correctAnswer = salah satunya
@@ -51,10 +53,14 @@ function levenshtein(a: string[], b: string[]): number {
   return prev[b.length];
 }
 
-/** 0–1; 1 berarti sama persis setelah dinormalisasi. */
+/** 0–1; 1 berarti sama persis setelah dinormalisasi fonetik (mendukung padanan kanji/kana dan partikel). */
 export function speechSimilarity(spoken: string, target: string): number {
-  const a = [...toHiragana(normalizeAnswer(spoken))];
-  const b = [...toHiragana(normalizeAnswer(target))];
+  const normSpoken = normalizePhoneticSpeech(spoken);
+  const normTarget = normalizePhoneticSpeech(target);
+  if (normSpoken === normTarget) return 1;
+
+  const a = [...normSpoken];
+  const b = [...normTarget];
   const longest = Math.max(a.length, b.length);
   if (longest === 0) return 0;
   return 1 - levenshtein(a, b) / longest;
