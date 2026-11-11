@@ -273,20 +273,26 @@
   transform: scale(0.95);
 }
 
-/* ── Subtitle Bar Langsung di Bawah Miu-chan (Voice AI Subtitle) ── */
+/* ── Subtitle Bar Langsung di Bawah Miu-chan (Voice AI Subtitle Sanctuary) ── */
 .subtitleWrapper {
   width: 100%;
-  max-width: 24rem;
+  max-width: 26rem;
+  height: 3.5rem;
+  min-height: 3.5rem;
+  max-height: 3.5rem;
   display: flex;
+  align-items: center;
   justify-content: center;
   margin-top: 8px;
-  min-height: 2.75rem;
+  overflow: hidden;
+  box-sizing: border-box;
   z-index: 2;
 }
 
 .idleSubtitle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 6px 16px;
   border-radius: var(--radius-pill);
@@ -296,6 +302,8 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .listeningSubtitle {
@@ -362,22 +370,33 @@
 
 .subtitleText {
   letter-spacing: 0.02em;
+  max-width: 20rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ── Subtitle Hasil Evaluasi Suara (Ramping & Menyatu) ── */
+/* ── Subtitle Hasil Evaluasi Suara (Slot Terkunci Tanpa Pergeseran) ── */
 .resultSubtitle {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 4px;
-  padding: 8px 18px;
-  border-radius: var(--radius-lg);
+  gap: 2px;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   animation: popIn var(--motion-fast) var(--ease-spring) backwards;
   width: 100%;
+  max-width: 26rem;
+  height: 3.5rem;
+  min-height: 3.5rem;
+  max-height: 3.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .resultSubtitleCorrect {
@@ -392,30 +411,47 @@
   color: #9a3412;
 }
 
+.resultHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+}
+
 .resultSubtitleBadge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
+  gap: 4px;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .resultSubtitleCaptured {
-  font-size: 1.05rem;
+  font-size: 0.88rem;
   font-weight: 800;
   margin: 0;
   color: var(--color-text);
-  line-height: 1.25;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 12rem;
 }
 
 .resultSubtitleTip {
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 600;
   margin: 0;
   opacity: 0.9;
-  line-height: 1.35;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 22rem;
 }
 
 .nekoStatusBadge {
@@ -529,4 +565,24 @@
 .speakVerdict[data-ok="true"] {
   background: color-mix(in srgb, var(--color-success) 14%, var(--color-surface));
   color: var(--color-success);
+}
+
+/* ── Fixed-Height Status Feedback Slot (Zero-Layout-Shift) ── */
+.speakingStatusSlot {
+  width: 100%;
+  height: 2.2rem;
+  min-height: 2.2rem;
+  max-height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.statusSlotPlaceholder {
+  display: block;
+  height: 1px;
+  visibility: hidden;
 }

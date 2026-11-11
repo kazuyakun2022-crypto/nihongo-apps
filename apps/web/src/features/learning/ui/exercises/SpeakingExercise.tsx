@@ -1,8 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { hasKana, toRomaji } from "@/shared/lib/kana";
-import { speechMatches } from "../../domain/speechMatch";
+import {
+  createSpeakingTarget,
+  hasKanji,
+  scorePronunciation,
+  speechMatches,
+  type SpeakingTarget,
+} from "../../domain/speechMatch";
 import { NekoAvatar, type NekoEmotion, type NekoMode } from "@/shared/ui/neko/NekoAvatar";
 import { AudioMeter } from "@/shared/lib/audioMeter";
 import { VoiceActivityTracker } from "@/shared/lib/audioNoiseGate";
@@ -60,6 +66,7 @@ export function SpeakingExercise({
   onSkip,
   skipped,
   feedback = true,
+  target,
 }: {
   text: string;
   variants?: string[];
@@ -68,6 +75,7 @@ export function SpeakingExercise({
   onSkip: () => void;
   skipped: boolean;
   feedback?: boolean;
+  target?: SpeakingTarget;
 }) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -80,10 +88,24 @@ export function SpeakingExercise({
   const [nekoMode, setNekoMode] = useState<NekoMode>("idle");
   const [nekoEmotion, setNekoEmotion] = useState<NekoEmotion>("biasa");
 
+  // Dual-Field Schema Target Pembelajaran
+  const speakingTarget = useMemo(() => {
+    return (
+      target ??
+      createSpeakingTarget({
+        displayText: text,
+        phoneticTarget: text,
+        romaji: hasKana(text) ? toRomaji(text) : undefined,
+        acceptedReadings: [text, ...variants],
+        lessonLevel: "PRE_N5",
+        itemType: "VOCABULARY",
+      })
+    );
+  }, [target, text, variants]);
+
   const recorderRef = useRef<MediaRecorder | null>(null);
   const recognitionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval>>();
   const levelRef = useRef<HTMLSpanElement | null>(null);
   const startingRef = useRef(false);
@@ -92,7 +114,7 @@ export function SpeakingExercise({
   const maxTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const vadTrackerRef = useRef<VoiceActivityTracker>(new VoiceActivityTracker());
 
-  // AudioMeter untuk animasi Avatar gerak bibir & telinga reaktif
+  // AudioMeter untuk animasi Avatar gerak bibir & telinga reaktif serta RMS meter
   const meterRef = useRef<AudioMeter | null>(null);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -128,24 +150,23 @@ export function SpeakingExercise({
     };
   }, []);
 
-  const matched = answer ? speechMatches(answer, [text, ...variants]) : false;
+  const scoreResult = answer ? scorePronunciation(answer, speakingTarget) : null;
+  const matched = scoreResult ? scoreResult.isCorrect : false;
   const showVerdict = feedback && !!answer && status === "idle";
 
   // Sinkronkan emosi saat ada teks atau jawaban berubah
   useEffect(() => {
     if (answer) {
-      const ok = speechMatches(answer, [text, ...variants]);
-      setNekoEmotion(ok ? "senang" : "bingung");
+      const res = scorePronunciation(answer, speakingTarget);
+      setNekoEmotion(res.isCorrect ? "senang" : "bingung");
     } else {
       setNekoEmotion("biasa");
     }
-  }, [answer, text, variants]);
+  }, [answer, speakingTarget]);
 
   function stopMonitor() {
     clearInterval(tickRef.current);
     tickRef.current = undefined;
-    void audioCtxRef.current?.close().catch(() => {});
-    audioCtxRef.current = null;
   }
 
   function releaseMic() {
@@ -156,27 +177,16 @@ export function SpeakingExercise({
   /**
    * Lapis 1 Proteksi: RMS Noise Gate (-42 dBFS) + VAD Hangover Time (800ms)
    * Menyaring desis ruangan dan mematikan mic secara deterministic saat selesai bicara.
+   * Menggunakan AudioMeter yang sudah aktif agar tidak terjadi suspensi AudioContext di mobile.
    */
-  function monitor(stream: MediaStream) {
-    const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!Ctx) return;
-    const ctx = new Ctx();
-    audioCtxRef.current = ctx;
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 1024;
-    ctx.createMediaStreamSource(stream).connect(analyser);
-    const buf = new Float32Array(analyser.fftSize);
-
+  function monitor() {
     const tracker = vadTrackerRef.current;
     tracker.start();
     setIsVoiced(false);
     setVisualScale(0);
 
     tickRef.current = setInterval(() => {
-      analyser.getFloatTimeDomainData(buf);
-      let sum = 0;
-      for (const v of buf) sum += v * v;
-      const rms = Math.sqrt(sum / buf.length);
+      const rms = meterRef.current?.micRms() ?? 0;
       const vad = tracker.feedRms(rms, TICK_MS);
       setIsVoiced(vad.isAboveNoiseFloor);
       setVisualScale(vad.visualScale);
@@ -374,18 +384,22 @@ export function SpeakingExercise({
           setStatus("idle");
           setNekoMode("idle");
           setNekoEmotion("bingung");
+          return;
+        }
+
+        const score = scorePronunciation(transcript, speakingTarget);
+        onAnswer(transcript);
+        setHeard(true);
+        setStatus("idle");
+        setNekoMode("idle");
+
+        if (score.isCorrect) {
+          setNekoEmotion("senang");
+          soundFX.play("correct", 0.6);
+          void playPraise();
         } else {
-          onAnswer(transcript);
-          setHeard(true);
-          setStatus("idle");
-          setNekoMode("idle");
-          const ok = speechMatches(transcript, [text, ...variants]);
-          if (ok) {
-            setNekoEmotion("senang");
-            void playPraise();
-          } else {
-            setNekoEmotion("bingung");
-          }
+          setNekoEmotion("bingung");
+          soundFX.play("wrong", 0.4);
         }
       } catch (err) {
         if (!aliveRef.current) return;
@@ -398,7 +412,7 @@ export function SpeakingExercise({
     recorderRef.current = recorder;
     recorder.start();
     setStatus("recording");
-    monitor(stream);
+    monitor();
     maxTimerRef.current = setTimeout(() => stop(), MAX_RECORDING_MS);
   }
 
@@ -465,16 +479,26 @@ export function SpeakingExercise({
                 matched ? styles.resultSubtitleCorrect : styles.resultSubtitleWrong
               }`}
             >
-              <div className={styles.resultSubtitleBadge}>
-                {matched ? "✨ Tepat! Hebat!" : "🐾 Belum Pas"}
+              <div className={styles.resultHeaderRow}>
+                <span className={styles.resultSubtitleBadge}>
+                  {scoreResult?.tier === "perfect"
+                    ? "✨ Sempurna!"
+                    : scoreResult?.tier === "good"
+                    ? "👍 Bagus!"
+                    : "🐾 Belum Pas"}
+                </span>
+                <span className={styles.resultSubtitleCaptured} lang="ja">
+                  "{matched && (scoreResult?.isKanjiMatch || !hasKanji(speakingTarget.displayText))
+                    ? speakingTarget.displayText
+                    : answer}"
+                </span>
               </div>
-              <p className={styles.resultSubtitleCaptured} lang="ja">
-                "{answer}"
-              </p>
               <p className={styles.resultSubtitleTip}>
-                {matched
-                  ? "Pelafalanmu sangat sesuai penutur asli!"
-                  : "Dengarkan contohnya, lalu ketuk mic untuk mencoba lagi."}
+                {matched && scoreResult?.displayFeedbackText
+                  ? scoreResult.displayFeedbackText
+                  : (scoreResult?.tip ?? (matched
+                    ? "Pelafalanmu sangat sesuai penutur asli!"
+                    : "Dengarkan contohnya, lalu ketuk mic untuk mencoba lagi."))}
               </p>
             </div>
           ) : (
@@ -540,11 +564,16 @@ export function SpeakingExercise({
           </button>
         </div>
       )}
-      {status === "recording" && (
-        <p className={styles.muted}>Rekaman berhenti sendiri saat kamu selesai bicara.</p>
-      )}
-
-      {error && <p className={styles.errorText}>{error}</p>}
+      {/* ── STATUS FEEDBACK SLOT TERKUNCI (ANTI-SLOP ZERO-LAYOUT-SHIFT) ── */}
+      <div className={styles.speakingStatusSlot}>
+        {error ? (
+          <p className={styles.errorText}>{error}</p>
+        ) : status === "recording" ? (
+          <p className={styles.muted}>Rekaman berhenti sendiri saat kamu selesai bicara.</p>
+        ) : (
+          <span className={styles.statusSlotPlaceholder} aria-hidden="true" />
+        )}
+      </div>
 
       {status === "unavailable" && !skipped && (
         <button type="button" className={styles.linkBtn} onClick={onSkip}>
