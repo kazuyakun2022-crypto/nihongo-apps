@@ -216,6 +216,32 @@ describe("GroqTranscriber ucapan campuran", () => {
       expect(res.text).toBe("");
       expect(res.status).toBe("LOW_CONFIDENCE");
     });
+
+    it("membuang halusinasi loop pengulangan Whisper (練習ターゲットの発音。練習ターゲットの発音。) saat hening", async () => {
+      stub({ id: { text: "", logprob: -5 }, ja: { text: "練習ターゲットの発音。練習ターゲットの発音。", logprob: -0.15 } });
+      const res = await transcribeJa("ねこ");
+      expect(res.text).toBe("");
+      expect(res.status).toBe("SILENT");
+    });
+
+    it("membuang halusinasi kalimat panjang tak relevan yang tidak memuat karakter target", async () => {
+      stub({ id: { text: "", logprob: -5 }, ja: { text: "今日はお天気がとてもいいですね", logprob: -0.2 } });
+      const res = await transcribeJa("ねこ");
+      expect(res.text).toBe("");
+      expect(res.status).toBe("SILENT");
+    });
+
+    it("memastikan prompt STT hanya berisi kata target murni tanpa meta-instruksi beracun", async () => {
+      let capturedPrompt = "";
+      vi.stubGlobal("fetch", async (_url: string, init: { body: FormData | string }) => {
+        capturedPrompt = (init.body as FormData).get("prompt") as string;
+        return new Response(JSON.stringify({ text: "ねこ", segments: [{ start: 0, end: 1, avg_logprob: -0.1, no_speech_prob: 0.01 }] }));
+      });
+      await transcribeJa("ねこ");
+      expect(capturedPrompt).toBe("ねこ。");
+      expect(capturedPrompt).not.toContain("練習ターゲット");
+      expect(capturedPrompt).not.toContain("日本語の学習練習です");
+    });
   });
 });
 

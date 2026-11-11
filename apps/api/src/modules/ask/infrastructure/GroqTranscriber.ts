@@ -22,14 +22,14 @@ export const JapaneseSpeakingReviewConfig = {
   temperature: 0.0,
   no_speech_threshold: 0.6,
   logprob_threshold: -1.0,
-  prompt: "日本語の学習練習です。平仮名、片仮名、漢字の発音。",
+  prompt: "こんにちは。",
 };
 
 export const VoiceNavigatorConfig = {
   prompt: "Pengguna bertanya seputar aplikasi dalam bahasa Indonesia atau Jepang.",
 };
 
-// Whisper suka "berhalusinasi" kalimat penutup video YouTube saat rekaman hampir hening / room noise.
+// Whisper suka "berhalusinasi" kalimat penutup video YouTube atau kata meta saat rekaman hampir hening / room noise.
 const HALLUCINATIONS = [
   "terima kasih telah menonton",
   "terima kasih sudah menonton",
@@ -58,6 +58,16 @@ const HALLUCINATIONS = [
   "bye bye",
   "おやすみなさい",
   "それではまた",
+  "練習ターゲット",
+  "練習ターゲットの発音",
+  "ターゲットの発音",
+  "発音練習",
+  "学習練習",
+  "平仮名、片仮名、漢字の発音",
+  "日本語の学習練習です",
+  "日本語の学習練習",
+  "日本語の学習",
+  "発音の練習",
 ];
 
 // Contoh ucapan campuran sebagai konteks Whisper untuk Voice Navigator / Mascot AI:
@@ -160,6 +170,92 @@ function normalize(text: string): string {
   return text.toLowerCase().replace(/[\s.,!?、。！？:;~〜…"'“”()（）「」『』[\]【】\-]/gu, "");
 }
 
+/**
+ * Mendeteksi loop pengulangan autoregresif khas halusinasi Whisper saat rekaman hening/noise
+ * Contoh kasus: "練習ターゲットの発音。練習ターゲットの発音。"
+ */
+export function hasRepetitionLoop(text: string): boolean {
+  if (!text || text.length < 6) return false;
+  const cleaned = text.trim();
+
+  // Pola klausa berulang dengan tanda baca (mis. "A。A。" atau "A, A")
+  const parts = cleaned.split(/[。、!?.,\s]+/).filter(Boolean);
+  if (parts.length >= 2) {
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (parts[i].length >= 3 && parts[i] === parts[i + 1]) {
+        return true;
+      }
+    }
+  }
+
+  // Pola pengulangan substring murni tanpa tanda baca (mis. "ABCABC")
+  const norm = normalize(cleaned);
+  if (norm.length >= 8) {
+    const half = Math.floor(norm.length / 2);
+    for (let len = 4; len <= half; len++) {
+      if (norm.length % len === 0) {
+        const chunk = norm.slice(0, len);
+        const repeats = norm.length / len;
+        if (repeats >= 2 && chunk.repeat(repeats) === norm) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+function levenshteinDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+    }
+    prev = cur;
+  }
+  return prev[n];
+}
+
+/**
+ * Memastikan hasil transkripsi memiliki kaitan fonetik masuk akal dengan target latihan.
+ * Jika target adalah kata pendek (mis. "ねこ" 2 huruf) tapi Whisper menghasilkan kalimat panjang
+ * yang sama sekali tidak memuat target atau kemiripan fonetik, itu 100% halusinasi derau ruangan.
+ */
+export function isTargetSanityMismatch(transcript: string, target?: string): boolean {
+  if (!target || !target.trim() || !transcript) return false;
+  const normT = normalize(transcript);
+  const normTarget = normalize(target);
+  if (!normTarget || !normT) return false;
+
+  // Jika transkrip langsung memuat target atau sebaliknya, pasti relevan
+  if (normT.includes(normTarget) || normTarget.includes(normT)) {
+    return false;
+  }
+
+  // Jika panjangnya mirip, cek toleransi pelafalan siswa (mis. beda 1-2 huruf fonem)
+  const dist = levenshteinDistance(normT, normTarget);
+  const maxLen = Math.max(normT.length, normTarget.length);
+  if (dist <= 2 || (1 - dist / maxLen) >= 0.5) {
+    return false;
+  }
+
+  // Jika transkrip jauh lebih panjang dari target (misal target "ねこ" tapi transkrip kalimat panjang lain)
+  // dan tidak mengandung target utuh atau kemiripan fonetik, tolak sebagai halusinasi
+  if (normT.length >= normTarget.length * 2 + 3 || normT.length >= 10) {
+    return true;
+  }
+
+  return false;
+}
+
 function isNoise(text: string, activePrompt?: string): boolean {
   if (!text || !text.trim()) return true;
   const norm = normalize(text);
@@ -169,23 +265,23 @@ function isNoise(text: string, activePrompt?: string): boolean {
   for (const h of HALLUCINATIONS) {
     const hNorm = normalize(h);
     if (norm === hNorm) return true;
-    if (hNorm.length >= 6 && norm.includes(hNorm)) return true;
+    if (hNorm.length >= 4 && norm.includes(hNorm)) return true;
   }
 
   // Karakter berulang tanpa arti seperti "......" atau "ああああ"
   if (/^(.)\1{3,}$/u.test(norm)) return true;
 
+  // Halusinasi loop berulang khas Whisper autoregression (mis. "A。A。")
+  if (hasRepetitionLoop(text)) return true;
+
   // Rekaman hampir hening kadang membuat Whisper mengulang prompt konteks
-  const allPrompts = [
-    activePrompt,
-    JapaneseSpeakingReviewConfig.prompt,
+  const basePrompts = [
     VoiceNavigatorConfig.prompt,
     ...Object.values(CODE_SWITCH_PROMPT),
   ].filter(Boolean) as string[];
 
-  const echoesPrompt = allPrompts.some((p) => {
+  const echoesPrompt = basePrompts.some((p) => {
     const pNorm = normalize(p);
-    // Whisper halusinasi mengulang kalimat panjang dari prompt saat hening
     return norm.length >= 12 && pNorm.length >= 12 && norm.includes(pNorm.slice(0, 15));
   });
 
@@ -221,9 +317,11 @@ export class GroqTranscriber {
 
     // ── 1. MODE LAYAR BELAJAR & REVIEW (Strict Japanese Only) ──
     if (language === "ja") {
-      const targetPrompt = contextTarget?.trim()
-        ? `${JapaneseSpeakingReviewConfig.prompt} 練習ターゲット: ${contextTarget.trim()}`
-        : JapaneseSpeakingReviewConfig.prompt;
+      const cleanTarget = contextTarget?.trim();
+      // Whisper prompt hanya berisi target kata bahasa Jepang atau ucapan netral.
+      // JANGAN PERNAH menyisipkan meta-instruksi (seperti "日本語の学習練習です" atau "練習ターゲット:")
+      // karena saat audio hening, Whisper autoregresif mengulang teks instruksi tersebut.
+      const targetPrompt = cleanTarget ? `${cleanTarget}。` : JapaneseSpeakingReviewConfig.prompt;
 
       const ja = await this.request(file, fileName, "ja", targetPrompt);
 
@@ -231,16 +329,20 @@ export class GroqTranscriber {
         return { text: "", alt: null, status: "SILENT", confidence: 0 };
       }
 
+      // Kunci mati ke bahasa Jepang murni: jika pengguna bicara bahasa Latin/Indonesia/Inggris,
+      // engine menolak input dan mengembalikan status NO_MATCH_JAPANESE
+      if (!containsJapanese(ja.text)) {
+        return { text: "", alt: null, status: "NO_MATCH_JAPANESE", confidence: 0 };
+      }
+
+      if (isTargetSanityMismatch(ja.text, cleanTarget)) {
+        return { text: "", alt: null, status: "SILENT", confidence: 0 };
+      }
+
       const confidence = Math.min(1, Math.max(0, Math.exp(ja.score)));
 
       if (ja.score < JapaneseSpeakingReviewConfig.logprob_threshold) {
         return { text: "", alt: null, status: "LOW_CONFIDENCE", confidence };
-      }
-
-      // Kunci mati ke bahasa Jepang murni: jika pengguna bicara bahasa Latin/Indonesia/Inggris,
-      // engine menolak input dan mengembalikan status NO_MATCH_JAPANESE
-      if (!containsJapanese(ja.text)) {
-        return { text: "", alt: null, status: "NO_MATCH_JAPANESE", confidence };
       }
 
       return { text: ja.text, alt: null, status: "OK", confidence };
