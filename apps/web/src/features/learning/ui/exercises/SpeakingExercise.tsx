@@ -5,6 +5,7 @@ import { hasKana, toRomaji } from "@/shared/lib/kana";
 import { speechMatches } from "../../domain/speechMatch";
 import { NekoAvatar, type NekoEmotion, type NekoMode } from "@/shared/ui/neko/NekoAvatar";
 import { AudioMeter } from "@/shared/lib/audioMeter";
+import { soundFX } from "@/lib/audio/SoundFXManager";
 import styles from "./exercises.module.css";
 import { CheckIcon, MicIcon, StopIcon, VolumeIcon } from "@/shared/ui/icons";
 
@@ -283,6 +284,7 @@ export function SpeakingExercise({
     meterRef.current?.attachMic(stream);
     setNekoMode("listening");
     setNekoEmotion("biasa");
+    soundFX.play("mic_start", 0.6);
 
     // Setup streaming speech recognition via Web Speech API jika didukung browser
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
