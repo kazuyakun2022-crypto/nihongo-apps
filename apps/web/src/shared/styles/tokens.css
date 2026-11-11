@@ -37,6 +37,22 @@
   --palette-matcha: #3a8544;
   --palette-ai: #3b5998;
 
+  /* ── Universal Tactile Neubrutalism-Lite & Anti-Slop Palette (All-Ages Universal Design) ── */
+  --color-sakura-coral: #FF5A79;
+  --color-matcha-green: #58CC02;
+  --color-golden-sun: #FFC800;
+  --color-streak-orange: #FF9600;
+  --color-navy-ink: #1E293B;
+  --color-rice-canvas: #F8FAFC;
+
+  /* Tactile 3D Extrusion Physics (Soft-Extruded Surfaces & Press-Down Physics) */
+  --shadow-tactile-sm: 0 3px 0 0 #1E293B;
+  --shadow-tactile-md: 0 4px 0 0 #1E293B;
+  --shadow-tactile-lg: 0 6px 0 0 #1E293B;
+  --shadow-tactile-matcha: 0 5px 0 0 #15803D;
+  --shadow-tactile-coral: 0 5px 0 0 #BE123C;
+  --border-tactile: 3px solid #1E293B;
+
   /* ── Tema "susu stroberi" (merah asli): merah beni utama; madu, mint, langit sebagai aksen ceria ── */
   --palette-mint: #8fdcc2;
   --palette-sky: #9dd0f7;

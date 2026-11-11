@@ -43,7 +43,7 @@ export function askRoutes(
     res.json({ answer, emotion, correction, speechRate, speech, guide });
   }));
 
-  // POST /api/ask/transcribe — body: audio mentah (webm/ogg/mp4), bahasa dideteksi otomatis (?lang=ja untuk memaksa Jepang)
+  // POST /api/ask/transcribe — body: audio mentah (webm/ogg/mp4), ?lang=ja untuk mode belajar & review, ?target=... untuk bias fonetik
   r.post(
     "/transcribe",
     express.raw({ type: ["audio/*", "video/*", "application/octet-stream"], limit: "10mb" }),
@@ -53,12 +53,18 @@ export function askRoutes(
         return;
       }
       if (!Buffer.isBuffer(req.body) || req.body.length < 1000) {
-        res.json({ text: "" });
+        res.json({ text: "", alt: null, status: "SILENT", confidence: 0 });
         return;
       }
       const language = req.query["lang"] === "ja" ? "ja" : undefined;
-      const { text, alt } = await transcriber.transcribe(req.body, req.headers["content-type"] ?? "audio/webm", language);
-      res.json({ text, alt });
+      const target = typeof req.query["target"] === "string" ? req.query["target"] : undefined;
+      const result = await transcriber.transcribe(req.body, req.headers["content-type"] ?? "audio/webm", language, target);
+      res.json({
+        text: result.text,
+        alt: result.alt,
+        status: result.status ?? (result.text ? "OK" : "SILENT"),
+        confidence: result.confidence ?? (result.text ? 0.95 : 0),
+      });
     }),
   );
 

@@ -5,29 +5,37 @@ import { hasKana, toRomaji } from "@/shared/lib/kana";
 import { speechMatches } from "../../domain/speechMatch";
 import { NekoAvatar, type NekoEmotion, type NekoMode } from "@/shared/ui/neko/NekoAvatar";
 import { AudioMeter } from "@/shared/lib/audioMeter";
+import { VoiceActivityTracker } from "@/shared/lib/audioNoiseGate";
 import styles from "./exercises.module.css";
 import { CheckIcon, MicIcon, StopIcon, VolumeIcon } from "@/shared/ui/icons";
 
 const MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"];
 const MAX_RECORDING_MS = 15000;
-/** Diam selama ini setelah mulai bicara = selesai bicara, rekaman berhenti sendiri. */
-const END_SILENCE_MS = 1100;
-/** Tidak ada suara sama sekali selama ini sejak mic dibuka = berhenti dan beri tahu. */
 const NO_SPEECH_MS = 7000;
 const TICK_MS = 50;
 
 type Status = "idle" | "recording" | "processing" | "unavailable";
 
-async function transcribeJapanese(audio: Blob): Promise<string> {
-  const res = await fetch("/api/ask/transcribe?lang=ja", {
+async function transcribeJapanese(audio: Blob, target?: string): Promise<{ text: string; status?: string; confidence?: number }> {
+  const url = target ? `/api/ask/transcribe?lang=ja&target=${encodeURIComponent(target)}` : "/api/ask/transcribe?lang=ja";
+  const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": audio.type || "audio/webm" },
     body: audio,
   });
-  const data = (await res.json().catch(() => ({}))) as { text?: string; error?: { code?: string; message?: string } };
+  const data = (await res.json().catch(() => ({}))) as {
+    text?: string;
+    status?: string;
+    confidence?: number;
+    error?: { code?: string; message?: string };
+  };
   if (res.status === 503) throw Object.assign(new Error(data.error?.message ?? "Pengenalan suara belum tersedia."), { unavailable: true });
   if (!res.ok) throw new Error(data.error?.message ?? "Gagal mengenali suara.");
-  return data.text?.trim() ?? "";
+  return {
+    text: data.text?.trim() ?? "",
+    status: data.status,
+    confidence: data.confidence,
+  };
 }
 
 /**
@@ -64,6 +72,8 @@ export function SpeakingExercise({
   const [error, setError] = useState<string | null>(null);
   const [heard, setHeard] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState("");
+  const [isVoiced, setIsVoiced] = useState(false);
+  const [visualScale, setVisualScale] = useState(0);
 
   // Miu-chan Voice AI animation states
   const [nekoMode, setNekoMode] = useState<NekoMode>("idle");
@@ -79,6 +89,7 @@ export function SpeakingExercise({
   const aliveRef = useRef(true);
   const silentStopRef = useRef(false);
   const maxTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const vadTrackerRef = useRef<VoiceActivityTracker>(new VoiceActivityTracker());
 
   // AudioMeter untuk animasi Avatar gerak bibir & telinga reaktif
   const meterRef = useRef<AudioMeter | null>(null);
@@ -141,7 +152,10 @@ export function SpeakingExercise({
     streamRef.current = null;
   }
 
-  /** Pantau volume: ambang = derau ruangan × 2,5; diam setelah bicara atau tidak bicara sama sekali = berhenti. */
+  /**
+   * Lapis 1 Proteksi: RMS Noise Gate (-42 dBFS) + VAD Hangover Time (800ms)
+   * Menyaring desis ruangan dan mematikan mic secara deterministic saat selesai bicara.
+   */
   function monitor(stream: MediaStream) {
     const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctx) return;
@@ -151,37 +165,30 @@ export function SpeakingExercise({
     analyser.fftSize = 1024;
     ctx.createMediaStreamSource(stream).connect(analyser);
     const buf = new Float32Array(analyser.fftSize);
-    const startedAt = performance.now();
-    let floor = 0;
-    let floorSamples = 0;
-    let loudTicks = 0;
-    let speaking = false;
-    let quietSince = 0;
+
+    const tracker = vadTrackerRef.current;
+    tracker.start();
+    setIsVoiced(false);
+    setVisualScale(0);
+
     tickRef.current = setInterval(() => {
       analyser.getFloatTimeDomainData(buf);
       let sum = 0;
       for (const v of buf) sum += v * v;
       const rms = Math.sqrt(sum / buf.length);
-      const now = performance.now();
-      if (levelRef.current) levelRef.current.style.setProperty("--level", Math.min(1, rms * 12).toFixed(2));
-      if (now - startedAt < 300) {
-        floor += rms;
-        floorSamples++;
-        return;
+      const vad = tracker.feedRms(rms, TICK_MS);
+      setIsVoiced(vad.isAboveNoiseFloor);
+      setVisualScale(vad.visualScale);
+
+      if (levelRef.current) {
+        levelRef.current.style.setProperty("--level", Math.min(1, vad.visualScale * 1.5).toFixed(2));
       }
-      const threshold = Math.max(0.012, (floor / Math.max(1, floorSamples)) * 2.5);
-      if (rms > threshold) {
-        loudTicks++;
-        quietSince = 0;
-        if (loudTicks >= 3) speaking = true;
-      } else {
-        loudTicks = 0;
-        if (speaking) {
-          quietSince ||= now;
-          if (now - quietSince >= END_SILENCE_MS) stop();
-        } else if (now - startedAt >= NO_SPEECH_MS) {
-          stop(true);
-        }
+
+      // Hangover Time: jeda 800ms hening setelah berbicara menghentikan rekaman otomatis
+      if (tracker.shouldAutoStopAfterSpeech()) {
+        stop();
+      } else if (tracker.isTimedOutSilent(NO_SPEECH_MS)) {
+        stop(true);
       }
     }, TICK_MS);
   }
@@ -314,6 +321,8 @@ export function SpeakingExercise({
     recorder.ondataavailable = (e) => e.data.size > 0 && chunks.push(e.data);
     recorder.onstop = async () => {
       stopMonitor();
+      setIsVoiced(false);
+      setVisualScale(0);
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
@@ -321,11 +330,14 @@ export function SpeakingExercise({
       }
       meterRef.current?.detachMic();
       releaseMic();
-      if (silentStopRef.current) {
+
+      const hadSpeech = vadTrackerRef.current.hasDetectedSpeech;
+      if (silentStopRef.current || !hadSpeech) {
         silentStopRef.current = false;
         setStatus("idle");
         setNekoMode("idle");
-        setError("Belum terdengar suara. Ketuk mic lalu ucapkan kalimatnya.");
+        setNekoEmotion("bingung");
+        setError("Suasana terlalu hening. Dekatkan mikrofon lalu ucapkan kalimatnya.");
         return;
       }
       setStatus("processing");
@@ -333,19 +345,30 @@ export function SpeakingExercise({
       setNekoEmotion("berpikir");
       try {
         let transcript = "";
+        let statusResp = "";
         try {
-          const res = await transcribeJapanese(new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" }));
-          transcript = res.trim();
+          const res = await transcribeJapanese(new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" }), text);
+          transcript = res.text;
+          statusResp = res.status ?? "";
         } catch {}
 
         // Jika transkripsi server kosong tapi speech recognition web menangkap teks
-        if (!transcript && liveTranscript.trim()) {
+        if (!transcript && liveTranscript.trim() && statusResp !== "NO_MATCH_JAPANESE") {
           transcript = liveTranscript.trim();
         }
 
         if (!aliveRef.current) return;
-        if (!transcript) {
-          setError("Suara tidak terdengar jelas. Ketuk mic dan ucapkan lagi lebih dekat ke mikrofon.");
+
+        if (statusResp === "NO_MATCH_JAPANESE") {
+          setError("Gunakan bahasa Jepang ya! Neko-sensei menunggu pelafalan bahasa Jepang.");
+          setStatus("idle");
+          setNekoMode("idle");
+          setNekoEmotion("bingung");
+          return;
+        }
+
+        if (!transcript || statusResp === "SILENT") {
+          setError("Suasana terlalu hening atau suara tidak terdengar jelas. Ketuk mic dan ucapkan lagi lebih dekat ke mikrofon.");
           setStatus("idle");
           setNekoMode("idle");
           setNekoEmotion("bingung");
@@ -415,7 +438,11 @@ export function SpeakingExercise({
             <div className={styles.listeningSubtitle}>
               <span className={styles.livePulseDot} aria-hidden="true" />
               <span className={styles.subtitleText} lang="ja">
-                {liveTranscript ? `"${liveTranscript}"` : "Mendengarkan ucapanmu…"}
+                {liveTranscript
+                  ? `"${liveTranscript}"`
+                  : isVoiced
+                    ? "Mendeteksi bahasa Jepang…"
+                    : "Mendengarkan ucapanmu…"}
               </span>
             </div>
           ) : status === "processing" ? (
@@ -472,30 +499,44 @@ export function SpeakingExercise({
 
       {/* ── MIC ACTION BUTTON ── */}
       {status !== "unavailable" && (
-        <button
-          type="button"
-          className={styles.micBtn}
-          data-recording={status === "recording"}
-          onClick={status === "recording" ? () => stop() : start}
-          disabled={status === "processing"}
-          aria-label={status === "recording" ? "Berhenti merekam" : "Mulai bicara"}
-        >
-          <span aria-hidden className={styles.micIcon}>
-            {status === "recording" ? <StopIcon size={18} /> : <MicIcon size={18} />}
-          </span>
-          {status === "recording" ? (
-            <>
-              Mendengarkan…
-              <span ref={levelRef} className={styles.micLevel} aria-hidden />
-            </>
-          ) : status === "processing" ? (
-            "Memeriksa ucapan…"
-          ) : answer ? (
-            "Ketuk untuk coba lagi"
-          ) : (
-            "Ketuk lalu bicara"
+        <div className={styles.micBtnWrapper}>
+          {status === "recording" && (
+            <div
+              className={styles.waveformRing}
+              style={{
+                transform: `scale(${1 + visualScale * 0.35})`,
+                opacity: isVoiced ? 0.85 : 0.25,
+                borderColor: isVoiced ? "#0284c7" : "#94a3b8",
+                boxShadow: isVoiced ? `0 0 14px rgba(2, 132, 199, ${0.3 + visualScale * 0.4})` : "none",
+              }}
+              aria-hidden="true"
+            />
           )}
-        </button>
+          <button
+            type="button"
+            className={styles.micBtn}
+            data-recording={status === "recording"}
+            onClick={status === "recording" ? () => stop() : start}
+            disabled={status === "processing"}
+            aria-label={status === "recording" ? "Berhenti merekam" : "Mulai bicara"}
+          >
+            <span aria-hidden className={styles.micIcon}>
+              {status === "recording" ? <StopIcon size={18} /> : <MicIcon size={18} />}
+            </span>
+            {status === "recording" ? (
+              <>
+                {isVoiced ? "Mendeteksi…" : "Mendengarkan…"}
+                <span ref={levelRef} className={styles.micLevel} aria-hidden />
+              </>
+            ) : status === "processing" ? (
+              "Memeriksa ucapan…"
+            ) : answer ? (
+              "Ketuk untuk coba lagi"
+            ) : (
+              "Ketuk lalu bicara"
+            )}
+          </button>
+        </div>
       )}
       {status === "recording" && (
         <p className={styles.muted}>Rekaman berhenti sendiri saat kamu selesai bicara.</p>

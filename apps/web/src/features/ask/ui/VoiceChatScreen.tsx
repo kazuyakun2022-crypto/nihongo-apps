@@ -76,6 +76,8 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
     emotion,
     getMicLevel,
     getVoiceLevel,
+    vadVisualScale,
+    isAboveNoiseFloor,
     messages,
     transcript,
     spoken,
@@ -303,11 +305,13 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
         {/* Status */}
         <p className={[
           styles.statusText,
-          isActive ? styles.statusListening : "",
+          isActive ? (isAboveNoiseFloor ? styles.statusVoiced : styles.statusListening) : "",
           state === "processing" ? styles.statusProcessing : "",
           state === "speaking" ? styles.statusSpeaking : "",
         ].filter(Boolean).join(" ")}>
-          {STATUS[state]}
+          {isActive
+            ? (isAboveNoiseFloor ? "[Mendeteksi Suara…]" : "[Mendengarkan…]")
+            : STATUS[state]}
         </p>
 
         {/* Slot subtitle & transkrip — ukuran tetap agar maskot tidak berpindah */}
@@ -337,21 +341,37 @@ export function VoiceChatScreen({ hideHeader = false, isActiveTab = true }: Voic
 
       {/* Tombol hold-to-talk */}
       <div className={styles.holdArea} data-no-swipe>
-        <button
-          className={`${styles.holdBtn} ${isActive ? styles.holdBtnActive : ""}`}
-          type="button"
-          onPointerDown={handleHoldStart}
-          onPointerUp={handleHoldEnd}
-          onPointerCancel={handleHoldEnd}
-          onPointerLeave={handleHoldEnd}
-          onContextMenu={(e) => e.preventDefault()}
-          style={{ touchAction: "none", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" }}
-          disabled={state === "processing"}
-          aria-pressed={isActive}
-          aria-label={isActive ? "Lepas untuk mengirim" : "Tahan untuk bicara dengan Miu-chan"}
-        >
-          <MicIcon />
-        </button>
+        <div className={styles.holdBtnWrapper}>
+          {isActive && (
+            <div
+              className={styles.waveformRing}
+              style={{
+                transform: `scale(${1 + vadVisualScale * 0.45})`,
+                opacity: isAboveNoiseFloor ? 0.75 + vadVisualScale * 0.25 : 0.2,
+                borderColor: isAboveNoiseFloor ? "#3b82f6" : "#94a3b8",
+                boxShadow: isAboveNoiseFloor
+                  ? `0 0 16px rgba(59, 130, 246, ${0.3 + vadVisualScale * 0.4})`
+                  : "none",
+              }}
+              aria-hidden="true"
+            />
+          )}
+          <button
+            className={`${styles.holdBtn} ${isActive ? styles.holdBtnActive : ""}`}
+            type="button"
+            onPointerDown={handleHoldStart}
+            onPointerUp={handleHoldEnd}
+            onPointerCancel={handleHoldEnd}
+            onPointerLeave={handleHoldEnd}
+            onContextMenu={(e) => e.preventDefault()}
+            style={{ touchAction: "none", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" }}
+            disabled={state === "processing"}
+            aria-pressed={isActive}
+            aria-label={isActive ? "Lepas untuk mengirim" : "Tahan untuk bicara dengan Miu-chan"}
+          >
+            <MicIcon />
+          </button>
+        </div>
         <p className={styles.holdHint}>
           {isActive
             ? "Lepas untuk kirim"

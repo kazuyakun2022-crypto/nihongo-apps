@@ -8,17 +8,60 @@ const EXTENSIONS: Record<string, string> = {
   "audio/wav": "wav",
 };
 
-// Whisper suka "berhalusinasi" kalimat penutup video saat rekaman hampir hening.
+/**
+ * Konfigurasi STT untuk Layar Belajar & Review Harian
+ * Dikunci mati ke bahasa Jepang murni, anti-halusinasi saat hening.
+ */
+export const JapaneseSpeakingReviewConfig = {
+  language: "ja" as const,
+  model: "whisper-large-v3-turbo",
+  detect_language: false,
+  vad_turnoff: 800,
+  endpointing: 500,
+  min_volume_threshold: -42,
+  temperature: 0.0,
+  no_speech_threshold: 0.6,
+  logprob_threshold: -1.0,
+  prompt: "日本語の学習練習です。平仮名、片仮名、漢字の発音。",
+};
+
+export const VoiceNavigatorConfig = {
+  prompt: "Pengguna bertanya seputar aplikasi dalam bahasa Indonesia atau Jepang.",
+};
+
+// Whisper suka "berhalusinasi" kalimat penutup video YouTube saat rekaman hampir hening / room noise.
 const HALLUCINATIONS = [
   "terima kasih telah menonton",
   "terima kasih sudah menonton",
+  "terima kasih banyak sudah menonton",
+  "terima kasih banyak telah menonton",
+  "terima kasih",
+  "selamat menonton",
   "ご視聴ありがとうございました",
+  "ご視聴ありがとうございました。",
+  "ご視聴いただきありがとうございました",
+  "ご視聴いただき、ありがとうございました",
+  "視聴ありがとうございました",
+  "チャンネル登録お願いします",
+  "チャンネル登録よろしくお願いします",
+  "チャンネル登録をお願いします",
+  "チャンネル登録よろしく",
+  "チャンネル登録",
   "thank you for watching",
+  "thank you for watching.",
+  "thank you very much for watching",
+  "thank you very much",
+  "thank you",
+  "subtitles by",
+  "subtitle by",
+  "transcribed by",
+  "bye bye",
+  "おやすみなさい",
+  "それではまた",
 ];
 
-// Contoh ucapan campuran sebagai konteks Whisper: kata Jepang di tengah kalimat Indonesia tetap ditulis
-// huruf Jepang (bukan dipaksa jadi kata Indonesia), dan sebaliknya.
-// Kata yang sering ditanyakan pelajar (食べる, です, artinya) ikut dimasukkan supaya dikenali sejak awal.
+// Contoh ucapan campuran sebagai konteks Whisper untuk Voice Navigator / Mascot AI:
+// kata Jepang di tengah kalimat Indonesia tetap ditulis huruf Jepang, dan sebaliknya.
 const CODE_SWITCH_PROMPT: Record<"id" | "ja", string> = {
   id: "Miu-chan, aku mau latihan 日本語. Artinya 食べる apa sih? Kemarin aku 学校に行きました terus makan ラーメン. ありがとう ya, です sama ます bedanya apa?",
   ja: "ミウちゃん、今日はちょっと capek なの。食べるってどういう意味？でも日本語の勉強、頑張りたい！",
@@ -92,7 +135,10 @@ Hasil: Aku mau ke 学校で行きます besok`;
 interface WhisperResult {
   text: string;
   score: number;
+  noSpeech?: boolean;
 }
+
+export type TranscriptStatus = "OK" | "SILENT" | "NO_MATCH_JAPANESE" | "LOW_CONFIDENCE";
 
 export interface Transcript {
   text: string;
@@ -101,6 +147,8 @@ export interface Transcript {
    * untuk menebak kata Jepang bila penggabungan transkrip gagal atau masih keliru.
    */
   alt: string | null;
+  status?: TranscriptStatus;
+  confidence?: number;
 }
 
 interface VerboseJson {
@@ -109,40 +157,113 @@ interface VerboseJson {
 }
 
 function normalize(text: string): string {
-  return text.toLowerCase().replace(/[\s.,!?、。！？]/gu, "");
+  return text.toLowerCase().replace(/[\s.,!?、。！？:;~〜…"'“”()（）「」『』[\]【】\-]/gu, "");
 }
 
-function isNoise(text: string): boolean {
-  if (!text) return true;
-  const normalized = text.toLowerCase().replace(/[.!?。！？\s]+$/u, "");
-  // Rekaman hampir hening kadang membuat Whisper mengulang prompt konteks.
-  const echoesPrompt = Object.values(CODE_SWITCH_PROMPT).some((p) => text.includes(p.slice(0, 20)));
-  return HALLUCINATIONS.includes(normalized) || echoesPrompt;
+function isNoise(text: string, activePrompt?: string): boolean {
+  if (!text || !text.trim()) return true;
+  const norm = normalize(text);
+  if (!norm) return true;
+
+  // Cek blacklist halusinasi Whisper saat hening
+  for (const h of HALLUCINATIONS) {
+    const hNorm = normalize(h);
+    if (norm === hNorm) return true;
+    if (hNorm.length >= 6 && norm.includes(hNorm)) return true;
+  }
+
+  // Karakter berulang tanpa arti seperti "......" atau "ああああ"
+  if (/^(.)\1{3,}$/u.test(norm)) return true;
+
+  // Rekaman hampir hening kadang membuat Whisper mengulang prompt konteks
+  const allPrompts = [
+    activePrompt,
+    JapaneseSpeakingReviewConfig.prompt,
+    VoiceNavigatorConfig.prompt,
+    ...Object.values(CODE_SWITCH_PROMPT),
+  ].filter(Boolean) as string[];
+
+  const echoesPrompt = allPrompts.some((p) => {
+    const pNorm = normalize(p);
+    // Whisper halusinasi mengulang kalimat panjang dari prompt saat hening
+    return norm.length >= 12 && pNorm.length >= 12 && norm.includes(pNorm.slice(0, 15));
+  });
+
+  return echoesPrompt;
 }
 
 export class GroqTranscriber {
   constructor(private readonly apiKey: string) {}
 
   /**
-   * Deteksi otomatis bahasa Indonesia atau Jepang: audio ditranskripsi dua kali secara paralel
-   * dengan bahasa dipaksa id dan ja, lalu dipilih hasil yang paling yakin (avg_logprob tertinggi).
-   * Deteksi bawaan Whisper sering salah untuk ucapan pendek beraksen.
-   * Bila skornya berdekatan (ucapan campuran), kedua transkrip digabung oleh LLM supaya bagian
-   * Indonesia tetap Latin dan bagian Jepang tetap huruf Jepang.
-   * Latihan berbicara memaksa "ja" karena siswa memang diminta mengucapkan bahasa Jepang.
+   * Dual-Engine STT Routing:
+   * 1. Mode Belajar & Review Harian (`language: "ja"`):
+   *    - Kunci bahasa ke Jepang murni, auto-detect nonaktif.
+   *    - Context prompt memprioritaskan target kosakata / kalimat yang sedang dipelajari.
+   *    - Output Latin/Indonesia ditolak dan mengembalikan status `NO_MATCH_JAPANESE`.
+   * 2. Mode AI Maskot / Voice Navigator (dwibahasa `id` + `ja`):
+   *    - Audio ditranskripsi paralel dengan bahasa dipaksa `id` dan `ja`.
+   *    - Menggunakan filter anti-halusinasi dan penggabungan transkrip LLM bila dwibahasa.
    */
-  async transcribe(audio: Buffer, mimeType: string, language?: "ja"): Promise<Transcript> {
+  async transcribe(
+    audio: Buffer,
+    mimeType: string,
+    language?: "ja",
+    contextTarget?: string,
+  ): Promise<Transcript> {
+    if (!Buffer.isBuffer(audio) || audio.length < 1000) {
+      return { text: "", alt: null, status: "SILENT", confidence: 0 };
+    }
+
     const baseType = mimeType.split(";")[0].trim().toLowerCase();
     const file = new Blob([new Uint8Array(audio)], { type: baseType });
     const fileName = `audio.${EXTENSIONS[baseType] ?? "webm"}`;
 
+    // ── 1. MODE LAYAR BELAJAR & REVIEW (Strict Japanese Only) ──
+    if (language === "ja") {
+      const targetPrompt = contextTarget?.trim()
+        ? `${JapaneseSpeakingReviewConfig.prompt} 練習ターゲット: ${contextTarget.trim()}`
+        : JapaneseSpeakingReviewConfig.prompt;
+
+      const ja = await this.request(file, fileName, "ja", targetPrompt);
+
+      if (ja.noSpeech || isNoise(ja.text, targetPrompt)) {
+        return { text: "", alt: null, status: "SILENT", confidence: 0 };
+      }
+
+      const confidence = Math.min(1, Math.max(0, Math.exp(ja.score)));
+
+      if (ja.score < JapaneseSpeakingReviewConfig.logprob_threshold) {
+        return { text: "", alt: null, status: "LOW_CONFIDENCE", confidence };
+      }
+
+      // Kunci mati ke bahasa Jepang murni: jika pengguna bicara bahasa Latin/Indonesia/Inggris,
+      // engine menolak input dan mengembalikan status NO_MATCH_JAPANESE
+      if (!containsJapanese(ja.text)) {
+        return { text: "", alt: null, status: "NO_MATCH_JAPANESE", confidence };
+      }
+
+      return { text: ja.text, alt: null, status: "OK", confidence };
+    }
+
+    // ── 2. MODE AI MASKOT / VOICE NAVIGATOR (Bilingual Bi-directional) ──
     const [id, ja] = await Promise.all([
-      language ? null : this.request(file, fileName, "id"),
+      this.request(file, fileName, "id"),
       this.request(file, fileName, "ja"),
     ]);
+
     const idIsLatin = !!id && !containsJapanese(id.text);
     const best = id && (idIsLatin ? ja.score - id.score <= JA_OVER_LATIN_MARGIN : id.score >= ja.score) ? id : ja;
-    if (isNoise(best.text)) return { text: "", alt: null };
+
+    if (best.noSpeech || isNoise(best.text)) {
+      return { text: "", alt: null, status: "SILENT", confidence: 0 };
+    }
+
+    const confidence = Math.min(1, Math.max(0, Math.exp(best.score)));
+
+    if (best.score < JapaneseSpeakingReviewConfig.logprob_threshold) {
+      return { text: "", alt: null, status: "LOW_CONFIDENCE", confidence };
+    }
 
     const mixed =
       id !== null &&
@@ -151,14 +272,21 @@ export class GroqTranscriber {
       !isNoise(ja.text) &&
       containsJapanese(ja.text) &&
       normalize(id.text) !== normalize(ja.text);
-    if (!mixed) return { text: best.text, alt: null };
+
+    if (!mixed) {
+      return { text: best.text, alt: null };
+    }
 
     const fused = await this.fuse(id.text, ja.text).catch((err: unknown) => {
       console.warn("[transcribe] penggabungan transkrip gagal:", err instanceof Error ? err.message : err);
       return null;
     });
+
     // Penggabung menempelkan halusinasi: pakai transkrip Indonesia, dan jangan kirim versi Jepang karangan ke AI
-    if (fused && fusionOnlyAppends(id.text, fused)) return { text: id.text, alt: null };
+    if (fused && fusionOnlyAppends(id.text, fused)) {
+      return { text: id.text, alt: null };
+    }
+
     return { text: fused ?? best.text, alt: ja.text };
   }
 
@@ -188,14 +316,20 @@ export class GroqTranscriber {
     return text && text.length <= limit ? text : null;
   }
 
-  private async request(file: Blob, fileName: string, language: "id" | "ja"): Promise<WhisperResult> {
+  private async request(
+    file: Blob,
+    fileName: string,
+    language: "id" | "ja",
+    customPrompt?: string,
+  ): Promise<WhisperResult> {
     const form = new FormData();
     form.append("file", file, fileName);
-    form.append("model", "whisper-large-v3-turbo");
+    form.append("model", JapaneseSpeakingReviewConfig.model);
     form.append("response_format", "verbose_json");
     form.append("language", language);
-    form.append("temperature", "0");
-    form.append("prompt", CODE_SWITCH_PROMPT[language]);
+    form.append("temperature", JapaneseSpeakingReviewConfig.temperature.toString());
+    const prompt = customPrompt || (language === "ja" ? JapaneseSpeakingReviewConfig.prompt : CODE_SWITCH_PROMPT[language]);
+    form.append("prompt", prompt);
 
     const res = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
       method: "POST",
@@ -205,11 +339,14 @@ export class GroqTranscriber {
     if (!res.ok) throw new Error(`Groq transcription error ${res.status}: ${await res.text()}`);
 
     const data = (await res.json()) as VerboseJson;
-    const segments = (data.segments ?? []).filter((s) => s.no_speech_prob < 0.8);
+    // Layer 1 & 3: Filter segmen di mana no_speech_prob < no_speech_threshold (0.6)
+    const segments = (data.segments ?? []).filter((s) => s.no_speech_prob < JapaneseSpeakingReviewConfig.no_speech_threshold);
     const duration = segments.reduce((sum, s) => sum + (s.end - s.start), 0);
-    if (duration === 0) return { text: "", score: -Infinity };
+    if (duration === 0 || segments.length === 0) {
+      return { text: "", score: -Infinity, noSpeech: true };
+    }
 
     const score = segments.reduce((sum, s) => sum + s.avg_logprob * (s.end - s.start), 0) / duration;
-    return { text: data.text?.trim() ?? "", score };
+    return { text: data.text?.trim() ?? "", score, noSpeech: false };
   }
 }

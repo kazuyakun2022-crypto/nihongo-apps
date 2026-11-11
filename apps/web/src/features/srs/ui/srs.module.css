@@ -68,7 +68,133 @@
   transition: width 0.3s var(--ease-spring);
 }
 
-/* ── Kartu Review SRS ── */
+/* ── Kartu Review SRS: Fixed-Height Sanctuary Canvas (Anti-Slop Zero-Layout-Shift) ── */
+.sanctuaryCard {
+  height: 19rem;
+  min-height: 19rem;
+  max-height: 19rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  background: var(--color-surface);
+  border: 3px solid #1E293B;
+  border-radius: 24px;
+  box-shadow: 0 5px 0 0 #1E293B, 0 12px 28px rgba(0, 0, 0, 0.06);
+  padding: var(--space-6) var(--space-4);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--motion-fast) var(--ease-spring), box-shadow var(--motion-fast);
+}
+
+@media (min-width: 480px) {
+  .sanctuaryCard {
+    height: 22rem;
+    min-height: 22rem;
+    max-height: 22rem;
+    padding: var(--space-8) var(--space-6);
+  }
+}
+
+.sanctuaryCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 0 #1E293B, 0 16px 32px rgba(0, 0, 0, 0.08);
+}
+
+.sanctuaryFrontArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.sanctuaryBackArea {
+  height: 6.8rem;
+  min-height: 6.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.sanctuaryBackPlaceholder {
+  height: 6.8rem;
+  min-height: 6.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.55;
+  border-top: 1.5px dashed var(--color-border);
+  width: 100%;
+}
+
+/* Bilah Aksi Terkunci di Bawah (Sticky Docked Footer Bar) */
+.dockedFooterBar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  width: 100%;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 2px solid var(--color-border);
+  padding: 12px 16px max(12px, env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--space-4);
+}
+
+.dockedFooterInner {
+  width: 100%;
+  max-width: 34rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.revealActionBtn {
+  width: 100%;
+  height: 3.5rem;
+  border-radius: 16px;
+  border: 2.5px solid #15803D;
+  background: #58CC02;
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4px 0 0 #15803D;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  transition: transform 0.1s, box-shadow 0.1s, background-color 0.15s;
+}
+
+.revealActionBtn:hover {
+  background: #4cb802;
+}
+
+.revealActionBtn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 0 #15803D;
+}
+
+/* ── Kartu Review SRS Legacy Fallback ── */
 .card {
   min-height: 14rem;
   display: grid;
@@ -183,17 +309,19 @@
   transform: translateY(-1px);
 }
 
-/* ── Tombol Rating SRS (Lupa, Sulit, Bisa, Mudah) ── */
+/* ── Tombol Rating SRS (Lupa, Sulit, Bisa, Mudah) Anti-Slop Tactile ── */
 .grades {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-2);
+  width: 100%;
+  height: 3.5rem;
 }
 
 @media (max-width: 400px) {
   .grades {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-2);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
   }
 }
 
@@ -202,53 +330,85 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 8px;
-  border-radius: var(--radius-md);
-  border: 1.5px solid var(--color-border);
+  padding: 6px 4px;
+  border-radius: 14px;
+  border: 2px solid #1E293B;
   background: var(--color-surface);
   cursor: pointer;
-  transition: all var(--motion-fast) var(--ease-spring);
-  min-height: 3.25rem;
-  gap: 2px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  height: 3.5rem;
+  box-sizing: border-box;
+  gap: 1px;
+  box-shadow: 0 3px 0 0 #1E293B;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .gradeBtn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 0 #1E293B;
+}
+
+.gradeBtn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #1E293B;
 }
 
 .gradeBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
+.gradeBtnLupa {
+  border-color: #DC2626;
+  box-shadow: 0 3px 0 0 #991B1B;
+  background: #FEF2F2;
+  color: #DC2626;
+}
 .gradeBtnLupa:hover:not(:disabled) {
-  border-color: #ef4444;
-  background: #fef2f2;
-  color: #dc2626;
+  background: #FEE2E2;
+}
+.gradeBtnLupa:active:not(:disabled) {
+  box-shadow: 0 1px 0 0 #991B1B;
 }
 
+.gradeBtnSulit {
+  border-color: #EA580C;
+  box-shadow: 0 3px 0 0 #C2410C;
+  background: #FFF7ED;
+  color: #EA580C;
+}
 .gradeBtnSulit:hover:not(:disabled) {
-  border-color: #f59e0b;
-  background: #fffbeb;
-  color: #d97706;
+  background: #FFEDD5;
+}
+.gradeBtnSulit:active:not(:disabled) {
+  box-shadow: 0 1px 0 0 #C2410C;
 }
 
+.gradeBtnBisa {
+  border-color: #2563EB;
+  box-shadow: 0 3px 0 0 #1D4ED8;
+  background: #EFF6FF;
+  color: #2563EB;
+}
 .gradeBtnBisa:hover:not(:disabled) {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #2563eb;
+  background: #DBEAFE;
+}
+.gradeBtnBisa:active:not(:disabled) {
+  box-shadow: 0 1px 0 0 #1D4ED8;
 }
 
 .gradeBtnMudah {
-  border-color: var(--color-primary);
-  background: linear-gradient(135deg, var(--palette-beni-700) 0%, #8c1d2c 100%);
-  color: #ffffff;
+  border-color: #15803D;
+  box-shadow: 0 3px 0 0 #166534;
+  background: #58CC02;
+  color: #FFFFFF;
 }
-
 .gradeBtnMudah:hover:not(:disabled) {
-  box-shadow: 0 6px 16px rgba(177, 42, 58, 0.4);
-  transform: translateY(-2px);
+  background: #4cb802;
+}
+.gradeBtnMudah:active:not(:disabled) {
+  box-shadow: 0 1px 0 0 #166534;
 }
 
 .gradeLabel {

@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { Mascot } from "@/shared/ui/Mascot";
 import { StreakFlame } from "@/shared/ui/StreakFlame";
 import { AchievementUnlockModal, type UnlockedAchievement } from "@/features/progress/ui/AchievementUnlockModal";
+import { SessionCelebrationModal } from "@/components/celebration/SessionCelebrationModal";
 import { starsFor } from "./WorldMap";
 import styles from "./scoreScreen.module.css";
 import { StarIcon } from "@/shared/ui/icons";
@@ -70,6 +71,7 @@ export function ScoreScreen({
   const shown = useCountUp(score, 1200, 350);
   const shownXp = useCountUp(xpEarned, 800, 300);
   const [dismissedAchievements, setDismissedAchievements] = useState(false);
+  const [celebrationActive, setCelebrationActive] = useState(passed);
   const stars = passed ? starsFor(score) : 0;
   const gap = Math.max(0, passingScore - score);
   const passAngle = (passingScore / 100) * 360;
@@ -82,6 +84,19 @@ export function ScoreScreen({
       document.body.style.overflow = prev;
     };
   }, []);
+
+  if (celebrationActive && passed) {
+    return (
+      <SessionCelebrationModal
+        xpEarned={xpEarned || 25}
+        currentStreakDays={streak || 1}
+        levelProgressPct={score}
+        title="Luar Biasa!"
+        subtitle={`Bab "${chapterTitle}" berhasil diselesaikan`}
+        onContinue={() => setCelebrationActive(false)}
+      />
+    );
+  }
 
   return createPortal(
     <div className={styles.screen} data-passed={passed || undefined} role="dialog" aria-modal="true" aria-labelledby="score-heading">

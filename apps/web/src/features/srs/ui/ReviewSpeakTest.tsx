@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { NekoAvatar, type NekoEmotion, type NekoMode } from "@/shared/ui/neko/NekoAvatar";
 import { AudioMeter } from "@/shared/lib/audioMeter";
+import { VoiceActivityTracker } from "@/shared/lib/audioNoiseGate";
+import { StablePushToTalkButton } from "@/components/speaking/StablePushToTalkButton";
+import { soundFX } from "@/lib/audio/SoundFXManager";
+import { scorePronunciation } from "@/features/learning/domain/pronunciationScorer";
 import type { DueCard } from "../domain/types";
 import styles from "./speakTest.module.css";
 
@@ -28,48 +32,21 @@ const DEFAULT_CARDS: DueCard[] = [
   { id: "default-5", itemType: "vocab", front: "日本", reading: "にほん", meaning: "Jepang" },
 ];
 
-/** Hitung kesamaan string (Levenshtein Distance) untuk menilai ucapan bahasa Jepang */
-function calculateSimilarity(str1: string, str2: string): number {
-  const s1 = str1.trim().toLowerCase().replace(/[\s・、。！？!?]/g, "");
-  const s2 = str2.trim().toLowerCase().replace(/[\s・、。！？!?]/g, "");
-  if (!s1 || !s2) return 0;
-  if (s1 === s2) return 100;
-  if (s1.includes(s2) || s2.includes(s1)) return 85;
-
-  const m = s1.length;
-  const n = s2.length;
-  const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
-
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      if (s1[i - 1] === s2[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else {
-        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-      }
-    }
-  }
-
-  const maxLen = Math.max(m, n);
-  const distance = dp[m][n];
-  const sim = Math.max(0, Math.round(((maxLen - distance) / maxLen) * 100));
-  return sim;
-}
-
 export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
   const list = cards.length > 0 ? cards : DEFAULT_CARDS;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mode, setMode] = useState<NekoMode>("idle");
   const [emotion, setEmotion] = useState<NekoEmotion>("biasa");
   const [liveTranscript, setLiveTranscript] = useState("");
+  const [isVoiced, setIsVoiced] = useState(false);
+  const [visualScale, setVisualScale] = useState(0);
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [scores, setScores] = useState<Record<number, number>>({});
   const [isCompleted, setIsCompleted] = useState(false);
 
   const meterRef = useRef<AudioMeter | null>(null);
+  const vadTrackerRef = useRef<VoiceActivityTracker>(new VoiceActivityTracker());
+  const vadIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -82,6 +59,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
   useEffect(() => {
     meterRef.current = new AudioMeter();
     return () => {
+      if (vadIntervalRef.current) clearInterval(vadIntervalRef.current);
       if (activeAudioRef.current) {
         activeAudioRef.current.pause();
         activeAudioRef.current = null;
@@ -143,39 +121,37 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     }
   }, [currentCard]);
 
-  // Evaluasi teks hasil pengucapan
+  // Evaluasi teks hasil pengucapan dengan Pronunciation Scorer (Levenshtein Distance + Phonetic Normalization)
   const evaluateSpeech = useCallback((spoken: string) => {
     if (!currentCard) return;
     const reading = currentCard.reading || currentCard.front;
     const front = currentCard.front;
 
-    const simReading = calculateSimilarity(spoken, reading);
-    const simFront = calculateSimilarity(spoken, front);
-    const finalScore = Math.max(simReading, simFront);
+    const res = scorePronunciation(spoken, [reading, front].filter(Boolean) as string[]);
 
-    const isCorrect = finalScore >= 75;
-    let tip = "";
+    if (res.isCorrect) {
+      soundFX.play("correct", 0.6);
+    } else {
+      soundFX.play("wrong", 0.4);
+    }
 
-    if (finalScore >= 85) {
-      tip = "Bagus sekali! Pelafalan dan intonasi penutur aslimu sangat tepat!";
+    if (res.tier === "perfect") {
       setEmotion("senang");
       void playSample("すごい！上手！");
-    } else if (finalScore >= 55) {
-      tip = "Hampir tepat! Perhatikan panjang vokal dan ketukan kata.";
+    } else if (res.tier === "good") {
       setEmotion("biasa");
     } else {
-      tip = "Belum pas. Dengarkan contoh pelafalan Miu-chan dan coba lagi.";
       setEmotion("bingung");
     }
 
     setEvaluation({
-      score: finalScore,
+      score: res.score,
       spokenText: spoken || "(Tidak terdengar jelas)",
-      isCorrect,
-      tip,
+      isCorrect: res.isCorrect,
+      tip: res.tip,
     });
 
-    setScores((prev) => ({ ...prev, [currentIndex]: finalScore }));
+    setScores((prev) => ({ ...prev, [currentIndex]: res.score }));
     setMode("idle");
   }, [currentCard, currentIndex, playSample]);
 
@@ -188,7 +164,10 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     setLiveTranscript("");
     setMode("listening");
     setEmotion("biasa");
+    setIsVoiced(false);
+    setVisualScale(0);
 
+    vadTrackerRef.current.start();
     meterRef.current?.resume();
 
     // 1. Setup AudioMeter via MediaStream
@@ -196,6 +175,14 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       meterRef.current?.attachMic(stream);
+
+      if (vadIntervalRef.current) clearInterval(vadIntervalRef.current);
+      vadIntervalRef.current = setInterval(() => {
+        const rms = meterRef.current?.micRms() ?? 0;
+        const vad = vadTrackerRef.current.feedRms(rms, 50);
+        setIsVoiced(vad.isAboveNoiseFloor);
+        setVisualScale(vad.visualScale);
+      }, 50);
 
       // Siapkan fallback MediaRecorder
       audioChunksRef.current = [];
@@ -263,6 +250,13 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     isListeningRef.current = false;
     setMode("processing");
 
+    if (vadIntervalRef.current) {
+      clearInterval(vadIntervalRef.current);
+      vadIntervalRef.current = null;
+    }
+    setIsVoiced(false);
+    setVisualScale(0);
+
     // Hentikan Web Speech API
     if (recognitionRef.current) {
       try {
@@ -270,6 +264,8 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
       } catch {}
       recognitionRef.current = null;
     }
+
+    const hadSpeech = vadTrackerRef.current.hasDetectedSpeech;
 
     // Hentikan MediaRecorder
     const rec = mediaRecorderRef.current;
@@ -281,15 +277,43 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
           streamRef.current = null;
         }
 
-        // Jika evaluasi belum diisi oleh Web Speech API, panggil endpoint transkripsi server
+        // Lapis 1 Proteksi: Jika mic ditahan saat suasana hening / desis kipas, jangan buang ke server
+        if (!hadSpeech) {
+          setEvaluation({
+            score: 0,
+            spokenText: "(Suasana terlalu hening)",
+            isCorrect: false,
+            tip: "Suasana terlalu hening. Dekatkan mikrofon dan ucapkan kata dengan jelas ya.",
+          });
+          setEmotion("bingung");
+          setMode("idle");
+          return;
+        }
+
+        // Jika evaluasi belum diisi oleh Web Speech API, panggil endpoint transkripsi server dengan target bias fonetik
         if (!evaluation) {
           try {
-            const res = await fetch("/api/ask/transcribe?lang=ja", {
+            const target = currentCard ? (currentCard.reading || currentCard.front) : "";
+            const url = target
+              ? `/api/ask/transcribe?lang=ja&target=${encodeURIComponent(target)}`
+              : "/api/ask/transcribe?lang=ja";
+            const res = await fetch(url, {
               method: "POST",
               headers: { "content-type": audioBlob.type || "audio/webm" },
               body: audioBlob,
             });
             const data = await res.json();
+            if (data?.status === "NO_MATCH_JAPANESE") {
+              setEvaluation({
+                score: 0,
+                spokenText: "(Bukan bahasa Jepang)",
+                isCorrect: false,
+                tip: "Gunakan pelafalan bahasa Jepang ya! Neko-sensei menunggu ucapan bahasa Jepang.",
+              });
+              setEmotion("bingung");
+              setMode("idle");
+              return;
+            }
             if (data?.text) {
               setLiveTranscript(data.text);
               evaluateSpeech(data.text);
@@ -303,11 +327,22 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
       };
       rec.stop();
     } else {
+      if (!hadSpeech) {
+        setEvaluation({
+          score: 0,
+          spokenText: "(Suasana terlalu hening)",
+          isCorrect: false,
+          tip: "Suasana terlalu hening. Dekatkan mikrofon dan ucapkan kata dengan jelas ya.",
+        });
+        setEmotion("bingung");
+        setMode("idle");
+        return;
+      }
       if (!evaluation) {
         evaluateSpeech("");
       }
     }
-  }, [evaluation, evaluateSpeech]);
+  }, [evaluation, evaluateSpeech, currentCard]);
 
   const handleNext = () => {
     if (currentIndex < list.length - 1) {
@@ -454,7 +489,11 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
             <div className={styles.listeningSubtitle}>
               <span className={styles.livePulseDot} aria-hidden="true" />
               <span className={styles.subtitleText} lang="ja">
-                {liveTranscript ? `"${liveTranscript}"` : "Mendengarkan ucapanmu…"}
+                {liveTranscript
+                  ? `"${liveTranscript}"`
+                  : isVoiced
+                    ? "Mendeteksi bahasa Jepang…"
+                    : "Mendengarkan ucapanmu…"}
               </span>
             </div>
           ) : mode === "processing" ? (
@@ -517,21 +556,18 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
         </div>
       )}
 
-      {/* Aksi Mikrofon Interaktif */}
+      {/* Aksi Mikrofon Interaktif Anti-Lepas (Zero-Slip Hardware-Locked Pointer Capture) */}
       <div className={styles.micActionArea}>
-        <button
-          type="button"
-          className={`${styles.micButton} ${mode === "listening" ? styles.micButtonActive : ""}`}
-          onPointerDown={startListening}
-          onPointerUp={stopListening}
-          onPointerCancel={stopListening}
+        <StablePushToTalkButton
+          onRecordingStart={startListening}
+          onRecordingEnd={() => void stopListening()}
           disabled={mode === "processing" || mode === "speaking"}
-          aria-label={mode === "listening" ? "Lepas untuk memeriksa" : "Tahan tombol untuk bicara"}
-        >
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-            <path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm7 9a1 1 0 0 1 1 1 8 8 0 0 1-7 7.93V21h2a1 1 0 0 1 0 2H9a1 1 0 0 1 0-2h2v-2.07A8 8 0 0 1 4 11a1 1 0 0 1 2 0 6 6 0 0 0 12 0 1 1 0 0 1 1-1z" />
-          </svg>
-        </button>
+          size="md"
+          label="Tahan"
+          activeLabel="Merekam..."
+          isVoiced={isVoiced}
+          visualScale={visualScale}
+        />
         <p className={styles.micHint}>
           {mode === "listening"
             ? "Mendengarkan... Lepas tombol untuk memeriksa"

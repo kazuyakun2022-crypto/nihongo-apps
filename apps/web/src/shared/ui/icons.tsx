@@ -9,6 +9,8 @@ export interface IconProps {
   filled?: boolean;
   /** Label untuk pembaca layar bila ikon berdiri sendiri tanpa teks. */
   title?: string;
+  /** Status aktif khusus ikon taktil navigasi */
+  active?: boolean;
 }
 
 function Svg({ size = 16, className, strokeWidth = 2, filled = false, title, children }: IconProps & { children: ReactNode }) {
@@ -727,6 +729,301 @@ export function NavProfileIcon(props: IconProps) {
     </Svg>
   );
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.2 SISTEM IKONOGRAFI NAVIGASI TEBAL (CHUNKY & BOLD TACTILE ICONS)
+   Bobot garis tebal (2.5px - 3px), ujung membulat, micro-fill & animasi taktil
+   ────────────────────────────────────────────────────────────────────────── */
+
+/** 1. Belajar (Learn Path): Buku kubus taktil tebal dengan aksen daun bambu */
+export function ChunkyLearnIcon({ size = 26, strokeWidth = 2.6, active = false, filled = false, className = '', title }: IconProps) {
+  const isSelected = active || filled;
+  return (
+    <svg
+      viewBox="0 0 28 28"
+      width={size}
+      height={size}
+      className={`${styles.icon} ${isSelected ? styles.animLearn : ''} ${className}`}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={title ? undefined : true}
+      role={title ? "img" : undefined}
+      aria-label={title}
+    >
+      {/* Bayangan taktil bawah */}
+      {isSelected && (
+        <path d="M3 21 C 7 19.5 11 20 14 22 C 17 20 21 19.5 25 21 L 25 24 C 21 22.5 17 23 14 25 C 11 23 7 22.5 3 24 Z" fill="#1E293B" opacity="0.3" />
+      )}
+      {/* Kubus Buku Terbuka */}
+      <path
+        d="M3 6.5 C 7 5 11 5.5 14 7.5 C 17 5.5 21 5 25 6.5 V 21 C 21 19.5 17 20 14 22 C 11 20 7 19.5 3 21 Z"
+        fill={isSelected ? "#14B8A6" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      {/* Lipatan Halaman Tengah */}
+      <path d="M14 7.5 V 22" stroke={isSelected ? "#1E293B" : "currentColor"} strokeWidth={strokeWidth} />
+      {/* Garis tekstur halaman taktil */}
+      <path d="M6 10 C 8.5 9.2 11 9.5 12 10" stroke={isSelected ? "#CCFBF1" : "currentColor"} strokeWidth={strokeWidth - 0.6} />
+      <path d="M6 14 C 8.5 13.2 11 13.5 12 14" stroke={isSelected ? "#CCFBF1" : "currentColor"} strokeWidth={strokeWidth - 0.6} />
+      {/* Aksen Daun Bambu Taktil di Pojok Kanan */}
+      <path
+        d="M17 11.5 C 19 9.5 22.5 10 22.5 10 C 22.5 10 22 13.5 20 14.5 C 18 15.5 17 11.5 17 11.5 Z"
+        fill={isSelected ? "#58CC02" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth - 0.8}
+      />
+    </svg>
+  );
+}
+
+/** 2. Review Harian (SRS): Kartu kilat bertumpuk dengan simbol petir menyala */
+export function ChunkyReviewIcon({ size = 26, strokeWidth = 2.6, active = false, filled = false, className = '', title }: IconProps) {
+  const isSelected = active || filled;
+  return (
+    <svg
+      viewBox="0 0 28 28"
+      width={size}
+      height={size}
+      className={`${styles.icon} ${isSelected ? styles.animReview : ''} ${className}`}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={title ? undefined : true}
+      role={title ? "img" : undefined}
+      aria-label={title}
+    >
+      {/* Kartu Dasar (Tumpukan Bawah) */}
+      <rect
+        x="3"
+        y="7"
+        width="18"
+        height="18"
+        rx="4"
+        fill={isSelected ? "#FED7AA" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      {/* Kartu Teratas Bergeser Sedikit ke Kanan */}
+      <rect
+        x={isSelected ? "7" : "6"}
+        y={isSelected ? "3" : "4"}
+        width="18"
+        height="18"
+        rx="4"
+        fill={isSelected ? "#FF9600" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+        style={{ transition: "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)" }}
+      />
+      {/* Simbol Petir Tebal Menyala */}
+      <path
+        d={isSelected ? "M17 6 L12.5 12 H16 L14 18 L19.5 11.5 H16 Z" : "M16 7 L12 12.5 H15 L13 18 L18.5 12 H15 Z"}
+        fill={isSelected ? "#FFFFFF" : "currentColor"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={isSelected ? 1.5 : 0}
+        strokeLinejoin="miter"
+      />
+    </svg>
+  );
+}
+
+/** 3. Kamus (Dictionary): Torii tebal berpadu dengan kaca pembesar & aksen kilau */
+export function ChunkyDictionaryIcon({ size = 26, strokeWidth = 2.6, active = false, filled = false, className = '', title }: IconProps) {
+  const isSelected = active || filled;
+  return (
+    <svg
+      viewBox="0 0 28 28"
+      width={size}
+      height={size}
+      className={`${styles.icon} ${isSelected ? styles.animDictionary : ''} ${className}`}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={title ? undefined : true}
+      role={title ? "img" : undefined}
+      aria-label={title}
+    >
+      {/* Balok Atas Torii (Kasagi) melengkung */}
+      <path
+        d="M2 7 C 6 5.5 12 5.5 18 7"
+        stroke={isSelected ? "#DC2626" : "currentColor"}
+        strokeWidth={strokeWidth + 0.5}
+      />
+      {/* Balok Kedua (Shimaki) */}
+      <path d="M4 9.5 H 16" stroke={isSelected ? "#DC2626" : "currentColor"} strokeWidth={strokeWidth} />
+      {/* Tiang Torii Kiri & Kanan */}
+      <path d="M6 9.5 V 22" stroke={isSelected ? "#DC2626" : "currentColor"} strokeWidth={strokeWidth} />
+      <path d="M14 9.5 V 15" stroke={isSelected ? "#DC2626" : "currentColor"} strokeWidth={strokeWidth} />
+
+      {/* Lensa Kaca Pembesar Taktil */}
+      <circle
+        cx="18"
+        cy="17"
+        r="6.5"
+        fill={isSelected ? "#BAE6FD" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      {/* Gagang Kaca Pembesar Tebal */}
+      <path d="M22.8 21.8 L 26 25" stroke={isSelected ? "#1E293B" : "currentColor"} strokeWidth={strokeWidth + 0.8} />
+      {/* Kilau Halus Lensa */}
+      {isSelected && (
+        <path d="M15 15 C 16 13.5 18.5 13.5 19.5 14.5" stroke="#FFFFFF" strokeWidth={1.8} />
+      )}
+    </svg>
+  );
+}
+
+/** 4. Simulasi JLPT: Jam pasir digital tebal berpadu pita gulungan emas */
+export function ChunkySimulasiIcon({ size = 26, strokeWidth = 2.6, active = false, filled = false, className = '', title }: IconProps) {
+  const isSelected = active || filled;
+  return (
+    <svg
+      viewBox="0 0 28 28"
+      width={size}
+      height={size}
+      className={`${styles.icon} ${isSelected ? styles.animSimulasi : ''} ${className}`}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={title ? undefined : true}
+      role={title ? "img" : undefined}
+      aria-label={title}
+    >
+      {/* Jam Pasir Kobalt Tebal */}
+      <path
+        d="M6 4 H 22 M6 24 H 22 M7 4 C 7 12 11 13 14 14 C 17 13 21 12 21 4 M7 24 C 7 16 11 15 14 14 C 17 15 21 16 21 24"
+        fill={isSelected ? "#1E40AF" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      {/* Pasir di dalam & Pita Gulungan Emas di Pinggang */}
+      {isSelected ? (
+        <>
+          <path d="M9 22 C 9 18 12 17.5 14 17.5 C 16 17.5 19 18 19 22 Z" fill="#FDE047" />
+          <circle cx="14" cy="15.5" r="1" fill="#FDE047" />
+          {/* Pita Emas Resmi */}
+          <rect x="11.5" y="12.5" width="5" height="3" rx="1" fill="#FFC800" stroke="#1E293B" strokeWidth="1" />
+        </>
+      ) : (
+        <path d="M10 20 H 18 M12 14 H 16" stroke="currentColor" strokeWidth={strokeWidth - 0.8} />
+      )}
+    </svg>
+  );
+}
+
+/** 5. Buku Tulis (Workbook): Kuas kaligrafi (Fude) tebal bersilang di kotak Juuji Grid */
+export function ChunkyWorkbookIcon({ size = 26, strokeWidth = 2.6, active = false, filled = false, className = '', title }: IconProps) {
+  const isSelected = active || filled;
+  return (
+    <svg
+      viewBox="0 0 28 28"
+      width={size}
+      height={size}
+      className={`${styles.icon} ${isSelected ? styles.animWorkbook : ''} ${className}`}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={title ? undefined : true}
+      role={title ? "img" : undefined}
+      aria-label={title}
+    >
+      {/* Kotak Naskah Juuji Grid (Grid Palang) */}
+      <rect
+        x="3"
+        y="4"
+        width="20"
+        height="20"
+        rx="3"
+        fill={isSelected ? "#EDE9FE" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      {/* Garis Palang Putus-Putus Grid */}
+      <path d="M13 4 V 24 M3 14 H 23" stroke={isSelected ? "#A78BFA" : "currentColor"} strokeWidth={1.5} strokeDasharray="2.5 2.5" />
+      {/* Batang Kuas Kaligrafi (Fude) Diagonal */}
+      <path
+        d="M20 5 L 25 10 L 14 21 L 9 16 Z"
+        fill={isSelected ? "#A855F7" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      {/* Bulu Kuas Kaligrafi Bergradasi Merah Bata */}
+      <path
+        d="M9 16 L 14 21 C 12 23.5 7 24.5 5.5 24 C 5 22.5 6.5 18 9 16 Z"
+        fill={isSelected ? "#DC2626" : "currentColor"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={1.2}
+      />
+    </svg>
+  );
+}
+
+/** 6. Profil & Prestasi: Karakter maskot Miu-chan berbentuk helm kucing bulat tebal */
+export function ChunkyProfileIcon({ size = 26, strokeWidth = 2.6, active = false, filled = false, className = '', title }: IconProps) {
+  const isSelected = active || filled;
+  return (
+    <svg
+      viewBox="0 0 28 28"
+      width={size}
+      height={size}
+      className={`${styles.icon} ${isSelected ? styles.animProfileEar : ''} ${className}`}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={title ? undefined : true}
+      role={title ? "img" : undefined}
+      aria-label={title}
+    >
+      {/* Telinga Kucing Kiri & Kanan */}
+      <path
+        d="M5 11 L 3 4 L 10 7 Z"
+        fill={isSelected ? "#FF5A79" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      <path
+        d="M23 11 L 25 4 L 18 7 Z"
+        fill={isSelected ? "#FF5A79" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      {/* Helm Kucing Bulat Tebal */}
+      <circle
+        cx="14"
+        cy="15"
+        r="10"
+        fill={isSelected ? "#FEF3C7" : "none"}
+        stroke={isSelected ? "#1E293B" : "currentColor"}
+        strokeWidth={strokeWidth}
+      />
+      {/* Mata Berkedip & Pipi Merona Merah */}
+      {isSelected ? (
+        <>
+          {/* Mata Miu-chan (Animasi Kedip) */}
+          <g className={styles.animProfileEye}>
+            <circle cx="10.5" cy="14" r="1.5" fill="#1E293B" />
+            <circle cx="17.5" cy="14" r="1.5" fill="#1E293B" />
+          </g>
+          {/* Pipi Merona Merah */}
+          <ellipse cx="8.5" cy="16.5" rx="1.5" ry="0.8" fill="#FF5A79" opacity="0.8" />
+          <ellipse cx="19.5" cy="16.5" rx="1.5" ry="0.8" fill="#FF5A79" opacity="0.8" />
+          {/* Hidung & Senyum Imut */}
+          <path d="M13 16 L 14 17 L 15 16 M14 17 V 18.5" stroke="#1E293B" strokeWidth="1.5" />
+        </>
+      ) : (
+        <>
+          <circle cx="10.5" cy="14" r="1" fill="currentColor" />
+          <circle cx="17.5" cy="14" r="1" fill="currentColor" />
+          <path d="M12 17 Q 14 19 16 17" stroke="currentColor" strokeWidth={strokeWidth - 0.8} />
+        </>
+      )}
+    </svg>
+  );
+}
+
 
 /** Ikon Dasbor admin */
 export function DashboardIcon(props: IconProps) {
