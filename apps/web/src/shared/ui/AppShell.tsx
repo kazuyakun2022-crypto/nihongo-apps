@@ -73,7 +73,6 @@ interface NavItem {
 const studentNav: NavItem[] = [
   { href: "/beranda", label: "Beranda", Icon: NavHomeIcon },
   { href: "/belajar", label: "Belajar", Icon: ChunkyLearnIcon },
-  { href: "/review",  label: "Review",  Icon: ChunkyReviewIcon },
   { href: "/ngobrol", label: "Ngobrol", Icon: NavChatIcon },
   { href: "/profil",  label: "Profil",  Icon: ChunkyProfileIcon },
 ];
