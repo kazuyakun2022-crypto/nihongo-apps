@@ -254,8 +254,52 @@ describe("layanan notifikasi", () => {
     expect(repo.rows[0].url).toBe("/notifikasi");
   });
 
-  it("menolak jam pengingat yang tidak valid", async () => {
+  it("mengirim pengingat SRS_DUE saat ada kartu jatuh tempo dan jam tenang tidak aktif", () => {
+    const at = new Date("2026-11-05T12:00:00Z"); // 19:00 WIB
+    const plan = planReminder(candidate({ dueSrsCount: 15 }), at);
+    expect(plan).toMatchObject({
+      type: "srs_due",
+      url: "/review",
+      metadata: { dueCount: 15 },
+    });
+    expect(plan?.title).toContain("15 Kosakata");
+  });
+
+  it("menahan pengingat non-darurat saat berada di rentang jam tenang (Quiet Hours)", () => {
+    // 23:00 WIB = 16:00 UTC (di dalam jam tenang 22:00 - 07:00)
+    const night = new Date("2026-11-05T16:00:00Z");
+    expect(planReminder(candidate({ dueSrsCount: 10 }), night)).toBeNull();
+    // 06:30 WIB = 23:30 UTC hari sebelumnya
+    const earlyMorning = new Date("2026-11-04T23:30:00Z");
+    expect(planReminder(candidate({ dueSrsCount: 10 }), earlyMorning)).toBeNull();
+  });
+
+  it("tetap mengirim STREAK_DANGER dalam 3 jam sebelum tengah malam walau di jam tenang", () => {
+    // 22:30 WIB = 15:30 UTC (≤ 3 jam sebelum tengah malam)
+    const lateNight = new Date("2026-11-05T15:30:00Z");
+    const plan = planReminder(
+      candidate({ streakCount: 21, lastActiveDate: new Date("2026-11-04T00:00:00Z") }),
+      lateNight,
+    );
+    expect(plan?.type).toBe("streak");
+    expect(plan?.title).toContain("21 hari");
+    expect(plan?.url).toBe("/belajar");
+  });
+
+  it("menolak jam pengingat dan jam tenang yang tidak valid", async () => {
     const { service } = serviceWith();
     await expect(service.updatePreferences("u1", { reminderTime: "25:00" })).rejects.toThrow("HH:MM");
+    await expect(service.updatePreferences("u1", { quietHourStart: "99:00" })).rejects.toThrow("HH:MM");
+  });
+
+  it("notifyTest melaporkan status pushEnabled, subscriptionCount, dan mengirim push ke perangkat terdaftar", async () => {
+    const { repo, push, service } = serviceWith();
+    repo.subs = [{ id: "s1", userId: "u1", endpoint: "https://push.example/1", p256dh: "k", auth: "a", failureCount: 0 }];
+
+    const res = await service.notifyTest("u1", "Kenji");
+
+    expect(res).toEqual({ created: true, pushSent: 1, pushEnabled: true, subscriptionCount: 1 });
+    expect(push.sent[0].payload.body).toContain("Kenji");
+    expect(push.sent[0].payload.tag).toContain("test:u1:");
   });
 });

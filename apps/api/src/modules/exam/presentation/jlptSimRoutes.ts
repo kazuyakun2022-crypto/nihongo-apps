@@ -316,7 +316,8 @@ export function jlptSimRoutes(activity: ActivityRecorder, notifier?: Notifier) {
           type: "exam",
           title: "Simulasi JLPT lulus!",
           body: `Skormu ${score.total}. Pertahankan ritme belajarmu untuk ujian yang sebenarnya.`,
-          url: "/beranda",
+          url: "/simulasi",
+          metadata: { score: score.total, levelId: c.level.id },
           dedupeKey: `exam:${attempt.id}`,
         })
         .catch((err) => console.error("[notifications] gagal membuat notifikasi simulasi", err instanceof Error ? err.message : err));

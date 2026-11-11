@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mascot, type MascotMood } from "@/shared/ui/Mascot";
+import { useNotifications } from "@/features/notifications/application/NotificationsProvider";
 import { useNavigator, type Caption, type VoiceState } from "../application/NavigatorProvider";
 import { pageTourFor } from "../domain/tours";
 import { Reveal } from "./Reveal";
@@ -43,6 +45,7 @@ function CaptionBubble({
   hintMode: boolean;
 }) {
   const [followUp, setFollowUp] = useState("");
+  const { markRead } = useNotifications();
   return (
     <div className={styles.bubble} role="status" aria-live="polite" data-refusal={caption.refusal || undefined}>
       <button type="button" className={styles.bubbleClose} onClick={onClose} aria-label="Tutup subtitle">
@@ -68,6 +71,31 @@ function CaptionBubble({
         <p className={caption.ja ? styles.capId : styles.capMain}>
           {caption.ja ? caption.id : <Reveal text={caption.id} />}
         </p>
+      )}
+      {caption.action && (
+        <div style={{ marginTop: "8px" }}>
+          <Link
+            href={caption.action.href}
+            onClick={() => {
+              if (caption.action?.notificationId) void markRead(caption.action.notificationId);
+              onClose();
+            }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: "6px 12px",
+              borderRadius: "999px",
+              background: "var(--color-primary)",
+              color: "#fff",
+              fontSize: "0.78rem",
+              fontWeight: 800,
+              textDecoration: "none",
+            }}
+          >
+            {caption.action.label}
+          </Link>
+        </div>
       )}
       {caption.reply && (
         <form

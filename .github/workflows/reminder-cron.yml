@@ -1,0 +1,35 @@
+# Menjalankan pemeriksaan pengingat belajar & streak secara berkala untuk backend Vercel Serverless
+# (pengganti setInterval pada server.ts).
+# Memerlukan GitHub Repository Secrets: API_URL (mis. https://nihongo-api.vercel.app) dan CRON_SECRET.
+name: Pengingat Belajar Cron
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Panggil endpoint cron pengingat
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "API_URL atau CRON_SECRET belum diatur di GitHub Secrets — cron dilewati."
+            exit 0
+          fi
+
+          BASE_URL="${API_URL%/}"
+          STATUS=$(curl -sS -o /tmp/cron_resp.txt -w "%{http_code}" \
+            -X POST "${BASE_URL}/api/notifications/cron/reminders" \
+            -H "x-cron-secret: ${CRON_SECRET}")
+
+          cat /tmp/cron_resp.txt
+          echo ""
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
+            echo "Cron endpoint mengembalikan status HTTP $STATUS"
+            exit 1
+          fi

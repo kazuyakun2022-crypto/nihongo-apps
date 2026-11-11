@@ -42,28 +42,32 @@ export class NotificationService implements Notifier {
     return this.deliver(userId, input, preferences);
   }
 
-  async notifyTest(userId: string, name?: string): Promise<NotifyResult> {
+  async notifyTest(
+    userId: string,
+    name?: string,
+  ): Promise<NotifyResult & { pushEnabled: boolean; subscriptionCount: number }> {
     const { push, clock } = this.deps;
+    const now = clock.now();
     const created = await this.repo.create({
       userId,
       type: "announcement",
       title: "Miu-chan menyapa 🔔",
       body: `Halo ${name || "Pelajar"}! Notifikasi Nihongo aktif dan siap mengingatkanmu belajar.`,
       url: "/beranda",
-      dedupeKey: `test:${userId}:${clock.now().getTime()}`,
-      createdAt: clock.now(),
+      dedupeKey: `test:${userId}:${now.getTime()}`,
+      createdAt: now,
     });
-    if (!created) return { created: false, pushSent: 0 };
-    if (!push.enabled) return { created: true, pushSent: 0 };
+    if (!created) return { created: false, pushSent: 0, pushEnabled: push.enabled, subscriptionCount: 0 };
+    if (!push.enabled) return { created: true, pushSent: 0, pushEnabled: false, subscriptionCount: 0 };
 
     const subscriptions = await this.repo.listSubscriptions(userId);
-    if (!subscriptions.length) return { created: true, pushSent: 0 };
+    if (!subscriptions.length) return { created: true, pushSent: 0, pushEnabled: true, subscriptionCount: 0 };
 
     const payload: PushPayload = {
       title: "Miu-chan menyapa 🔔",
       body: `Halo ${name || "Pelajar"}! Notifikasi Nihongo aktif dan siap mengingatkanmu belajar.`,
       url: "/beranda",
-      tag: `test:${userId}`,
+      tag: `test:${userId}:${now.getTime()}`,
     };
 
     const results = await Promise.all(
@@ -78,7 +82,12 @@ export class NotificationService implements Notifier {
         return result;
       }),
     );
-    return { created: true, pushSent: results.filter((r) => r === "ok").length };
+    return {
+      created: true,
+      pushSent: results.filter((r) => r === "ok").length,
+      pushEnabled: true,
+      subscriptionCount: subscriptions.length,
+    };
   }
 
   private async deliver(
@@ -97,6 +106,7 @@ export class NotificationService implements Notifier {
       title: input.title,
       body: input.body,
       url: input.url ?? null,
+      metadata: input.metadata ?? null,
       dedupeKey: input.dedupeKey ?? null,
       createdAt: clock.now(),
     });
@@ -155,15 +165,24 @@ export class NotificationService implements Notifier {
   ): Promise<NotificationPreferenceSettings> {
     const current = await this.getPreferences(userId);
     const next: NotificationPreferenceSettings = { ...current, ...patch };
+    if (next.quietHourStart === "") next.quietHourStart = null;
+    if (next.quietHourEnd === "") next.quietHourEnd = null;
 
     if (!isValidTimeZone(next.timezone)) throw Errors.validation("Zona waktu tidak valid.");
     if (parseReminderTime(next.reminderTime) === null) throw Errors.validation("Jam pengingat harus berformat HH:MM.");
+    if (next.quietHourStart && parseReminderTime(next.quietHourStart) === null) {
+      throw Errors.validation("Jam mulai tenang harus berformat HH:MM.");
+    }
+    if (next.quietHourEnd && parseReminderTime(next.quietHourEnd) === null) {
+      throw Errors.validation("Jam selesai tenang harus berformat HH:MM.");
+    }
 
     return this.repo.savePreferences(userId, next);
   }
 
   config(): { enabled: boolean; publicKey: string } {
-    return { enabled: this.deps.push.enabled && Boolean(this.deps.publicKey), publicKey: this.deps.publicKey };
+    const publicKey = this.deps.publicKey.trim();
+    return { enabled: this.deps.push.enabled && Boolean(publicKey), publicKey };
   }
 
   async subscribe(

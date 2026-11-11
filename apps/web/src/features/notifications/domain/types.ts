@@ -1,4 +1,4 @@
-export type NotificationType = "study_reminder" | "streak" | "achievement" | "exam" | "announcement" | "system";
+export type NotificationType = "study_reminder" | "srs_due" | "streak" | "achievement" | "exam" | "announcement" | "system";
 
 export interface AppNotification {
   id: string;
@@ -6,6 +6,7 @@ export interface AppNotification {
   title: string;
   body: string;
   url: string | null;
+  metadata?: Record<string, unknown> | null;
   readAt: string | null;
   createdAt: string;
 }
@@ -13,11 +14,14 @@ export interface AppNotification {
 export interface NotificationPreferences {
   pushEnabled: boolean;
   studyReminder: boolean;
+  srsReminder: boolean;
   streak: boolean;
   achievement: boolean;
   exam: boolean;
   announcement: boolean;
   reminderTime: string;
+  quietHourStart: string | null;
+  quietHourEnd: string | null;
   timezone: string;
 }
 

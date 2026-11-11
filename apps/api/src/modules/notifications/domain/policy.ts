@@ -3,6 +3,7 @@ import type { NotificationPreferenceSettings, NotificationType, ReminderCandidat
 
 const PREFERENCE_BY_TYPE: Record<NotificationType, keyof NotificationPreferenceSettings | null> = {
   study_reminder: "studyReminder",
+  srs_due: "srsReminder",
   streak: "streak",
   achievement: "achievement",
   exam: "exam",
@@ -63,30 +64,72 @@ function firstName(displayName: string): string {
   return name || "Sobat Nihongo";
 }
 
+export function isWithinQuietHours(
+  minutes: number,
+  startStr?: string | null,
+  endStr?: string | null,
+): boolean {
+  if (!startStr || !endStr) return false;
+  const start = parseReminderTime(startStr);
+  const end = parseReminderTime(endStr);
+  if (start === null || end === null || start === end) return false;
+  if (start < end) return minutes >= start && minutes < end;
+  // Rentang melewati tengah malam (mis. 22:00 → 07:00)
+  return minutes >= start || minutes < end;
+}
+
 /**
- * Pengingat hanya dibuat setelah jam pengingat pengguna lewat, dan tidak dibuat sama sekali
- * bila pengguna sudah belajar hari itu. dedupe harian mencegah cron 15 menit mengirim berulang.
+ * Pengingat hanya dibuat setelah jam pengingat pengguna lewat (atau peringatan streak darurat
+ * dalam 3 jam terakhir sebelum tengah malam), mematuhi jam tenang untuk pengingat non-darurat,
+ * dan tidak dibuat bila pengguna sudah belajar hari itu.
  */
 export function planReminder(candidate: ReminderCandidate, now: Date): NotifyInput | null {
   const preferences = candidate.preferences;
   const { day, minutes } = localClock(now, preferences.timezone);
   const target = parseReminderTime(preferences.reminderTime);
-  if (target === null || minutes < target) return null;
 
-  if (candidate.lastActiveDate && dayFromDbDate(candidate.lastActiveDate) === day) return null;
+  const alreadyActiveToday =
+    candidate.lastActiveDate !== null && dayFromDbDate(candidate.lastActiveDate) === day;
+  if (alreadyActiveToday) return null;
 
   const dedupeKey = `daily:${candidate.id}:${day}`;
   const streakAtRisk =
     candidate.streakCount >= 2 &&
     candidate.lastActiveDate !== null &&
     daysBetween(dayFromDbDate(candidate.lastActiveDate), day) === 1;
+  const lastThreeHoursBeforeMidnight = minutes >= 21 * 60;
 
-  if (streakAtRisk && preferences.streak) {
+  // Peringatan streak darurat boleh menembus jam tenang malam bila tersisa ≤3 jam sebelum ganti hari
+  if (
+    streakAtRisk &&
+    preferences.streak &&
+    ((target !== null && minutes >= target) || lastThreeHoursBeforeMidnight)
+  ) {
     return {
       type: "streak",
-      title: `Streak ${candidate.streakCount} hari hampir putus`,
-      body: "Belum ada latihan hari ini. Satu sesi singkat sudah cukup untuk menjaga streak-mu tetap hidup.",
-      url: "/beranda",
+      title: `Streak ${candidate.streakCount} hari dalam bahaya! 🔥`,
+      body: "Malam akan segera berganti! Selesaikan 1 latihan mini sekarang agar api streak belajarmu tidak padam.",
+      url: "/belajar",
+      metadata: { streakCount: candidate.streakCount },
+      dedupeKey,
+    };
+  }
+
+  // Hormati jam tenang pengguna untuk pengingat non-darurat
+  if (isWithinQuietHours(minutes, preferences.quietHourStart, preferences.quietHourEnd)) {
+    return null;
+  }
+
+  if (target === null || minutes < target) return null;
+
+  if ((candidate.dueSrsCount ?? 0) > 0 && preferences.srsReminder) {
+    const dueCount = candidate.dueSrsCount!;
+    return {
+      type: "srs_due",
+      title: `${dueCount} Kosakata Menunggumu! 🌸`,
+      body: "Nya~! Otakmu sedang dalam momen terbaik untuk mengingat materi hari ini. Ulas 3 menit yuk sebelum lupa!",
+      url: "/review",
+      metadata: { dueCount },
       dedupeKey,
     };
   }
@@ -95,7 +138,7 @@ export function planReminder(candidate: ReminderCandidate, now: Date): NotifyInp
 
   return {
     type: "study_reminder",
-    title: "Waktunya belajar sebentar",
+    title: "Waktunya belajar sebentar 🌸",
     body: `${firstName(candidate.displayName)}, Miu-chan sudah menunggu. Lima menit latihan hari ini sudah cukup untuk menjaga kebiasaan.`,
     url: "/beranda",
     dedupeKey,

@@ -43,6 +43,7 @@ export class PrismaActivityRecorder implements ActivityRecorder {
             title: `Lencana baru: ${achievement.name}`,
             body: achievement.description ?? "Kamu membuka lencana baru. Cek profil untuk melihat koleksimu.",
             url: "/profil",
+            metadata: { achievementCode: achievement.code },
             dedupeKey: `achievement:${userId}:${achievement.code}`,
           }).catch((err) => {
             console.error("[notifications] gagal membuat notifikasi lencana", err instanceof Error ? err.message : err);

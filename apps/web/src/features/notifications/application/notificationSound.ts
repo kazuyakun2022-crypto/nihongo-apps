@@ -130,7 +130,10 @@ export async function triggerDeviceNotification(title: string, body: string, url
     try {
       let reg = await navigator.serviceWorker.getRegistration().catch(() => null);
       if (!reg || !reg.active) {
-        reg = await navigator.serviceWorker.ready.catch(() => null);
+        reg = await Promise.race([
+          navigator.serviceWorker.ready.catch(() => null),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000)),
+        ]);
       }
       if (reg && "showNotification" in reg) {
         await reg.showNotification(title, {
@@ -141,6 +144,10 @@ export async function triggerDeviceNotification(title: string, body: string, url
           renotify: true,
           vibrate: [200, 100, 200],
           data: { url },
+          actions: [
+            { action: "open", title: "Mulai Belajar" },
+            { action: "close", title: "Tutup" },
+          ],
         } as unknown as NotificationOptions);
         shownViaSW = true;
       }
@@ -150,6 +157,7 @@ export async function triggerDeviceNotification(title: string, body: string, url
   }
 
   // Fallback standar browser desktop (jika Service Worker belum siap/aktif)
+  let shownViaWindow = false;
   if (!shownViaSW) {
     try {
       new Notification(title, {
@@ -157,10 +165,11 @@ export async function triggerDeviceNotification(title: string, body: string, url
         icon: "/icons/icon-192.png",
         tag: uniqueTag,
       });
+      shownViaWindow = true;
     } catch (err) {
       console.warn("[notification] Fallback new Notification gagal:", err);
     }
   }
 
-  return true;
+  return shownViaSW || shownViaWindow;
 }
