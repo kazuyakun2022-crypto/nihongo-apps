@@ -191,11 +191,6 @@ function LessonShell({
         )}
       </aside>
       <div className={styles.stage}>
-        {/* Di bawah 1280px panel samping (dan judulnya) tersembunyi: judul bab ringkas di atas pelajaran */}
-        <h1 className={styles.stageTitle}>
-          {moduleTitle && <span className={styles.stageModule}>{moduleTitle}</span>}
-          {title}
-        </h1>
         {children}
       </div>
     </div>
@@ -246,29 +241,35 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
   // ── Loading ──
   if (lesson.phase === "loading") {
     return (
-      <SkeletonRegion label="Memuat pelajaran…" className={styles.wrap}>
-        <div className={styles.progressRow}>
-          <Skeleton circle width={32} />
-          <Skeleton height="0.5rem" radius="var(--radius-pill)" style={{ flex: 1 }} />
-          <Skeleton width="2rem" />
+      <div className={styles.shell}>
+        <div className={styles.stage} style={{ padding: "16px", height: "100%" }}>
+          <SkeletonRegion label="Memuat pelajaran…" style={{ display: "flex", flexDirection: "column", height: "100%", gap: "16px", justifyContent: "center" }}>
+            <div className={styles.progressRow} style={{ padding: 0 }}>
+              <Skeleton circle width={32} />
+              <Skeleton height="0.5rem" radius="var(--radius-pill)" style={{ flex: 1 }} />
+              <Skeleton width="2rem" />
+            </div>
+            <div className={styles.studyCard}>
+              <Skeleton width="5rem" height="1.25rem" radius="var(--radius-pill)" />
+              <Skeleton width="60%" height="2.5rem" />
+              <Skeleton width="40%" />
+              <SkeletonText lines={2} />
+            </div>
+            <Skeleton height="3.5rem" radius="18px" />
+          </SkeletonRegion>
         </div>
-        <div className={styles.studyCard}>
-          <Skeleton width="5rem" height="1.25rem" radius="var(--radius-pill)" />
-          <Skeleton width="60%" height="2.5rem" />
-          <Skeleton width="40%" />
-          <SkeletonText lines={2} />
-        </div>
-        <Skeleton height="3rem" radius="var(--radius-pill)" />
-      </SkeletonRegion>
+      </div>
     );
   }
 
   // ── Error ──
   if (lesson.phase === "error") {
     return (
-      <div className={styles.wrap}>
-        <Alert>{lesson.errorMsg}</Alert>
-        <Link href="/belajar">← Kembali ke daftar bab</Link>
+      <div className={styles.shell}>
+        <div className={styles.stage} style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "24px", height: "100%" }}>
+          <Alert>{lesson.errorMsg}</Alert>
+          <Link href="/belajar" style={{ marginTop: "16px", fontWeight: 700, color: "var(--color-primary)" }}>← Kembali ke daftar bab</Link>
+        </div>
       </div>
     );
   }
@@ -289,7 +290,9 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
         <div className={styles.progressRow}>
           <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup pelajaran"><CloseIcon size={20} /></Link>
         </div>
-        <WarmupDeck cards={lesson.warmupCards} chapterTitle={chapterTitle} onDone={lesson.finishWarmup} />
+        <div className={styles.lessonContentArea}>
+          <WarmupDeck cards={lesson.warmupCards} chapterTitle={chapterTitle} onDone={lesson.finishWarmup} />
+        </div>
       </LessonShell>
     );
   }
@@ -336,70 +339,72 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           <span className={styles.progressLabel}>{lesson.studyIndex + 1}/{lesson.studyCards.length}</span>
         </div>
 
-        {lesson.chapter && lesson.studyIndex === 0 && lesson.chapter.explanation && (
-          <div className={styles.explanationCard}>
-            <p className={styles.explanationLabel}>Pengantar Bab</p>
-            <p className={styles.explanationText}><FuriganaText text={lesson.chapter.explanation} /></p>
+        <div className={styles.lessonContentArea}>
+          {lesson.chapter && lesson.studyIndex === 0 && lesson.chapter.explanation && (
+            <div className={styles.explanationCard}>
+              <p className={styles.explanationLabel}>Pengantar Bab</p>
+              <p className={styles.explanationText}><FuriganaText text={lesson.chapter.explanation} /></p>
+            </div>
+          )}
+
+          <div className={styles.studyCard} key={lesson.studyIndex} data-dir={lesson.direction}>
+            {card.kind === "block" && <LessonBlockView block={card.data} />}
+
+            {card.kind === "vocab" && (
+              <>
+                <span className={`${styles.cardBadge} ${styles.badgeVocab}`}>Kosakata</span>
+                {card.data.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={card.data.imageUrl} alt={card.data.meaningId} className={styles.cardImage} decoding="async" />
+                )}
+                <p className={styles.cardMain} lang="ja">
+                  {card.data.word}
+                  <SpeakButton onClick={() => speak(card.data.word)} />
+                </p>
+                <p className={styles.cardReading} lang="ja">{card.data.reading}</p>
+                <p className={styles.cardMeaning}>{card.data.meaningId}</p>
+                {card.data.exampleSentence && (
+                  <button type="button" className={`${styles.exampleBtn} ${styles.cardExample}`} onClick={() => speak(stripFurigana(card.data.exampleSentence ?? ""))} aria-label="Putar contoh kalimat">
+                    「<FuriganaText text={card.data.exampleSentence} />」 <VolumeIcon size={16} />
+                  </button>
+                )}
+                {card.data.exampleTranslation && <p className={styles.cardTranslation}>{card.data.exampleTranslation}</p>}
+              </>
+            )}
+
+            {card.kind === "kanji" && (
+              <>
+                <span className={`${styles.cardBadge} ${styles.badgeKanji}`}>Kanji</span>
+                <p className={`${styles.cardMain} ${styles.cardKanji}`} lang="ja">
+                  {card.data.character}
+                  <SpeakButton onClick={() => speak(card.data.character)} />
+                </p>
+                <div className={styles.cardReadings}>
+                  {card.data.onyomi && <span className={styles.readingChip}><span>On</span>{card.data.onyomi}</span>}
+                  {card.data.kunyomi && <span className={styles.readingChip}><span>Kun</span>{card.data.kunyomi}</span>}
+                </div>
+                <p className={styles.cardMeaning}>{card.data.meaningId}</p>
+              </>
+            )}
+
+            {card.kind === "grammar" && (
+              <>
+                <span className={`${styles.cardBadge} ${styles.badgeGrammar}`}>Tata Bahasa</span>
+                <p className={styles.cardPattern} lang="ja"><FuriganaText text={card.data.pattern} /></p>
+                <p className={styles.cardExplanation}><FuriganaText text={card.data.explanation} /></p>
+                {card.data.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={card.data.imageUrl} alt="" className={styles.blockImage} decoding="async" />
+                )}
+                {card.data.exampleSentence && (
+                  <button type="button" className={styles.exampleBtn} onClick={() => speak(stripFurigana(card.data.exampleSentence ?? ""))} aria-label="Putar contoh kalimat">
+                    「<FuriganaText text={card.data.exampleSentence} />」 <VolumeIcon size={16} />
+                  </button>
+                )}
+                {card.data.exampleTranslation && <p className={styles.cardTranslation}>{card.data.exampleTranslation}</p>}
+              </>
+            )}
           </div>
-        )}
-
-        <div className={styles.studyCard} key={lesson.studyIndex} data-dir={lesson.direction}>
-          {card.kind === "block" && <LessonBlockView block={card.data} />}
-
-          {card.kind === "vocab" && (
-            <>
-              <span className={`${styles.cardBadge} ${styles.badgeVocab}`}>Kosakata</span>
-              {card.data.imageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={card.data.imageUrl} alt={card.data.meaningId} className={styles.cardImage} decoding="async" />
-              )}
-              <p className={styles.cardMain} lang="ja">
-                {card.data.word}
-                <SpeakButton onClick={() => speak(card.data.word)} />
-              </p>
-              <p className={styles.cardReading} lang="ja">{card.data.reading}</p>
-              <p className={styles.cardMeaning}>{card.data.meaningId}</p>
-              {card.data.exampleSentence && (
-                <button type="button" className={`${styles.exampleBtn} ${styles.cardExample}`} onClick={() => speak(stripFurigana(card.data.exampleSentence ?? ""))} aria-label="Putar contoh kalimat">
-                  「<FuriganaText text={card.data.exampleSentence} />」 <VolumeIcon size={16} />
-                </button>
-              )}
-              {card.data.exampleTranslation && <p className={styles.cardTranslation}>{card.data.exampleTranslation}</p>}
-            </>
-          )}
-
-          {card.kind === "kanji" && (
-            <>
-              <span className={`${styles.cardBadge} ${styles.badgeKanji}`}>Kanji</span>
-              <p className={`${styles.cardMain} ${styles.cardKanji}`} lang="ja">
-                {card.data.character}
-                <SpeakButton onClick={() => speak(card.data.character)} />
-              </p>
-              <div className={styles.cardReadings}>
-                {card.data.onyomi && <span className={styles.readingChip}><span>On</span>{card.data.onyomi}</span>}
-                {card.data.kunyomi && <span className={styles.readingChip}><span>Kun</span>{card.data.kunyomi}</span>}
-              </div>
-              <p className={styles.cardMeaning}>{card.data.meaningId}</p>
-            </>
-          )}
-
-          {card.kind === "grammar" && (
-            <>
-              <span className={`${styles.cardBadge} ${styles.badgeGrammar}`}>Tata Bahasa</span>
-              <p className={styles.cardPattern} lang="ja"><FuriganaText text={card.data.pattern} /></p>
-              <p className={styles.cardExplanation}><FuriganaText text={card.data.explanation} /></p>
-              {card.data.imageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={card.data.imageUrl} alt="" className={styles.blockImage} decoding="async" />
-              )}
-              {card.data.exampleSentence && (
-                <button type="button" className={styles.exampleBtn} onClick={() => speak(stripFurigana(card.data.exampleSentence ?? ""))} aria-label="Putar contoh kalimat">
-                  「<FuriganaText text={card.data.exampleSentence} />」 <VolumeIcon size={16} />
-                </button>
-              )}
-              {card.data.exampleTranslation && <p className={styles.cardTranslation}>{card.data.exampleTranslation}</p>}
-            </>
-          )}
         </div>
 
         {/* Bilah Aksi Terkunci di Bawah (Zero-Scroll Docked Navigation) */}
@@ -440,32 +445,61 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
         title={chapterTitle}
         moduleTitle={moduleTitle}
         stage={lesson.quizQuestions[0] && isPracticeQuestion(lesson.quizQuestions[0]) ? "practice" : "quiz"}
-        tip="Tidak perlu terburu-buru. Kamu bisa kembali ke soal sebelumnya sebelum mengumpulkan." mood="semangat">
-        <div className={styles.intro}>
-          <div className={styles.introMascot}>
-            <Mascot mood="semangat" size={112} />
-          </div>
-          <div className={styles.introBody}>
-            <h2 className={styles.introHeading}>Siap berlatih?</h2>
-            {lesson.chapter && <p className={styles.introChapter}>{lesson.chapter.title}</p>}
-            <p className={styles.muted}>{lesson.quizQuestions.length} latihan</p>
-            <Alert tone="info">
-              Butuh nilai minimal <strong>{lesson.chapter?.passScore ?? 70}%</strong> untuk menyelesaikan bab ini dan membuka bab
-              berikutnya. Kalau belum tercapai, kamu bisa langsung mengulang kuisnya.
-            </Alert>
-            <ul className={styles.skillList} aria-label="Keterampilan yang dilatih">
-              {countBySkill(lesson.quizQuestions.map((q) => q.type)).map(({ skill, count }) => (
-                <li key={skill} className={styles.skillChip}>
-                  <SkillIcon skill={skill} /> {SKILLS[skill].label} <strong>{count}</strong>
-                </li>
-              ))}
-            </ul>
-            <div className={styles.introActions}>
-              <Button block onClick={lesson.startQuiz} disabled={lesson.quizQuestions.length === 0}>Mulai Latihan</Button>
-              {lesson.studyCards.length > 0 && (
-                <Button block variant="secondary" onClick={lesson.backToStudy}>← Ulang materi</Button>
-              )}
+        tip="Tidak perlu terburu-buru. Kamu bisa kembali ke soal sebelumnya sebelum mengumpulkan."
+        mood="semangat"
+      >
+        <div className={styles.progressRow}>
+          <Link href="/belajar" className={styles.closeBtn} aria-label="Tutup persiapan"><CloseIcon size={20} /></Link>
+        </div>
+        <div className={styles.lessonContentArea}>
+          <div className={styles.intro}>
+            <div className={styles.introMascot}>
+              <Mascot mood="semangat" size={96} />
             </div>
+            <div className={styles.introBody}>
+              <h2 className={styles.introHeading}>Siap berlatih?</h2>
+              {lesson.chapter && <p className={styles.introChapter}>{lesson.chapter.title}</p>}
+              <p className={styles.muted}>{lesson.quizQuestions.length} latihan</p>
+              <Alert tone="info">
+                Butuh nilai minimal <strong>{lesson.chapter?.passScore ?? 70}%</strong> untuk menyelesaikan bab ini dan membuka bab
+                berikutnya. Kalau belum tercapai, kamu bisa langsung mengulang kuisnya.
+              </Alert>
+              <ul className={styles.skillList} aria-label="Keterampilan yang dilatih">
+                {countBySkill(lesson.quizQuestions.map((q) => q.type)).map(({ skill, count }) => (
+                  <li key={skill} className={styles.skillChip}>
+                    <SkillIcon skill={skill} /> {SKILLS[skill].label} <strong>{count}</strong>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className={styles.dockedActionBar}>
+          <div className={styles.dockedActionInner}>
+            {lesson.studyCards.length > 0 && (
+              <button
+                type="button"
+                className={styles.dockedPrevBtn}
+                onClick={() => {
+                  soundFX.play("tap", 0.35);
+                  lesson.backToStudy();
+                }}
+                aria-label="Kembali ke materi"
+              >
+                ←
+              </button>
+            )}
+            <button
+              type="button"
+              className={styles.dockedNextBtn}
+              onClick={() => {
+                soundFX.play("tap", 0.35);
+                lesson.startQuiz();
+              }}
+              disabled={lesson.quizQuestions.length === 0}
+            >
+              Mulai Latihan →
+            </button>
           </div>
         </div>
       </LessonShell>
@@ -519,62 +553,71 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           <span className={styles.progressLabel}>{lesson.quizIndex + 1}/{lesson.quizQuestions.length}</span>
         </div>
 
-        <div className={styles.quizCard} key={q.id} data-dir={lesson.direction}>
-          <QuestionHeader q={q} />
-          {q.audioUrl && (
-            <QuestionAudio key={q.id} url={q.audioUrl} className={styles.audioBtn} />
-          )}
-          {(q.type === "susun_huruf" || q.type === "susun_kalimat") && (
-            <TileExercise
-              tiles={q.options}
-              sentence={q.type === "susun_kalimat"}
-              answer={lesson.currentAnswer}
-              onAnswer={(a) => lesson.selectAnswer(q.id, a)}
-              disabled={lesson.phase === "submitting"}
-            />
-          )}
-          {q.type === "menulis" && (
-            <HandwritingExercise
-              slots={q.slots ?? 1}
-              script={q.script ?? "campuran"}
-              kanji={chapterKanji}
-              answer={lesson.currentAnswer}
-              onAnswer={(a) => lesson.selectAnswer(q.id, a)}
-            />
-          )}
-          {q.type === "berbicara" && (
-            <SpeakingExercise
-              text={q.speakText ?? ""}
-              variants={q.speakVariants}
-              answer={lesson.currentAnswer}
-              onAnswer={(a) => lesson.selectAnswer(q.id, a)}
-              onSkip={() => lesson.skipQuestion(q.id)}
-              skipped={lesson.currentSkipped}
-            />
-          )}
-          {(q.type === "pilihan_ganda" || q.type === "mendengar") && (
-            <div className={styles.options}>
-              {q.options.map((opt, i) => (
-                <button
-                  key={opt}
-                  className={styles.optionBtn}
-                  aria-pressed={lesson.currentAnswer === opt}
-                  onClick={() => {
-                    soundFX.play("tap", 0.35);
-                    lesson.selectAnswer(q.id, opt);
-                  }}
-                  disabled={lesson.phase === "submitting"}
-                >
-                  <span className={styles.optionLabel}>{LABELS[i]}</span>
-                  <FuriganaText text={opt} />
-                </button>
-              ))}
-            </div>
+        <div className={styles.lessonContentArea}>
+          <div className={styles.quizCard} key={q.id} data-dir={lesson.direction}>
+            <QuestionHeader q={q} />
+            {q.audioUrl && (
+              <QuestionAudio key={q.id} url={q.audioUrl} className={styles.audioBtn} />
+            )}
+            {(q.type === "susun_huruf" || q.type === "susun_kalimat") && (
+              <TileExercise
+                tiles={q.options}
+                sentence={q.type === "susun_kalimat"}
+                answer={lesson.currentAnswer}
+                onAnswer={(a) => lesson.selectAnswer(q.id, a)}
+                disabled={lesson.phase === "submitting"}
+              />
+            )}
+            {q.type === "menulis" && (
+              <HandwritingExercise
+                slots={q.slots ?? 1}
+                script={q.script ?? "campuran"}
+                kanji={chapterKanji}
+                answer={lesson.currentAnswer}
+                onAnswer={(a) => lesson.selectAnswer(q.id, a)}
+              />
+            )}
+            {q.type === "berbicara" && (
+              <SpeakingExercise
+                text={q.speakText ?? ""}
+                variants={q.speakVariants}
+                answer={lesson.currentAnswer}
+                onAnswer={(a) => lesson.selectAnswer(q.id, a)}
+                onSkip={() => lesson.skipQuestion(q.id)}
+                skipped={lesson.currentSkipped}
+              />
+            )}
+            {(q.type === "pilihan_ganda" || q.type === "mendengar") && (
+              <div className={styles.options}>
+                {q.options.map((opt, i) => (
+                  <button
+                    key={opt}
+                    className={styles.optionBtn}
+                    aria-pressed={lesson.currentAnswer === opt}
+                    onClick={() => {
+                      soundFX.play("tap", 0.35);
+                      lesson.selectAnswer(q.id, opt);
+                    }}
+                    disabled={lesson.phase === "submitting"}
+                  >
+                    <span className={styles.optionLabel}>{LABELS[i]}</span>
+                    <FuriganaText text={opt} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Gagal mengirim jawaban: sebelumnya diam saja dan kembali ke soal tanpa penjelasan */}
+          {lesson.errorMsg && <Alert>{lesson.errorMsg}</Alert>}
+
+          {/* Sebelumnya muncul juga hanya karena soal terakhir ini sendiri belum dijawab */}
+          {lesson.isLastQuiz && lesson.unansweredOthers > 0 && (
+            <p className={styles.muted} style={{ textAlign: "center", margin: "4px 0 0" }}>
+              Masih ada {lesson.unansweredOthers} soal lain yang belum dijawab. Periksa kembali soal sebelumnya.
+            </p>
           )}
         </div>
-
-        {/* Gagal mengirim jawaban: sebelumnya diam saja dan kembali ke soal tanpa penjelasan */}
-        {lesson.errorMsg && <Alert>{lesson.errorMsg}</Alert>}
 
         {/* Bilah Aksi Terkunci di Bawah (Zero-Scroll Docked Navigation) */}
         <div className={styles.dockedActionBar}>
@@ -618,13 +661,6 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
             )}
           </div>
         </div>
-
-        {/* Sebelumnya muncul juga hanya karena soal terakhir ini sendiri belum dijawab */}
-        {lesson.isLastQuiz && lesson.unansweredOthers > 0 && (
-          <p className={styles.muted} style={{ textAlign: "center" }}>
-            Masih ada {lesson.unansweredOthers} soal lain yang belum dijawab. Periksa kembali soal sebelumnya.
-          </p>
-        )}
       </LessonShell>
     );
   }
@@ -744,20 +780,21 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
       tip={passed ? "Bagus! Latih lagi pola bab ini lewat ngobrol supaya makin lancar." : "Lihat pembahasan soal yang salah, lalu coba lagi. Kamu pasti bisa."}
       mood={passed ? "senang" : "berpikir"}
     >
-      <div className={styles.resultHero} data-passed={passed || undefined}>
-        {passed && (
-          <div className={styles.confetti} aria-hidden="true">
-            {Array.from({ length: 16 }, (_, i) => <span key={i} />)}
-          </div>
-        )}
-        <Mascot mood={passed ? "senang" : "berpikir"} size={88} />
-        <h2 className={styles.resultHeading}>{passed ? "Bab Selesai!" : `Belum Lulus: butuh ${passingScore}%`}</h2>
-        <div className={styles.resultScore} aria-label={`Nilai ${score} persen`}>{shownScore}%</div>
-        <p className={styles.resultSub}>
-          {correct} dari {graded} benar · Nilai lulus {passingScore}%
-        </p>
-        <span className={styles.xpBadge}>+{xpEarned} XP</span>
-      </div>
+      <div className={styles.lessonContentArea} style={{ justifyContent: "flex-start", overflowY: "auto", height: "100%", padding: "16px 16px 32px" }}>
+        <div className={styles.resultHero} data-passed={passed || undefined}>
+          {passed && (
+            <div className={styles.confetti} aria-hidden="true">
+              {Array.from({ length: 16 }, (_, i) => <span key={i} />)}
+            </div>
+          )}
+          <Mascot mood={passed ? "senang" : "berpikir"} size={88} />
+          <h2 className={styles.resultHeading}>{passed ? "Bab Selesai!" : `Belum Lulus: butuh ${passingScore}%`}</h2>
+          <div className={styles.resultScore} aria-label={`Nilai ${score} persen`}>{shownScore}%</div>
+          <p className={styles.resultSub}>
+            {correct} dari {graded} benar · Nilai lulus {passingScore}%
+          </p>
+          <span className={styles.xpBadge}>+{xpEarned} XP</span>
+        </div>
 
       {!passed && (
         <Alert tone="info">
@@ -1002,7 +1039,8 @@ function ResultView({ lesson, title, moduleTitle }: { lesson: ReturnType<typeof 
           </Link>
         </div>
       </div>
-    </LessonShell>
+    </div>
+  </LessonShell>
   );
 }
 

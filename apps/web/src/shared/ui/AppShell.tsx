@@ -161,78 +161,83 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ? adminNav.filter((item) => !item.superAdminOnly || isSuperAdmin)
     : studentNav;
   const isChatPage = pathname.startsWith("/ngobrol") || pathname.startsWith("/suara");
+  const isLessonPage = pathname.startsWith("/belajar/") && pathname !== "/belajar";
   // Panel admin berisi tabel & data padat, jadi memakai seluruh lebar layar
   const isWidePage = pathname.startsWith("/admin");
   const [collapsed, toggleSidebar] = useSidebarCollapse();
 
   return (
     <NavigatorProvider>
-      <div className={`${styles.shell} ${collapsed ? styles.sidebarCollapsed : ""}`}>
-        <nav className={styles.nav} aria-label="Menu utama">
-          <span className={styles.brand}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/app-icon.png" alt="日本語" className={styles.brandLogoImg} />
-            <span className={styles.brandText}>
-              <span className={styles.brandName} lang="ja">
-                日本語
+      <div className={`${styles.shell} ${isLessonPage ? styles.shellLesson : ""} ${collapsed ? styles.sidebarCollapsed : ""}`}>
+        {!isLessonPage && (
+          <nav className={styles.nav} aria-label="Menu utama">
+            <span className={styles.brand}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/app-icon.png" alt="日本語" className={styles.brandLogoImg} />
+              <span className={styles.brandText}>
+                <span className={styles.brandName} lang="ja">
+                  日本語
+                </span>
+                <span className={styles.brandTag}>{isAdmin ? "Panel pengelola" : "Belajar bersama Miu-chan"}</span>
               </span>
-              <span className={styles.brandTag}>{isAdmin ? "Panel pengelola" : "Belajar bersama Miu-chan"}</span>
             </span>
-          </span>
-          <ul className={styles.navList} style={{ "--nav-cols": nav.length } as React.CSSProperties}>
-            {nav.map((item) => {
-              const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
-              const NavIcon = item.Icon;
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={styles.navLink}
-                    aria-current={active ? "page" : undefined}
-                    aria-label={item.label}
-                    title={item.label}
-                    data-spotlight={`nav-${item.href.slice(1)}`}
-                    onClick={() => soundFX.play("tap", 0.35)}
-                  >
-                    <span className={styles.navIconWrap}>
-                      <NavIcon size={24} strokeWidth={active ? 2.8 : 2.2} active={active} filled={active} />
-                    </span>
-                    {/* Nama layar: terlihat jelas di ponsel maupun sidebar desktop */}
-                    <span className={styles.navLabel}>
-                      {(item as { short?: string }).short ? (
-                        <>
-                          <span className={styles.navLabelFull}>{item.label}</span>
-                          <span className={styles.navLabelShort} aria-hidden="true">
-                            {(item as { short?: string }).short}
-                          </span>
-                        </>
-                      ) : (
-                        <span className={styles.navLabelText}>{item.label}</span>
-                      )}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+            <ul className={styles.navList} style={{ "--nav-cols": nav.length } as React.CSSProperties}>
+              {nav.map((item) => {
+                const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+                const NavIcon = item.Icon;
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={styles.navLink}
+                      aria-current={active ? "page" : undefined}
+                      aria-label={item.label}
+                      title={item.label}
+                      data-spotlight={`nav-${item.href.slice(1)}`}
+                      onClick={() => soundFX.play("tap", 0.35)}
+                    >
+                      <span className={styles.navIconWrap}>
+                        <NavIcon size={24} strokeWidth={active ? 2.8 : 2.2} active={active} filled={active} />
+                      </span>
+                      {/* Nama layar: terlihat jelas di ponsel maupun sidebar desktop */}
+                      <span className={styles.navLabel}>
+                        {(item as { short?: string }).short ? (
+                          <>
+                            <span className={styles.navLabelFull}>{item.label}</span>
+                            <span className={styles.navLabelShort} aria-hidden="true">
+                              {(item as { short?: string }).short}
+                            </span>
+                          </>
+                        ) : (
+                          <span className={styles.navLabelText}>{item.label}</span>
+                        )}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
 
-        </nav>
+          </nav>
+        )}
 
         {/* Tombol panah setengah lingkaran — di LUAR nav agar tidak ikut translateX saat collapsed */}
-        <button
-          type="button"
-          className={styles.collapseBtn}
-          onClick={toggleSidebar}
-          aria-expanded={!collapsed}
-          aria-label={collapsed ? "Buka menu samping" : "Sembunyikan menu samping"}
-          title={collapsed ? "Buka menu samping" : "Sembunyikan menu samping"}
-        >
-          <span className={styles.collapseIconWrap}>
-            <SidebarToggleIcon size={20} strokeWidth={2.4} />
-          </span>
-        </button>
+        {!isLessonPage && (
+          <button
+            type="button"
+            className={styles.collapseBtn}
+            onClick={toggleSidebar}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? "Buka menu samping" : "Sembunyikan menu samping"}
+            title={collapsed ? "Buka menu samping" : "Sembunyikan menu samping"}
+          >
+            <span className={styles.collapseIconWrap}>
+              <SidebarToggleIcon size={20} strokeWidth={2.4} />
+            </span>
+          </button>
+        )}
         {/* Bilah atas terpadu: logo aplikasi, judul halaman aktif, & akses lonceng notifikasi */}
-        {!isChatPage && (
+        {!isChatPage && !isLessonPage && (
           <header className={styles.topBar}>
             <div className={styles.topBarInner}>
               <div className={styles.topBarLeft}>
@@ -274,16 +279,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </header>
         )}
 
-        <main className={`${styles.main} ${isChatPage ? styles.mainChat : ""} ${isWidePage ? styles.mainWide : ""}`}>
+        <main className={`${styles.main} ${isLessonPage ? styles.mainLesson : isChatPage ? styles.mainChat : ""} ${isWidePage ? styles.mainWide : ""}`}>
           {children}
         </main>
-        {/* Miu-chan pemandu: widget melayang + sorotan (disembunyikan otomatis saat ujian) */}
-        <MascotNavigator />
+        {/* Miu-chan pemandu: widget melayang + sorotan (disembunyikan otomatis saat ujian & sesi belajar) */}
+        {!isLessonPage && <MascotNavigator />}
         <MiuStage />
         <ConfirmHost />
         <SpotlightOverlay />
         <InAppNotificationBanner />
-        {!isChatPage && <InstallPrompt />}
+        {!isChatPage && !isLessonPage && <InstallPrompt />}
       </div>
     </NavigatorProvider>
   );
