@@ -13,6 +13,7 @@ import { NotificationBell } from "@/features/notifications/ui/NotificationBell";
 import { InAppNotificationBanner } from "@/features/notifications/ui/InAppNotificationBanner";
 import styles from "./shell.module.css";
 import { ConfirmHost } from "@/shared/ui/confirmDialog";
+import { soundFX } from "@/lib/audio/SoundFXManager";
 import {
   ArrowLeftIcon,
   SidebarToggleIcon,
@@ -20,6 +21,9 @@ import {
   NavLearnIcon,
   NavChatIcon,
   NavProfileIcon,
+  ChunkyLearnIcon,
+  ChunkyReviewIcon,
+  ChunkyProfileIcon,
   DashboardIcon,
   UsersIcon,
   BookOpenIcon,
@@ -68,9 +72,10 @@ interface NavItem {
 
 const studentNav: NavItem[] = [
   { href: "/beranda", label: "Beranda", Icon: NavHomeIcon },
-  { href: "/belajar", label: "Belajar", Icon: NavLearnIcon },
+  { href: "/belajar", label: "Belajar", Icon: ChunkyLearnIcon },
+  { href: "/review",  label: "Review",  Icon: ChunkyReviewIcon },
   { href: "/ngobrol", label: "Ngobrol", Icon: NavChatIcon },
-  { href: "/profil",  label: "Profil",  Icon: NavProfileIcon },
+  { href: "/profil",  label: "Profil",  Icon: ChunkyProfileIcon },
 ];
 
 function getParentRoute(pathname: string, isAdmin: boolean): string | null {
@@ -188,9 +193,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     aria-label={item.label}
                     title={item.label}
                     data-spotlight={`nav-${item.href.slice(1)}`}
+                    onClick={() => soundFX.play("tap", 0.35)}
                   >
                     <span className={styles.navIconWrap}>
-                      <NavIcon size={22} strokeWidth={active ? 2.4 : 2} />
+                      <NavIcon size={24} strokeWidth={active ? 2.8 : 2.2} active={active} filled={active} />
                     </span>
                     {/* Nama layar: terlihat jelas di ponsel maupun sidebar desktop */}
                     <span className={styles.navLabel}>

@@ -10,6 +10,8 @@ import { Skeleton, SkeletonRegion } from "@/shared/ui/Skeleton";
 import { NekoAvatar } from "@/shared/ui/neko/NekoAvatar";
 import { AchievementUnlockModal } from "@/features/progress/ui/AchievementUnlockModal";
 import { useCountUp } from "@/features/learning/ui/ScoreScreen";
+import { soundFX } from "@/lib/audio/SoundFXManager";
+import { SessionCelebrationModal } from "@/components/celebration/SessionCelebrationModal";
 import { useReview, type ReviewedRecord } from "../application/useReview";
 import { useDailyReview } from "../application/DailyReviewContext";
 import { ReviewSpeakTest } from "./ReviewSpeakTest";
@@ -43,6 +45,7 @@ export function ReviewDeck() {
   } = useReview();
 
   const [dismissedAchievements, setDismissedAchievements] = useState(false);
+  const [showCelebrationModal, setShowCelebrationModal] = useState(true);
   const expEarned = summary.total ? summary.total * 10 : 50;
   const shownXp = useCountUp(current ? 0 : expEarned, 800, 200);
 
@@ -88,12 +91,22 @@ export function ReviewDeck() {
 
       if (!revealed && (e.code === "Space" || e.key === "Enter")) {
         e.preventDefault();
+        soundFX.play("tap", 0.35);
         reveal();
       } else if (revealed && !pending && current) {
-        if (e.key === "1") grade("lupa");
-        else if (e.key === "2") grade("sulit");
-        else if (e.key === "3") grade("bisa");
-        else if (e.key === "4") grade("mudah");
+        if (e.key === "1") {
+          soundFX.play("wrong", 0.4);
+          grade("lupa");
+        } else if (e.key === "2") {
+          soundFX.play("wrong", 0.4);
+          grade("sulit");
+        } else if (e.key === "3") {
+          soundFX.play("correct", 0.5);
+          grade("bisa");
+        } else if (e.key === "4") {
+          soundFX.play("correct", 0.5);
+          grade("mudah");
+        }
       }
     };
 
@@ -160,73 +173,86 @@ export function ReviewDeck() {
     const difficultCount = summary.lupa + summary.sulit;
 
     return (
-      <div className={styles.simpleCompleteWrap} data-spotlight="review-selesai">
-        <div className={styles.simpleCompleteCard}>
-          <div className={styles.simpleAvatarWrap}>
-            <NekoAvatar
-              mode="idle"
-              emotion="senang"
-              size={110}
-              label="Miu-chan Selamat!"
-            />
-          </div>
-
-          <span className={styles.simpleBadge}>
-            🎉 Review Hari Ini Selesai!
-          </span>
-
-          <h1 className={styles.simpleTitle}>Kerja Bagus!</h1>
-          <p className={styles.simpleDesc}>
-            Semua kosakata jatuh tempo hari ini telah berhasil kamu latih. Materi dan bab belajar kini terbuka bebas!
-          </p>
-
-          {/* 3 Metrik Esensial Ringkas */}
-          <div className={styles.simpleStatsRow}>
-            <div className={styles.simpleStatItem}>
-              <span className={styles.simpleStatNum}>{summary.total}</span>
-              <span className={styles.simpleStatLabel}>Kartu Selesai</span>
-            </div>
-            <div className={styles.simpleStatDivider} />
-            <div className={styles.simpleStatItem}>
-              <span className={styles.simpleStatNum} style={{ color: "#16a34a" }}>{accuracy}%</span>
-              <span className={styles.simpleStatLabel}>Penguasaan</span>
-            </div>
-            <div className={styles.simpleStatDivider} />
-            <div className={styles.simpleStatItem}>
-              <span className={styles.simpleStatNum} style={{ color: "#ea580c" }}>+{shownXp}</span>
-              <span className={styles.simpleStatLabel}>XP Didapat</span>
-            </div>
-          </div>
-
-          {/* Tombol Aksi Simpel & Fokus */}
-          <div className={styles.simpleActionCol}>
-            <Link href="/belajar" className={styles.simpleBtnPrimary}>
-              Lanjut Belajar Materi Bab →
-            </Link>
-
-            {difficultCount > 0 && (
-              <button
-                type="button"
-                className={styles.simpleBtnSecondary}
-                onClick={() => reviewAgain(true)}
-              >
-                🔄 Ulangi Kata Sulit ({difficultCount})
-              </button>
-            )}
-
-            <Link href="/beranda" className={styles.simpleBtnGhost}>
-              Kembali ke Beranda
-            </Link>
-          </div>
-        </div>
-
-        {!dismissedAchievements && unlockedAchievements && unlockedAchievements.length > 0 && (
-          <AchievementUnlockModal
-            achievements={unlockedAchievements}
-            onClose={() => setDismissedAchievements(true)}
+      <>
+        {showCelebrationModal && (
+          <SessionCelebrationModal
+            xpEarned={expEarned}
+            currentStreakDays={latestProgress?.streak ?? 1}
+            levelProgressPct={accuracy}
+            title="Review Tuntas!"
+            subtitle="Kewajiban kosakata harian berhasil kamu selesaikan"
+            levelName="Penguasaan SRS Harian"
+            onContinue={() => setShowCelebrationModal(false)}
           />
         )}
-      </div>
+        <div className={styles.simpleCompleteWrap} data-spotlight="review-selesai">
+          <div className={styles.simpleCompleteCard}>
+            <div className={styles.simpleAvatarWrap}>
+              <NekoAvatar
+                mode="idle"
+                emotion="senang"
+                size={110}
+                label="Miu-chan Selamat!"
+              />
+            </div>
+
+            <span className={styles.simpleBadge}>
+              🎉 Review Hari Ini Selesai!
+            </span>
+
+            <h1 className={styles.simpleTitle}>Kerja Bagus!</h1>
+            <p className={styles.simpleDesc}>
+              Semua kosakata jatuh tempo hari ini telah berhasil kamu latih. Materi dan bab belajar kini terbuka bebas!
+            </p>
+
+            {/* 3 Metrik Esensial Ringkas */}
+            <div className={styles.simpleStatsRow}>
+              <div className={styles.simpleStatItem}>
+                <span className={styles.simpleStatNum}>{summary.total}</span>
+                <span className={styles.simpleStatLabel}>Kartu Selesai</span>
+              </div>
+              <div className={styles.simpleStatDivider} />
+              <div className={styles.simpleStatItem}>
+                <span className={styles.simpleStatNum} style={{ color: "#16a34a" }}>{accuracy}%</span>
+                <span className={styles.simpleStatLabel}>Penguasaan</span>
+              </div>
+              <div className={styles.simpleStatDivider} />
+              <div className={styles.simpleStatItem}>
+                <span className={styles.simpleStatNum} style={{ color: "#ea580c" }}>+{shownXp}</span>
+                <span className={styles.simpleStatLabel}>XP Didapat</span>
+              </div>
+            </div>
+
+            {/* Tombol Aksi Simpel & Fokus */}
+            <div className={styles.simpleActionCol}>
+              <Link href="/belajar" className={styles.simpleBtnPrimary}>
+                Lanjut Belajar Materi Bab →
+              </Link>
+
+              {difficultCount > 0 && (
+                <button
+                  type="button"
+                  className={styles.simpleBtnSecondary}
+                  onClick={() => reviewAgain(true)}
+                >
+                  🔄 Ulangi Kata Sulit ({difficultCount})
+                </button>
+              )}
+
+              <Link href="/beranda" className={styles.simpleBtnGhost}>
+                Kembali ke Beranda
+              </Link>
+            </div>
+          </div>
+
+          {!dismissedAchievements && unlockedAchievements && unlockedAchievements.length > 0 && (
+            <AchievementUnlockModal
+              achievements={unlockedAchievements}
+              onClose={() => setDismissedAchievements(true)}
+            />
+          )}
+        </div>
+      </>
     );
   }
 
@@ -259,9 +285,9 @@ export function ReviewDeck() {
         </div>
       </div>
 
-      {/* Flashcard */}
-      <div className={styles.card} data-spotlight="review-kartu-depan">
-        {/* Tombol Cepat Audio & Mic di Pojok Kartu */}
+      {/* Flashcard: Kotak Pertanyaan Berketinggian Tetap (Fixed-Height Sanctuary Canvas) */}
+      <div className={styles.sanctuaryCard} data-spotlight="review-kartu-depan">
+        {/* Tombol Cepat Audio di Pojok Kartu */}
         <div className={styles.cardQuickActions}>
           <button
             type="button"
@@ -276,12 +302,16 @@ export function ReviewDeck() {
           </button>
         </div>
 
-        <p lang="ja" className={styles.front}>
-          {current.front}
-        </p>
+        {/* Zona Teks Depan Terpusat */}
+        <div className={styles.sanctuaryFrontArea}>
+          <p lang="ja" className={styles.front}>
+            {current.front}
+          </p>
+        </div>
 
-        {revealed && (
-          <div className={styles.back}>
+        {/* Zona Teks Belakang Terkunci (Slot Terpadu Tanpa Menggeser Layout) */}
+        {revealed ? (
+          <div className={styles.sanctuaryBackArea}>
             {current.reading && (
               <p lang="ja" className={styles.backReading}>
                 {current.reading}
@@ -289,7 +319,6 @@ export function ReviewDeck() {
             )}
             <p className={styles.backMeaning}>{current.meaning}</p>
 
-            {/* Quick Tes Speak button right on card */}
             <button
               type="button"
               className={styles.speakPracticePill}
@@ -299,30 +328,53 @@ export function ReviewDeck() {
               🎙️ Tes Speak Kata Ini Bersama Miu-chan
             </button>
           </div>
+        ) : (
+          <div className={styles.sanctuaryBackPlaceholder}>
+            <span>🐾 Ketuk Spasi atau tombol di bawah untuk melihat jawaban</span>
+          </div>
         )}
       </div>
 
-      {/* Tombol Nilai (Lupa, Sulit, Bisa, Mudah) */}
-      {revealed ? (
-        <div className={styles.grades} data-spotlight="review-nilai">
-          {grades.map((g) => (
+      {/* Bilah Aksi Terkunci di Bawah (Sticky Docked Footer Bar) */}
+      <div className={styles.dockedFooterBar}>
+        <div className={styles.dockedFooterInner}>
+          {revealed ? (
+            <div className={styles.grades} data-spotlight="review-nilai">
+              {grades.map((g) => (
+                <button
+                  key={g.value}
+                  type="button"
+                  className={`${styles.gradeBtn} ${g.className}`}
+                  onClick={() => {
+                    if (g.value === "lupa" || g.value === "sulit") {
+                      soundFX.play("wrong", 0.4);
+                    } else {
+                      soundFX.play("correct", 0.5);
+                    }
+                    grade(g.value);
+                  }}
+                  disabled={pending}
+                >
+                  <span className={styles.gradeLabel}>{g.label}</span>
+                  <span className={styles.gradeSub}>{g.sub}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
             <button
-              key={g.value}
               type="button"
-              className={`${styles.gradeBtn} ${g.className}`}
-              onClick={() => grade(g.value)}
-              disabled={pending}
+              className={styles.revealActionBtn}
+              onClick={() => {
+                soundFX.play("tap", 0.35);
+                reveal();
+              }}
+              data-spotlight="review-kartu"
             >
-              <span className={styles.gradeLabel}>{g.label}</span>
-              <span className={styles.gradeSub}>{g.sub}</span>
+              Lihat Jawaban (Spasi)
             </button>
-          ))}
+          )}
         </div>
-      ) : (
-        <Button block onClick={reveal} data-spotlight="review-kartu">
-          Lihat jawaban (Spasi)
-        </Button>
-      )}
+      </div>
     </section>
   );
 }
