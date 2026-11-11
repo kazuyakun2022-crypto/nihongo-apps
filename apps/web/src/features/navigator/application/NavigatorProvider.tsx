@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth/application/AuthProvider";
+import { useNotifications } from "@/features/notifications/application/NotificationsProvider";
 import { postAssistant, type AskMessage } from "@/features/ask/data/askApi";
 import { AudioMeter } from "@/shared/lib/audioMeter";
 import { EXAM_ROUTES, OWN_MASCOT_ROUTES, bandForLevel, matchIntent, type LevelBand } from "../domain/intents";
@@ -37,6 +38,8 @@ export interface Caption {
   reply?: boolean;
   /** Penolakan saat ujian. */
   refusal?: boolean;
+  /** Tautan aksi cepat saat maskot menyampaikan notifikasi mendesak. */
+  action?: { label: string; href: string; notificationId?: string };
 }
 
 export interface ActiveTour {
@@ -134,6 +137,7 @@ function firstActive(steps: TourStep[], from: number): number {
 
 export function NavigatorProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const { items: notifications } = useNotifications();
   const pathname = usePathname() ?? "";
 
   const [voiceState, setVoiceState] = useState<VoiceState>("IDLE_FLOATING");
@@ -222,6 +226,28 @@ export function NavigatorProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     historyRef.current = [];
   }, [pathname]);
+
+  // Mascot Speech Balloon Alert: saat pengguna masuk Beranda dengan notifikasi mendesak yang belum dibaca
+  useEffect(() => {
+    if (pathname !== "/beranda" || !isWidgetVisible || examLocked || tour || welcome || caption || !captionsOn) return;
+    const urgent = notifications.find(
+      (n) => !n.readAt && (n.type === "streak" || n.type === "srs_due" || n.type === "study_reminder"),
+    );
+    if (!urgent) return;
+    const seenKey = `nihongo:urgent-alert:${urgent.id}`;
+    try {
+      if (sessionStorage.getItem(seenKey) === "1") return;
+      sessionStorage.setItem(seenKey, "1");
+    } catch {
+      return;
+    }
+    const label =
+      urgent.type === "srs_due" ? "Ulas Sekarang →" : urgent.type === "streak" ? "Selamatkan Streak →" : "Mulai Belajar →";
+    setCaption({
+      id: `${urgent.title} — ${urgent.body}`,
+      action: { label, href: urgent.url || "/beranda", notificationId: urgent.id },
+    });
+  }, [pathname, isWidgetVisible, examLocked, tour, welcome, caption, captionsOn, notifications]);
 
   const setScreenDetail = useCallback((key: string, detail: string | null) => {
     if (detail) detailsRef.current.set(key, detail);

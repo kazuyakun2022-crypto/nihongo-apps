@@ -5,7 +5,13 @@ import { tokenStore } from "@/core/http/apiClient";
 import { useAuth } from "@/features/auth/application/AuthProvider";
 import { notificationsApi } from "../data/notificationsApi";
 import type { AppNotification, NotificationPreferences, PushState } from "../domain/types";
-import { currentPushSubscription, pushSupported, subscribePush, unsubscribePush } from "./pushSubscription";
+import {
+  currentPushSubscription,
+  pushSupported,
+  subscribePush,
+  syncPushSubscriptionIfActive,
+  unsubscribePush,
+} from "./pushSubscription";
 import {
   getNotificationSoundEnabled,
   playNotificationSound,
@@ -29,7 +35,13 @@ interface NotificationsContextValue {
   savePreferences: (patch: Partial<NotificationPreferences>) => Promise<NotificationPreferences>;
   enablePush: () => Promise<void>;
   disablePush: () => Promise<void>;
-  sendTestNotification: () => Promise<{ created: boolean; pushSent: number }>;
+  sendTestNotification: () => Promise<{
+    created: boolean;
+    pushSent: number;
+    pushEnabled?: boolean;
+    subscriptionCount?: number;
+    localShown?: boolean;
+  }>;
   toggleSound: (enabled: boolean) => void;
   playSound: () => Promise<void>;
   triggerDevice: (title?: string, body?: string) => Promise<boolean>;
@@ -53,30 +65,32 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
   const [toast, setToast] = useState<{ id: string; title: string; body: string; url?: string } | null>(null);
   const mounted = useRef(true);
   const prevUnreadRef = useRef<number | null>(null);
+  const lastPushAtRef = useRef<number>(0);
+  const knownIdsRef = useRef<Set<string> | null>(null);
+  const pushSubscribedRef = useRef(false);
+
+  useEffect(() => {
+    pushSubscribedRef.current = pushState === "subscribed" && pushServerEnabled;
+  }, [pushState, pushServerEnabled]);
 
   useEffect(() => {
     setSoundEnabledState(getNotificationSoundEnabled());
   }, []);
 
   useEffect(() => {
-    if (prevUnreadRef.current !== null && unreadCount > prevUnreadRef.current) {
-      void playNotificationSound();
-      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
-        const newest = items[0];
-        const title = newest?.title || "Miu-chan (Nihongo)";
-        const body = newest?.body || "Ada pengingat belajar baru untukmu!";
-        const url = newest?.url || "/beranda";
-        void triggerDeviceNotification(title, body, url);
-      }
-    }
-    prevUnreadRef.current = unreadCount;
-  }, [unreadCount, items]);
-
-  useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
     };
+  }, []);
+
+  const showToast = useCallback((title: string, body: string, url?: string) => {
+    setToast({ id: String(Date.now()), title, body, url });
+    void playNotificationSound();
+  }, []);
+
+  const dismissToast = useCallback(() => {
+    setToast(null);
   }, []);
 
   const refreshUnread = useCallback(async () => {
@@ -95,6 +109,27 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     try {
       const data = await notificationsApi.list(50);
       if (!mounted.current) return;
+
+      const prevKnown = knownIdsRef.current;
+      const nextKnown = new Set(data.items.map((item) => item.id));
+      knownIdsRef.current = nextKnown;
+
+      // Deteksi notifikasi baru yang belum muncul lewat Web Push SW agar tetap bunyi & tampil saat tab terbuka
+      if (prevKnown && Date.now() - lastPushAtRef.current > 4000) {
+        const newestUnread = data.items.find((item) => !item.readAt && !prevKnown.has(item.id));
+        if (newestUnread) {
+          showToast(newestUnread.title, newestUnread.body, newestUnread.url ?? "/beranda");
+          if (
+            !pushSubscribedRef.current &&
+            typeof window !== "undefined" &&
+            "Notification" in window &&
+            Notification.permission === "granted"
+          ) {
+            void triggerDeviceNotification(newestUnread.title, newestUnread.body, newestUnread.url ?? "/beranda");
+          }
+        }
+      }
+
       setItems(data.items);
       setUnreadCount(data.unreadCount);
       setError(null);
@@ -103,22 +138,34 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     } finally {
       if (mounted.current) setLoading(false);
     }
-  }, []);
+  }, [showToast]);
+
+  useEffect(() => {
+    if (prevUnreadRef.current !== null && unreadCount > prevUnreadRef.current) {
+      void refresh();
+    }
+    prevUnreadRef.current = unreadCount;
+  }, [unreadCount, refresh]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
     const onMessage = (event: MessageEvent) => {
       if (event.data?.type === "push") {
-        void refreshUnread();
+        lastPushAtRef.current = Date.now();
+        const payload = (event.data.payload ?? {}) as { title?: string; body?: string; url?: string };
+        showToast(
+          payload.title || "Miu-chan (Nihongo)",
+          payload.body || "Ada pengingat belajar baru untukmu!",
+          payload.url || "/beranda",
+        );
         void refresh();
-        void playNotificationSound();
       }
     };
     navigator.serviceWorker.addEventListener("message", onMessage);
     return () => {
       navigator.serviceWorker.removeEventListener("message", onMessage);
     };
-  }, [refresh, refreshUnread]);
+  }, [refresh, showToast]);
 
   useEffect(() => {
     if (status !== "authenticated") {
@@ -126,6 +173,8 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
       setUnreadCount(0);
       setPreferences(null);
       setPushState("loading");
+      knownIdsRef.current = null;
+      prevUnreadRef.current = null;
       return;
     }
 
@@ -135,7 +184,13 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
       const prefs = results[1];
       if (prefs.status === "fulfilled") setPreferences(prefs.value);
       const config = results[2];
-      if (config.status === "fulfilled") setPushServerEnabled(config.value.enabled && Boolean(config.value.publicKey));
+      if (config.status === "fulfilled") {
+        const enabled = config.value.enabled && Boolean(config.value.publicKey);
+        setPushServerEnabled(enabled);
+        if (enabled && config.value.publicKey) {
+          void syncPushSubscriptionIfActive(config.value.publicKey);
+        }
+      }
     });
 
     notificationsApi.unreadCount().then(({ unreadCount: count }) => {
@@ -228,15 +283,6 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     await playNotificationSound();
   }, []);
 
-  const showToast = useCallback((title: string, body: string, url?: string) => {
-    setToast({ id: String(Date.now()), title, body, url });
-    void playNotificationSound();
-  }, []);
-
-  const dismissToast = useCallback(() => {
-    setToast(null);
-  }, []);
-
   const triggerDevice = useCallback(
     async (
       title = "Miu-chan (Nihongo) 🔔",
@@ -250,13 +296,24 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
 
   const sendTestNotification = useCallback(async () => {
     const res = await notificationsApi.sendTest();
+    lastPushAtRef.current = Date.now();
     await Promise.all([refresh(), refreshUnread()]);
+    let localShown = false;
+    if (res.pushSent === 0) {
+      localShown = await triggerDeviceNotification(
+        "Miu-chan menyapa 🔔",
+        "Ini adalah tes notifikasi sistem di perangkatmu!",
+        "/beranda",
+      );
+    }
     showToast(
-      "Miu-chan (Nihongo) 🔔",
-      "Notifikasi aplikasi Nihongo aktif dan siap mengingatkanmu belajar setiap hari!",
+      "Miu-chan menyapa 🔔",
+      res.pushSent > 0
+        ? "Web Push berhasil dikirim ke sistem notifikasi perangkatmu!"
+        : "Notifikasi uji coba telah dikirim.",
       "/beranda",
     );
-    return res;
+    return { ...res, localShown };
   }, [refresh, refreshUnread, showToast]);
 
   const value = useMemo<NotificationsContextValue>(

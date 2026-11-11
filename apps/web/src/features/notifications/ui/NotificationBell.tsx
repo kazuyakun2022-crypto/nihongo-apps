@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BellIcon } from "@/shared/ui/icons";
+import { BellIcon, SettingsIcon } from "@/shared/ui/icons";
 import { useNotifications } from "../application/NotificationsProvider";
 import { notificationTime, TYPE_META } from "./meta";
 import styles from "./notification.module.css";
@@ -49,21 +49,33 @@ export function NotificationBell({ inline = false }: { inline?: boolean }) {
         title="Notifikasi"
       >
         <BellIcon size={20} />
-        {unreadCount > 0 && <span className={styles.badge}>{unreadCount > 9 ? "9+" : unreadCount}</span>}
+        {unreadCount > 0 && <span className={styles.badge}>{unreadCount > 99 ? "99+" : unreadCount}</span>}
       </button>
 
       {open && (
         <div className={`${styles.panel} ${inline ? styles.panelInline : ""}`} role="dialog" aria-label="Notifikasi terbaru">
           <div className={styles.panelHead}>
             <h2 className={styles.panelTitle}>Notifikasi</h2>
-            <button
-              type="button"
-              className={styles.textBtn}
-              onClick={() => void markAllRead()}
-              disabled={unreadCount === 0}
-            >
-              Tandai dibaca
-            </button>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <button
+                type="button"
+                className={styles.textBtn}
+                onClick={() => void markAllRead()}
+                disabled={unreadCount === 0}
+              >
+                Tandai dibaca
+              </button>
+              <Link
+                href="/profil/notifikasi"
+                className={styles.textBtn}
+                aria-label="Pengaturan notifikasi"
+                title="Pengaturan notifikasi"
+                onClick={() => setOpen(false)}
+                style={{ display: "inline-flex", alignItems: "center", padding: "4px" }}
+              >
+                <SettingsIcon size={16} />
+              </Link>
+            </div>
           </div>
 
           {latest.length === 0 ? (

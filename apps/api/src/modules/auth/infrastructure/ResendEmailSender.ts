@@ -21,7 +21,13 @@ function layout(heading: string, body: string, link: string, button: string) {
  * Butuh RESEND_API_KEY dan EMAIL_FROM dari domain yang sudah diverifikasi di Resend.
  */
 export class ResendEmailSender implements EmailSender {
-  constructor(private readonly apiKey: string, private readonly from: string) {}
+  private readonly apiKey: string;
+  private readonly from: string;
+
+  constructor(apiKey: string, from: string) {
+    this.apiKey = apiKey.trim();
+    this.from = from.trim();
+  }
 
   async sendVerification(to: string, displayName: string, link: string) {
     await this.send(

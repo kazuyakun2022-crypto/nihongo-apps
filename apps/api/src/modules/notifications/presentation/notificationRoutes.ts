@@ -9,11 +9,14 @@ const preferencesBody = z
   .object({
     pushEnabled: z.boolean().optional(),
     studyReminder: z.boolean().optional(),
+    srsReminder: z.boolean().optional(),
     streak: z.boolean().optional(),
     achievement: z.boolean().optional(),
     exam: z.boolean().optional(),
     announcement: z.boolean().optional(),
     reminderTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Jam harus berformat HH:MM.").optional(),
+    quietHourStart: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Jam mulai tenang harus berformat HH:MM.").nullable().optional(),
+    quietHourEnd: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Jam selesai tenang harus berformat HH:MM.").nullable().optional(),
     timezone: z.string().min(1).max(50).optional(),
   })
   .refine((value) => Object.keys(value).length > 0, { message: "Tidak ada pengaturan yang diubah." });
@@ -59,7 +62,13 @@ export function notificationRoutes(service: NotificationService) {
   r.post("/test", asyncHandler(async (req, res) => {
     const user = currentUser(req);
     const result = await service.notifyTest(user.id);
-    res.json({ ok: true, created: result.created, pushSent: result.pushSent });
+    res.json({
+      ok: true,
+      created: result.created,
+      pushSent: result.pushSent,
+      pushEnabled: result.pushEnabled,
+      subscriptionCount: result.subscriptionCount,
+    });
   }));
 
   r.post("/read-all", asyncHandler(async (req, res) => {

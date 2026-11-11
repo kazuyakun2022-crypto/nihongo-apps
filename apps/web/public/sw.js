@@ -5,7 +5,7 @@
  * - /api tidak pernah di-cache di sini agar data pribadi dan token aman.
  * Naikkan VERSION setiap mengubah file ini.
  */
-const VERSION = "v8";
+const VERSION = "v9";
 const STATIC_CACHE = `nihongo-static-${VERSION}`;
 const PAGE_CACHE = `nihongo-pages-${VERSION}`;
 const PRECACHE = [
@@ -20,7 +20,12 @@ const PRECACHE = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(STATIC_CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches
+      .open(STATIC_CACHE)
+      .then((c) => Promise.allSettled(PRECACHE.map((url) => c.add(url).catch(() => undefined))))
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener("activate", (event) => {
@@ -93,21 +98,30 @@ self.addEventListener("fetch", (event) => {
 /* Pengingat belajar lewat web push. Server mengirim payload JSON {title, body, url, tag}. */
 self.addEventListener("push", (event) => {
   let data = {};
-  try {
-    data = event.data ? event.data.json() : {};
-  } catch {
-    data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch {
+      try {
+        const text = event.data.text();
+        data = text ? { body: text } : {};
+      } catch {
+        data = {};
+      }
+    }
   }
   const url = data.url || "/beranda";
   const title = data.title || "Miu-chan menunggumu";
+  const body = data.body || "Yuk latihan 5 menit hari ini!";
+  const tag = data.tag || `nihongo-notif-${Date.now()}`;
 
   event.waitUntil(
     Promise.all([
       self.registration.showNotification(title, {
-        body: data.body || "Yuk latihan 5 menit hari ini!",
+        body,
         icon: "/icons/icon-192.png",
         badge: "/icons/icon-192.png",
-        tag: data.tag || `nihongo-notif-${Date.now()}`,
+        tag,
         renotify: true,
         vibrate: [200, 100, 200],
         data: { url },
@@ -116,9 +130,9 @@ self.addEventListener("push", (event) => {
           { action: "close", title: "Tutup" },
         ],
       }),
-      // Beri tahu tab yang sedang terbuka agar daftar notifikasi langsung diperbarui.
+      // Beri tahu tab yang sedang terbuka agar daftar notifikasi langsung diperbarui tanpa memicu notifikasi sistem ganda.
       self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
-        clients.forEach((client) => client.postMessage({ type: "push", payload: { title, url } }));
+        clients.forEach((client) => client.postMessage({ type: "push", payload: { title, body, url, tag } }));
       }),
     ]),
   );
@@ -126,6 +140,7 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+  if (event.action === "close") return;
   const target = new URL(event.notification.data?.url || "/beranda", self.location.origin).href;
 
   event.waitUntil(
@@ -134,7 +149,7 @@ self.addEventListener("notificationclick", (event) => {
       const sameOrigin = clients.find((client) => client.url.startsWith(self.location.origin));
       if (sameOrigin) {
         await sameOrigin.focus();
-        if ("navigate" in sameOrigin) await sameOrigin.navigate(target);
+        if ("navigate" in sameOrigin) await sameOrigin.navigate(target).catch(() => undefined);
         return;
       }
       await self.clients.openWindow(target);

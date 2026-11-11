@@ -1,6 +1,7 @@
 /** Jenis notifikasi yang dikenal aplikasi. Harus sama dengan enum NotificationType di Prisma. */
 export const NOTIFICATION_TYPES = [
   "study_reminder",
+  "srs_due",
   "streak",
   "achievement",
   "exam",
@@ -13,22 +14,28 @@ export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 export interface NotificationPreferenceSettings {
   pushEnabled: boolean;
   studyReminder: boolean;
+  srsReminder: boolean;
   streak: boolean;
   achievement: boolean;
   exam: boolean;
   announcement: boolean;
   reminderTime: string;
+  quietHourStart: string | null;
+  quietHourEnd: string | null;
   timezone: string;
 }
 
 export const DEFAULT_PREFERENCES: NotificationPreferenceSettings = {
   pushEnabled: true,
   studyReminder: true,
+  srsReminder: true,
   streak: true,
   achievement: true,
   exam: true,
   announcement: true,
   reminderTime: "19:00",
+  quietHourStart: "22:00",
+  quietHourEnd: "07:00",
   timezone: "Asia/Jakarta",
 };
 
@@ -38,6 +45,7 @@ export interface NotificationView {
   title: string;
   body: string;
   url: string | null;
+  metadata?: Record<string, unknown> | null;
   readAt: string | null;
   createdAt: string;
 }
@@ -47,6 +55,7 @@ export interface NotificationInput {
   title: string;
   body: string;
   url?: string | null;
+  metadata?: Record<string, unknown> | null;
   dedupeKey?: string | null;
   createdAt: Date;
 }
@@ -67,6 +76,7 @@ export interface ReminderCandidate {
   lastActiveDate: Date | null;
   preferences: NotificationPreferenceSettings;
   hasSubscription: boolean;
+  dueSrsCount?: number;
 }
 
 export interface NotificationRepository {
@@ -103,6 +113,7 @@ export interface NotifyInput {
   title: string;
   body: string;
   url?: string;
+  metadata?: Record<string, unknown> | null;
   dedupeKey?: string;
 }
 

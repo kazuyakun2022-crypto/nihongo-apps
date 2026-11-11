@@ -98,14 +98,16 @@ export function buildContainer(env: Env, db: Db) {
   const hasher = new BcryptPasswordHasher();
   const tokens = new CryptoTokenGenerator();
   const accessTokens = new JwtAccessTokenService(env.JWT_ACCESS_SECRET, env.ACCESS_TOKEN_TTL_MINUTES);
-  const email = env.RESEND_API_KEY ? new ResendEmailSender(env.RESEND_API_KEY, env.EMAIL_FROM) : new ConsoleEmailSender();
-  if (!env.RESEND_API_KEY && env.NODE_ENV === "production") {
+  const resendKey = env.RESEND_API_KEY.trim();
+  const webOrigin = env.WEB_ORIGIN.trim().replace(/\/+$/, "");
+  const email = resendKey ? new ResendEmailSender(resendKey, env.EMAIL_FROM) : new ConsoleEmailSender();
+  if (!resendKey && env.NODE_ENV === "production") {
     console.warn("[email] RESEND_API_KEY kosong: email verifikasi dan reset password hanya dicetak ke log, tidak terkirim.");
   }
   const refreshTtlDays = env.REFRESH_TOKEN_TTL_DAYS;
 
   const sessionIssuer = new SessionIssuer({ sessions, tokens, accessTokens, clock, refreshTtlDays });
-  const sendVerification = new SendEmailVerification({ users, oneTimeTokens, tokens, email, clock, webOrigin: env.WEB_ORIGIN });
+  const sendVerification = new SendEmailVerification({ users, oneTimeTokens, tokens, email, clock, webOrigin });
 
   const oauthVerifier = env.GOOGLE_CLIENT_ID
     ? new GoogleOAuthVerifier(env.GOOGLE_CLIENT_ID)
@@ -120,7 +122,7 @@ export function buildContainer(env: Env, db: Db) {
     logout: new Logout({ sessions, tokens, clock }),
     verifyEmail: new VerifyEmail({ users, oneTimeTokens, tokens, clock }),
     sendVerification,
-    requestPasswordReset: new RequestPasswordReset({ users, oneTimeTokens, tokens, email, clock, webOrigin: env.WEB_ORIGIN }),
+    requestPasswordReset: new RequestPasswordReset({ users, oneTimeTokens, tokens, email, clock, webOrigin }),
     resetPassword: new ResetPassword({ users, oneTimeTokens, sessions, tokens, hasher, clock }),
     getCurrentUser: new GetCurrentUser({ users }),
     completeOnboarding: new CompleteOnboarding({ users, guard: new PrismaOnboardingGuard(db) }),

@@ -128,6 +128,7 @@ enum MemoryType {
 /// Jenis notifikasi in-app dan push. Nilainya disimpan sebagai enum Postgres.
 enum NotificationType {
   study_reminder
+  srs_due
   streak
   achievement
   exam
@@ -844,17 +845,20 @@ model PushSubscription {
 
 /// Preferensi notifikasi pengguna. Baris dibuat saat pengguna pertama kali menyimpan pengaturan.
 model NotificationPreference {
-  userId        String   @id @map("user_id") @db.Uuid
-  pushEnabled   Boolean  @default(true) @map("push_enabled")
-  studyReminder Boolean  @default(true) @map("study_reminder")
-  streak        Boolean  @default(true) @map("streak")
-  achievement   Boolean  @default(true) @map("achievement")
-  exam          Boolean  @default(true) @map("exam")
-  announcement  Boolean  @default(true) @map("announcement")
-  reminderTime  String   @default("19:00") @map("reminder_time") @db.VarChar(5)
-  timezone      String   @default("Asia/Jakarta") @db.VarChar(50)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String   @id @map("user_id") @db.Uuid
+  pushEnabled    Boolean  @default(true) @map("push_enabled")
+  studyReminder  Boolean  @default(true) @map("study_reminder")
+  srsReminder    Boolean  @default(true) @map("srs_reminder")
+  streak         Boolean  @default(true) @map("streak")
+  achievement    Boolean  @default(true) @map("achievement")
+  exam           Boolean  @default(true) @map("exam")
+  announcement   Boolean  @default(true) @map("announcement")
+  reminderTime   String   @default("19:00") @map("reminder_time") @db.VarChar(5)
+  quietHourStart String?  @default("22:00") @map("quiet_hour_start") @db.VarChar(5)
+  quietHourEnd   String?  @default("07:00") @map("quiet_hour_end") @db.VarChar(5)
+  timezone       String   @default("Asia/Jakarta") @db.VarChar(50)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notification_preferences")
 }
@@ -867,6 +871,7 @@ model Notification {
   title     String           @db.VarChar(120)
   body      String           @db.VarChar(500)
   url       String?          @db.VarChar(255)
+  metadata  Json?
   readAt    DateTime?        @map("read_at") @db.Timestamptz
   dedupeKey String?          @unique @map("dedupe_key") @db.VarChar(120)
   createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz

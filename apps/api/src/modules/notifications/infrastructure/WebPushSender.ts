@@ -5,10 +5,19 @@ export class WebPushSender implements PushSender {
   readonly enabled: boolean;
 
   constructor(publicKey: string, privateKey: string, subject: string, private readonly ttlSeconds: number) {
-    this.enabled = Boolean(publicKey && privateKey);
-    if (this.enabled) {
-      webpush.setVapidDetails(subject, publicKey, privateKey);
+    const pub = publicKey.trim();
+    const priv = privateKey.trim();
+    const sub = subject.trim() || "mailto:admin@nihongo.local";
+    let configured = false;
+    if (pub && priv) {
+      try {
+        webpush.setVapidDetails(sub, pub, priv);
+        configured = true;
+      } catch (err) {
+        console.error("[push] Konfigurasi VAPID tidak valid, Web Push dinonaktifkan:", err instanceof Error ? err.message : err);
+      }
     }
+    this.enabled = configured;
   }
 
   async send(subscription: PushSubscriptionRecord, payload: PushPayload): Promise<"ok" | "gone" | "error"> {
@@ -21,9 +30,9 @@ export class WebPushSender implements PushSender {
       );
       return "ok";
     } catch (error) {
-      const status = (error as { statusCode?: number }).statusCode;
-      if (status === 404 || status === 410) return "gone";
-      console.error("[push] gagal mengirim notifikasi", status ?? (error instanceof Error ? error.message : error));
+      const errObj = error as { statusCode?: number; body?: string };
+      if (errObj.statusCode === 404 || errObj.statusCode === 410) return "gone";
+      console.error("[push] gagal mengirim notifikasi", errObj.statusCode ?? (error instanceof Error ? error.message : error), errObj.body ?? "");
       return "error";
     }
   }

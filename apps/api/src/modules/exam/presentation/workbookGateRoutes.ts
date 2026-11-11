@@ -165,14 +165,22 @@ async function finishAttempt(attemptId: string, levelId: number, details: Workbo
   return { score, passed, passScore: config.passScore, results, cooldownUntil };
 }
 
-function notifyWorkbookPass(notifier: Notifier | undefined, userId: string, attemptId: string): Promise<unknown> {
+function notifyWorkbookResult(
+  notifier: Notifier | undefined,
+  userId: string,
+  attemptId: string,
+  outcome: { passed: boolean; score: number },
+): Promise<unknown> {
   if (!notifier) return Promise.resolve();
   return notifier
     .notify(userId, {
       type: "exam",
-      title: "Gerbang Tulis lulus!",
-      body: "Tulisan tanganmu lolos. Lanjut ke materi berikutnya dan terus latih kanjimu.",
-      url: "/beranda",
+      title: outcome.passed ? "Gerbang Tulis lulus! ✍️" : "Koreksi Tulisan Tangan Selesai ✍️",
+      body: outcome.passed
+        ? `Miu-chan sudah memeriksa lembar tulisanmu. Skor: ${outcome.score}/100 — lanjut ke materi berikutnya!`
+        : `Miu-chan sudah memeriksa lembar tulisanmu. Skor: ${outcome.score}/100 — cek detail coretan yang perlu diperbaiki.`,
+      url: "/belajar/gerbang-tulis",
+      metadata: { attemptId, score: outcome.score, passed: outcome.passed },
       dedupeKey: `exam:${attemptId}`,
     })
     .catch((err) => console.error("[notifications] gagal membuat notifikasi gerbang tulis", err instanceof Error ? err.message : err));
@@ -321,7 +329,7 @@ export function workbookGateRoutes(geminiApiKey: string, activity: ActivityRecor
     const results = details.sheets.flatMap((s) => details.sheetResults[s.index].results);
     const outcome = await finishAttempt(attempt.id, attempt.levelId, details, results);
     const progress = await activity.record(user.id, "workbook_gate", outcome.passed ? XP_REWARD.gatePassed : XP_REWARD.gateTried);
-    if (outcome.passed) await notifyWorkbookPass(notifier, user.id, attempt.id);
+    await notifyWorkbookResult(notifier, user.id, attempt.id, outcome);
     res.json({ ...outcome, progress });
   }));
 
@@ -342,7 +350,7 @@ export function workbookGateRoutes(geminiApiKey: string, activity: ActivityRecor
     details.canvasResults = results;
     const outcome = await finishAttempt(attempt.id, attempt.levelId, details, results);
     const progress = await activity.record(user.id, "workbook_gate", outcome.passed ? XP_REWARD.gatePassed : XP_REWARD.gateTried);
-    if (outcome.passed) await notifyWorkbookPass(notifier, user.id, attempt.id);
+    await notifyWorkbookResult(notifier, user.id, attempt.id, outcome);
     res.json({ ...outcome, progress });
   }));
 

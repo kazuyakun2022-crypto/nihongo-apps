@@ -12,7 +12,14 @@ export const notificationsApi = {
   unreadCount: () => api.get<{ unreadCount: number }>("/notifications/unread-count"),
   markRead: (id: string) => api.post<{ read: boolean }>(`/notifications/${id}/read`),
   markAllRead: () => api.post<{ updated: number }>("/notifications/read-all"),
-  sendTest: () => api.post<{ ok: true; created: boolean; pushSent: number }>("/notifications/test"),
+  sendTest: () =>
+    api.post<{
+      ok: true;
+      created: boolean;
+      pushSent: number;
+      pushEnabled?: boolean;
+      subscriptionCount?: number;
+    }>("/notifications/test"),
   config: () => api.get<PushConfig>("/notifications/config"),
   preferences: () => api.get<NotificationPreferences>("/notifications/preferences"),
   updatePreferences: (patch: Partial<NotificationPreferences>) =>

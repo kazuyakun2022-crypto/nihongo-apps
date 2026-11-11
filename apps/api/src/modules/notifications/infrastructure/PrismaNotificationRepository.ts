@@ -1,4 +1,4 @@
-import type { Prisma, NotificationType as PrismaNotificationType } from "@prisma/client";
+import { Prisma, type NotificationType as PrismaNotificationType } from "@prisma/client";
 import type { Db } from "../../../shared/infrastructure/prisma";
 import { DEFAULT_PREFERENCES } from "../domain/types";
 import type {
@@ -14,11 +14,14 @@ import type {
 type PreferenceRow = {
   pushEnabled: boolean;
   studyReminder: boolean;
+  srsReminder: boolean;
   streak: boolean;
   achievement: boolean;
   exam: boolean;
   announcement: boolean;
   reminderTime: string;
+  quietHourStart: string | null;
+  quietHourEnd: string | null;
   timezone: string;
 };
 
@@ -27,11 +30,14 @@ function toPreferences(row: PreferenceRow | null): NotificationPreferenceSetting
   return {
     pushEnabled: row.pushEnabled,
     studyReminder: row.studyReminder,
+    srsReminder: row.srsReminder,
     streak: row.streak,
     achievement: row.achievement,
     exam: row.exam,
     announcement: row.announcement,
     reminderTime: row.reminderTime,
+    quietHourStart: row.quietHourStart,
+    quietHourEnd: row.quietHourEnd,
     timezone: row.timezone,
   };
 }
@@ -39,11 +45,14 @@ function toPreferences(row: PreferenceRow | null): NotificationPreferenceSetting
 const preferenceSelect = {
   pushEnabled: true,
   studyReminder: true,
+  srsReminder: true,
   streak: true,
   achievement: true,
   exam: true,
   announcement: true,
   reminderTime: true,
+  quietHourStart: true,
+  quietHourEnd: true,
   timezone: true,
 } satisfies Prisma.NotificationPreferenceSelect;
 
@@ -71,6 +80,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
       title: row.title,
       body: row.body,
       url: row.url,
+      metadata: (row.metadata as Record<string, unknown> | null) ?? null,
       readAt: row.readAt?.toISOString() ?? null,
       createdAt: row.createdAt.toISOString(),
     }));
@@ -105,6 +115,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
           title: input.title,
           body: input.body,
           url: input.url ?? null,
+          metadata: input.metadata ? (input.metadata as Prisma.InputJsonValue) : Prisma.DbNull,
           dedupeKey: input.dedupeKey ?? null,
           createdAt: input.createdAt,
         },
@@ -183,6 +194,16 @@ export class PrismaNotificationRepository implements NotificationRepository {
         _count: { select: { pushSubscriptions: true } },
       },
     });
+    const now = new Date();
+    const dueGroups = rows.length
+      ? await this.db.srsCard.groupBy({
+          by: ["userId"],
+          where: { userId: { in: rows.map((r) => r.id) }, dueDate: { lte: now } },
+          _count: { _all: true },
+        })
+      : [];
+    const dueByUser = new Map(dueGroups.map((g) => [g.userId, g._count._all]));
+
     return rows.map((row) => ({
       id: row.id,
       displayName: row.displayName,
@@ -190,6 +211,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
       lastActiveDate: row.lastActiveDate,
       preferences: toPreferences(row.notificationPreference),
       hasSubscription: row._count.pushSubscriptions > 0,
+      dueSrsCount: dueByUser.get(row.id) ?? 0,
     }));
   }
 
