@@ -118,15 +118,22 @@
 }
 
 .studyCard {
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--color-surface, #ffffff);
+  border: 3px solid #1E293B;
+  border-radius: 24px;
   padding: var(--space-5) var(--space-4);
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: var(--space-3);
-  box-shadow: var(--shadow-card);
-  min-height: 12rem;   /* lebih compact di mobile */
+  box-shadow: 0 5px 0 0 #1E293B, 0 12px 28px rgba(0, 0, 0, 0.06);
+  min-height: 18rem;
+  max-height: calc(100dvh - 12.5rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  box-sizing: border-box;
   animation: cardInForward var(--motion-slow) var(--ease-out) both;
 }
 
@@ -148,7 +155,7 @@
 @media (min-width: 480px) {
   .studyCard {
     padding: var(--space-6) var(--space-5);
-    min-height: 18rem;
+    min-height: 20rem;
   }
 }
 
@@ -231,13 +238,153 @@
   line-height: 1.6;
 }
 
-/* ── Nav ── */
+/* ── Nav & Bilah Aksi Terkunci di Bawah (Zero-Scroll Docked Navigation) ── */
 .nav {
   display: flex;
   gap: var(--space-2);
 }
 
 .nav > :last-child { flex: 1; }
+
+.dockedActionBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  width: 100%;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--color-surface, #ffffff) 96%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 2.5px solid #1E293B;
+  padding: 12px 16px max(12px, env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dockedActionInner {
+  width: 100%;
+  max-width: 32rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dockedPrevBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 3.5rem;
+  border-radius: 16px;
+  border: 2.5px solid #1E293B;
+  background: #FFFFFF;
+  color: #1E293B;
+  font-size: 1.25rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 3.5px 0 0 #1E293B;
+  outline: none;
+  transition: transform 0.1s, box-shadow 0.1s, background-color 0.15s;
+  flex-shrink: 0;
+}
+
+.dockedPrevBtn:hover:not(:disabled) {
+  background: #F8FAFC;
+  transform: translateY(-1px);
+}
+
+.dockedPrevBtn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1.5px 0 0 #1E293B;
+}
+
+.dockedPrevBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: 0 1.5px 0 0 #94A3B8;
+  border-color: #CBD5E1;
+  color: #94A3B8;
+}
+
+.dockedNextBtn {
+  flex: 1;
+  height: 3.5rem;
+  border-radius: 18px;
+  border: 2.5px solid #15803D;
+  background: #58CC02;
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4.5px 0 0 #15803D;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, box-shadow 0.1s, background-color 0.15s;
+}
+
+.dockedNextBtn:hover:not(:disabled) {
+  background: #4CB802;
+}
+
+.dockedNextBtn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 0 #15803D;
+}
+
+.dockedNextBtn:disabled {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+  color: #94A3B8;
+  box-shadow: 0 2px 0 0 #CBD5E1;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.dockedSubmitBtn {
+  flex: 1;
+  height: 3.5rem;
+  border-radius: 18px;
+  border: 2.5px solid #D97706;
+  background: #F59E0B;
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4.5px 0 0 #B45309;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, box-shadow 0.1s, background-color 0.15s;
+}
+
+.dockedSubmitBtn:hover:not(:disabled) {
+  background: #EAB308;
+}
+
+.dockedSubmitBtn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 0 #B45309;
+}
+
+.dockedSubmitBtn:disabled {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+  color: #94A3B8;
+  box-shadow: 0 2px 0 0 #CBD5E1;
+  cursor: not-allowed;
+  transform: none;
+}
 
 /* ── Quiz intro ── */
 .intro {
@@ -263,13 +410,27 @@
 
 /* ── Quiz question ── */
 .quizCard {
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  display: grid;
+  background: var(--color-surface, #ffffff);
+  border: 3px solid #1E293B;
+  border-radius: 24px;
+  padding: var(--space-5) var(--space-4);
+  display: flex;
+  flex-direction: column;
   gap: var(--space-3);
+  box-shadow: 0 5px 0 0 #1E293B, 0 12px 28px rgba(0, 0, 0, 0.06);
+  min-height: 18rem;
+  max-height: calc(100dvh - 12.5rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  box-sizing: border-box;
   animation: cardInForward var(--motion-slow) var(--ease-out) both;
+}
+
+@media (min-width: 480px) {
+  .quizCard {
+    padding: var(--space-6) var(--space-5);
+    min-height: 20rem;
+  }
 }
 
 .question {
@@ -289,28 +450,34 @@
   align-items: center;
   gap: var(--space-3);
   width: 100%;
-  padding: var(--space-3) var(--space-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  font-size: var(--font-size-md);
+  min-height: 3.4rem;
+  padding: 12px 18px;
+  border: 2.5px solid #CBD5E1;
+  border-radius: 16px;
+  background: #FFFFFF;
+  color: #1E293B;
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
   text-align: left;
-  transition: transform var(--motion-fast) var(--ease-spring), border-color var(--motion-fast), background var(--motion-fast), box-shadow var(--motion-fast);
+  box-shadow: 0 3px 0 0 #E2E8F0;
+  transition: transform 0.1s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
 }
 
-.optionBtn:hover {
-  border-color: var(--color-primary);
-  background: var(--color-surface-muted);
+.optionBtn:hover:not(:disabled) {
+  border-color: #0284C7;
+  background: #F0F9FF;
   transform: translateY(-1px);
 }
+
 .optionBtn[aria-pressed="true"] {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-weight: var(--font-weight-bold);
-  box-shadow: 0 4px 12px rgba(177, 42, 58, 0.25);
-  transform: translateY(-1px);
+  border-color: #0284C7;
+  background: #E0F2FE;
+  color: #0369A1;
+  font-weight: 800;
+  box-shadow: 0 3px 0 0 #0284C7;
+  transform: translateY(1px);
   animation: selectPop var(--motion-base) var(--ease-spring);
 }
 
@@ -318,7 +485,7 @@
 @keyframes selectPop {
   0% { transform: scale(1); }
   50% { transform: scale(1.03); }
-  100% { transform: translateY(-1px); }
+  100% { transform: translateY(1px); }
 }
 
 /* Pilihan jawaban muncul berurutan A → D */
@@ -1183,6 +1350,7 @@
   display: grid;
   gap: var(--space-3);
   min-width: 0;
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 }
 
 /* Panel samping hanya muncul di layar lebar */
@@ -1575,11 +1743,17 @@
 
 /* ── Rombakan tampilan: Pelajaran bab (nuansa Jepang hangat) ── */
 .stageTitle {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 800;
-  position: relative;
-  padding-bottom: var(--space-2);
+  display: none;
+}
+@media (min-width: 1280px) {
+  .stageTitle {
+    display: grid;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    position: relative;
+    padding-bottom: var(--space-2);
+  }
 }
 .stageTitle::after {
   content: "";

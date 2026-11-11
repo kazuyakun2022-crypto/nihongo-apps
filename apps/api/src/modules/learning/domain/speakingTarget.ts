@@ -110,7 +110,6 @@ export const COMMON_KANJI_READINGS: Record<string, string> = {
   朝ご飯: "あさごはん",
   昼ご飯: "ひるごはん",
   晩ご飯: "ばんごはん",
-  パン: "ぱん",
   肉: "にく",
   野菜: "やさい",
   果物: "くだもの",
@@ -231,8 +230,11 @@ export function normalizePhoneticSpeech(text: string): string {
  */
 export function sanitizePreN5Kana(text: string): string {
   if (!text) return "";
-  // 1. Ubah format furigana '漢字(かんじ)' -> 'かんじ'
-  let sanitized = text.replace(/[\u4E00-\u9FFF\u3400-\u4DBF々]+[(（]([\u3041-\u3096\u30A1-\u30FAー]+)[)）]/g, "$1");
+  // 1. Ubah format furigana '漢字(かんじ)' atau '朝ご飯(あさごはん)' -> 'あさごはん'
+  let sanitized = text.replace(
+    /([\u4E00-\u9FFF\u3400-\u4DBF々][\u4E00-\u9FFF\u3400-\u4DBF々\u3041-\u3096\u30A1-\u30FAー]*)[(（]([\u3041-\u3096\u30A1-\u30FAー]+)[)）]/g,
+    "$2",
+  );
   // 2. Ganti kanji umum ke hiragana
   sanitized = kanjiToKana(sanitized);
   return sanitized;

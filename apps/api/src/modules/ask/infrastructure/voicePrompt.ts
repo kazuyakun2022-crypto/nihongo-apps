@@ -1,4 +1,5 @@
 import { appSection } from "../domain/navigationGuide";
+import { getOrthographyPrompt } from "../../conversation/domain/LevelPolicy";
 import {
   japaneseRatio,
   levelBand,
@@ -53,8 +54,8 @@ const LEVEL_RULES: Record<LevelBand, string> = {
 };
 
 function levelSection(user?: AskUser): string {
-  return `\n\nLEVEL USER: ${levelLabel(user?.level)}.\n- ${LEVEL_RULES[levelBand(user?.level)]}
-- Ini obrolan suara: JANGAN tulis furigana atau cara baca dalam kurung, karena akan ikut dibacakan.`;
+  const orthography = getOrthographyPrompt(user?.level ?? "N5", "voice");
+  return `\n\nLEVEL USER: ${levelLabel(user?.level)}.\n- ${LEVEL_RULES[levelBand(user?.level)]}\n- ATURAN ORTOGRAFI: ${orthography}\n- Ini obrolan suara: JANGAN tulis furigana atau cara baca dalam kurung, karena akan ikut dibacakan.`;
 }
 
 /** Versi transkrip berbahasa Jepang dari ucapan yang sama, untuk menebak kata Jepang yang salah dengar. */

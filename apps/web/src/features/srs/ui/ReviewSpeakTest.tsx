@@ -7,6 +7,7 @@ import { VoiceActivityTracker } from "@/shared/lib/audioNoiseGate";
 import { StablePushToTalkButton } from "@/components/speaking/StablePushToTalkButton";
 import { soundFX } from "@/lib/audio/SoundFXManager";
 import { scorePronunciation } from "@/features/learning/domain/pronunciationScorer";
+import { createSpeakingTarget, hasKanji } from "@/features/learning/domain/speakingTarget";
 import type { DueCard } from "../domain/types";
 import styles from "./speakTest.module.css";
 
@@ -121,13 +122,22 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
     }
   }, [currentCard]);
 
-  // Evaluasi teks hasil pengucapan dengan Pronunciation Scorer (Levenshtein Distance + Phonetic Normalization)
+  // Evaluasi teks hasil pengucapan dengan Pronunciation Scorer & Dual-Field Schema
   const evaluateSpeech = useCallback((spoken: string) => {
     if (!currentCard) return;
     const reading = currentCard.reading || currentCard.front;
     const front = currentCard.front;
 
-    const res = scorePronunciation(spoken, [reading, front].filter(Boolean) as string[]);
+    const target = createSpeakingTarget({
+      displayText: reading,
+      phoneticTarget: reading,
+      kanjiAlternative: front !== reading ? front : null,
+      acceptedReadings: [reading, front].filter(Boolean) as string[],
+      lessonLevel: "N5",
+      itemType: "VOCABULARY",
+    });
+
+    const res = scorePronunciation(spoken, target);
 
     if (res.isCorrect) {
       soundFX.play("correct", 0.6);
@@ -146,9 +156,12 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
 
     setEvaluation({
       score: res.score,
-      spokenText: spoken || "(Tidak terdengar jelas)",
+      spokenText:
+        res.isCorrect && (res.isKanjiMatch || !hasKanji(target.displayText))
+          ? target.displayText
+          : spoken || "(Tidak terdengar jelas)",
       isCorrect: res.isCorrect,
-      tip: res.tip,
+      tip: res.displayFeedbackText || res.tip,
     });
 
     setScores((prev) => ({ ...prev, [currentIndex]: res.score }));

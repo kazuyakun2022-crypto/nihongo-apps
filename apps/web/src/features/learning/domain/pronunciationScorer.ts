@@ -1,8 +1,15 @@
+import {
+  hasKanji,
+  isSpeakingMatch,
+  normalizePhoneticSpeech,
+  type SpeakingTarget,
+} from "./speakingTarget";
+
 /**
  * Pronunciation Scorer & Phonetic Target Matching
  *
- * Menilai akurasi pelafalan bahasa Jepang menggunakan normalisasi fonetik
- * dan Levenshtein Distance dengan 3 tier umpan balik:
+ * Menilai akurasi pelafalan bahasa Jepang menggunakan normalisasi fonetik,
+ * Dual-Field Schema (acceptedReadings), dan Levenshtein Distance dengan 3 tier:
  * - 90–100%: Sangat tepat / penutur asli (Ding-dong sound + pujian)
  * - 60–89%: Bagus, umpan balik konstruktif (mis. panjang harakat / sokuon)
  * - < 60%: Belum pas, memotivasi tanpa menyalahkan secara kasar
@@ -10,14 +17,9 @@
 
 const PUNCTUATION = /[\s　。、．，,.!！?？「」『』（）()・~〜…"'“”\-—_+=/\\|*^%$#@!~`]/gu;
 
-/** Normalisasi: NFKC, buang tanda baca, ubah Katakana ke Hiragana agar fonem setara */
+/** Normalisasi dasar: NFKC, buang tanda baca, ubah Katakana ke Hiragana agar fonem setara */
 export function normalizeJapaneseSpeech(text: string): string {
-  return text
-    .normalize("NFKC")
-    .replace(PUNCTUATION, "")
-    .toLowerCase()
-    .replace(/[ァ-ヶ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60))
-    .trim();
+  return normalizePhoneticSpeech(text);
 }
 
 /** Hitung Levenshtein Distance antara dua array karakter */
@@ -47,6 +49,8 @@ export interface PronunciationScoreResult {
   bestTarget: string;
   spokenNormalized: string;
   targetNormalized: string;
+  isKanjiMatch?: boolean;
+  displayFeedbackText?: string;
 }
 
 /** Periksa apakah perbedaan utama terletak pada panjang vokal (chouon) atau konsonan ganda (sokuon) */
@@ -60,14 +64,21 @@ function isVowelOrSokuonDifference(spoken: string, target: string): boolean {
 }
 
 /**
- * Menilai ucapan terhadap satu atau lebih target (mis. bacaan hiragana dan tulisan kanji).
+ * Menilai ucapan terhadap satu atau lebih target (mis. bacaan hiragana dan tulisan kanji)
+ * atau objek SpeakingTarget berstruktur ganda.
  */
 export function scorePronunciation(
   spoken: string,
-  targets: string[],
+  targetsInput: string[] | SpeakingTarget,
 ): PronunciationScoreResult {
   const cleanSpoken = spoken.trim();
-  const normSpoken = normalizeJapaneseSpeech(cleanSpoken);
+  const isTargetObject = typeof targetsInput === "object" && !Array.isArray(targetsInput);
+  const speakingTarget: SpeakingTarget | null = isTargetObject ? (targetsInput as SpeakingTarget) : null;
+  const targets: string[] = isTargetObject
+    ? (targetsInput as SpeakingTarget).acceptedReadings
+    : (targetsInput as string[]);
+
+  const normSpoken = normalizePhoneticSpeech(cleanSpoken);
 
   if (!normSpoken) {
     return {
@@ -77,23 +88,45 @@ export function scorePronunciation(
       tip: "Suara tidak terdengar jelas. Ucapkan lagi lebih dekat ke mikrofon ya.",
       bestTarget: targets[0] ?? "",
       spokenNormalized: "",
-      targetNormalized: normalizeJapaneseSpeech(targets[0] ?? ""),
+      targetNormalized: normalizePhoneticSpeech(targets[0] ?? ""),
+    };
+  }
+
+  // 1. Cek kecocokan instan Dual-Field Schema bila target adalah SpeakingTarget
+  if (speakingTarget && isSpeakingMatch(cleanSpoken, speakingTarget)) {
+    const isKanji = hasKanji(cleanSpoken) && !hasKanji(speakingTarget.displayText);
+    const feedbackText = `Pelafalanmu tepat! ${speakingTarget.displayText}${
+      speakingTarget.romaji ? ` (${speakingTarget.romaji})` : ""
+    } 🎉`;
+
+    return {
+      score: 100,
+      tier: "perfect",
+      isCorrect: true,
+      tip: isKanji ? feedbackText : "Bagus sekali! Pelafalan dan intonasi penutur aslimu sangat tepat!",
+      bestTarget: speakingTarget.displayText,
+      spokenNormalized: normSpoken,
+      targetNormalized: normalizePhoneticSpeech(speakingTarget.phoneticTarget),
+      isKanjiMatch: isKanji,
+      displayFeedbackText: feedbackText,
     };
   }
 
   let bestScore = -1;
   let bestTarget = targets[0] ?? "";
   let bestTargetNorm = "";
+  let matchedKanji = false;
 
   for (const t of targets) {
     if (!t) continue;
-    const normTarget = normalizeJapaneseSpeech(t);
+    const normTarget = normalizePhoneticSpeech(t);
     if (!normTarget) continue;
 
     if (normSpoken === normTarget) {
       bestScore = 100;
       bestTarget = t;
       bestTargetNorm = normTarget;
+      if (hasKanji(cleanSpoken) && !hasKanji(t)) matchedKanji = true;
       break;
     }
 
@@ -110,20 +143,27 @@ export function scorePronunciation(
       bestScore = substringBonus;
       bestTarget = t;
       bestTargetNorm = normTarget;
+      if (hasKanji(cleanSpoken) && !hasKanji(t)) matchedKanji = true;
     }
   }
 
   const finalScore = Math.max(0, bestScore);
 
   if (finalScore >= 90) {
+    const displayTarget = speakingTarget?.displayText || bestTarget;
+    const romajiPart = speakingTarget?.romaji ? ` (${speakingTarget.romaji})` : "";
+    const feedbackText = `Pelafalanmu tepat! ${displayTarget}${romajiPart} 🎉`;
+
     return {
       score: finalScore,
       tier: "perfect",
       isCorrect: true,
-      tip: "Bagus sekali! Pelafalan dan intonasi penutur aslimu sangat tepat!",
+      tip: matchedKanji ? feedbackText : "Bagus sekali! Pelafalan dan intonasi penutur aslimu sangat tepat!",
       bestTarget,
       spokenNormalized: normSpoken,
       targetNormalized: bestTargetNorm,
+      isKanjiMatch: matchedKanji,
+      displayFeedbackText: feedbackText,
     };
   }
 
@@ -141,6 +181,7 @@ export function scorePronunciation(
       bestTarget,
       spokenNormalized: normSpoken,
       targetNormalized: bestTargetNorm,
+      isKanjiMatch: matchedKanji,
     };
   }
 
@@ -152,6 +193,7 @@ export function scorePronunciation(
     bestTarget,
     spokenNormalized: normSpoken,
     targetNormalized: bestTargetNorm,
+    isKanjiMatch: false,
   };
 }
 

@@ -4,22 +4,20 @@ export {
   phoneticDistance,
   type PronunciationScoreResult,
 } from "./pronunciationScorer";
+export {
+  createSpeakingTarget,
+  isSpeakingMatch,
+  sanitizePreN5Kana,
+  hasKanji,
+  type SpeakingTarget,
+} from "./speakingTarget";
+import { normalizePhoneticSpeech } from "./speakingTarget";
 
 /**
  * Kemiripan ucapan dengan kalimat target, sama dengan penilaian server (api: learning/domain/Exercise.ts),
  * dipakai untuk umpan balik langsung setelah siswa berbicara.
  */
 export const SPEAKING_MIN_SIMILARITY = 0.8;
-
-const PUNCTUATION = /[\s　。、．，,.!！?？「」『』（）()・~〜…"'“”]/gu;
-
-function normalize(text: string): string {
-  return text
-    .normalize("NFKC")
-    .replace(PUNCTUATION, "")
-    .toLowerCase()
-    .replace(/[ァ-ヶ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60));
-}
 
 function levenshtein(a: string[], b: string[]): number {
   let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
@@ -33,10 +31,14 @@ function levenshtein(a: string[], b: string[]): number {
   return prev[b.length];
 }
 
-/** 0–1; 1 berarti sama persis setelah dinormalisasi. */
+/** 0–1; 1 berarti sama persis setelah dinormalisasi fonetik. */
 export function speechSimilarity(spoken: string, target: string): number {
-  const a = [...normalize(spoken)];
-  const b = [...normalize(target)];
+  const normSpoken = normalizePhoneticSpeech(spoken);
+  const normTarget = normalizePhoneticSpeech(target);
+  if (normSpoken === normTarget) return 1;
+
+  const a = [...normSpoken];
+  const b = [...normTarget];
   const longest = Math.max(a.length, b.length);
   if (longest === 0) return 0;
   return 1 - levenshtein(a, b) / longest;

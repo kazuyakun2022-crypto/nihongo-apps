@@ -108,7 +108,6 @@ export const COMMON_KANJI_READINGS: Record<string, string> = {
   朝ご飯: "あさごはん",
   昼ご飯: "ひるごはん",
   晩ご飯: "ばんごはん",
-  パン: "ぱん",
   肉: "にく",
   野菜: "やさい",
   果物: "くだもの",
@@ -215,7 +214,10 @@ export function normalizePhoneticSpeech(text: string): string {
  */
 export function sanitizePreN5Kana(text: string): string {
   if (!text) return "";
-  let sanitized = text.replace(/[\u4E00-\u9FFF\u3400-\u4DBF々]+[(（]([\u3041-\u3096\u30A1-\u30FAー]+)[)）]/g, "$1");
+  let sanitized = text.replace(
+    /([\u4E00-\u9FFF\u3400-\u4DBF々][\u4E00-\u9FFF\u3400-\u4DBF々\u3041-\u3096\u30A1-\u30FAー]*)[(（]([\u3041-\u3096\u30A1-\u30FAー]+)[)）]/g,
+    "$2",
+  );
   sanitized = kanjiToKana(sanitized);
   return sanitized;
 }

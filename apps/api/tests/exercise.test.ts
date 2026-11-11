@@ -21,6 +21,11 @@ describe("penilaian latihan", () => {
     expect(isAnswerCorrect(key, "わたしはがくせえです")).toBe(true);
     expect(isAnswerCorrect(key, "こんにちは")).toBe(false);
     expect(speechSimilarity("コーヒー", "こーひー")).toBe(1);
+    // STT mengeluarkan kanji (猫) saat target Pre-N5 hiragana (ねこ)
+    expect(speechSimilarity("猫", "ねこ")).toBe(1);
+    expect(isAnswerCorrect({ type: "berbicara", correctAnswer: "ねこ", options: [] }, "猫")).toBe(true);
+    // Partikel lisan 'は' vs 'わ'
+    expect(speechSimilarity("わたしわがくせいです", "わたしはがくせいです")).toBe(1);
   });
 
   it("kepingan harus bisa membentuk jawaban", () => {

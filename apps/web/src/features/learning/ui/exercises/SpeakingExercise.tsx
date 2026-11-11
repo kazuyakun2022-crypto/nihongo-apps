@@ -1,8 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { hasKana, toRomaji } from "@/shared/lib/kana";
-import { scorePronunciation, speechMatches } from "../../domain/speechMatch";
+import {
+  createSpeakingTarget,
+  hasKanji,
+  scorePronunciation,
+  speechMatches,
+  type SpeakingTarget,
+} from "../../domain/speechMatch";
 import { NekoAvatar, type NekoEmotion, type NekoMode } from "@/shared/ui/neko/NekoAvatar";
 import { AudioMeter } from "@/shared/lib/audioMeter";
 import { VoiceActivityTracker } from "@/shared/lib/audioNoiseGate";
@@ -60,6 +66,7 @@ export function SpeakingExercise({
   onSkip,
   skipped,
   feedback = true,
+  target,
 }: {
   text: string;
   variants?: string[];
@@ -68,6 +75,7 @@ export function SpeakingExercise({
   onSkip: () => void;
   skipped: boolean;
   feedback?: boolean;
+  target?: SpeakingTarget;
 }) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +87,21 @@ export function SpeakingExercise({
   // Miu-chan Voice AI animation states
   const [nekoMode, setNekoMode] = useState<NekoMode>("idle");
   const [nekoEmotion, setNekoEmotion] = useState<NekoEmotion>("biasa");
+
+  // Dual-Field Schema Target Pembelajaran
+  const speakingTarget = useMemo(() => {
+    return (
+      target ??
+      createSpeakingTarget({
+        displayText: text,
+        phoneticTarget: text,
+        romaji: hasKana(text) ? toRomaji(text) : undefined,
+        acceptedReadings: [text, ...variants],
+        lessonLevel: "PRE_N5",
+        itemType: "VOCABULARY",
+      })
+    );
+  }, [target, text, variants]);
 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const recognitionRef = useRef<any>(null);
@@ -127,19 +150,19 @@ export function SpeakingExercise({
     };
   }, []);
 
-  const scoreResult = answer ? scorePronunciation(answer, [text, ...variants]) : null;
+  const scoreResult = answer ? scorePronunciation(answer, speakingTarget) : null;
   const matched = scoreResult ? scoreResult.isCorrect : false;
   const showVerdict = feedback && !!answer && status === "idle";
 
   // Sinkronkan emosi saat ada teks atau jawaban berubah
   useEffect(() => {
     if (answer) {
-      const res = scorePronunciation(answer, [text, ...variants]);
+      const res = scorePronunciation(answer, speakingTarget);
       setNekoEmotion(res.isCorrect ? "senang" : "bingung");
     } else {
       setNekoEmotion("biasa");
     }
-  }, [answer, text, variants]);
+  }, [answer, speakingTarget]);
 
   function stopMonitor() {
     clearInterval(tickRef.current);
@@ -364,7 +387,7 @@ export function SpeakingExercise({
           return;
         }
 
-        const score = scorePronunciation(transcript, [text, ...variants]);
+        const score = scorePronunciation(transcript, speakingTarget);
         onAnswer(transcript);
         setHeard(true);
         setStatus("idle");
@@ -465,13 +488,17 @@ export function SpeakingExercise({
                     : "🐾 Belum Pas"}
                 </span>
                 <span className={styles.resultSubtitleCaptured} lang="ja">
-                  "{answer}"
+                  "{matched && (scoreResult?.isKanjiMatch || !hasKanji(speakingTarget.displayText))
+                    ? speakingTarget.displayText
+                    : answer}"
                 </span>
               </div>
               <p className={styles.resultSubtitleTip}>
-                {scoreResult?.tip ?? (matched
-                  ? "Pelafalanmu sangat sesuai penutur asli!"
-                  : "Dengarkan contohnya, lalu ketuk mic untuk mencoba lagi.")}
+                {matched && scoreResult?.displayFeedbackText
+                  ? scoreResult.displayFeedbackText
+                  : (scoreResult?.tip ?? (matched
+                    ? "Pelafalanmu sangat sesuai penutur asli!"
+                    : "Dengarkan contohnya, lalu ketuk mic untuk mencoba lagi."))}
               </p>
             </div>
           ) : (

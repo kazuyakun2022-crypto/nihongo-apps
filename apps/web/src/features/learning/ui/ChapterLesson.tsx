@@ -21,6 +21,7 @@ import { TileExercise } from "./exercises/TileExercise";
 import { ScoreScreen, useCountUp } from "./ScoreScreen";
 import { WarmupDeck } from "./WarmupDeck";
 import { JUST_COMPLETED_KEY } from "./WorldMap";
+import { soundFX } from "@/lib/audio/SoundFXManager";
 import styles from "./chapter.module.css";
 import {
   ArrowRightIcon,
@@ -401,17 +402,33 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           )}
         </div>
 
-        <div className={styles.dotNav}>
-          {lesson.studyCards.map((_, i) => (
-            <span key={i} className={i === lesson.studyIndex ? `${styles.dot} ${styles.dotActive}` : styles.dot} data-done={i < lesson.studyIndex || undefined} />
-          ))}
+        {/* Bilah Aksi Terkunci di Bawah (Zero-Scroll Docked Navigation) */}
+        <div className={styles.dockedActionBar}>
+          <div className={styles.dockedActionInner}>
+            <button
+              type="button"
+              className={styles.dockedPrevBtn}
+              onClick={() => {
+                soundFX.play("tap", 0.35);
+                lesson.prevStudy();
+              }}
+              disabled={lesson.studyIndex === 0}
+              aria-label="Kartu sebelumnya"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              className={styles.dockedNextBtn}
+              onClick={() => {
+                soundFX.play("tap", 0.35);
+                lesson.nextStudy();
+              }}
+            >
+              {lesson.isLastStudy ? "Lanjut ke Latihan Kuis →" : "Lanjut →"}
+            </button>
+          </div>
         </div>
-
-        <div className={styles.nav}>
-          <Button variant="secondary" onClick={lesson.prevStudy} disabled={lesson.studyIndex === 0} aria-label="Kartu sebelumnya">←</Button>
-          <Button block onClick={lesson.nextStudy}>{lesson.isLastStudy ? "Lanjut ke Kuis →" : "Lanjut →"}</Button>
-        </div>
-        <p className={styles.keyHint}>Pintasan: tombol ← dan → di keyboard</p>
       </LessonShell>
     );
   }
@@ -502,12 +519,6 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
           <span className={styles.progressLabel}>{lesson.quizIndex + 1}/{lesson.quizQuestions.length}</span>
         </div>
 
-        <div className={styles.dotNav}>
-          {lesson.quizQuestions.map((_, i) => (
-            <span key={i} className={i === lesson.quizIndex ? `${styles.dot} ${styles.dotActive}` : styles.dot} data-done={i < lesson.quizIndex || undefined} />
-          ))}
-        </div>
-
         <div className={styles.quizCard} key={q.id} data-dir={lesson.direction}>
           <QuestionHeader q={q} />
           {q.audioUrl && (
@@ -548,7 +559,10 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
                   key={opt}
                   className={styles.optionBtn}
                   aria-pressed={lesson.currentAnswer === opt}
-                  onClick={() => lesson.selectAnswer(q.id, opt)}
+                  onClick={() => {
+                    soundFX.play("tap", 0.35);
+                    lesson.selectAnswer(q.id, opt);
+                  }}
                   disabled={lesson.phase === "submitting"}
                 >
                   <span className={styles.optionLabel}>{LABELS[i]}</span>
@@ -562,17 +576,47 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
         {/* Gagal mengirim jawaban: sebelumnya diam saja dan kembali ke soal tanpa penjelasan */}
         {lesson.errorMsg && <Alert>{lesson.errorMsg}</Alert>}
 
-        <div className={styles.nav}>
-          <Button variant="secondary" onClick={lesson.prevQuiz} disabled={lesson.quizIndex === 0} aria-label="Soal sebelumnya">←</Button>
-          {lesson.isLastQuiz ? (
-            <Button block onClick={lesson.submitQuiz} disabled={!lesson.allAnswered || lesson.phase === "submitting"}>
-              {lesson.phase === "submitting" ? "Menilai…" : "Kumpulkan →"}
-            </Button>
-          ) : (
-            <Button block onClick={lesson.nextQuiz} disabled={!lesson.currentAnswer && !lesson.currentSkipped}>
-              Lanjut →
-            </Button>
-          )}
+        {/* Bilah Aksi Terkunci di Bawah (Zero-Scroll Docked Navigation) */}
+        <div className={styles.dockedActionBar}>
+          <div className={styles.dockedActionInner}>
+            <button
+              type="button"
+              className={styles.dockedPrevBtn}
+              onClick={() => {
+                soundFX.play("tap", 0.35);
+                lesson.prevQuiz();
+              }}
+              disabled={lesson.quizIndex === 0 || lesson.phase === "submitting"}
+              aria-label="Soal sebelumnya"
+            >
+              ←
+            </button>
+            {lesson.isLastQuiz ? (
+              <button
+                type="button"
+                className={styles.dockedSubmitBtn}
+                onClick={() => {
+                  soundFX.play("tap", 0.35);
+                  lesson.submitQuiz();
+                }}
+                disabled={!lesson.allAnswered || lesson.phase === "submitting"}
+              >
+                {lesson.phase === "submitting" ? "Menilai…" : "Kumpulkan Latihan →"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={styles.dockedNextBtn}
+                onClick={() => {
+                  soundFX.play("tap", 0.35);
+                  lesson.nextQuiz();
+                }}
+                disabled={!lesson.currentAnswer && !lesson.currentSkipped}
+              >
+                Lanjut →
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Sebelumnya muncul juga hanya karena soal terakhir ini sendiri belum dijawab */}
@@ -604,7 +648,16 @@ export function ChapterLesson({ chapterId }: { chapterId: string }) {
 
 function SpeakButton({ onClick }: { onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className={styles.speakBtn} title="Dengarkan" aria-label="Putar suara">
+    <button
+      type="button"
+      onClick={() => {
+        soundFX.play("tap", 0.35);
+        onClick();
+      }}
+      className={styles.speakBtn}
+      title="Dengarkan"
+      aria-label="Putar suara"
+    >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
         <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />

@@ -32,6 +32,27 @@ function isIntermediate(levelCode: string): boolean {
 }
 
 /**
+ * Aturan Ketat Pembuatan Teks AI (Level-Aware Text Generation Prompt / Orthography Constraints)
+ * Menyelaraskan teks yang digenerate AI berdasarkan level aktif pengguna:
+ * - Pre-N5 & N5 Awal: Zero-Kanji / Pure Kana Mode
+ * - N5 Lanjutan & N4: Kanji Terbatas + Furigana
+ * - N3 s.d. N1: Natural Kanji & Business Mode
+ */
+export function getOrthographyPrompt(levelCode: string, mode: "text" | "voice" = "text"): string {
+  const code = (levelCode || "N5").toUpperCase().replace(/[^A-Z0-9_]/g, "");
+  if (code === "PRE_N5" || code === "PREN5" || code === "PEMULA" || code === "N5_AWAL") {
+    return "Kamu adalah pembuat materi untuk pemula absolut (Pre-N5 / N5). DILARANG menggunakan huruf Kanji apa pun dalam kalimat target berbicara. Semua kata benda, kata kerja, dan partikel WAJIB ditulis murni menggunakan Hiragana dan Katakana (contoh: tulis 'わたし は がくせい です', JANGAN tulis '私は学生です').";
+  }
+  if (code === "N5" || code === "N4" || code === "DASAR") {
+    if (mode === "voice") {
+      return "Gunakan hanya 100 Kanji N5 dasar. Untuk kata yang kanjinya belum dipelajari, wajib ditulis dalam Hiragana. Jangan sertakan anotasi furigana kurung di obrolan suara.";
+    }
+    return "Gunakan hanya 100 Kanji N5 dasar. Untuk kata yang kanjinya belum dipelajari, wajib ditulis dalam Hiragana. Sertakan data furigana format 漢字(かんじ) pada setiap kanji yang dimunculkan.";
+  }
+  return "Gunakan ortografi penulisan standar orang dewasa (Kanji alami). Evaluasi suara menggunakan pencocokan membaca kanji (Onyomi/Kunyomi) yang relevan dengan konteks kalimat.";
+}
+
+/**
  * Menyusun system prompt untuk maskot sesuai PRD:
  * Persona & Style Prompting + Bilingual Scaffolding + Aturan level + Emosi + Skenario + Memori + Format <correction_data>
  */
@@ -93,9 +114,10 @@ export function buildSystemPrompt(ctx: ConversationContext): string {
     `1. **Keep it Short & Conversational**: Limit your response to 1-3 short sentences per turn (pendamping bahasa Indonesia tidak dihitung). No text-walls.`,
     `2. **Interactive Handshake**: Always end your response with an open-ended question or gentle prompt that invites the user to respond.`,
     `3. **Length & Kanji Constraint**: ${rules.maxSentenceWords > 0 ? `Setiap kalimat Jepang maksimal ${rules.maxSentenceWords} kata.` : "Panjang kalimat Jepang bebas; kalimat majemuk dan kompleks boleh."} ${kanjiRule}`,
-    `4. **Furigana Rule**: ${furiganaRuleText}`,
-    `5. **Addressing**: Jangan selalu menyebut nama pengguna di setiap balasan. Hanya panggil namanya jika pengguna menyapa atau menyebut namanya terlebih dahulu. Jika memang perlu memanggil, gunakan nama panggilan yang pendek. Utamakan pakai "kamu" atau sapaan netral.`,
-    rules.systemPrompt ? `6. **Panduan level dari Admin**: ${rules.systemPrompt}` : "",
+    `4. **Ortografi & Aturan Teks Sesuai Level**: ${getOrthographyPrompt(rules.levelCode)}`,
+    `5. **Furigana Rule**: ${furiganaRuleText}`,
+    `6. **Addressing**: Jangan selalu menyebut nama pengguna di setiap balasan. Hanya panggil namanya jika pengguna menyapa atau menyebut namanya terlebih dahulu. Jika memang perlu memanggil, gunakan nama panggilan yang pendek. Utamakan pakai "kamu" atau sapaan netral.`,
+    rules.systemPrompt ? `7. **Panduan level dari Admin**: ${rules.systemPrompt}` : "",
     ``,
     `# DYNAMIC EMOTIONAL STATE`,
     `Analyze the topic and the user's tone, then select ONE dominant emotion for this response and write it in the "emotion" field:`,
