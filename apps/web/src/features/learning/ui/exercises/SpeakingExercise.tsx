@@ -456,16 +456,18 @@ export function SpeakingExercise({
                 matched ? styles.resultSubtitleCorrect : styles.resultSubtitleWrong
               }`}
             >
-              <div className={styles.resultSubtitleBadge}>
-                {scoreResult?.tier === "perfect"
-                  ? "✨ Sempurna!"
-                  : scoreResult?.tier === "good"
-                  ? "👍 Bagus!"
-                  : "🐾 Belum Pas"}
+              <div className={styles.resultHeaderRow}>
+                <span className={styles.resultSubtitleBadge}>
+                  {scoreResult?.tier === "perfect"
+                    ? "✨ Sempurna!"
+                    : scoreResult?.tier === "good"
+                    ? "👍 Bagus!"
+                    : "🐾 Belum Pas"}
+                </span>
+                <span className={styles.resultSubtitleCaptured} lang="ja">
+                  "{answer}"
+                </span>
               </div>
-              <p className={styles.resultSubtitleCaptured} lang="ja">
-                "{answer}"
-              </p>
               <p className={styles.resultSubtitleTip}>
                 {scoreResult?.tip ?? (matched
                   ? "Pelafalanmu sangat sesuai penutur asli!"
@@ -535,11 +537,16 @@ export function SpeakingExercise({
           </button>
         </div>
       )}
-      {status === "recording" && (
-        <p className={styles.muted}>Rekaman berhenti sendiri saat kamu selesai bicara.</p>
-      )}
-
-      {error && <p className={styles.errorText}>{error}</p>}
+      {/* ── STATUS FEEDBACK SLOT TERKUNCI (ANTI-SLOP ZERO-LAYOUT-SHIFT) ── */}
+      <div className={styles.speakingStatusSlot}>
+        {error ? (
+          <p className={styles.errorText}>{error}</p>
+        ) : status === "recording" ? (
+          <p className={styles.muted}>Rekaman berhenti sendiri saat kamu selesai bicara.</p>
+        ) : (
+          <span className={styles.statusSlotPlaceholder} aria-hidden="true" />
+        )}
+      </div>
 
       {status === "unavailable" && !skipped && (
         <button type="button" className={styles.linkBtn} onClick={onSkip}>

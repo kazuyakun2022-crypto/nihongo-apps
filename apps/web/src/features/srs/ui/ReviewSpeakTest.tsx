@@ -470,7 +470,7 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
         </div>
       </div>
 
-      {/* Panggung Maskot Miu-chan & Subtitle Pintar */}
+      {/* Panggung Maskot Miu-chan & Subtitle Pintar (Fixed Sanctuary Zone) */}
       <div className={styles.mascotStage}>
         <div className={styles.avatarBox}>
           <NekoAvatar
@@ -478,12 +478,12 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
             emotion={emotion}
             micLevel={getMicLevel}
             voiceLevel={getVoiceLevel}
-            size={160}
+            size={140}
             label="Miu-chan Voice AI"
           />
         </div>
 
-        {/* ── SUBTITLE LANGSUNG DI BAWAH MIU-CHAN (TANPA KOTAK POPUP KAKU) ── */}
+        {/* ── SUBTITLE LANGSUNG DI BAWAH MIU-CHAN (ZERO-LAYOUT-SHIFT SANCTUARY) ── */}
         <div className={styles.subtitleWrapper}>
           {mode === "listening" ? (
             <div className={styles.listeningSubtitle}>
@@ -514,12 +514,14 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
                 evaluation.isCorrect ? styles.resultSubtitleCorrect : styles.resultSubtitleWrong
               }`}
             >
-              <div className={styles.resultSubtitleBadge}>
-                {evaluation.isCorrect ? "✨ Tepat!" : "🐾 Belum pas"} ({evaluation.score}%)
+              <div className={styles.resultHeaderRow}>
+                <span className={styles.resultSubtitleBadge}>
+                  {evaluation.isCorrect ? "✨ Tepat!" : "🐾 Belum pas"} ({evaluation.score}%)
+                </span>
+                <span className={styles.resultSubtitleCaptured} lang="ja">
+                  "{evaluation.spokenText}"
+                </span>
               </div>
-              <p className={styles.resultSubtitleCaptured} lang="ja">
-                "{evaluation.spokenText}"
-              </p>
               {evaluation.tip && (
                 <p className={styles.resultSubtitleTip}>{evaluation.tip}</p>
               )}
@@ -532,14 +534,12 @@ export function ReviewSpeakTest({ cards, onClose, onFinish }: SpeakTestProps) {
         </div>
       </div>
 
-      {/* Kartu Target Kata */}
+      {/* Kartu Target Kata (Fixed-Height Sanctuary Canvas) */}
       {currentCard && (
         <div className={styles.targetCard}>
-          {currentCard.reading && (
-            <p className={styles.targetReading} lang="ja">
-              {currentCard.reading}
-            </p>
-          )}
+          <p className={styles.targetReading} lang="ja">
+            {currentCard.reading || "\u00A0"}
+          </p>
           <h1 className={styles.targetFront} lang="ja">
             {currentCard.front}
           </h1>

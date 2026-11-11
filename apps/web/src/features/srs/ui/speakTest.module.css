@@ -98,7 +98,7 @@
   transition: width 0.3s var(--ease-spring);
 }
 
-/* ── Arena Maskot Miu-chan & Subtitle Interaktif ── */
+/* ── Arena Maskot Miu-chan & Subtitle Interaktif (Fixed-Height Sanctuary Canvas) ── */
 .mascotStage {
   position: relative;
   display: flex;
@@ -106,36 +106,45 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 230px;
-  padding: var(--space-3) var(--space-4) var(--space-4);
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+  padding: 10px 16px;
   border-radius: var(--radius-xl);
   background: radial-gradient(circle at center, color-mix(in srgb, var(--palette-beni-100) 50%, #ffffff) 0%, var(--palette-washi) 100%);
   border: 1px solid var(--color-border);
   box-shadow: 0 4px 20px -4px rgba(177, 42, 58, 0.08);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .avatarBox {
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   display: grid;
   place-content: center;
 }
 
-/* ── Subtitle Bar Langsung di Bawah Miu-chan (Voice AI Subtitle) ── */
+/* ── Subtitle Bar Langsung di Bawah Miu-chan (Voice AI Subtitle Sanctuary) ── */
 .subtitleWrapper {
   width: 100%;
   max-width: 28rem;
+  height: 3.5rem;
+  min-height: 3.5rem;
+  max-height: 3.5rem;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 6px;
-  min-height: 2.75rem;
+  margin-top: 4px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .idleSubtitle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 6px 16px;
   border-radius: var(--radius-pill);
@@ -145,11 +154,14 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .listeningSubtitle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 6px 16px;
   border-radius: var(--radius-pill);
@@ -159,6 +171,8 @@
   border: 1.5px solid #38bdf8;
   background: #f0f9ff;
   animation: pulseListening 1.5s infinite;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .livePulseDot {
@@ -177,6 +191,7 @@
 .processingSubtitle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 6px 16px;
   border-radius: var(--radius-pill);
@@ -185,11 +200,13 @@
   color: #b45309;
   border: 1.5px solid #fde047;
   background: #fefce8;
+  max-width: 100%;
 }
 
 .speakingSubtitle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 6px 16px;
   border-radius: var(--radius-pill);
@@ -198,26 +215,38 @@
   color: var(--color-primary);
   border: 1.5px solid var(--color-primary-soft);
   background: var(--palette-beni-100);
+  max-width: 100%;
 }
 
 .subtitleText {
   letter-spacing: 0.02em;
+  max-width: 20rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ── Subtitle Hasil Evaluasi Suara (Ramping & Menyatu) ── */
+/* ── Subtitle Hasil Evaluasi Suara (Slot Terkunci Tanpa Pergeseran) ── */
 .resultSubtitle {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 4px;
-  padding: 8px 18px;
-  border-radius: var(--radius-lg);
+  gap: 2px;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   animation: var(--kf-popIn) var(--motion-fast) var(--ease-spring) backwards;
   width: 100%;
+  max-width: 26rem;
+  height: 3.5rem;
+  min-height: 3.5rem;
+  max-height: 3.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .resultSubtitleCorrect {
@@ -232,30 +261,47 @@
   color: #9a3412;
 }
 
+.resultHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+}
+
 .resultSubtitleBadge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
+  gap: 4px;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .resultSubtitleCaptured {
-  font-size: 1.05rem;
+  font-size: 0.88rem;
   font-weight: 800;
   margin: 0;
   color: var(--color-text);
-  line-height: 1.25;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 12rem;
 }
 
 .resultSubtitleTip {
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 600;
   margin: 0;
   opacity: 0.9;
-  line-height: 1.35;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 22rem;
 }
 
 @keyframes pulseListening {
@@ -267,31 +313,39 @@
   }
 }
 
-/* ── Kartu Target Kosakata ── */
+/* ── Kartu Target Kosakata (Fixed-Height Sanctuary Canvas) ── */
 .targetCard {
   width: 100%;
+  height: 10.5rem;
+  min-height: 10.5rem;
+  max-height: 10.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: var(--space-5) var(--space-4);
+  padding: 10px 16px;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  gap: 6px;
+  border: 3px solid #1E293B;
+  border-radius: 20px;
+  box-shadow: 0 4px 0 0 #1E293B, 0 8px 20px rgba(0, 0, 0, 0.05);
+  gap: 3px;
   position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .targetReading {
-  font-size: 1.15rem;
+  height: 1.4rem;
+  line-height: 1.4rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-primary);
   margin: 0;
 }
 
 .targetFront {
-  font-size: 2.75rem;
+  font-size: 2.35rem;
   font-weight: var(--font-weight-heavy);
   color: var(--color-text);
   line-height: 1.15;
@@ -300,25 +354,30 @@
 }
 
 .targetMeaning {
-  font-size: 1rem;
+  height: 1.3rem;
+  line-height: 1.3rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text-muted);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .listenSampleBtn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 4px 12px;
   border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--palette-beni-100) 80%, var(--palette-washi));
   border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
   color: var(--color-primary);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 6px;
+  margin-top: 4px;
   transition: all var(--motion-fast);
 }
 
@@ -327,14 +386,19 @@
   transform: translateY(-1px);
 }
 
-/* ── Tombol Interaksi Mic ── */
+/* ── Tombol Interaksi Mic (Hardware-Locked Push-to-Talk) ── */
 .micActionArea {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 6px;
   width: 100%;
-  margin-top: var(--space-2);
+  height: 9rem;
+  min-height: 9rem;
+  max-height: 9rem;
+  margin-top: 0;
+  box-sizing: border-box;
 }
 
 .micButton {
@@ -384,10 +448,19 @@
 }
 
 .micHint {
+  height: 2rem;
+  min-height: 2rem;
+  max-height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--color-text-muted);
+  line-height: 1.2;
+  overflow: hidden;
 }
 
 /* ── Footer Navigasi Kata ── */
@@ -396,7 +469,10 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding-top: var(--space-2);
+  height: 3.25rem;
+  min-height: 3.25rem;
+  padding-top: 0;
+  box-sizing: border-box;
 }
 
 .navBtn {
