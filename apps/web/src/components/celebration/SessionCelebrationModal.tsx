@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef, useMemo } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundFX } from '@/lib/audio/SoundFXManager';
 
@@ -277,14 +278,14 @@ export const SessionCelebrationModal: React.FC<CelebrationProps> = ({
           alignItems: 'center',
         }}
       >
-        {/* Tahap 1: Mascot Fanfare Spring Bounce */}
+        {/* Tahap 1: Mascot Fanfare Spring Bounce (Miu-chan Selebrasi) */}
         <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-          className="w-24 h-24 mb-3 rounded-full flex items-center justify-center text-4xl"
           style={{
-            width: '92px',
-            height: '92px',
+            position: 'relative',
+            width: '104px',
+            height: '104px',
             borderRadius: '9999px',
             backgroundColor: '#FEF3C7',
             border: '3.5px solid #1E293B',
@@ -292,11 +293,61 @@ export const SessionCelebrationModal: React.FC<CelebrationProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '2.5rem',
-            marginBottom: '12px',
+            marginBottom: '14px',
+            overflow: 'visible',
           }}
         >
-          🐱🎉
+          {/* Miu-chan Karakter Asli */}
+          <div
+            style={{
+              position: 'relative',
+              width: '94px',
+              height: '94px',
+              borderRadius: '9999px',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Image
+              src="/neko/maskot-senang.webp"
+              alt="Miu-chan Selebrasi"
+              width={94}
+              height={94}
+              priority
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                transform: 'scale(1.08)',
+              }}
+            />
+          </div>
+
+          {/* Aksentuasi Terompet Pesta / Sparkle Badge */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              bottom: '-2px',
+              right: '-2px',
+              width: '32px',
+              height: '32px',
+              borderRadius: '9999px',
+              backgroundColor: '#FFFFFF',
+              border: '2px solid #1E293B',
+              boxShadow: '0 2px 0 0 #1E293B',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '16px',
+            }}
+          >
+            🎉
+          </motion.div>
         </motion.div>
 
         <h2
