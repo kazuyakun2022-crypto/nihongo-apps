@@ -365,6 +365,30 @@
   }
 }
 
+/* Mode pelajaran interaktif 100dvh (Zero Layout Shift & Zero Page Scroll) */
+.shellLesson {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.mainLesson {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  animation: none !important;
+}
+
 /* ══ Navigasi Bawah Ponsel (Mobile Bottom Bar) ══
    Desain bernuansa Washi Jepang hangat, glassy modern, dengan animasi pop-in halus & label nama layar jelas */
 .nav {
