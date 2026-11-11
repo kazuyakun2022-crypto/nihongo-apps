@@ -3,3 +3,80 @@
   flex-shrink: 0;
   vertical-align: -0.15em;
 }
+
+/* Micro-Animations Ikon Taktil Navigasi Tebal */
+.chunkyActive {
+  filter: drop-shadow(0 3px 6px rgba(30, 41, 59, 0.22));
+}
+
+.animLearn {
+  animation: chunkySpringBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animReview {
+  animation: chunkyCardShift 0.4s ease-out forwards;
+}
+
+.animDictionary {
+  animation: chunkyLensGleam 1.8s ease-in-out infinite;
+}
+
+.animSimulasi {
+  animation: chunkySandFall 1.6s ease-in-out infinite;
+}
+
+.animWorkbook {
+  animation: chunkyBrushStroke 0.5s ease-out;
+}
+
+.animProfileEar {
+  transform-origin: 12px 14px;
+  animation: chunkyEarWiggle 2s ease-in-out infinite;
+}
+
+.animProfileEye {
+  transform-origin: center;
+  animation: chunkyCatBlink 3.5s infinite;
+}
+
+@keyframes chunkySpringBounce {
+  0% { transform: scale(1) translateY(0); }
+  40% { transform: scale(1.15, 0.88) translateY(-4px); }
+  70% { transform: scale(0.96, 1.04) translateY(-1px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+@keyframes chunkyCardShift {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(3px) rotate(2deg); }
+  100% { transform: translateX(2px) rotate(1.5deg); }
+}
+
+@keyframes chunkyLensGleam {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(56, 189, 248, 0)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6)); }
+}
+
+@keyframes chunkySandFall {
+  0% { transform: translateY(-2px); opacity: 0.4; }
+  50% { transform: translateY(1px); opacity: 1; }
+  100% { transform: translateY(3px); opacity: 0.2; }
+}
+
+@keyframes chunkyBrushStroke {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  40% { transform: rotate(-6deg) translate(2px, -2px); }
+  80% { transform: rotate(3deg) translate(-1px, 1px); }
+  100% { transform: rotate(0deg) translate(0, 0); }
+}
+
+@keyframes chunkyCatBlink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.12); }
+}
+
+@keyframes chunkyEarWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}

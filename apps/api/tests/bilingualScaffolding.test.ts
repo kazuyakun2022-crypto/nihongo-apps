@@ -177,6 +177,46 @@ describe("GroqTranscriber ucapan campuran", () => {
     stub({ id: { text: "apa arti tabel", logprob: -0.3 }, ja: { text: "食べる", logprob: -0.5 } }, "Apa arti 食べる? ".repeat(10));
     expect((await transcribe()).text).toBe("apa arti tabel");
   });
+
+  describe("Strict Japanese mode (Layar Belajar & Review Harian)", () => {
+    const transcribeJa = (target?: string) => new GroqTranscriber("key").transcribe(audio, "audio/webm", "ja", target);
+
+    it("mengembalikan teks Jepang murni dengan status OK saat siswa melafalkan dengan benar", async () => {
+      stub({ id: { text: "", logprob: -5 }, ja: { text: "ねこ", logprob: -0.25 } });
+      const res = await transcribeJa("ねこ");
+      expect(res.text).toBe("ねこ");
+      expect(res.status).toBe("OK");
+      expect(res.confidence).toBeGreaterThan(0.7);
+    });
+
+    it("menolak ucapan Latin/Indonesia dengan status NO_MATCH_JAPANESE", async () => {
+      stub({ id: { text: "", logprob: -5 }, ja: { text: "halo kucing", logprob: -0.3 } });
+      const res = await transcribeJa("ねこ");
+      expect(res.text).toBe("");
+      expect(res.status).toBe("NO_MATCH_JAPANESE");
+    });
+
+    it("membuang halusinasi Whisper (ご視聴ありがとうございました) saat hening", async () => {
+      stub({ id: { text: "", logprob: -5 }, ja: { text: "ご視聴ありがとうございました", logprob: -0.1 } });
+      const res = await transcribeJa();
+      expect(res.text).toBe("");
+      expect(res.status).toBe("SILENT");
+    });
+
+    it("membuang halusinasi bahasa Inggris saat hening (Thank you for watching)", async () => {
+      stub({ id: { text: "", logprob: -5 }, ja: { text: "Thank you for watching.", logprob: -0.1 } });
+      const res = await transcribeJa();
+      expect(res.text).toBe("");
+      expect(res.status).toBe("SILENT");
+    });
+
+    it("menandai ucapan bergumam/rendah confidence dengan LOW_CONFIDENCE", async () => {
+      stub({ id: { text: "", logprob: -5 }, ja: { text: "ねこ", logprob: -1.35 } });
+      const res = await transcribeJa("ねこ");
+      expect(res.text).toBe("");
+      expect(res.status).toBe("LOW_CONFIDENCE");
+    });
+  });
 });
 
 describe("panduan level & bab aktif di prompt Miu-chan", () => {

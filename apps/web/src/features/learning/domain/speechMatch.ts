@@ -1,3 +1,10 @@
+export {
+  scorePronunciation,
+  normalizeJapaneseSpeech,
+  phoneticDistance,
+  type PronunciationScoreResult,
+} from "./pronunciationScorer";
+
 /**
  * Kemiripan ucapan dengan kalimat target, sama dengan penilaian server (api: learning/domain/Exercise.ts),
  * dipakai untuk umpan balik langsung setelah siswa berbicara.

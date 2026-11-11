@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest } from "@/core/http/apiClient";
 import { AudioMeter } from "@/shared/lib/audioMeter";
+import { VoiceActivityTracker } from "@/shared/lib/audioNoiseGate";
 import { EMOTIONS, type NekoEmotion } from "@/shared/ui/neko/nekoRig";
 
 export type VoiceState = "idle" | "listening" | "processing" | "speaking";
@@ -51,15 +52,26 @@ function pickMimeType(): string | undefined {
 }
 
 /** `alt`: versi bahasa Jepang dari ucapan yang sama, membantu AI memahami kalimat campuran. */
-async function transcribe(audio: Blob): Promise<{ text: string; alt: string | null }> {
+async function transcribe(audio: Blob): Promise<{ text: string; alt: string | null; status?: string; confidence?: number }> {
   const res = await fetch("/api/ask/transcribe", {
     method: "POST",
     headers: { "content-type": audio.type || "audio/webm" },
     body: audio,
   });
-  const data = (await res.json().catch(() => ({}))) as { text?: string; alt?: string | null; error?: { message?: string } };
+  const data = (await res.json().catch(() => ({}))) as {
+    text?: string;
+    alt?: string | null;
+    status?: string;
+    confidence?: number;
+    error?: { message?: string };
+  };
   if (!res.ok) throw new Error(data.error?.message ?? "Gagal mengenali suara.");
-  return { text: data.text?.trim() ?? "", alt: data.alt?.trim() || null };
+  return {
+    text: data.text?.trim() ?? "",
+    alt: data.alt?.trim() || null,
+    status: data.status,
+    confidence: data.confidence,
+  };
 }
 
 async function fetchAnswer(
@@ -169,12 +181,17 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
   const rateRef = useRef(1);
   const historyRef = useRef<HistoryItem[]>([]);
   const meterRef = useRef<AudioMeter | null>(null);
+  const vadTrackerRef = useRef<VoiceActivityTracker>(new VoiceActivityTracker());
+  const vadIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [vadVisualScale, setVadVisualScale] = useState(0);
+  const [isAboveNoiseFloor, setIsAboveNoiseFloor] = useState(false);
   // Naik setiap user mulai bicara/berhenti, supaya sapaan yang telat datang tidak menimpa giliran user
   const turnRef = useRef(0);
 
   useEffect(() => {
     setIsSupported(isRecordingSupported());
     return () => {
+      if (vadIntervalRef.current) clearInterval(vadIntervalRef.current);
       audioRef.current?.pause();
       if (recorderRef.current?.state === "recording") recorderRef.current.stop();
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -332,10 +349,18 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
     const turn = turnRef.current;
     setState("processing");
     try {
-      const { text, alt } = await transcribe(audio);
+      const { text, alt, status, confidence } = await transcribe(audio);
       if (turnRef.current !== turn) return;
-      if (!text) {
-        setError("Miu-chan tidak menangkap suaramu, coba bicara lagi ya.");
+      if (status === "SILENT" || !text) {
+        setError("Suasana terlalu hening atau suara belum tertangkap.");
+        setState("idle");
+        return;
+      }
+      if (status === "LOW_CONFIDENCE" || (confidence !== undefined && confidence < 0.65)) {
+        // Lapis 3: Tampilkan animasi memiringkan kepala:
+        // "Miu-chan kurang dengar, bisa diulang sekali lagi? nya~"
+        setEmotion("bingung");
+        setError("Miu-chan kurang dengar, bisa diulang sekali lagi? nya~");
         setState("idle");
         return;
       }
@@ -359,6 +384,10 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
     stopRequestedRef.current = false;
     setState("listening");
 
+    vadTrackerRef.current.start();
+    setVadVisualScale(0);
+    setIsAboveNoiseFloor(false);
+
     try {
       streamRef.current ??= await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 },
@@ -371,6 +400,14 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
 
     (meterRef.current ??= new AudioMeter()).attachMic(streamRef.current);
 
+    if (vadIntervalRef.current) clearInterval(vadIntervalRef.current);
+    vadIntervalRef.current = setInterval(() => {
+      const rms = meterRef.current?.micRms() ?? 0;
+      const vad = vadTrackerRef.current.feedRms(rms, 50);
+      setVadVisualScale(vad.visualScale);
+      setIsAboveNoiseFloor(vad.isAboveNoiseFloor);
+    }, 50);
+
     const mimeType = pickMimeType();
     const recorder = new MediaRecorder(streamRef.current, mimeType ? { mimeType } : undefined);
     const chunks: Blob[] = [];
@@ -380,11 +417,29 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
       if (e.data.size > 0) chunks.push(e.data);
     };
     recorder.onstop = () => {
+      if (vadIntervalRef.current) {
+        clearInterval(vadIntervalRef.current);
+        vadIntervalRef.current = null;
+      }
+      setVadVisualScale(0);
+      setIsAboveNoiseFloor(false);
+
+      const hadSpeech = vadTrackerRef.current.hasDetectedSpeech;
       const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" });
+
       if (Date.now() - startedAt < MIN_RECORDING_MS || blob.size < 1000) {
         setState("idle");
         return;
       }
+
+      // Lapis 1 Proteksi: Jika energi suara di bawah -42 dBFS (hanya desis/keheningan),
+      // buang di sisi browser sebelum dikirim ke server / LLM.
+      if (!hadSpeech) {
+        setError("Suasana terlalu hening. Silakan bicara lebih dekat ke mikrofon.");
+        setState("idle");
+        return;
+      }
+
       void handleRecording(blob);
     };
 
@@ -400,6 +455,13 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
   }, []);
 
   const stop = useCallback(() => {
+    if (vadIntervalRef.current) {
+      clearInterval(vadIntervalRef.current);
+      vadIntervalRef.current = null;
+    }
+    setVadVisualScale(0);
+    setIsAboveNoiseFloor(false);
+
     const recorder = recorderRef.current;
     if (recorder?.state === "recording") {
       recorder.onstop = null;
@@ -427,6 +489,8 @@ export function useVoiceChat({ onGuide }: { onGuide?: (destination: string) => v
     emotion,
     getMicLevel,
     getVoiceLevel,
+    vadVisualScale,
+    isAboveNoiseFloor,
     messages,
     transcript,
     spoken,

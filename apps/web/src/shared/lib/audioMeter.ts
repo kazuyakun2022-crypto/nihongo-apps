@@ -83,6 +83,23 @@ export class AudioMeter {
   micLevel = (): number => this.read(this.mic?.analyser, "mic");
   voiceLevel = (): number => this.read(this.voice?.analyser, "voice");
 
+  micRms(): number {
+    if (!this.mic?.analyser) return 0;
+    this.mic.analyser.getFloatTimeDomainData(this.buf);
+    let sum = 0;
+    for (let i = 0; i < this.buf.length; i++) sum += this.buf[i] * this.buf[i];
+    return Math.sqrt(sum / this.buf.length);
+  }
+
+  micDbfs(): number {
+    const rms = this.micRms();
+    return rms > 0.000001 ? 20 * Math.log10(rms) : -100;
+  }
+
+  isAboveNoiseFloor(thresholdDbfs = -42): boolean {
+    return this.micDbfs() >= thresholdDbfs;
+  }
+
   dispose(): void {
     this.detachVoice();
     this.mic?.source.disconnect();

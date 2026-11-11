@@ -438,6 +438,23 @@
   line-height: 1.5;
 }
 
+.micBtnWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.waveformRing {
+  position: absolute;
+  inset: -10px;
+  border-radius: var(--radius-pill);
+  border: 2px solid #0284c7;
+  pointer-events: none;
+  transition: transform 0.08s ease-out, opacity 0.1s ease, border-color 0.15s ease;
+  z-index: 0;
+}
+
 .micBtn {
   display: inline-flex;
   align-items: center;
