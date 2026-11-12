@@ -167,7 +167,7 @@ export function LoginForm() {
     : error
     ? "Hmm, coba cek lagi ya"
     : typingPassword
-    ? "Miu tutup mata, aman kok!"
+    ? "Miu tutup mata, tidak mengintip kok! 🙈"
     : "Selamat datang kembali!";
 
   return (
@@ -269,13 +269,16 @@ export function LoginForm() {
             <div className={styles.mobileAvatarWrap}>
               <NekoAvatar
                 mode="idle"
-                emotion={mobileEmotion}
-                size={135}
+                emotion={typingPassword ? "dielus" : mobileEmotion}
+                size={195}
                 onTap={handleMobileMascotTap}
                 label="Miu-chan"
               />
             </div>
-            <p className={styles.mobileMascotText}>おかえり！</p>
+            <div className={styles.mobileSpeechBubble}>
+              <span className={styles.mobileSpeechBubbleJp}>{bubbleJp}</span>
+              <span className={styles.mobileSpeechBubbleId}>{bubbleId}</span>
+            </div>
           </div>
 
           {/* Form Utama (Shared Mobile & Desktop) */}
