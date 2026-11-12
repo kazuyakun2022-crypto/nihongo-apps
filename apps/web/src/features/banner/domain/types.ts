@@ -15,7 +15,7 @@ export interface BannerItem {
 }
 
 export interface BannerInput {
-  title: string;
+  title?: string;
   description?: string | null;
   imageUrl: string;
   linkUrl: string;

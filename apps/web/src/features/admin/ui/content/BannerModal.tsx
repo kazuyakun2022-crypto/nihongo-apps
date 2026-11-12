@@ -147,7 +147,7 @@ export function BannerModal({
 
   useEffect(() => {
     if (banner) {
-      setTitle(banner.title);
+      setTitle(banner.title || "");
       setDesc(banner.description || "");
       setImageUrl(banner.imageUrl);
       setLinkUrl(banner.linkUrl);
@@ -162,7 +162,7 @@ export function BannerModal({
       setDesc("");
       setImageUrl(BANNER_PRESETS[0].url);
       setLinkUrl("/simulasi");
-      setBadge("Promo");
+      setBadge("");
       setTarget("_self");
       setOrder(defaultOrder);
       setIsActive(true);
@@ -176,10 +176,6 @@ export function BannerModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) {
-      setError("Judul banner wajib diisi.");
-      return;
-    }
     if (!imageUrl.trim()) {
       setError("URL gambar banner wajib diisi.");
       return;
@@ -212,6 +208,8 @@ export function BannerModal({
       setSubmitting(false);
     }
   };
+
+  const hasText = Boolean(title.trim() || desc.trim() || badge.trim());
 
   return (
     <div
@@ -274,7 +272,9 @@ export function BannerModal({
                 Pratinjau Nyata di Beranda Siswa
               </span>
               <span style={{ fontSize: "0.74rem", color: "var(--color-text-muted)" }}>
-                Shading: {shadingPosition === "right" ? "Kanan" : shadingPosition === "bottom" ? "Bawah" : shadingPosition === "full" ? "Merata" : "Kiri"} · {shadingOpacity}% ({target === "_blank" ? "Tab Baru" : "Halaman Ini"})
+                {hasText
+                  ? `Shading: ${shadingPosition === "right" ? "Kanan" : shadingPosition === "bottom" ? "Bawah" : shadingPosition === "full" ? "Merata" : "Kiri"} · ${shadingOpacity}%`
+                  : "Banner Grafis Bersih (Tanpa Teks & Shading)"} · ({target === "_blank" ? "Tab Baru" : "Halaman Ini"})
               </span>
             </div>
 
@@ -289,50 +289,59 @@ export function BannerModal({
                   }}
                 />
               ) : null}
-              <div
-                className={styles.previewOverlay}
-                style={getBannerShadingStyle(shadingPosition, shadingOpacity)}
-              />
-              <span className={styles.watermarkKanji} aria-hidden="true" lang="ja">
-                推
-              </span>
 
-              <div className={styles.previewContent}>
-                {badge && <span className={styles.previewBadge}>{badge}</span>}
-                <h3 className={styles.previewTitle}>
-                  {title || "Judul Rekomendasi atau Iklan"}
-                </h3>
-                <p className={styles.previewDesc}>
-                  {desc || "Deskripsi singkat mengenai penawaran materi, simulasi, atau fitur baru."}
-                </p>
-                <span className={styles.previewBtn}>
-                  <span>Buka Sekarang</span>
-                  <ArrowRightIcon size={12} />
-                </span>
-              </div>
+              {hasText && (
+                <>
+                  <div
+                    className={styles.previewOverlay}
+                    style={getBannerShadingStyle(shadingPosition, shadingOpacity)}
+                  />
+                  <span className={styles.watermarkKanji} aria-hidden="true" lang="ja">
+                    推
+                  </span>
+
+                  <div className={styles.previewContent}>
+                    {badge.trim() && <span className={styles.previewBadge}>{badge.trim()}</span>}
+                    {title.trim() && (
+                      <h3 className={styles.previewTitle}>
+                        {title.trim()}
+                      </h3>
+                    )}
+                    {desc.trim() && (
+                      <p className={styles.previewDesc}>
+                        {desc.trim()}
+                      </p>
+                    )}
+                    <span className={styles.previewBtn}>
+                      <span>Buka Sekarang</span>
+                      <ArrowRightIcon size={12} />
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
           {/* ── ISIAN FORM ── */}
           <div className={styles.formGroup}>
             <label className={styles.formLabel} htmlFor="banner-title">
-              <span>
-                Judul Banner <span className={styles.requiredMark}>*</span>
-              </span>
+              <span>Judul Banner (Opsional)</span>
               <span style={{ fontSize: "0.72rem", color: "var(--color-text-muted)", fontWeight: 400 }}>
-                {title.length}/60 karakter
+                {title.length}/70 karakter
               </span>
             </label>
             <input
               id="banner-title"
               type="text"
               className={styles.formInput}
-              placeholder="Misal: Simulasi JLPT Resmi 2026 atau Promo Kelas Intensif N3"
+              placeholder="Kosongkan jika banner sudah memiliki teks/desain sendiri..."
               value={title}
               maxLength={70}
               onChange={(e) => setTitle(e.target.value)}
-              required
             />
+            <span className={styles.formHelper}>
+              Jika dikosongkan, gambar banner akan ditampilkan utuh dan bersih tanpa lapisan bayangan gelap atau teks tambahan.
+            </span>
           </div>
 
           <div className={styles.formGroup}>
@@ -351,18 +360,37 @@ export function BannerModal({
 
           {/* Label / Badge Penanda */}
           <div className={styles.formGroup}>
-            <label className={styles.formLabel} htmlFor="banner-badge">
-              <span>Label Penanda / Badge</span>
-            </label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+              <label className={styles.formLabel} htmlFor="banner-badge" style={{ marginBottom: 0 }}>
+                <span>Label Penanda / Badge (Opsional)</span>
+              </label>
+              {badge && (
+                <button
+                  type="button"
+                  className={styles.btnClearBadge}
+                  onClick={() => setBadge("")}
+                  title="Hapus badge"
+                >
+                  ✕ Hapus Badge
+                </button>
+              )}
+            </div>
             <input
               id="banner-badge"
               type="text"
               className={styles.formInput}
-              placeholder="Misal: Promo, Rekomendasi, Event, Fitur Baru"
+              placeholder="Misal: Promo, Rekomendasi, Event (Kosongkan jika tanpa label)"
               value={badge}
               onChange={(e) => setBadge(e.target.value)}
             />
             <div className={styles.chipsRow}>
+              <button
+                type="button"
+                className={`${styles.chipBtn} ${!badge ? styles.chipBtnActive : ""}`}
+                onClick={() => setBadge("")}
+              >
+                Tanpa Badge
+              </button>
               {BADGE_SUGGESTIONS.map((b) => (
                 <button
                   key={b}
@@ -467,11 +495,12 @@ export function BannerModal({
               required
             />
             <div className={styles.imageDimensionTip}>
-              <span className={styles.imageDimensionTitle}>📐 Panduan Ukuran & Rasio Gambar yang Pas:</span>
+              <span className={styles.imageDimensionTitle}>📐 Panduan Ukuran &amp; Rasio Gambar yang Pas:</span>
               <span>
-                • <strong>Ukuran Rekomendasi:</strong> <code>1200 × 500 px</code> (rasio ~<code>2.4:1</code>) atau <code>1200 × 630 px</code> (rasio <code>16:9</code> landscape).<br />
-                • <strong>Zona Aman Teks:</strong> Taruh objek/karakter/produk utama di <strong>sisi kanan</strong> agar tidak tertutup teks judul & tombol di sisi kiri.<br />
-                • <strong>Format & Ukuran File:</strong> Format WebP atau JPG, disarankan di bawah 500 KB agar cepat dimuat di HP.
+                • <strong>Ukuran Standar:</strong> <code>1200 × 500 px</code> (rasio <strong>2.4 : 1</strong>) — Pratinjau &amp; hasil di Beranda kini 100% sinkron 1:1 dengan alat potong (Crop &amp; Fit).<br />
+                • <strong>Mode Pas-kan / Penuhi:</strong> Pada alat crop, gunakan <em>Penuhi Frame</em> untuk mengisi penuh atau <em>Pas-kan Utuh (Fit)</em> agar brosur/flyer tampil utuh tanpa terpotong.<br />
+                • <strong>Banner Grafis Tanpa Teks:</strong> Judul &amp; Badge bersifat <strong>opsional</strong>. Kosongkan keduanya jika bannermu sudah memiliki teks sendiri agar tampil bersih tanpa shading hitam.<br />
+                • <strong>Format Disarankan:</strong> WebP atau JPG (di bawah 500 KB) agar langsung terbuka cepat di ponsel siswa.
               </span>
             </div>
             <span className={styles.formHelper}>

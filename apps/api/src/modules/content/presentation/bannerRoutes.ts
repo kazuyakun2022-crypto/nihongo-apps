@@ -3,7 +3,7 @@ import { prisma } from "../../../shared/infrastructure/prisma";
 import { z } from "zod";
 
 const bannerSchema = z.object({
-  title: z.string().min(1, "Judul banner wajib diisi.").max(150),
+  title: z.string().max(150).optional().nullable().default(""),
   description: z.string().max(300).optional().nullable(),
   imageUrl: z.string().min(1, "URL gambar wajib diisi."),
   linkUrl: z.string().min(1, "URL tautan tujuan wajib diisi.").max(500),
@@ -63,7 +63,7 @@ export function adminBannerRoutes(): Router {
     try {
       const created = await prisma.banner.create({
         data: {
-          title: parsed.data.title,
+          title: parsed.data.title || "",
           description: parsed.data.description || null,
           imageUrl: parsed.data.imageUrl,
           linkUrl: parsed.data.linkUrl,
@@ -95,7 +95,7 @@ export function adminBannerRoutes(): Router {
       const updated = await prisma.banner.update({
         where: { id },
         data: {
-          title: parsed.data.title,
+          title: parsed.data.title || "",
           description: parsed.data.description || null,
           imageUrl: parsed.data.imageUrl,
           linkUrl: parsed.data.linkUrl,

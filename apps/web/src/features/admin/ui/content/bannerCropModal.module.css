@@ -262,6 +262,55 @@
   border: 1px solid var(--color-border, #e5e0dc);
 }
 
+.modeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--color-border, #e5e0dc);
+}
+
+.modeChips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.modeBtn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border, #e5e0dc);
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #1f1a1c);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.modeBtn:hover {
+  background: var(--palette-beni-50, #fdf2f4);
+  border-color: var(--palette-beni-300, #f09ba6);
+  color: var(--palette-beni-700, #b12a3a);
+}
+
+.modeBtnActive {
+  background: var(--palette-beni-700, #b12a3a);
+  color: #ffffff;
+  border-color: var(--palette-beni-700, #b12a3a);
+}
+
+.modeBtnActive:hover {
+  background: #8c1d2c;
+  color: #ffffff;
+}
+
 .ratioRow {
   display: flex;
   align-items: center;
