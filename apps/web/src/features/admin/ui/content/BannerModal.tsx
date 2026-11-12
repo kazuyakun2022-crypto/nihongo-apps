@@ -324,6 +324,14 @@ export function BannerModal({
               onChange={(e) => setImageUrl(e.target.value)}
               required
             />
+            <div className={styles.imageDimensionTip}>
+              <span className={styles.imageDimensionTitle}>📐 Panduan Ukuran & Rasio Gambar yang Pas:</span>
+              <span>
+                • <strong>Ukuran Rekomendasi:</strong> <code>1200 × 500 px</code> (rasio ~<code>2.4:1</code>) atau <code>1200 × 630 px</code> (rasio <code>16:9</code> landscape).<br />
+                • <strong>Zona Aman Teks:</strong> Taruh objek/karakter/produk utama di <strong>sisi kanan</strong> agar tidak tertutup teks judul & tombol di sisi kiri.<br />
+                • <strong>Format & Ukuran File:</strong> Format WebP atau JPG, disarankan di bawah 500 KB agar cepat dimuat di HP.
+              </span>
+            </div>
             <span className={styles.formHelper}>
               Pilih salah satu preset gambar bernuansa Jepang di bawah ini atau tempel URL gambar pilihanmu sendiri:
             </span>

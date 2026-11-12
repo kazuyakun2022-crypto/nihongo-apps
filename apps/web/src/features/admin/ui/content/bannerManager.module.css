@@ -830,6 +830,35 @@
   line-height: 1.35;
 }
 
+.imageDimensionTip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(177, 42, 58, 0.04);
+  border: 1px dashed rgba(177, 42, 58, 0.25);
+  font-size: 0.73rem;
+  color: var(--color-text);
+  line-height: 1.45;
+  margin: 4px 0 2px 0;
+}
+
+.imageDimensionTitle {
+  font-weight: 700;
+  color: var(--palette-beni-700);
+  font-size: 0.76rem;
+}
+
+.imageDimensionTip code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 0.73rem;
+  font-family: inherit;
+  font-weight: 700;
+}
+
 /* ── Quick Preset Image Picker ── */
 .presetGrid {
   display: grid;
