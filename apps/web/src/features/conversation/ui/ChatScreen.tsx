@@ -188,7 +188,6 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
               <div className={styles.scenarioCover}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={imgUrl} alt={scenario.title} className={styles.scenarioCoverImg} />
-                <div className={styles.scenarioCoverOverlay} />
                 <div className={styles.scenarioCoverBadges}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <button
@@ -199,6 +198,7 @@ export function ChatScreen({ scenario = null }: { scenario?: ScenarioItem | null
                       title="Kembali ke daftar skenario"
                     >
                       <ArrowLeftIcon size={16} strokeWidth={2.4} />
+                      <span>Kembali</span>
                     </button>
                     <span className={styles.scenarioCoverLevel}>{scenario.levelCode}</span>
                   </div>

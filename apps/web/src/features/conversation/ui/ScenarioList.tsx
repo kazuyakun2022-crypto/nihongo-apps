@@ -147,7 +147,6 @@ export function ScenarioList() {
                       className={styles.image}
                       loading="lazy"
                     />
-                    <div className={styles.imageOverlay} />
                     <span className={styles.levelBadge}>{s.levelCode}</span>
                     {s.location && (
                       <span className={styles.locationBadge}>
