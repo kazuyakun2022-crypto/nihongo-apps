@@ -16,9 +16,13 @@ import { StarIcon } from "@/shared/ui/icons";
 import styles from "./scoreScreen.module.css";
 
 /** Angka naik dari 0 ke target dengan kurva easing yang mulus. */
-export function useCountUp(target: number, durationMs = 1000, delayMs = 300) {
+export function useCountUp(target: number, durationMs = 1000, delayMs = 300, active = true) {
   const [value, setValue] = useState(0);
   useEffect(() => {
+    if (!active) {
+      setValue(0);
+      return;
+    }
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setValue(target);
       return;
@@ -33,9 +37,11 @@ export function useCountUp(target: number, durationMs = 1000, delayMs = 300) {
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [target, durationMs, delayMs]);
+  }, [target, durationMs, delayMs, active]);
   return value;
 }
+
+type ResultPhase = "score" | "achievement" | "xp" | "streak" | "done";
 
 const R = 70;
 const C = 2 * Math.PI * R;
@@ -80,9 +86,7 @@ export function ScoreScreen({
   onRetryQuiz: () => void;
   onShowReview: () => void;
 }) {
-  const shown = useCountUp(score, 1100, 300);
-  const shownXp = useCountUp(xpEarned, 800, 300);
-  const [dismissedAchievements, setDismissedAchievements] = useState(false);
+  const [phase, setPhase] = useState<ResultPhase>("score");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const stars = passed ? starsFor(score) : 0;
   const gap = Math.max(0, passingScore - score);
@@ -96,11 +100,35 @@ export function ScoreScreen({
     close: closeStreak,
   } = useDailyStreakCelebration(user?.id);
   const hasNewAchievements = Boolean(newAchievements && newAchievements.length > 0);
-  const canShowStreak = passed && typeof streak === "number" && streak > 0 && (!hasNewAchievements || dismissedAchievements);
+  const xpActive = phase === "xp" || phase === "streak" || phase === "done";
+  const shown = useCountUp(score, 1100, 300);
+  const shownXp = useCountUp(xpEarned, 850, 120, xpActive);
 
   useEffect(() => {
-    if (canShowStreak && typeof streak === "number") celebrateStreak(streak);
-  }, [canShowStreak, streak, celebrateStreak]);
+    if (phase !== "score") return;
+    const timer = window.setTimeout(() => {
+      if (hasNewAchievements) setPhase("achievement");
+      else setPhase(passed ? "xp" : "done");
+    }, passed ? 2200 : 1500);
+    return () => clearTimeout(timer);
+  }, [phase, hasNewAchievements, passed]);
+
+  useEffect(() => {
+    if (phase !== "xp") return;
+    const timer = window.setTimeout(() => {
+      if (!passed || typeof streak !== "number" || streak <= 0) {
+        setPhase("done");
+        return;
+      }
+      const opened = celebrateStreak(streak);
+      setPhase(opened ? "streak" : "done");
+    }, 1100);
+    return () => clearTimeout(timer);
+  }, [phase, passed, streak, celebrateStreak]);
+
+  useEffect(() => {
+    if (phase === "xp") soundFX.play("coin_tick", 0.5);
+  }, [phase]);
 
   // Kunci scroll latar belakang
   useEffect(() => {
@@ -136,21 +164,13 @@ export function ScoreScreen({
       if (stars >= 3) soundFX.play("glockenspiel_chime", 0.65);
     }, 1500);
 
-    // Tahap 3: Deru hangat api streak
-    const tStreak = setTimeout(() => {
-      if (streak && streak > 0) {
-        soundFX.play("fire_surge", 0.4);
-      }
-    }, 1800);
-
     return () => {
       clearTimeout(tFanfare);
       clearTimeout(tStar1);
       clearTimeout(tStar2);
       clearTimeout(tStar3);
-      clearTimeout(tStreak);
     };
-  }, [passed, stars, streak]);
+  }, [passed, stars]);
 
   // ── Partikel 2D Canvas Confetti (Sakura, Bintang Emas, Pita Berwarna) ──
   useEffect(() => {
@@ -388,38 +408,44 @@ export function ScoreScreen({
             </div>
 
             {/* Metrik Cepat (Tactile Neubrutalism-Lite Box) */}
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.55, type: "spring" }}
-              className={styles.quickStatsRow}
-            >
-              <div className={styles.statPill}>
-                <span className={styles.statPillLabel}>Poin XP</span>
-                <span className={`${styles.statPillVal} ${styles.statPillValXp}`}>
-                  <span className={styles.coinBadge}>🪙</span> +{shownXp} XP
-                </span>
-              </div>
-              <div className={styles.statDivider} />
-              <div className={styles.statPill}>
-                <span className={styles.statPillLabel}>Akurasi</span>
-                <span className={styles.statPillVal} style={{ color: "#16a34a" }}>
-                  {Math.round((correct / Math.max(graded, 1)) * 100)}%
-                </span>
-              </div>
-              <div className={styles.statDivider} />
-              <div className={styles.statPill}>
-                <span className={styles.statPillLabel}>Batas Lulus</span>
-                <span className={styles.statPillVal}>{passingScore}%</span>
-              </div>
-            </motion.div>
+            {xpActive && (
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05, type: "spring" }}
+                className={styles.quickStatsRow}
+              >
+                <motion.div
+                  className={styles.statPill}
+                  animate={{ scale: phase === "xp" ? [1, 1.08, 1] : 1 }}
+                  transition={{ duration: 0.6, repeat: phase === "xp" ? 2 : 0, ease: "easeInOut" }}
+                >
+                  <span className={styles.statPillLabel}>Poin XP</span>
+                  <span className={`${styles.statPillVal} ${styles.statPillValXp}`}>
+                    <span className={styles.coinBadge}>🪙</span> +{shownXp} XP
+                  </span>
+                </motion.div>
+                <div className={styles.statDivider} />
+                <div className={styles.statPill}>
+                  <span className={styles.statPillLabel}>Akurasi</span>
+                  <span className={styles.statPillVal} style={{ color: "#16a34a" }}>
+                    {Math.round((correct / Math.max(graded, 1)) * 100)}%
+                  </span>
+                </div>
+                <div className={styles.statDivider} />
+                <div className={styles.statPill}>
+                  <span className={styles.statPillLabel}>Batas Lulus</span>
+                  <span className={styles.statPillVal}>{passingScore}%</span>
+                </div>
+              </motion.div>
+            )}
 
             {/* Kartu Streak Berapi Hangat */}
-            {streak !== undefined && streak > 0 && (
+            {phase === "done" && streak !== undefined && streak > 0 && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.92, y: 14 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: 1.75, type: "spring" }}
+                transition={{ delay: 0.05, type: "spring" }}
                 className={styles.streakCard}
               >
                 <div className={styles.streakFlameWrap}>
@@ -433,42 +459,44 @@ export function ScoreScreen({
             )}
 
             {/* Tombol Aksi Fisik Tebal (Duolingo-Grade Tactile Buttons) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.95, type: "spring" }}
-              className={styles.actions}
-            >
-              <Link
-                href="/belajar"
-                className={styles.btnPrimary}
-                onClick={() => soundFX.play("tap", 0.35)}
+            {phase === "done" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, type: "spring" }}
+                className={styles.actions}
               >
-                Lanjut ke Bab Berikutnya →
-              </Link>
-              <div className={styles.actionRowSecondary}>
-                <button
-                  type="button"
-                  className={styles.btnGhost}
-                  onClick={() => {
-                    soundFX.play("tap", 0.35);
-                    onShowReview();
-                  }}
+                <Link
+                  href="/belajar"
+                  className={styles.btnPrimary}
+                  onClick={() => soundFX.play("tap", 0.35)}
                 >
-                  📝 Pembahasan Soal
-                </button>
-                <button
-                  type="button"
-                  className={styles.btnGhost}
-                  onClick={() => {
-                    soundFX.play("tap", 0.35);
-                    onRestartStudy();
-                  }}
-                >
-                  🔄 Ulang Materi
-                </button>
-              </div>
-            </motion.div>
+                  Lanjut ke Bab Berikutnya →
+                </Link>
+                <div className={styles.actionRowSecondary}>
+                  <button
+                    type="button"
+                    className={styles.btnGhost}
+                    onClick={() => {
+                      soundFX.play("tap", 0.35);
+                      onShowReview();
+                    }}
+                  >
+                    📝 Pembahasan Soal
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.btnGhost}
+                    onClick={() => {
+                      soundFX.play("tap", 0.35);
+                      onRestartStudy();
+                    }}
+                  >
+                    🔄 Ulang Materi
+                  </button>
+                </div>
+              </motion.div>
+            )}
           </div>
         ) : (
           <div className={styles.verdict}>
@@ -476,56 +504,61 @@ export function ScoreScreen({
               <strong>Butuh {passingScore}% untuk lulus (kurang {gap}% lagi).</strong>
               <span>Bab berikutnya masih terkunci. Yuk coba kuisnya sekali lagi!</span>
             </div>
-            <div className={styles.actions}>
-              <button
-                type="button"
-                className={styles.btnPrimaryRetry}
-                onClick={() => {
-                  soundFX.play("tap", 0.35);
-                  onRetryQuiz();
-                }}
-              >
-                Coba Kuis Lagi →
-              </button>
-              <div className={styles.actionRowSecondary}>
+            {phase === "done" && (
+              <div className={styles.actions}>
                 <button
                   type="button"
-                  className={styles.btnGhost}
+                  className={styles.btnPrimaryRetry}
                   onClick={() => {
                     soundFX.play("tap", 0.35);
-                    onShowReview();
+                    onRetryQuiz();
                   }}
                 >
-                  📝 Lihat Pembahasan
+                  Coba Kuis Lagi →
                 </button>
-                <button
-                  type="button"
-                  className={styles.btnGhost}
-                  onClick={() => {
-                    soundFX.play("tap", 0.35);
-                    onRestartStudy();
-                  }}
-                >
-                  🔄 Pelajari Ulang
-                </button>
+                <div className={styles.actionRowSecondary}>
+                  <button
+                    type="button"
+                    className={styles.btnGhost}
+                    onClick={() => {
+                      soundFX.play("tap", 0.35);
+                      onShowReview();
+                    }}
+                  >
+                    📝 Lihat Pembahasan
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.btnGhost}
+                    onClick={() => {
+                      soundFX.play("tap", 0.35);
+                      onRestartStudy();
+                    }}
+                  >
+                    🔄 Pelajari Ulang
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </motion.div>
 
-      {!dismissedAchievements && newAchievements && newAchievements.length > 0 && (
+      {phase === "achievement" && newAchievements && newAchievements.length > 0 && (
         <AchievementUnlockModal
           achievements={newAchievements}
-          onClose={() => setDismissedAchievements(true)}
+          onClose={() => setPhase(passed ? "xp" : "done")}
         />
       )}
 
-      {streakOpen && (
+      {phase === "streak" && streakOpen && (
         <DailyStreakCelebrationModal
           streak={streakValue}
           previousStreak={previousStreak}
-          onClose={closeStreak}
+          onClose={() => {
+            closeStreak();
+            setPhase("done");
+          }}
         />
       )}
     </div>,

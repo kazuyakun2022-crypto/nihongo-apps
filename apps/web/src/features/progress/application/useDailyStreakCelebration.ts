@@ -27,11 +27,11 @@ export function useDailyStreakCelebration(userId?: string) {
 
   const celebrate = useCallback(
     (streak: number) => {
-      if (!Number.isFinite(streak) || streak <= 0) return;
+      if (!Number.isFinite(streak) || streak <= 0) return false;
 
       const today = jakartaDay();
       try {
-        if (window.localStorage.getItem(key) === today) return;
+        if (window.localStorage.getItem(key) === today) return false;
         window.localStorage.setItem(key, today);
       } catch {}
 
@@ -40,6 +40,7 @@ export function useDailyStreakCelebration(userId?: string) {
         streak: Math.round(streak),
         previousStreak: Math.max(0, Math.round(streak) - 1),
       });
+      return true;
     },
     [key],
   );
