@@ -22,6 +22,7 @@
     "soal:jlpt": "tsx prisma/scripts/jlptBank.ts",
     "soal:jlpt-build": "tsx prisma/scripts/generateJlptBankPackages.ts",
     "scenario:sync": "tsx prisma/scripts/seedAllImageScenarios.ts",
+    "admin:inject": "tsx prisma/scripts/injectAdmin.ts",
     "audio:pronunciation": "tsx scripts/buildPronunciationAudio.ts"
   },
   "dependencies": {
