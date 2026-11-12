@@ -859,6 +859,91 @@
   font-weight: 700;
 }
 
+/* ── Drop Zone Ambil dari Galeri & Drag & Drop ── */
+.bannerDropZone {
+  position: relative;
+  width: 100%;
+  padding: 20px 16px;
+  border-radius: var(--radius-lg, 16px);
+  border: 2px dashed rgba(177, 42, 58, 0.35);
+  background: var(--palette-washi, #faf8f5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  user-select: none;
+}
+
+.bannerDropZone:hover {
+  border-color: var(--palette-beni-600, #c43244);
+  background: #fdf2f4;
+}
+
+.bannerDropZone:focus-visible {
+  outline: none;
+  border-color: var(--palette-beni-700, #b12a3a);
+  box-shadow: 0 0 0 3px rgba(177, 42, 58, 0.15);
+}
+
+.bannerDropZone[data-dragging="true"] {
+  border-color: var(--palette-beni-700, #b12a3a);
+  background: #fce8ea;
+  box-shadow: 0 0 0 4px rgba(177, 42, 58, 0.2);
+  transform: scale(1.01);
+}
+
+.dropZoneIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(177, 42, 58, 0.1);
+  color: var(--palette-beni-700, #b12a3a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.bannerDropZone:hover .dropZoneIconWrap,
+.bannerDropZone[data-dragging="true"] .dropZoneIconWrap {
+  transform: scale(1.1) translateY(-2px);
+  background: rgba(177, 42, 58, 0.18);
+}
+
+.dropZoneTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 440px;
+}
+
+.dropZoneMainText {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text, #1f1a1c);
+}
+
+.dropZoneSubText {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #736b6e);
+  line-height: 1.35;
+}
+
+.dropZoneActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
 /* ── Tombol Ambil dari Galeri & Crop ── */
 .imageUploadRow {
   display: flex;
