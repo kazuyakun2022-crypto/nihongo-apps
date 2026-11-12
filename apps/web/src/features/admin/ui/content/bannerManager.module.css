@@ -830,6 +830,87 @@
   line-height: 1.35;
 }
 
+.imageDimensionTip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(177, 42, 58, 0.04);
+  border: 1px dashed rgba(177, 42, 58, 0.25);
+  font-size: 0.73rem;
+  color: var(--color-text);
+  line-height: 1.45;
+  margin: 4px 0 2px 0;
+}
+
+.imageDimensionTitle {
+  font-weight: 700;
+  color: var(--palette-beni-700);
+  font-size: 0.76rem;
+}
+
+.imageDimensionTip code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 0.73rem;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+/* ── Tombol Ambil dari Galeri & Crop ── */
+.imageUploadRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.btnGalleryUpload {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--palette-beni-700) 0%, #8c1d2c 100%);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(177, 42, 58, 0.2);
+  transition: all 0.15s ease;
+}
+
+.btnGalleryUpload:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(177, 42, 58, 0.3);
+}
+
+.btnCropExisting {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--palette-washi);
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btnCropExisting:hover {
+  background: #fdf2f4;
+  border-color: var(--palette-beni-300);
+  color: var(--palette-beni-700);
+}
+
 /* ── Quick Preset Image Picker ── */
 .presetGrid {
   display: grid;

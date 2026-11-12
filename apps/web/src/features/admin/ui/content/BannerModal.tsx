@@ -9,7 +9,8 @@ import {
   type ShadingPosition,
 } from "@/features/banner/domain/shading";
 import { useModalBehavior } from "@/shared/ui/useModalBehavior";
-import { CloseIcon, CheckIcon, ImageIcon, ArrowRightIcon } from "@/shared/ui/icons";
+import { CloseIcon, CheckIcon, ImageIcon, ArrowRightIcon, UploadIcon, CropIcon } from "@/shared/ui/icons";
+import { BannerCropModal } from "./BannerCropModal";
 import styles from "./bannerManager.module.css";
 
 export const BANNER_PRESETS = [
@@ -80,6 +81,45 @@ export function BannerModal({
   const [isActive, setIsActive] = useState(true);
   const [shadingPosition, setShadingPosition] = useState<ShadingPosition>("left");
   const [shadingOpacity, setShadingOpacity] = useState<number>(60);
+
+  // Fitur Upload dari Galeri & Crop Modal
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropRawImage, setCropRawImage] = useState("");
+
+  const handlePickFromGallery = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Pilih berkas gambar yang valid (JPG, PNG, WebP).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setCropRawImage(reader.result);
+        setCropModalOpen(true);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleCropExisting = () => {
+    if (imageUrl.trim()) {
+      setCropRawImage(imageUrl.trim());
+      setCropModalOpen(true);
+    }
+  };
+
+  const handleCropCompleted = (uploadedUrl: string) => {
+    setImageUrl(uploadedUrl);
+    setCropModalOpen(false);
+  };
 
   // Hook perilaku modal (Escape, kunci scroll hanya jika terbuka, focus trap)
   useModalBehavior(dialogRef as React.RefObject<HTMLElement>, onClose, submitting, isOpen);
@@ -312,18 +352,61 @@ export function BannerModal({
           <div className={styles.formGroup}>
             <label className={styles.formLabel} htmlFor="banner-image">
               <span>
-                URL Gambar Latar <span className={styles.requiredMark}>*</span>
+                Gambar Latar &amp; Foto Promosi <span className={styles.requiredMark}>*</span>
               </span>
             </label>
+
+            {/* Input Tersembunyi untuk Buka Galeri HP / File Picker */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileSelected}
+            />
+
+            {/* Tombol Aksi Upload Galeri & Crop */}
+            <div className={styles.imageUploadRow}>
+              <button
+                type="button"
+                className={styles.btnGalleryUpload}
+                onClick={handlePickFromGallery}
+                title="Pilih foto dari Galeri HP atau Laptop untuk dipotong (crop & fit)"
+              >
+                <UploadIcon size={15} />
+                <span>📁 Ambil dari Galeri / Upload Foto</span>
+              </button>
+
+              {imageUrl.trim() && (
+                <button
+                  type="button"
+                  className={styles.btnCropExisting}
+                  onClick={handleCropExisting}
+                  title="Buka alat potong & sesuaikan gambar ini"
+                >
+                  <CropIcon size={14} />
+                  <span>✂️ Crop &amp; Pas-kan Gambar</span>
+                </button>
+              )}
+            </div>
+
             <input
               id="banner-image"
               type="text"
               className={styles.formInput}
-              placeholder="https://images.unsplash.com/..."
+              placeholder="https://images.unsplash.com/... atau /api/media/..."
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               required
             />
+            <div className={styles.imageDimensionTip}>
+              <span className={styles.imageDimensionTitle}>📐 Panduan Ukuran & Rasio Gambar yang Pas:</span>
+              <span>
+                • <strong>Ukuran Rekomendasi:</strong> <code>1200 × 500 px</code> (rasio ~<code>2.4:1</code>) atau <code>1200 × 630 px</code> (rasio <code>16:9</code> landscape).<br />
+                • <strong>Zona Aman Teks:</strong> Taruh objek/karakter/produk utama di <strong>sisi kanan</strong> agar tidak tertutup teks judul & tombol di sisi kiri.<br />
+                • <strong>Format & Ukuran File:</strong> Format WebP atau JPG, disarankan di bawah 500 KB agar cepat dimuat di HP.
+              </span>
+            </div>
             <span className={styles.formHelper}>
               Pilih salah satu preset gambar bernuansa Jepang di bawah ini atau tempel URL gambar pilihanmu sendiri:
             </span>
@@ -564,6 +647,14 @@ export function BannerModal({
           </div>
         </form>
       </div>
+
+      {/* Modal Crop & Fit Interaktif */}
+      <BannerCropModal
+        isOpen={cropModalOpen}
+        imageSrc={cropRawImage}
+        onClose={() => setCropModalOpen(false)}
+        onCropComplete={handleCropCompleted}
+      />
     </div>
   );
 }

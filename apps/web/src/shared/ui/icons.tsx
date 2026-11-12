@@ -1161,3 +1161,33 @@ export function LogoutIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function CropIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M6 2v14a2 2 0 0 0 2 2h14" />
+      <path d="M18 22V8a2 2 0 0 0-2-2H2" />
+    </Svg>
+  );
+}
+
+export function ZoomInIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      <line x1="11" y1="8" x2="11" y2="14" />
+      <line x1="8" y1="11" x2="14" y2="11" />
+    </Svg>
+  );
+}
+
+export function ZoomOutIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      <line x1="8" y1="11" x2="14" y2="11" />
+    </Svg>
+  );
+}
