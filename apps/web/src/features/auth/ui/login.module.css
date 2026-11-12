@@ -17,14 +17,13 @@
 
 .page {
   position: relative;
-  height: 100dvh;
   min-height: 100dvh;
   width: 100%;
   background: linear-gradient(135deg, #FFE9E8 0%, #FFF5F3 50%, #FFFFFF 100%);
   font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #2B1A1F;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
 }
@@ -60,28 +59,20 @@
 
 /* ══════════════════════════════════════════
    LAYOUT WRAPPER (MOBILE DEFAULT < 900px)
-   Compact 100dvh fit: No vertical scrolling on mobile!
-   Padding rapat, konten terpusat & seimbang
+   Fleksibel: pas di 100dvh pada layar normal, tetap bisa scroll
+   secara alami jika keyboard muncul / layar pendek.
 ══════════════════════════════════════════ */
 .layoutWrapper {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
-  max-height: 100dvh;
+  min-height: 100dvh;
   width: 100%;
-  max-width: 440px;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 10px 20px 12px;
+  padding: 16px 24px 24px;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.layoutWrapper::-webkit-scrollbar {
-  display: none;
 }
 
 /* Panel hero desktop TIDAK ditampilkan pada mobile */
@@ -95,31 +86,31 @@
   flex-direction: column;
   width: 100%;
   flex: 1;
+  min-width: 0;
   min-height: 0;
-  justify-content: space-between;
 }
 
 /* ──────── Mobile Header (< 900px) ────────
-   "← Beranda" di kiri dan "日本語" di kanan, tanpa kotak, area sentuh min 36px */
+   "← Beranda" di kiri dan "日本語" di kanan, tanpa kotak, area sentuh min 44px */
 .mobileHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-height: 32px;
-  margin-bottom: 2px;
+  min-height: 44px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 
 .mobileHeaderBack {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 700;
   color: #2B1A1F;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
-  min-width: 36px;
+  min-height: 44px;
+  min-width: 44px;
   background: none;
   border: none;
   padding: 0;
@@ -274,27 +265,27 @@
   flex-shrink: 0;
 }
 
-/* 2. Judul "Masuk ke Akun" (mobile default: 21px, hemat ruang) dan subjudul */
+/* 2. Judul "Masuk ke Akun" dan subjudul */
 .formTitle {
-  font-size: 21px;
+  font-size: clamp(24px, 6.5vw, 30px);
   font-weight: 800;
   color: #2B1A1F;
   letter-spacing: -0.02em;
   line-height: 1.15;
-  margin: 0 0 2px 0;
+  margin: 0 0 4px 0;
   flex-shrink: 0;
 }
 
 .formSubtitle {
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 400;
   color: #6B5A60;
-  line-height: 1.35;
-  margin: 0 0 8px 0;
+  line-height: 1.45;
+  margin: 0 0 16px 0;
   flex-shrink: 0;
 }
 
-/* 3. Tombol Google: mobile default pill tinggi 42px, full width */
+/* 3. Tombol Google: pill tinggi 48px di mobile, full width */
 .googleBtnWrapper {
   position: relative;
   width: 100%;
@@ -307,13 +298,13 @@
   justify-content: center;
   gap: 10px;
   width: 100%;
-  height: 42px;
-  border-radius: 21px;
+  height: 48px;
+  border-radius: 24px;
   background: #FFFFFF;
   border: 1.5px solid #DDBFC6;
   color: #2B1A1F;
   font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -368,12 +359,12 @@
   cursor: pointer !important;
 }
 
-/* 4. Pemisah: garis - "atau masuk dengan email" (11px) - garis */
+/* 4. Pemisah: garis - "atau masuk dengan email" (12px) - garis */
 .divider {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 8px 0 10px 0;
+  gap: 12px;
+  margin: 14px 0;
   width: 100%;
   flex-shrink: 0;
 }
@@ -385,17 +376,17 @@
 }
 
 .dividerText {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: #8A7880;
   white-space: nowrap;
 }
 
-/* Jarak antar field mobile default 9px (hemat tinggi vertikal) */
+/* Jarak antar field mobile 16px */
 .formFields {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 16px;
   width: 100%;
 }
 
@@ -452,17 +443,17 @@
   height: 18px;
 }
 
-/* 5 & 6. Field Inputs: mobile default tinggi 42px, radius 12px, background putih, border 1.5px #DDBFC6 */
+/* 5 & 6. Field Inputs: tinggi 50px di mobile, radius 14px, font 16px (cegah auto-zoom iOS) */
 .inputField {
-  height: 42px;
+  height: 50px;
   width: 100%;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #FFFFFF;
   border: 1.5px solid #DDBFC6;
-  padding-left: 40px;
+  padding-left: 44px;
   padding-right: 14px;
   font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   color: #2B1A1F;
   box-sizing: border-box;
   outline: none;
@@ -483,15 +474,15 @@
 }
 
 .inputFieldWithRight {
-  padding-right: 44px;
+  padding-right: 48px;
 }
 
-/* Tombol ikon mata 38x38px di dalam sisi kanan pada mobile */
+/* Tombol ikon mata 44x44px (target sentuh aksesibel) */
 .togglePassBtn {
   position: absolute;
-  right: 2px;
-  width: 38px;
-  height: 38px;
+  right: 3px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -565,20 +556,20 @@
   margin: 0;
 }
 
-/* 7. Tombol utama "Masuk ke Akun": mobile default tinggi 46px, full width, radius 23px (pill), gradien accent */
+/* 7. Tombol utama "Masuk ke Akun": tinggi 52px di mobile, full width, radius 26px (pill), gradien accent */
 .submitBtn {
-  margin-top: 6px;
-  height: 46px;
+  margin-top: 4px;
+  height: 52px;
   width: 100%;
-  border-radius: 23px;
+  border-radius: 26px;
   border: none;
   background: linear-gradient(135deg, #C4122F 0%, #A00D27 100%);
   color: #FFFFFF;
   font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 14.5px;
+  font-size: 15.5px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(196, 18, 47, 0.25);
+  box-shadow: 0 8px 18px rgba(196, 18, 47, 0.28);
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
@@ -617,17 +608,17 @@
 }
 
 /* 8. Teks "Belum punya akun? " + link "Daftar gratis sekarang" (800, warna accent, tanpa underline)
-   Di mobile: menempel di dasar layar (margin-top: auto), padding ringkas */
+   Di mobile: menempel di dasar layar (margin-top: auto) */
 .footerWrapper {
   margin-top: auto;
-  padding-top: 8px;
-  padding-bottom: 2px;
+  padding-top: 20px;
+  padding-bottom: 4px;
   text-align: center;
   flex-shrink: 0;
 }
 
 .footerText {
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: #6B5A60;
   margin: 0;
 }
@@ -645,40 +636,83 @@
 }
 
 /* ══════════════════════════════════════════
+   TABLET & LAYAR SEDANG (600px - 899px)
+   Memberikan ruang lebih lega agar proporsional di tablet
+══════════════════════════════════════════ */
+@media (min-width: 600px) and (max-width: 899px) {
+  .layoutWrapper {
+    max-width: 520px;
+    padding: 24px 32px 32px;
+  }
+
+  .mobileMascotSection {
+    margin-bottom: 16px;
+    gap: 16px;
+  }
+
+  .formTitle {
+    font-size: 32px;
+  }
+
+  .formSubtitle {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .googleBtn {
+    height: 52px;
+    border-radius: 26px;
+    font-size: 15px;
+  }
+
+  .inputField {
+    height: 54px;
+    border-radius: 16px;
+  }
+
+  .submitBtn {
+    height: 56px;
+    border-radius: 28px;
+    font-size: 16px;
+  }
+}
+
+/* ══════════════════════════════════════════
    LAYOUT DESKTOP (>= 900px, acuan 1440x900)
-   Grid 2 kolom (1.05fr 1fr), padding luar 16px, gap 16px, tinggi minimal 100vh
+   Grid 2 kolom (1.05fr 1fr), padding luar 16px, gap 16px, tinggi minimal 100dvh
 ══════════════════════════════════════════ */
 @media (min-width: 900px) {
   .layoutWrapper {
-    display: grid !important;
-    grid-template-columns: 1.05fr 1fr;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
     gap: 16px;
     padding: 16px;
     max-width: 1440px;
-    min-height: 100vh;
-    height: auto;
-    max-height: none;
-    overflow-y: visible;
+    min-height: 100dvh;
+    width: 100%;
     box-sizing: border-box;
     align-items: stretch;
   }
 
   /* ──────── KOLOM KIRI (hero) ────────
      radius 32px, overflow hidden, shadow 0 24px 60px rgba(122,21,39,.28),
-     radial-gradient, padding 32px 40px 44px, flex column space-between */
+     radial-gradient, flex column space-between, sticky agar tetap proporsional saat scroll */
   .heroPanel {
-    display: flex !important;
-    position: relative;
+    display: flex;
+    position: sticky;
+    top: 16px;
     border-radius: 32px;
     overflow: hidden;
     box-shadow: 0 24px 60px rgba(122, 21, 39, 0.28);
     background: radial-gradient(circle at 50% 46%, #C5503F 0%, #B02D44 38%, #7A1527 100%);
     color: #FFFFFF;
-    padding: 32px 40px 44px;
+    padding: clamp(24px, 3vh, 32px) clamp(24px, 3vw, 40px) clamp(28px, 4vh, 44px);
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
-    min-height: calc(100vh - 32px);
+    height: calc(100dvh - 32px);
+    min-height: 540px;
+    max-height: 920px;
   }
 
   /* Atas: chip brand (lingkaran 44px + "日本語" 18px/700 + "Nihongo × ミウちゃん" 12px) */
@@ -751,7 +785,7 @@
     z-index: 1;
   }
 
-  /* Tengah: gelembung ucapan + gambar Miu-chan ~430px + 2 cincin dekoratif (560px & 440px) */
+  /* Tengah: gelembung ucapan + gambar Miu-chan + 2 cincin dekoratif (560px & 440px) */
   .heroCenter {
     position: relative;
     display: flex;
@@ -759,7 +793,7 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    min-height: 440px;
+    min-height: 0;
     z-index: 2;
   }
 
@@ -860,8 +894,8 @@
   }
 
   .heroChibiMascot {
-    width: clamp(260px, 25vw, 360px);
-    max-height: 420px;
+    width: clamp(200px, min(25vw, 38vh), 360px);
+    max-height: clamp(200px, 42vh, 420px);
     filter: drop-shadow(0 18px 32px rgba(60, 8, 16, 0.35));
     view-transition-name: miu;
   }
@@ -884,7 +918,7 @@
 
   .heroQuoteJp {
     font-family: "Zen Maru Gothic", sans-serif;
-    font-size: 30px;
+    font-size: clamp(22px, 2.2vw, 30px);
     font-weight: 700;
     letter-spacing: 1px;
     margin: 0;
@@ -892,7 +926,7 @@
   }
 
   .heroQuoteId {
-    font-size: 15px;
+    font-size: clamp(13px, 1.2vw, 15px);
     font-weight: 500;
     color: rgba(255, 255, 255, 0.9);
     margin: 6px 0 0 0;
@@ -900,16 +934,16 @@
   }
 
   /* ──────── KOLOM KANAN ────────
-     Padding 16px 40px 24px. Header di atas ("← Beranda" pill putih berborder #F0DDE0, dan "日本語" di kanan).
+     Padding responsif. Header di atas ("← Beranda" pill putih berborder #F0DDE0, dan "日本語" di kanan).
      Komponen form di tengah, lebar maksimal 400px, jarak elemen 20px, judul 36px, badge rata kiri. */
   .contentColumn {
-    padding: 16px 40px 24px;
+    padding: 16px clamp(20px, 3.5vw, 40px) 24px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
-    overflow-y: auto;
-    min-height: calc(100vh - 32px);
+    min-width: 0;
+    min-height: calc(100dvh - 32px);
   }
 
   .mobileHeader {
@@ -973,7 +1007,7 @@
   }
 
   .formTitle {
-    font-size: 36px;
+    font-size: clamp(28px, 2.6vw, 36px);
     margin: 0 0 8px 0;
   }
 
@@ -1075,104 +1109,34 @@
 }
 
 /* ══════════════════════════════════════════
-   EXTRA-SHORT MOBILE SCREENS (< 660px height)
-   Penyesuaian ekstra padat agar tetap 100% fit tanpa scroll pada layar mungil
+   LAYAR SANGAT SEMPIT (< 360px, mis. 320px)
+   Jaga agar tidak ada scroll horizontal dan semua elemen tetap nyaman
 ══════════════════════════════════════════ */
-@media (max-height: 660px) and (max-width: 899px) {
+@media (max-width: 359px) {
   .layoutWrapper {
-    padding: 6px 16px 8px;
-  }
-
-  .mobileHeader {
-    min-height: 28px;
-    margin-bottom: 0;
+    padding: 12px 16px 20px;
   }
 
   .mobileMascotSection {
-    margin-bottom: 4px;
     gap: 8px;
+    margin-bottom: 10px;
   }
 
   .mobileAvatarWrap {
-    width: 68px;
-    height: 68px;
+    width: 72px;
+    height: 72px;
   }
 
   .mobileSpeechBubble {
-    padding: 4px 10px;
-    border-radius: 12px;
+    padding: 6px 10px;
+    border-radius: 14px;
   }
 
   .mobileSpeechBubbleJp {
-    font-size: 12px;
-  }
-
-  .mobileSpeechBubbleId {
-    font-size: 10px;
-  }
-
-  .japaneseBadge {
-    display: none;
-  }
-
-  .formTitle {
-    font-size: 18px;
-    margin: 0;
-  }
-
-  .formSubtitle {
-    display: none;
-  }
-
-  .googleBtn {
-    height: 38px;
-    border-radius: 19px;
     font-size: 12.5px;
   }
 
-  .divider {
-    margin: 4px 0 6px 0;
-  }
-
-  .formFields {
-    gap: 6px;
-  }
-
-  .fieldLabel {
+  .mobileSpeechBubbleId {
     font-size: 11px;
-    margin-bottom: 2px;
-  }
-
-  .passwordHeaderRow {
-    margin-bottom: 2px;
-  }
-
-  .inputField {
-    height: 38px;
-    border-radius: 10px;
-    font-size: 13px;
-    padding-left: 36px;
-  }
-
-  .inputIconLeft {
-    left: 11px;
-    width: 16px;
-    height: 16px;
-  }
-
-  .submitBtn {
-    height: 40px;
-    border-radius: 20px;
-    font-size: 13.5px;
-    margin-top: 4px;
-  }
-
-  .footerWrapper {
-    margin-top: auto;
-    padding-top: 4px;
-  }
-
-  .footerText {
-    font-size: 11.5px;
   }
 }
