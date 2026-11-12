@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ApiError } from "@/core/http/apiClient";
 import { PawIcon } from "@/shared/ui/icons";
+import { ChibiMascot } from "@/shared/ui/neko/ChibiMascot";
+import { NekoAvatar, type NekoEmotion } from "@/shared/ui/neko/NekoAvatar";
 import { TransitionLink } from "@/shared/ui/ViewTransitions";
 import { useAuth } from "../application/AuthProvider";
 import styles from "./login.module.css";
@@ -34,9 +36,40 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [typingPassword, setTypingPassword] = useState(false);
+
+  // Interaksi maskot desktop & mobile
+  const [desktopPokes, setDesktopPokes] = useState(0);
+  const [mobileEmotion, setMobileEmotion] = useState<NekoEmotion>("biasa");
+  const mobileEmotionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const googleBtnRef = useRef<HTMLDivElement | null>(null);
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  function handleDesktopMascotPoke() {
+    setDesktopPokes((prev) => prev + 1);
+  }
+
+  function handleMobileMascotTap() {
+    const reactiveEmotions: NekoEmotion[] = ["senang", "semangat", "malu", "dielus"];
+    const nextEmotion = reactiveEmotions[Math.floor(Math.random() * reactiveEmotions.length)];
+    setMobileEmotion(nextEmotion);
+
+    if (mobileEmotionTimerRef.current) {
+      clearTimeout(mobileEmotionTimerRef.current);
+    }
+    mobileEmotionTimerRef.current = setTimeout(() => {
+      setMobileEmotion("biasa");
+    }, 2200);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (mobileEmotionTimerRef.current) {
+        clearTimeout(mobileEmotionTimerRef.current);
+      }
+    };
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -120,6 +153,23 @@ export function LoginForm() {
     };
   }, [googleClientId]);
 
+  // Ucapan responsif Miu-chan di balon ucapan desktop
+  const bubbleJp = busy
+    ? "ちょっと待ってね…"
+    : error
+    ? "あれれ？"
+    : typingPassword
+    ? "見ないよ〜！"
+    : "おかえり！";
+
+  const bubbleId = busy
+    ? "Sebentar ya…"
+    : error
+    ? "Hmm, coba cek lagi ya"
+    : typingPassword
+    ? "Miu tutup mata, aman kok!"
+    : "Selamat datang kembali!";
+
   return (
     <main className={styles.page}>
       {/* 2 Lingkaran blur lembut sebagian keluar layar */}
@@ -129,12 +179,12 @@ export function LoginForm() {
       <div className={styles.layoutWrapper}>
         {/* ──────── KOLOM KIRI (DESKTOP HERO >= 900px) ──────── */}
         <aside className={styles.heroPanel}>
-          {/* Bagian Atas: Chip brand */}
+          {/* Bagian Atas: Chip brand dengan wajah Miu-chan */}
           <div className={styles.heroTop}>
             <TransitionLink href="/" className={styles.brandChip} title="Beranda Nihongo">
               <div className={styles.brandChipLogo}>
                 <Image
-                  src="/neko-sensei.png"
+                  src="/neko/chibi/neko-chibi-face.webp"
                   alt="Miu-chan"
                   width={34}
                   height={34}
@@ -153,24 +203,32 @@ export function LoginForm() {
             日本語
           </div>
 
-          {/* Bagian Tengah: Gelembung ucapan + Miu-chan + 2 cincin dekoratif */}
+          {/* Bagian Tengah: Balon ucapan + Miu-chan (dari Landing Page) + 2 cincin dekoratif */}
           <div className={styles.heroCenter}>
             <div className={styles.heroRingOuter} aria-hidden="true" />
             <div className={styles.heroRingInner} aria-hidden="true" />
 
             <div className={styles.speechBubble}>
-              <span className={styles.speechBubbleJp}>おかえり！</span>
-              <span className={styles.speechBubbleId}>Selamat datang kembali!</span>
+              <span className={styles.speechBubbleJp}>{bubbleJp}</span>
+              <span className={styles.speechBubbleId}>{bubbleId}</span>
             </div>
 
-            <Image
-              src="/neko-sensei.png"
-              alt="Maskot Miu-chan"
-              width={430}
-              height={430}
-              priority
-              className={styles.heroMascotImg}
-            />
+            {/* Miu-chan interaktif dari Landing Page (ChibiMascot) */}
+            <button
+              type="button"
+              className={styles.heroChibiBtn}
+              onClick={handleDesktopMascotPoke}
+              title="Klik Miu-chan untuk menyapa!"
+              aria-label="Sentuh Miu-chan"
+            >
+              <ChibiMascot
+                alt="Miu-chan Maskot Bahasa Jepang"
+                pokeSignal={desktopPokes}
+                eyesClosed={typingPassword}
+                className={styles.heroChibiMascot}
+                priority
+              />
+            </button>
           </div>
 
           {/* Bagian Bawah: Tagline motivasi */}
@@ -206,16 +264,15 @@ export function LoginForm() {
             </TransitionLink>
           </header>
 
-          {/* Bagian Maskot Mobile (< 900px): Lingkaran 112px + "おかえり！" */}
+          {/* Bagian Maskot Mobile (< 900px): Kepala Miu beranimasi idle, mengikuti kursor, berekspresi saat disentuh, tanpa frame bg */}
           <div className={styles.mobileMascotSection}>
-            <div className={styles.mobileMascotCircle}>
-              <Image
-                src="/neko-sensei.png"
-                alt="Miu-chan"
-                width={112}
-                height={112}
-                priority
-                className={styles.mobileMascotImg}
+            <div className={styles.mobileAvatarWrap}>
+              <NekoAvatar
+                mode="idle"
+                emotion={mobileEmotion}
+                size={135}
+                onTap={handleMobileMascotTap}
+                label="Miu-chan"
               />
             </div>
             <p className={styles.mobileMascotText}>おかえり！</p>
@@ -374,6 +431,8 @@ export function LoginForm() {
                     placeholder="Masukkan password akunmu"
                     required
                     value={password}
+                    onFocus={() => setTypingPassword(true)}
+                    onBlur={() => setTypingPassword(false)}
                     onChange={(e) => {
                       setPassword(e.target.value);
                       if (error) setError(null);
