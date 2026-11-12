@@ -40,6 +40,8 @@ export function BannerCropModal({
   const [scale, setScale] = useState<number>(1.0);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [rotation, setRotation] = useState<number>(0);
+  const [fitMode, setFitMode] = useState<"cover" | "contain">("cover");
+  const [showGuide, setShowGuide] = useState<boolean>(true);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -76,7 +78,7 @@ export function BannerCropModal({
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
 
-    // Bersihkan & gambar latar gelap
+    // Bersihkan & gambar latar gelap dasar
     ctx.clearRect(0, 0, targetW, targetH);
     ctx.fillStyle = "#110709";
     ctx.fillRect(0, 0, targetW, targetH);
@@ -87,9 +89,26 @@ export function BannerCropModal({
     const effW = isRotated ? nh : nw;
     const effH = isRotated ? nw : nh;
 
-    // Hitung perbesaran agar gambar menutupi kanvas 1200x500 (Cover)
-    const coverScale = Math.max(targetW / effW, targetH / effH);
-    const totalScale = coverScale * scale;
+    // Jika mode "contain" (pas-kan utuh):
+    // Buat latar belakang bernuansa lembut dengan efek blur dari foto itu sendiri
+    if (fitMode === "contain") {
+      ctx.save();
+      ctx.filter = "blur(20px) brightness(0.42)";
+      const bgScale = Math.max(targetW / effW, targetH / effH);
+      const bgW = nw * bgScale;
+      const bgH = nh * bgScale;
+      ctx.drawImage(img, (targetW - bgW) / 2, (targetH - bgH) / 2, bgW, bgH);
+      ctx.restore();
+    }
+
+    // Hitung faktor perbesaran:
+    // - cover: penuhi seluruh frame 1200x500 (bisa digeser/potong)
+    // - contain: seluruh foto muat utuh 100% tanpa terpotong sedikitpun
+    const baseScale =
+      fitMode === "contain"
+        ? Math.min(targetW / effW, targetH / effH)
+        : Math.max(targetW / effW, targetH / effH);
+    const totalScale = baseScale * scale;
 
     const dw = nw * totalScale;
     const dh = nh * totalScale;
@@ -99,7 +118,7 @@ export function BannerCropModal({
     ctx.rotate((rotation * Math.PI) / 180);
     ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
     ctx.restore();
-  }, [ratio, scale, pan, rotation, status]);
+  }, [ratio, scale, pan, rotation, fitMode, status]);
 
   // Efek memuat gambar ketika modal dibuka
   useEffect(() => {
@@ -111,6 +130,8 @@ export function BannerCropModal({
     setPan({ x: 0, y: 0 });
     setRotation(0);
     setRatio(2.4);
+    setFitMode("cover");
+    setShowGuide(true);
 
     let active = true;
     const img = new Image();
@@ -143,7 +164,7 @@ export function BannerCropModal({
     };
   }, [isOpen, imageSrc]);
 
-  // Gambar ulang kanvas setiap ada perubahan parameter (pan, zoom, rotate, ratio)
+  // Gambar ulang kanvas setiap ada perubahan parameter (pan, zoom, rotate, ratio, fitMode)
   useEffect(() => {
     if (status === "ready") {
       renderCanvas();
@@ -307,26 +328,71 @@ export function BannerCropModal({
             {/* Kanvas Pemotong Gambar Langsung */}
             <canvas ref={canvasRef} className={styles.cropCanvas} />
 
-            {/* Grid 3x3 Overlay */}
-            <div className={styles.gridOverlay}>
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className={styles.gridCell} />
-              ))}
-            </div>
+            {/* Grid 3x3 Overlay (Opsional) */}
+            {showGuide && (
+              <div className={styles.gridOverlay}>
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className={styles.gridCell} />
+                ))}
+              </div>
+            )}
 
-            {/* Safe Zone Visual Guide */}
-            <div className={styles.safeZoneGuide}>
-              <div className={styles.safeZoneText}>
-                <span className={styles.safeZoneTextBadge}>Zona Teks &amp; Tombol</span>
+            {/* Safe Zone Visual Guide (Opsional) */}
+            {showGuide && (
+              <div className={styles.safeZoneGuide}>
+                <div className={styles.safeZoneText}>
+                  <span className={styles.safeZoneTextBadge}>Zona Teks &amp; Tombol</span>
+                </div>
+                <div className={styles.safeZoneFocus}>
+                  <span className={styles.safeZoneFocusBadge}>Fokus Foto / Objek</span>
+                </div>
               </div>
-              <div className={styles.safeZoneFocus}>
-                <span className={styles.safeZoneFocusBadge}>Fokus Foto / Objek</span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Toolbar Pengontrol */}
           <div className={styles.toolbar}>
+            {/* Mode Penyesuaian Foto (Cover vs Fit/Contain) */}
+            <div className={styles.modeRow}>
+              <span className={styles.ratioLabel}>Mode Penyesuaian Foto:</span>
+              <div className={styles.modeChips}>
+                <button
+                  type="button"
+                  className={`${styles.modeBtn} ${fitMode === "cover" ? styles.modeBtnActive : ""}`}
+                  onClick={() => {
+                    setFitMode("cover");
+                    setScale(1.0);
+                    setPan({ x: 0, y: 0 });
+                  }}
+                  disabled={status !== "ready" || isUploading}
+                  title="Penuhi seluruh kanvas banner (dapat dipotong / digeser)"
+                >
+                  <span>🔲 Penuhi Frame (Cover)</span>
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.modeBtn} ${fitMode === "contain" ? styles.modeBtnActive : ""}`}
+                  onClick={() => {
+                    setFitMode("contain");
+                    setScale(1.0);
+                    setPan({ x: 0, y: 0 });
+                  }}
+                  disabled={status !== "ready" || isUploading}
+                  title="Tampilkan seluruh foto tanpa ada bagian terpotong"
+                >
+                  <span>🖼️ Pas-kan Utuh (Fit / Contain)</span>
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.modeBtn} ${showGuide ? styles.modeBtnActive : ""}`}
+                  onClick={() => setShowGuide((prev) => !prev)}
+                  title="Tampilkan/sembunyikan garis bantu zona teks & fokus foto"
+                >
+                  <span>{showGuide ? "👁️ Garis Bantu Aktif" : "👁️ Garis Bantu Nonaktif"}</span>
+                </button>
+              </div>
+            </div>
+
             {/* Pilihan Rasio */}
             <div className={styles.ratioRow}>
               <span className={styles.ratioLabel}>Pilihan Rasio Banner:</span>
@@ -356,7 +422,7 @@ export function BannerCropModal({
                 </span>
                 <input
                   type="range"
-                  min="0.5"
+                  min="0.3"
                   max="3.0"
                   step="0.05"
                   value={scale}

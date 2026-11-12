@@ -57,25 +57,27 @@ export function BannerManager() {
   };
 
   const handleSave = async (payload: BannerInput) => {
+    const bannerName = payload.title?.trim() || "Banner Grafis";
     if (editingBanner) {
       await bannerApi.update(editingBanner.id, payload);
-      showToast(`Banner "${payload.title}" berhasil diperbarui.`);
+      showToast(`Banner "${bannerName}" berhasil diperbarui.`);
     } else {
       await bannerApi.create(payload);
-      showToast(`Banner baru "${payload.title}" berhasil dipasang.`);
+      showToast(`Banner baru "${bannerName}" berhasil dipasang.`);
     }
     loadData();
   };
 
   const handleToggle = async (item: BannerItem) => {
     const nextState = !item.isActive;
+    const bannerName = item.title?.trim() || "Banner Grafis";
     try {
       // Optimistic update
       setBanners((prev) =>
         prev.map((b) => (b.id === item.id ? { ...b, isActive: nextState } : b))
       );
       await bannerApi.toggle(item.id);
-      showToast(`Status "${item.title}" diubah menjadi ${nextState ? "Aktif" : "Nonaktif"}.`);
+      showToast(`Status "${bannerName}" diubah menjadi ${nextState ? "Aktif" : "Nonaktif"}.`);
     } catch (err: any) {
       // Revert if error
       setBanners((prev) =>
@@ -86,9 +88,10 @@ export function BannerManager() {
   };
 
   const handleDelete = async (item: BannerItem) => {
+    const bannerName = item.title?.trim() || "Banner Grafis";
     const ok = await askConfirm({
       title: "Hapus Banner & Iklan",
-      description: `Apakah kamu yakin ingin menghapus banner "${item.title}"? Banner ini akan dihapus secara permanen dari Beranda siswa.`,
+      description: `Apakah kamu yakin ingin menghapus banner "${bannerName}"? Banner ini akan dihapus secara permanen dari Beranda siswa.`,
       confirmText: "Hapus Permanen",
       tone: "danger",
     });
@@ -97,7 +100,7 @@ export function BannerManager() {
     try {
       await bannerApi.delete(item.id);
       setBanners((prev) => prev.filter((b) => b.id !== item.id));
-      showToast(`Banner "${item.title}" berhasil dihapus.`);
+      showToast(`Banner "${bannerName}" berhasil dihapus.`);
     } catch (err: any) {
       alert("Gagal menghapus banner: " + (err?.message || "Terjadi kesalahan."));
     }
@@ -381,28 +384,32 @@ export function BannerManager() {
                       (e.currentTarget as HTMLElement).style.display = "none";
                     }}
                   />
-                  <div
-                    className={styles.realBannerOverlay}
-                    style={getBannerShadingStyle(item.shadingPosition, item.shadingOpacity)}
-                  />
-                  <span className={styles.realBannerKanji} aria-hidden="true" lang="ja">
-                    推
-                  </span>
-
-                  {/* Konten Utama Banner (Badge, Judul, Deskripsi, Tombol Aksi) */}
-                  <div className={styles.realBannerContent}>
-                    {item.badge && <span className={styles.realBannerBadge}>{item.badge}</span>}
-                    <h3 className={styles.realBannerTitle}>{item.title}</h3>
-                    {item.description && (
-                      <p className={styles.realBannerDesc}>{item.description}</p>
-                    )}
-                    <div className={styles.realBannerActionRow}>
-                      <span className={styles.realBannerBtn}>
-                        <span>Buka Sekarang</span>
-                        <span aria-hidden="true">→</span>
+                  {Boolean(item.title?.trim() || item.description?.trim() || item.badge?.trim()) && (
+                    <>
+                      <div
+                        className={styles.realBannerOverlay}
+                        style={getBannerShadingStyle(item.shadingPosition, item.shadingOpacity)}
+                      />
+                      <span className={styles.realBannerKanji} aria-hidden="true" lang="ja">
+                        推
                       </span>
-                    </div>
-                  </div>
+
+                      {/* Konten Utama Banner (Badge, Judul, Deskripsi, Tombol Aksi) */}
+                      <div className={styles.realBannerContent}>
+                        {item.badge && <span className={styles.realBannerBadge}>{item.badge}</span>}
+                        {item.title && <h3 className={styles.realBannerTitle}>{item.title}</h3>}
+                        {item.description && (
+                          <p className={styles.realBannerDesc}>{item.description}</p>
+                        )}
+                        <div className={styles.realBannerActionRow}>
+                          <span className={styles.realBannerBtn}>
+                            <span>Buka Sekarang</span>
+                            <span aria-hidden="true">→</span>
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -532,7 +539,13 @@ export function BannerManager() {
                             {item.badge}
                           </span>
                         )}
-                        <strong>{item.title}</strong>
+                        <strong>
+                          {item.title?.trim() || (
+                            <span style={{ fontStyle: "italic", color: "var(--color-text-muted)", fontWeight: 500 }}>
+                              Banner Grafis (Tanpa Teks)
+                            </span>
+                          )}
+                        </strong>
                       </div>
                     </td>
                     <td style={{ maxWidth: 220, color: "var(--color-text-muted)" }}>

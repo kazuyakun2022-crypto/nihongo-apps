@@ -90,6 +90,9 @@ export function HomeBannerCarousel() {
         >
           {banners.map((item, idx) => {
             const isExternal = item.linkUrl.startsWith("http://") || item.linkUrl.startsWith("https://");
+            const hasText = Boolean(
+              item.title?.trim() || item.description?.trim() || item.badge?.trim()
+            );
 
             const content = (
               <>
@@ -97,7 +100,7 @@ export function HomeBannerCarousel() {
                 <div className={styles.imageWrap}>
                   <img
                     src={item.imageUrl}
-                    alt=""
+                    alt={item.title || "Banner NihonGo"}
                     className={styles.bannerImg}
                     loading={idx === 0 ? "eager" : "lazy"}
                     onError={(e) => {
@@ -105,28 +108,34 @@ export function HomeBannerCarousel() {
                       (e.currentTarget as HTMLElement).style.display = "none";
                     }}
                   />
-                  <div
-                    className={styles.overlay}
-                    style={getBannerShadingStyle(item.shadingPosition, item.shadingOpacity)}
-                  />
-                  <span className={styles.watermarkKanji} aria-hidden="true" lang="ja">
-                    推
-                  </span>
+                  {hasText && (
+                    <>
+                      <div
+                        className={styles.overlay}
+                        style={getBannerShadingStyle(item.shadingPosition, item.shadingOpacity)}
+                      />
+                      <span className={styles.watermarkKanji} aria-hidden="true" lang="ja">
+                        推
+                      </span>
+                    </>
+                  )}
                 </div>
 
-                {/* Konten Teks & Aksi */}
-                <div className={styles.bannerContent}>
-                  {item.badge && <span className={styles.badge}>{item.badge}</span>}
-                  <h3 className={styles.title}>{item.title}</h3>
-                  {item.description && <p className={styles.desc}>{item.description}</p>}
+                {/* Konten Teks & Aksi hanya jika banner memiliki teks */}
+                {hasText && (
+                  <div className={styles.bannerContent}>
+                    {item.badge && <span className={styles.badge}>{item.badge}</span>}
+                    {item.title && <h3 className={styles.title}>{item.title}</h3>}
+                    {item.description && <p className={styles.desc}>{item.description}</p>}
 
-                  <div className={styles.actionRow}>
-                    <span className={styles.actionBtn}>
-                      <span>Buka Sekarang</span>
-                      <span className={styles.actionArrow} aria-hidden="true">→</span>
-                    </span>
+                    <div className={styles.actionRow}>
+                      <span className={styles.actionBtn}>
+                        <span>Buka Sekarang</span>
+                        <span className={styles.actionArrow} aria-hidden="true">→</span>
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             );
 
