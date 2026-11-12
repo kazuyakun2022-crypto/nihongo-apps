@@ -264,13 +264,13 @@ export function LoginForm() {
             </TransitionLink>
           </header>
 
-          {/* Bagian Maskot Mobile (< 900px): Kepala Miu beranimasi idle, mengikuti kursor, berekspresi saat disentuh, tanpa frame bg */}
+          {/* Bagian Maskot Mobile (< 900px): Kepala Miu beranimasi idle, mengikuti kursor, berekspresi saat disentuh, layout horizontal compact */}
           <div className={styles.mobileMascotSection}>
             <div className={styles.mobileAvatarWrap}>
               <NekoAvatar
                 mode="idle"
                 emotion={typingPassword ? "dielus" : mobileEmotion}
-                size={195}
+                size={88}
                 onTap={handleMobileMascotTap}
                 label="Miu-chan"
               />

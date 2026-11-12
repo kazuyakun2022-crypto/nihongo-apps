@@ -17,13 +17,14 @@
 
 .page {
   position: relative;
+  height: 100dvh;
   min-height: 100dvh;
   width: 100%;
   background: linear-gradient(135deg, #FFE9E8 0%, #FFF5F3 50%, #FFFFFF 100%);
   font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #2B1A1F;
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -59,19 +60,28 @@
 
 /* ══════════════════════════════════════════
    LAYOUT WRAPPER (MOBILE DEFAULT < 900px)
-   Padding: 20px atas, 32px kiri-kanan, 28px bawah, min 100dvh
+   Compact 100dvh fit: No vertical scrolling on mobile!
+   Padding rapat, konten terpusat & seimbang
 ══════════════════════════════════════════ */
 .layoutWrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  height: 100dvh;
+  max-height: 100dvh;
   width: 100%;
-  max-width: 480px;
+  max-width: 440px;
   margin: 0 auto;
-  padding: 20px 32px 28px;
+  padding: 10px 20px 12px;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.layoutWrapper::-webkit-scrollbar {
+  display: none;
 }
 
 /* Panel hero desktop TIDAK ditampilkan pada mobile */
@@ -86,27 +96,30 @@
   width: 100%;
   flex: 1;
   min-height: 0;
+  justify-content: space-between;
 }
 
 /* ──────── Mobile Header (< 900px) ────────
-   "← Beranda" di kiri dan "日本語" di kanan, tanpa kotak, area sentuh min 44px */
+   "← Beranda" di kiri dan "日本語" di kanan, tanpa kotak, area sentuh min 36px */
 .mobileHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 10px;
+  min-height: 32px;
+  margin-bottom: 2px;
+  flex-shrink: 0;
 }
 
 .mobileHeaderBack {
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #2B1A1F;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 36px;
+  min-width: 36px;
   background: none;
   border: none;
   padding: 0;
@@ -120,13 +133,13 @@
 
 .mobileHeaderBrand {
   font-family: "Zen Maru Gothic", sans-serif;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 800;
   color: #8A1F35;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: 36px;
   background: none;
   border: none;
   padding: 0;
@@ -138,18 +151,22 @@
 }
 
 /* ──────── Mobile Mascot Section ────────
-   Kepala Miu-chan animasi interaktif (tanpa frame lingkaran / tanpa background),
-   idle bergerak alami, mengikuti kursor/pointer, dan ada ekspresi saat disentuh */
+   Layout horizontal rapat: Kepala Miu di kiri (size 88px), balon ucapan di kanan
+   dengan ekor menunjuk ke kepala Miu. Hemat tinggi vertikal ~180px! */
 .mobileMascotSection {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  margin-bottom: 8px;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .mobileAvatarWrap {
-  width: 195px;
-  height: 195px;
+  width: 88px;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,53 +174,53 @@
   background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 .mobileSpeechBubble {
   background: #FFFFFF;
   border: 1.5px solid #FFCCD6;
-  border-radius: 18px;
-  padding: 8px 18px;
+  border-radius: 16px;
+  padding: 8px 14px;
   box-shadow: 0 4px 14px rgba(176, 45, 68, 0.08);
   position: relative;
-  text-align: center;
-  margin-top: -6px;
-  margin-bottom: 12px;
-  max-width: 290px;
+  text-align: left;
+  margin: 0;
+  flex: 1;
+  max-width: 250px;
   animation: mobileFloatBubble 2.5s ease-in-out infinite alternate;
 }
 
 .mobileSpeechBubble::before {
   content: "";
   position: absolute;
-  top: -7px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 0 7px 7px;
+  top: 50%;
+  left: -7px;
+  transform: translateY(-50%);
+  border-width: 6px 7px 6px 0;
   border-style: solid;
-  border-color: transparent transparent #FFCCD6;
+  border-color: transparent #FFCCD6 transparent transparent;
 }
 
 .mobileSpeechBubble::after {
   content: "";
   position: absolute;
-  top: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 0 6px 6px;
+  top: 50%;
+  left: -5px;
+  transform: translateY(-50%);
+  border-width: 5px 6px 5px 0;
   border-style: solid;
-  border-color: transparent transparent #FFFFFF;
+  border-color: transparent #FFFFFF transparent transparent;
 }
 
 @keyframes mobileFloatBubble {
   0% { transform: translateY(0); }
-  100% { transform: translateY(-3px); }
+  100% { transform: translateY(-2px); }
 }
 
 .mobileSpeechBubbleJp {
   font-family: "Zen Maru Gothic", sans-serif;
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 800;
   color: #B02D44;
   display: block;
@@ -211,7 +228,7 @@
 }
 
 .mobileSpeechBubbleId {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   color: #6B5A60;
   display: block;
@@ -221,7 +238,7 @@
 
 .mobileMascotText {
   font-family: "Zen Maru Gothic", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #8A1F35;
   margin: 0;
@@ -239,60 +256,64 @@
   flex: 1;
 }
 
-/* 1. Badge "ログイン" (12px, 700, Zen Maru Gothic, warna #8A1F35, bg #FFE4E9, pill) */
+/* 1. Badge "ログイン" (mobile default: 11px, compact pill) */
 .japaneseBadge {
   font-family: "Zen Maru Gothic", sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: #8A1F35;
   background: #FFE4E9;
-  padding: 4px 14px;
+  padding: 2px 10px;
   border-radius: 9999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: fit-content;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   letter-spacing: 0.04em;
+  flex-shrink: 0;
 }
 
-/* 2. Judul "Masuk ke Akun" (800, letter-spacing negatif) dan subjudul */
+/* 2. Judul "Masuk ke Akun" (mobile default: 21px, hemat ruang) dan subjudul */
 .formTitle {
-  font-size: 30px;
+  font-size: 21px;
   font-weight: 800;
   color: #2B1A1F;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1.15;
-  margin: 0 0 6px 0;
+  margin: 0 0 2px 0;
+  flex-shrink: 0;
 }
 
 .formSubtitle {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
   color: #6B5A60;
-  line-height: 1.5;
-  margin: 0 0 22px 0;
+  line-height: 1.35;
+  margin: 0 0 8px 0;
+  flex-shrink: 0;
 }
 
-/* 3. Tombol Google: pill tinggi 52px, full width, logo 20px, teks penuh */
+/* 3. Tombol Google: mobile default pill tinggi 42px, full width */
 .googleBtnWrapper {
   position: relative;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .googleBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  height: 52px;
-  border-radius: 26px;
+  height: 42px;
+  border-radius: 21px;
   background: #FFFFFF;
   border: 1.5px solid #DDBFC6;
   color: #2B1A1F;
   font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -319,8 +340,8 @@
 }
 
 .googleIcon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 }
 
@@ -347,13 +368,14 @@
   cursor: pointer !important;
 }
 
-/* 4. Pemisah: garis - "atau masuk dengan email" (12px) - garis */
+/* 4. Pemisah: garis - "atau masuk dengan email" (11px) - garis */
 .divider {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 18px 0;
+  gap: 10px;
+  margin: 8px 0 10px 0;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .dividerLine {
@@ -363,17 +385,17 @@
 }
 
 .dividerText {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #8A7880;
   white-space: nowrap;
 }
 
-/* Jarak antar field 22px */
+/* Jarak antar field mobile default 9px (hemat tinggi vertikal) */
 .formFields {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 9px;
   width: 100%;
 }
 
@@ -384,10 +406,10 @@
 }
 
 .fieldLabel {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #2B1A1F;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
   display: block;
 }
 
@@ -395,11 +417,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 
 .forgotLink {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #C4122F;
   text-decoration: none;
@@ -420,27 +442,27 @@
 
 .inputIconLeft {
   position: absolute;
-  left: 16px;
+  left: 13px;
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #8A1F35;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
-/* 5 & 6. Field Inputs: tinggi 54px, radius 16px, background putih, border 1.5px #DDBFC6 */
+/* 5 & 6. Field Inputs: mobile default tinggi 42px, radius 12px, background putih, border 1.5px #DDBFC6 */
 .inputField {
-  height: 54px;
+  height: 42px;
   width: 100%;
-  border-radius: 16px;
+  border-radius: 12px;
   background: #FFFFFF;
   border: 1.5px solid #DDBFC6;
-  padding-left: 46px;
-  padding-right: 16px;
+  padding-left: 40px;
+  padding-right: 14px;
   font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   color: #2B1A1F;
   box-sizing: border-box;
   outline: none;
@@ -453,7 +475,7 @@
 
 .inputField:focus {
   border-color: #C4122F !important;
-  box-shadow: 0 0 0 4px rgba(196, 18, 47, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(196, 18, 47, 0.15) !important;
 }
 
 .inputFieldError {
@@ -461,15 +483,15 @@
 }
 
 .inputFieldWithRight {
-  padding-right: 52px;
+  padding-right: 44px;
 }
 
-/* Tombol ikon mata 44x44px di dalam sisi kanan */
+/* Tombol ikon mata 38x38px di dalam sisi kanan pada mobile */
 .togglePassBtn {
   position: absolute;
-  right: 4px;
-  width: 44px;
-  height: 44px;
+  right: 2px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -477,7 +499,7 @@
   border: none;
   cursor: pointer;
   color: #8A7880;
-  border-radius: 12px;
+  border-radius: 10px;
   transition: color 0.15s ease, background-color 0.15s ease;
   padding: 0;
 }
@@ -488,10 +510,10 @@
 }
 
 .fieldErrorText {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #DC2626;
-  margin-top: 6px;
+  margin-top: 4px;
   margin-bottom: 0;
 }
 
@@ -543,31 +565,32 @@
   margin: 0;
 }
 
-/* 7. Tombol utama "Masuk ke Akun": tinggi 56px, full width, radius 28px (pill), gradien accent */
+/* 7. Tombol utama "Masuk ke Akun": mobile default tinggi 46px, full width, radius 23px (pill), gradien accent */
 .submitBtn {
   margin-top: 6px;
-  height: 56px;
+  height: 46px;
   width: 100%;
-  border-radius: 28px;
+  border-radius: 23px;
   border: none;
   background: linear-gradient(135deg, #C4122F 0%, #A00D27 100%);
   color: #FFFFFF;
   font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(196, 18, 47, 0.3);
+  box-shadow: 0 6px 16px rgba(196, 18, 47, 0.25);
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   outline: none;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .submitBtn:hover:not(:disabled) {
   filter: brightness(0.92);
-  box-shadow: 0 12px 26px rgba(196, 18, 47, 0.38);
+  box-shadow: 0 8px 20px rgba(196, 18, 47, 0.32);
 }
 
 .submitBtn:active:not(:disabled) {
@@ -580,8 +603,8 @@
 }
 
 .spinner {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 2.5px solid rgba(255, 255, 255, 0.35);
   border-top-color: #FFFFFF;
   border-radius: 50%;
@@ -594,15 +617,17 @@
 }
 
 /* 8. Teks "Belum punya akun? " + link "Daftar gratis sekarang" (800, warna accent, tanpa underline)
-   Di mobile: menempel di dasar layar (margin-top: auto) */
+   Di mobile: menempel di dasar layar (margin-top: auto), padding ringkas */
 .footerWrapper {
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: 8px;
+  padding-bottom: 2px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .footerText {
-  font-size: 14px;
+  font-size: 12.5px;
   color: #6B5A60;
   margin: 0;
 }
@@ -631,6 +656,9 @@
     padding: 16px;
     max-width: 1440px;
     min-height: 100vh;
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
     box-sizing: border-box;
     align-items: stretch;
   }
@@ -938,21 +966,213 @@
     flex: none;
   }
 
+  .japaneseBadge {
+    font-size: 12px;
+    padding: 4px 14px;
+    margin-bottom: 8px;
+  }
+
   .formTitle {
     font-size: 36px;
     margin: 0 0 8px 0;
   }
 
   .formSubtitle {
+    font-size: 14px;
+    line-height: 1.5;
     margin: 0 0 20px 0;
+  }
+
+  .googleBtn {
+    height: 52px;
+    border-radius: 26px;
+    font-size: 15px;
+    gap: 12px;
+  }
+
+  .googleIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .divider {
+    margin: 18px 0;
+    gap: 12px;
+  }
+
+  .dividerText {
+    font-size: 12px;
   }
 
   .formFields {
     gap: 20px;
   }
 
+  .fieldLabel {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .passwordHeaderRow {
+    margin-bottom: 6px;
+  }
+
+  .forgotLink {
+    font-size: 13px;
+  }
+
+  .inputField {
+    height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+    padding-left: 46px;
+    padding-right: 16px;
+  }
+
+  .inputFieldWithRight {
+    padding-right: 52px;
+  }
+
+  .inputIconLeft {
+    left: 16px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .togglePassBtn {
+    width: 44px;
+    height: 44px;
+    right: 4px;
+    border-radius: 12px;
+  }
+
+  .fieldErrorText {
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .submitBtn {
+    margin-top: 6px;
+    height: 56px;
+    border-radius: 28px;
+    font-size: 16px;
+    box-shadow: 0 10px 22px rgba(196, 18, 47, 0.3);
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+  }
+
   .footerWrapper {
     margin-top: 16px;
     padding-top: 0;
+  }
+
+  .footerText {
+    font-size: 14px;
+  }
+}
+
+/* ══════════════════════════════════════════
+   EXTRA-SHORT MOBILE SCREENS (< 660px height)
+   Penyesuaian ekstra padat agar tetap 100% fit tanpa scroll pada layar mungil
+══════════════════════════════════════════ */
+@media (max-height: 660px) and (max-width: 899px) {
+  .layoutWrapper {
+    padding: 6px 16px 8px;
+  }
+
+  .mobileHeader {
+    min-height: 28px;
+    margin-bottom: 0;
+  }
+
+  .mobileMascotSection {
+    margin-bottom: 4px;
+    gap: 8px;
+  }
+
+  .mobileAvatarWrap {
+    width: 68px;
+    height: 68px;
+  }
+
+  .mobileSpeechBubble {
+    padding: 4px 10px;
+    border-radius: 12px;
+  }
+
+  .mobileSpeechBubbleJp {
+    font-size: 12px;
+  }
+
+  .mobileSpeechBubbleId {
+    font-size: 10px;
+  }
+
+  .japaneseBadge {
+    display: none;
+  }
+
+  .formTitle {
+    font-size: 18px;
+    margin: 0;
+  }
+
+  .formSubtitle {
+    display: none;
+  }
+
+  .googleBtn {
+    height: 38px;
+    border-radius: 19px;
+    font-size: 12.5px;
+  }
+
+  .divider {
+    margin: 4px 0 6px 0;
+  }
+
+  .formFields {
+    gap: 6px;
+  }
+
+  .fieldLabel {
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+
+  .passwordHeaderRow {
+    margin-bottom: 2px;
+  }
+
+  .inputField {
+    height: 38px;
+    border-radius: 10px;
+    font-size: 13px;
+    padding-left: 36px;
+  }
+
+  .inputIconLeft {
+    left: 11px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .submitBtn {
+    height: 40px;
+    border-radius: 20px;
+    font-size: 13.5px;
+    margin-top: 4px;
+  }
+
+  .footerWrapper {
+    margin-top: auto;
+    padding-top: 4px;
+  }
+
+  .footerText {
+    font-size: 11.5px;
   }
 }

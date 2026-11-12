@@ -6,7 +6,10 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { StreakFlame } from "@/shared/ui/StreakFlame";
+import { DailyStreakCelebrationModal } from "@/shared/ui/DailyStreakCelebrationModal";
 import { AchievementUnlockModal, type UnlockedAchievement } from "@/features/progress/ui/AchievementUnlockModal";
+import { useAuth } from "@/features/auth/application/AuthProvider";
+import { useDailyStreakCelebration } from "@/features/progress/application/useDailyStreakCelebration";
 import { soundFX } from "@/lib/audio/SoundFXManager";
 import { starsFor } from "./WorldMap";
 import { StarIcon } from "@/shared/ui/icons";
@@ -83,6 +86,21 @@ export function ScoreScreen({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const stars = passed ? starsFor(score) : 0;
   const gap = Math.max(0, passingScore - score);
+
+  const { user } = useAuth();
+  const {
+    open: streakOpen,
+    streak: streakValue,
+    previousStreak,
+    celebrate: celebrateStreak,
+    close: closeStreak,
+  } = useDailyStreakCelebration(user?.id);
+  const hasNewAchievements = Boolean(newAchievements && newAchievements.length > 0);
+  const canShowStreak = passed && typeof streak === "number" && streak > 0 && (!hasNewAchievements || dismissedAchievements);
+
+  useEffect(() => {
+    if (canShowStreak && typeof streak === "number") celebrateStreak(streak);
+  }, [canShowStreak, streak, celebrateStreak]);
 
   // Kunci scroll latar belakang
   useEffect(() => {
@@ -500,6 +518,14 @@ export function ScoreScreen({
         <AchievementUnlockModal
           achievements={newAchievements}
           onClose={() => setDismissedAchievements(true)}
+        />
+      )}
+
+      {streakOpen && (
+        <DailyStreakCelebrationModal
+          streak={streakValue}
+          previousStreak={previousStreak}
+          onClose={closeStreak}
         />
       )}
     </div>,

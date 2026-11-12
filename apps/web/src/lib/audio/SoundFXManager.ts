@@ -264,6 +264,43 @@ class SoundFXManager {
         break;
       }
 
+      case 'cat_meow': {
+        // Meong singkat Miu: sawtooth dengan vibrato lembut dan filter bandpass
+        const osc = ac.createOscillator();
+        const filter = ac.createBiquadFilter();
+        const gain = ac.createGain();
+        const vibrato = ac.createOscillator();
+        const vibratoGain = ac.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(520, t0);
+        osc.frequency.exponentialRampToValueAtTime(880, t0 + 0.12);
+        osc.frequency.exponentialRampToValueAtTime(540, t0 + 0.34);
+
+        vibrato.type = 'sine';
+        vibrato.frequency.setValueAtTime(22, t0);
+        vibratoGain.gain.setValueAtTime(28, t0);
+        vibrato.connect(vibratoGain).connect(osc.frequency);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1100, t0);
+        filter.frequency.exponentialRampToValueAtTime(1600, t0 + 0.14);
+        filter.frequency.exponentialRampToValueAtTime(900, t0 + 0.38);
+        filter.Q.setValueAtTime(4, t0);
+
+        gain.gain.setValueAtTime(0.001, t0);
+        gain.gain.linearRampToValueAtTime(vol * 0.32, t0 + 0.04);
+        gain.gain.setValueAtTime(vol * 0.24, t0 + 0.2);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.4);
+
+        osc.connect(filter).connect(gain).connect(ac.destination);
+        vibrato.start(t0);
+        osc.start(t0);
+        osc.stop(t0 + 0.42);
+        vibrato.stop(t0 + 0.42);
+        break;
+      }
+
       case 'glockenspiel_chime': {
         // Ascending crystalline glockenspiel bells (G5, B5, D6, G6)
         const chimeNotes = [783.99, 987.77, 1174.66, 1567.98];
