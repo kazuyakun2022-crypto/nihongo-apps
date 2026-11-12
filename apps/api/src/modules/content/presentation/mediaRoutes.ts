@@ -51,6 +51,7 @@ export function publicMediaRoutes() {
       if (!asset) throw Errors.notFound("Gambar");
       res.setHeader("Content-Type", asset.mimeType);
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader("X-Content-Type-Options", "nosniff");
       res.send(Buffer.from(asset.data));
     }),

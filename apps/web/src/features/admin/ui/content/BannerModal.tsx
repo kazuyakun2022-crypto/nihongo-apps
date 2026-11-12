@@ -94,19 +94,28 @@ export function BannerModal({
   const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
+    if (file.type && !file.type.startsWith("image/")) {
       setError("Pilih berkas gambar yang valid (JPG, PNG, WebP).");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setCropRawImage(reader.result);
-        setCropModalOpen(true);
-      }
-    };
-    reader.readAsDataURL(file);
+    if (cropRawImage.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(cropRawImage);
+      } catch {}
+    }
+    const objectUrl = URL.createObjectURL(file);
+    setCropRawImage(objectUrl);
+    setCropModalOpen(true);
     e.target.value = "";
+  };
+
+  const handleCloseCrop = () => {
+    if (cropRawImage.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(cropRawImage);
+      } catch {}
+    }
+    setCropModalOpen(false);
   };
 
   const handleCropExisting = () => {
@@ -117,6 +126,11 @@ export function BannerModal({
   };
 
   const handleCropCompleted = (uploadedUrl: string) => {
+    if (cropRawImage.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(cropRawImage);
+      } catch {}
+    }
     setImageUrl(uploadedUrl);
     setCropModalOpen(false);
   };
@@ -652,7 +666,7 @@ export function BannerModal({
       <BannerCropModal
         isOpen={cropModalOpen}
         imageSrc={cropRawImage}
-        onClose={() => setCropModalOpen(false)}
+        onClose={handleCloseCrop}
         onCropComplete={handleCropCompleted}
       />
     </div>
