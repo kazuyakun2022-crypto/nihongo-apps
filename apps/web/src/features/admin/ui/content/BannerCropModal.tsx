@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { apiUpload } from "@/core/http/apiClient";
 import { useModalBehavior } from "@/shared/ui/useModalBehavior";
 import {
@@ -33,65 +33,152 @@ export function BannerCropModal({
   onCropComplete,
 }: BannerCropModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const loadedImgRef = useRef<HTMLImageElement | null>(null);
 
   const [ratio, setRatio] = useState<number>(2.4);
-  const [scale, setScale] = useState<number>(1);
+  const [scale, setScale] = useState<number>(1.0);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [rotation, setRotation] = useState<number>(0);
-  const [imgLoaded, setImgLoaded] = useState<boolean>(false);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Dragging refs
   const isDraggingRef = useRef<boolean>(false);
-  const startPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const dragStartRef = useRef<{
+    clientX: number;
+    clientY: number;
+    initialPanX: number;
+    initialPanY: number;
+  }>({ clientX: 0, clientY: 0, initialPanX: 0, initialPanY: 0 });
 
   useModalBehavior(dialogRef as React.RefObject<HTMLElement>, onClose, isUploading, isOpen);
 
-  // Reset transforms saat modal atau gambar berganti
-  useEffect(() => {
-    if (isOpen && imageSrc) {
-      setScale(1);
-      setPan({ x: 0, y: 0 });
-      setRotation(0);
-      setRatio(2.4);
-      setError(null);
-      setImgLoaded(false);
+  // Render gambar ke canvas
+  const renderCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    const img = loadedImgRef.current;
+    if (!canvas || !img || status !== "ready") return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const targetW = 1200;
+    const targetOpt = RATIO_OPTIONS.find((r) => Math.abs(r.value - ratio) < 0.05) || RATIO_OPTIONS[0];
+    const targetH = targetOpt.targetH;
+
+    if (canvas.width !== targetW || canvas.height !== targetH) {
+      canvas.width = targetW;
+      canvas.height = targetH;
     }
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    // Bersihkan & gambar latar gelap
+    ctx.clearRect(0, 0, targetW, targetH);
+    ctx.fillStyle = "#110709";
+    ctx.fillRect(0, 0, targetW, targetH);
+
+    const nw = img.naturalWidth || 1;
+    const nh = img.naturalHeight || 1;
+    const isRotated = rotation === 90 || rotation === 270;
+    const effW = isRotated ? nh : nw;
+    const effH = isRotated ? nw : nh;
+
+    // Hitung perbesaran agar gambar menutupi kanvas 1200x500 (Cover)
+    const coverScale = Math.max(targetW / effW, targetH / effH);
+    const totalScale = coverScale * scale;
+
+    const dw = nw * totalScale;
+    const dh = nh * totalScale;
+
+    ctx.save();
+    ctx.translate(targetW / 2 + pan.x, targetH / 2 + pan.y);
+    ctx.rotate((rotation * Math.PI) / 180);
+    ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
+    ctx.restore();
+  }, [ratio, scale, pan, rotation, status]);
+
+  // Efek memuat gambar ketika modal dibuka
+  useEffect(() => {
+    if (!isOpen || !imageSrc) return;
+
+    setStatus("loading");
+    setErrorMessage(null);
+    setScale(1.0);
+    setPan({ x: 0, y: 0 });
+    setRotation(0);
+    setRatio(2.4);
+
+    let active = true;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    const handleSuccess = () => {
+      if (!active) return;
+      loadedImgRef.current = img;
+      setStatus("ready");
+    };
+
+    const handleError = () => {
+      if (!active) return;
+      setStatus("error");
+      setErrorMessage("Gagal memuat gambar. Pastikan format berkas valid (JPG, PNG, WebP).");
+    };
+
+    img.onload = handleSuccess;
+    img.onerror = handleError;
+    img.src = imageSrc;
+
+    // Jika gambar sudah selesai dimuat secara instan dari cache / blob
+    if (img.complete && img.naturalWidth > 0) {
+      handleSuccess();
+    }
+
+    return () => {
+      active = false;
+      loadedImgRef.current = null;
+    };
   }, [isOpen, imageSrc]);
+
+  // Gambar ulang kanvas setiap ada perubahan parameter (pan, zoom, rotate, ratio)
+  useEffect(() => {
+    if (status === "ready") {
+      renderCanvas();
+    }
+  }, [status, renderCanvas]);
 
   if (!isOpen || !imageSrc) return null;
 
-  const isRotated90or270 = rotation === 90 || rotation === 270;
-
-  // Hitung base cover scale saat gambar berhasil dimuat
-  const getCoverScale = () => {
-    if (!viewportRef.current || !imgRef.current) return 1;
-    const vp = viewportRef.current.getBoundingClientRect();
-    const nw = imgRef.current.naturalWidth || 1;
-    const nh = imgRef.current.naturalHeight || 1;
-    const effW = isRotated90or270 ? nh : nw;
-    const effH = isRotated90or270 ? nw : nh;
-    return Math.max(vp.width / effW, vp.height / effH);
-  };
-
+  // Interaksi Drag / Pan (Mouse & Touch)
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (isUploading) return;
+    if (status !== "ready" || isUploading) return;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     isDraggingRef.current = true;
-    startPosRef.current = {
-      x: e.clientX - pan.x,
-      y: e.clientY - pan.y,
+    dragStartRef.current = {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      initialPanX: pan.x,
+      initialPanY: pan.y,
     };
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current || isUploading) return;
+    if (!isDraggingRef.current || status !== "ready" || isUploading) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const mult = 1200 / (rect.width || 1);
+
+    const dx = (e.clientX - dragStartRef.current.clientX) * mult;
+    const dy = (e.clientY - dragStartRef.current.clientY) * mult;
+
     setPan({
-      x: e.clientX - startPosRef.current.x,
-      y: e.clientY - startPosRef.current.y,
+      x: dragStartRef.current.initialPanX + dx,
+      y: dragStartRef.current.initialPanY + dy,
     });
   };
 
@@ -104,92 +191,54 @@ export function BannerCropModal({
     }
   };
 
+  // Zoom dengan Wheel / Trackpad
   const handleWheel = (e: React.WheelEvent) => {
-    if (isUploading) return;
+    if (status !== "ready" || isUploading) return;
     e.preventDefault();
-    const delta = -e.deltaY * 0.0015;
-    setScale((prev) => Math.min(3.5, Math.max(0.6, Number((prev + delta).toFixed(2)))));
+    const delta = -e.deltaY * 0.001;
+    setScale((prev) => Math.min(3.5, Math.max(0.5, Number((prev + delta).toFixed(2)))));
   };
 
+  // Tombol Aksi Cepat
   const handleRotate = () => {
     setRotation((prev) => (prev + 90) % 360);
   };
 
   const handleResetCenter = () => {
     setPan({ x: 0, y: 0 });
-    setScale(1);
+    setScale(1.0);
   };
 
+  // Simpan hasil potongan ke Server
   const handleCropAndUpload = async () => {
-    if (!imgRef.current || !viewportRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas || status !== "ready") return;
+
     setIsUploading(true);
-    setError(null);
+    setErrorMessage(null);
 
     try {
-      const img = imgRef.current;
-      const vp = viewportRef.current.getBoundingClientRect();
-      const outputW = 1200;
-      const targetOpt = RATIO_OPTIONS.find((r) => Math.abs(r.value - ratio) < 0.05) || RATIO_OPTIONS[0];
-      const outputH = targetOpt.targetH;
+      // Ekspor blob dari kanvas (WebP dengan fallback JPEG)
+      const blob =
+        (await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob(resolve, "image/webp", 0.9);
+        })) ||
+        (await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob(resolve, "image/jpeg", 0.9);
+        }));
 
-      const canvas = document.createElement("canvas");
-      canvas.width = outputW;
-      canvas.height = outputH;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("Browser tidak mendukung render Canvas.");
+      if (!blob) throw new Error("Gagal mengompres gambar.");
 
-      // Aktifkan smoothing kualitas tinggi
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-
-      const nw = img.naturalWidth || 1;
-      const nh = img.naturalHeight || 1;
-      const effW = isRotated90or270 ? nh : nw;
-      const effH = isRotated90or270 ? nw : nh;
-
-      const coverScale = Math.max(vp.width / effW, vp.height / effH);
-      const totalScale = coverScale * scale;
-
-      const mult = outputW / vp.width;
-
-      const canvasCenterX = outputW / 2;
-      const canvasCenterY = outputH / 2;
-      const canvasPanX = pan.x * mult;
-      const canvasPanY = pan.y * mult;
-
-      const drawnW = nw * totalScale * mult;
-      const drawnH = nh * totalScale * mult;
-
-      ctx.save();
-      ctx.translate(canvasCenterX + canvasPanX, canvasCenterY + canvasPanY);
-      ctx.rotate((rotation * Math.PI) / 180);
-      ctx.drawImage(img, -drawnW / 2, -drawnH / 2, drawnW, drawnH);
-      ctx.restore();
-
-      // Kompres ke WebP (dengan fallback JPEG)
-      const blob = await new Promise<Blob | null>((resolve) => {
-        canvas.toBlob(resolve, "image/webp", 0.9);
-      }) || await new Promise<Blob | null>((resolve) => {
-        canvas.toBlob(resolve, "image/jpeg", 0.9);
-      });
-
-      if (!blob) throw new Error("Gagal membuat berkas gambar hasil crop.");
-
-      // Upload via backend endpoint /api/admin/media
+      // Upload ke endpoint /api/admin/media
       const res = await apiUpload<{ id: string; url: string }>("/admin/media", blob);
       onCropComplete(res.url);
       onClose();
     } catch (err: any) {
-      setError(err?.message || "Gagal mengunggah gambar hasil crop.");
+      setErrorMessage(err?.message || "Gagal mengunggah gambar hasil crop.");
     } finally {
       setIsUploading(false);
     }
   };
-
-  // Base scale kalkulasi untuk tampilan CSS img di viewport
-  const vpRect = viewportRef.current?.getBoundingClientRect();
-  const baseScale = vpRect && imgRef.current ? getCoverScale() : 1;
-  const currentTotalScale = baseScale * scale;
 
   return (
     <div
@@ -234,12 +283,11 @@ export function BannerCropModal({
 
         {/* Work Area */}
         <div className={styles.modalBody}>
-          {error && <div className={styles.errorBanner}>{error}</div>}
+          {errorMessage && <div className={styles.errorBanner}>{errorMessage}</div>}
 
-          {/* Viewport Box */}
+          {/* Kanvas Interaktif */}
           <div
-            ref={viewportRef}
-            className={styles.viewportContainer}
+            className={styles.canvasWrapper}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -247,22 +295,17 @@ export function BannerCropModal({
             onWheel={handleWheel}
             style={{ aspectRatio: String(ratio) }}
           >
+            {status === "loading" && (
+              <div className={styles.loadingOverlay}>
+                <div className={styles.spinner} />
+                <span>Memuat gambar dari galeri…</span>
+              </div>
+            )}
+
             <span className={styles.dragHint}>🖱️ Geser untuk mengatur posisi foto</span>
 
-            {/* Gambar yang digerakkan */}
-            <img
-              ref={imgRef}
-              src={imageSrc}
-              alt="Gambar sumber crop"
-              className={styles.cropImage}
-              style={{
-                transform: `translate(${pan.x}px, ${pan.y}px) scale(${currentTotalScale}) rotate(${rotation}deg)`,
-                opacity: imgLoaded ? 1 : 0,
-                transition: isDraggingRef.current ? "none" : "transform 0.08s ease-out",
-              }}
-              onLoad={() => setImgLoaded(true)}
-              onError={() => setError("Gagal memuat gambar sumber. Pastikan berkas gambar valid.")}
-            />
+            {/* Kanvas Pemotong Gambar Langsung */}
+            <canvas ref={canvasRef} className={styles.cropCanvas} />
 
             {/* Grid 3x3 Overlay */}
             <div className={styles.gridOverlay}>
@@ -297,7 +340,7 @@ export function BannerCropModal({
                       setRatio(opt.value);
                       setPan({ x: 0, y: 0 });
                     }}
-                    disabled={isUploading}
+                    disabled={status !== "ready" || isUploading}
                   >
                     {opt.label}
                   </button>
@@ -313,14 +356,14 @@ export function BannerCropModal({
                 </span>
                 <input
                   type="range"
-                  min="0.6"
+                  min="0.5"
                   max="3.0"
                   step="0.05"
                   value={scale}
                   onChange={(e) => setScale(parseFloat(e.target.value))}
                   className={styles.zoomSlider}
                   aria-label="Atur tingkat zoom gambar"
-                  disabled={isUploading}
+                  disabled={status !== "ready" || isUploading}
                 />
                 <span className={styles.zoomIcon} aria-hidden="true">
                   <ZoomInIcon size={16} />
@@ -333,7 +376,7 @@ export function BannerCropModal({
                   type="button"
                   className={styles.toolBtn}
                   onClick={handleResetCenter}
-                  disabled={isUploading}
+                  disabled={status !== "ready" || isUploading}
                   title="Pusatkan posisi gambar"
                 >
                   Pusatkan
@@ -342,7 +385,7 @@ export function BannerCropModal({
                   type="button"
                   className={styles.toolBtn}
                   onClick={handleRotate}
-                  disabled={isUploading}
+                  disabled={status !== "ready" || isUploading}
                   title="Putar 90 derajat searah jarum jam"
                 >
                   <RotateCwIcon size={14} /> Putar 90°
@@ -370,7 +413,7 @@ export function BannerCropModal({
               type="button"
               className={styles.btnApply}
               onClick={() => void handleCropAndUpload()}
-              disabled={isUploading || !imgLoaded}
+              disabled={status !== "ready" || isUploading}
             >
               <CheckIcon size={16} strokeWidth={2.5} />
               {isUploading ? "Mengompres & Mengunggah..." : "✂️ Terapkan & Pasang"}
@@ -381,4 +424,3 @@ export function BannerCropModal({
     </div>
   );
 }
-

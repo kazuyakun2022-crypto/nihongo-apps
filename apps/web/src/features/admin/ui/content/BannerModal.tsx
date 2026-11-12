@@ -86,6 +86,23 @@ export function BannerModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [cropRawImage, setCropRawImage] = useState("");
+  const [dragging, setDragging] = useState(false);
+
+  const processFile = (file: File | undefined | null) => {
+    if (!file) return;
+    if (file.type && !file.type.startsWith("image/")) {
+      setError("Pilih berkas gambar yang valid (JPG, PNG, WebP).");
+      return;
+    }
+    if (cropRawImage.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(cropRawImage);
+      } catch {}
+    }
+    const objectUrl = URL.createObjectURL(file);
+    setCropRawImage(objectUrl);
+    setCropModalOpen(true);
+  };
 
   const handlePickFromGallery = () => {
     fileInputRef.current?.click();
@@ -93,20 +110,19 @@ export function BannerModal({
 
   const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setError("Pilih berkas gambar yang valid (JPG, PNG, WebP).");
-      return;
+    if (file) {
+      processFile(file);
+      e.target.value = "";
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setCropRawImage(reader.result);
-        setCropModalOpen(true);
-      }
-    };
-    reader.readAsDataURL(file);
-    e.target.value = "";
+  };
+
+  const handleCloseCrop = () => {
+    if (cropRawImage.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(cropRawImage);
+      } catch {}
+    }
+    setCropModalOpen(false);
   };
 
   const handleCropExisting = () => {
@@ -117,6 +133,11 @@ export function BannerModal({
   };
 
   const handleCropCompleted = (uploadedUrl: string) => {
+    if (cropRawImage.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(cropRawImage);
+      } catch {}
+    }
     setImageUrl(uploadedUrl);
     setCropModalOpen(false);
   };
@@ -206,6 +227,13 @@ export function BannerModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="banner-modal-title"
+        onPaste={(e) => {
+          const file = [...e.clipboardData.files].find((f) => f.type.startsWith("image/"));
+          if (file) {
+            e.preventDefault();
+            processFile(file);
+          }
+        }}
       >
         {/* Header Modal */}
         <div className={styles.modalHeader}>
@@ -365,29 +393,68 @@ export function BannerModal({
               onChange={handleFileSelected}
             />
 
-            {/* Tombol Aksi Upload Galeri & Crop */}
-            <div className={styles.imageUploadRow}>
-              <button
-                type="button"
-                className={styles.btnGalleryUpload}
-                onClick={handlePickFromGallery}
-                title="Pilih foto dari Galeri HP atau Laptop untuk dipotong (crop & fit)"
-              >
-                <UploadIcon size={15} />
-                <span>📁 Ambil dari Galeri / Upload Foto</span>
-              </button>
+            {/* Area Unggah: Drag & Drop, Klik Buka Galeri, & Tempel Ctrl+V */}
+            <div
+              className={styles.bannerDropZone}
+              data-dragging={dragging ? "true" : undefined}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragging(false);
+                const file = e.dataTransfer.files?.[0];
+                if (file) processFile(file);
+              }}
+              onClick={handlePickFromGallery}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handlePickFromGallery();
+                }
+              }}
+              tabIndex={0}
+              role="button"
+              aria-label="Area seret & lepas gambar atau klik untuk pilih dari galeri"
+            >
+              <div className={styles.dropZoneIconWrap} aria-hidden="true">
+                <UploadIcon size={22} />
+              </div>
 
-              {imageUrl.trim() && (
-                <button
-                  type="button"
-                  className={styles.btnCropExisting}
-                  onClick={handleCropExisting}
-                  title="Buka alat potong & sesuaikan gambar ini"
-                >
-                  <CropIcon size={14} />
-                  <span>✂️ Crop &amp; Pas-kan Gambar</span>
-                </button>
-              )}
+              <div className={styles.dropZoneTextGroup}>
+                <span className={styles.dropZoneMainText}>
+                  {dragging
+                    ? "Lepaskan foto di sini untuk memotong (Crop & Fit)..."
+                    : "Seret & lepas foto ke sini, atau klik untuk buka Galeri"}
+                </span>
+                <span className={styles.dropZoneSubText}>
+                  Mendukung JPG, PNG, WebP · Tempel langsung (Ctrl+V) didukung
+                </span>
+              </div>
+
+              <div className={styles.dropZoneActions}>
+                <span className={styles.btnGalleryUpload}>
+                  <UploadIcon size={14} />
+                  <span>📁 Buka Galeri / File</span>
+                </span>
+
+                {imageUrl.trim() && (
+                  <button
+                    type="button"
+                    className={styles.btnCropExisting}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCropExisting();
+                    }}
+                    title="Buka alat potong & sesuaikan gambar ini"
+                  >
+                    <CropIcon size={14} />
+                    <span>✂️ Crop &amp; Pas-kan Gambar Ini</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             <input
@@ -652,7 +719,7 @@ export function BannerModal({
       <BannerCropModal
         isOpen={cropModalOpen}
         imageSrc={cropRawImage}
-        onClose={() => setCropModalOpen(false)}
+        onClose={handleCloseCrop}
         onCropComplete={handleCropCompleted}
       />
     </div>
