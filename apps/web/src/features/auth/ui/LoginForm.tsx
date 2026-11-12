@@ -153,13 +153,25 @@ export function LoginForm() {
     };
   }, [googleClientId]);
 
-  // Ucapan responsif Miu-chan di balon ucapan desktop
+  const mobileEmotionMessages: Partial<Record<NekoEmotion, { jp: string; id: string }>> = {
+    senang: { jp: "えへへ！", id: "Senang ketemu kamu lagi!" },
+    semangat: { jp: "がんばって！", id: "Yuk semangat belajar hari ini!" },
+    malu: { jp: "照れるなぁ…", id: "Eh, jangan dicolek dong~" },
+    dielus: { jp: "にゃ〜ん ♪", id: "Hehe, Miu suka dielus~" },
+  };
+
+  const mobileReaction = mobileEmotionMessages[mobileEmotion];
+  const isMobileSpeaking = busy || Boolean(error) || typingPassword || mobileEmotion !== "biasa";
+
+  // Ucapan responsif Miu-chan di balon ucapan desktop & mobile
   const bubbleJp = busy
     ? "ちょっと待ってね…"
     : error
     ? "あれれ？"
     : typingPassword
     ? "見ないよ〜！"
+    : mobileReaction
+    ? mobileReaction.jp
     : "おかえり！";
 
   const bubbleId = busy
@@ -168,6 +180,8 @@ export function LoginForm() {
     ? "Hmm, coba cek lagi ya"
     : typingPassword
     ? "Miu tutup mata, tidak mengintip kok! 🙈"
+    : mobileReaction
+    ? mobileReaction.id
     : "Selamat datang kembali!";
 
   return (
@@ -264,18 +278,23 @@ export function LoginForm() {
             </TransitionLink>
           </header>
 
-          {/* Bagian Maskot Mobile (< 900px): Kepala Miu beranimasi idle, mengikuti kursor, berekspresi saat disentuh, layout horizontal compact */}
+          {/* Bagian Maskot Mobile (< 900px): Kepala Miu di tengah & besar, balon teks hanya muncul saat berbicara */}
           <div className={styles.mobileMascotSection}>
             <div className={styles.mobileAvatarWrap}>
               <NekoAvatar
                 mode="idle"
                 emotion={typingPassword ? "dielus" : mobileEmotion}
-                size={88}
+                size={128}
                 onTap={handleMobileMascotTap}
                 label="Miu-chan"
               />
             </div>
-            <div className={styles.mobileSpeechBubble}>
+            <div
+              className={`${styles.mobileSpeechBubble} ${
+                isMobileSpeaking ? styles.mobileSpeechBubbleVisible : ""
+              }`}
+              aria-hidden={!isMobileSpeaking}
+            >
               <span className={styles.mobileSpeechBubbleJp}>{bubbleJp}</span>
               <span className={styles.mobileSpeechBubbleId}>{bubbleId}</span>
             </div>
