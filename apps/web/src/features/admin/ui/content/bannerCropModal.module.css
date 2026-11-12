@@ -1,0 +1,428 @@
+/* ==========================================================================
+   Banner Crop & Fit Modal - NihonGo Design System
+   Interactive image crop, zoom, pan, and rotate with safe zone guides
+   ========================================================================== */
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: rgba(14, 4, 7, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: cropFadeIn 0.2s ease-out;
+}
+
+@keyframes cropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalDialog {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  max-height: 94vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-lg, 20px);
+  border: 1.5px solid var(--color-border, #e5e0dc);
+  box-shadow: 0 24px 64px -12px rgba(18, 4, 7, 0.35);
+  overflow: hidden;
+  animation: cropSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cropSlideUp {
+  from { transform: translateY(16px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* ── Modal Header ── */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border, #e5e0dc);
+  background: var(--palette-washi, #faf8f5);
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headerIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(177, 42, 58, 0.1);
+  color: var(--palette-beni-700, #b12a3a);
+}
+
+.titleText {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-text, #1f1a1c);
+}
+
+.subtitleText {
+  margin: 2px 0 0 0;
+  font-size: 0.74rem;
+  color: var(--color-text-muted, #736b6e);
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e5e0dc);
+  background: var(--color-surface, #fff);
+  color: var(--color-text-muted, #736b6e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.closeBtn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+/* ── Modal Body & Work Area ── */
+.modalBody {
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Viewport Pemotong Gambar ── */
+.viewportContainer {
+  position: relative;
+  width: 100%;
+  background: #110709;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(177, 42, 58, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: none;
+  cursor: grab;
+}
+
+.viewportContainer:active {
+  cursor: grabbing;
+}
+
+.viewportFrame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cropImage {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+  transform-origin: center center;
+  max-width: none;
+  max-height: none;
+}
+
+/* ── Grid & Panduan Safe Zone ── */
+.gridOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  z-index: 5;
+}
+
+.gridCell {
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+}
+
+/* Panduan Area Teks Kiri & Fokus Kanan */
+.safeZoneGuide {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  z-index: 6;
+}
+
+.safeZoneText {
+  flex: 0 0 42%;
+  background: linear-gradient(90deg, rgba(18, 4, 7, 0.55) 0%, rgba(18, 4, 7, 0.15) 100%);
+  border-right: 1.5px dashed rgba(252, 211, 77, 0.6);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.safeZoneTextBadge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #fef08a;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.safeZoneFocus {
+  flex: 1;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.safeZoneFocusBadge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+/* Petunjuk drag / pan */
+.dragHint {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  z-index: 7;
+}
+
+/* ── Toolbar Pengontrol ── */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--palette-washi, #faf8f5);
+  padding: 12px 14px;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--color-border, #e5e0dc);
+}
+
+.ratioRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ratioLabel {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--color-text, #1f1a1c);
+}
+
+.ratioChips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ratioBtn {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border, #e5e0dc);
+  background: var(--color-surface, #fff);
+  color: var(--color-text-muted, #736b6e);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ratioBtn:hover {
+  border-color: var(--palette-beni-400, #e27280);
+  color: var(--palette-beni-700, #b12a3a);
+}
+
+.ratioBtnActive {
+  background: var(--palette-beni-700, #b12a3a);
+  color: #ffffff;
+  border-color: var(--palette-beni-700, #b12a3a);
+}
+
+/* Slider Zoom & Fit Buttons */
+.controlsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.zoomGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 200px;
+}
+
+.zoomIcon {
+  color: var(--color-text-muted, #736b6e);
+  display: flex;
+  align-items: center;
+}
+
+.zoomSlider {
+  flex: 1;
+  height: 6px;
+  border-radius: 4px;
+  accent-color: var(--palette-beni-700, #b12a3a);
+  cursor: pointer;
+}
+
+.zoomValue {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #736b6e);
+  min-width: 32px;
+  text-align: right;
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e5e0dc);
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #1f1a1c);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.toolBtn:hover {
+  background: var(--palette-beni-50, #fdf2f4);
+  border-color: var(--palette-beni-300, #f09ba6);
+  color: var(--palette-beni-700, #b12a3a);
+}
+
+/* ── Modal Footer ── */
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--color-border, #e5e0dc);
+  background: var(--palette-washi, #faf8f5);
+}
+
+.footerHint {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #736b6e);
+}
+
+.footerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btnCancel {
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid var(--color-border, #e5e0dc);
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #1f1a1c);
+  cursor: pointer;
+}
+
+.btnCancel:hover {
+  background: #f5f2ec;
+}
+
+.btnApply {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, var(--palette-beni-700, #b12a3a) 0%, #8c1d2c 100%);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(177, 42, 58, 0.25);
+  transition: all 0.15s ease;
+}
+
+.btnApply:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(177, 42, 58, 0.35);
+}
+
+.btnApply:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorBanner {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
