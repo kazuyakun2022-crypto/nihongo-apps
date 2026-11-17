@@ -161,7 +161,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ? adminNav.filter((item) => !item.superAdminOnly || isSuperAdmin)
     : studentNav;
   const isChatPage = pathname.startsWith("/ngobrol") || pathname.startsWith("/suara");
-  const isLessonPage = pathname.startsWith("/belajar/") && pathname !== "/belajar";
+  const isLessonPage = pathname.startsWith("/belajar/") && pathname !== "/belajar/tulis-buku";
   // Panel admin berisi tabel & data padat, jadi memakai seluruh lebar layar
   const isWidePage = pathname.startsWith("/admin");
   const [collapsed, toggleSidebar] = useSidebarCollapse();
