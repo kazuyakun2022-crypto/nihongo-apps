@@ -18,8 +18,8 @@ jobs:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           if [ -z "$API_URL" ] || [ -z "$CRON_SECRET" ]; then
-            echo "API_URL atau CRON_SECRET belum diatur di GitHub Secrets — cron dilewati."
-            exit 0
+            echo "::error::API_URL atau CRON_SECRET belum diatur di GitHub Secrets."
+            exit 1
           fi
 
           BASE_URL="${API_URL%/}"
