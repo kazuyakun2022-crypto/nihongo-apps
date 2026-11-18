@@ -6,7 +6,6 @@ import { useAuth } from "@/features/auth/application/AuthProvider";
 import { notificationsApi } from "../data/notificationsApi";
 import type { AppNotification, NotificationPreferences, PushState } from "../domain/types";
 import {
-  currentPushSubscription,
   pushSupported,
   subscribePush,
   syncPushSubscriptionIfActive,
@@ -172,14 +171,15 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
       setItems([]);
       setUnreadCount(0);
       setPreferences(null);
-      setPushState("loading");
+      setPushState("inactive");
       knownIdsRef.current = null;
       prevUnreadRef.current = null;
       return;
     }
 
     let active = true;
-    Promise.allSettled([refresh(), notificationsApi.preferences(), notificationsApi.config()]).then((results) => {
+    setPushState("loading");
+    Promise.allSettled([refresh(), notificationsApi.preferences(), notificationsApi.config()]).then(async (results) => {
       if (!active) return;
       const prefs = results[1];
       if (prefs.status === "fulfilled") setPreferences(prefs.value);
@@ -188,9 +188,28 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
         const enabled = config.value.enabled && Boolean(config.value.publicKey);
         setPushServerEnabled(enabled);
         if (enabled && config.value.publicKey) {
-          void syncPushSubscriptionIfActive(config.value.publicKey);
+          const synchronized = await syncPushSubscriptionIfActive(config.value.publicKey);
+          if (active) {
+            setPushState(
+              synchronized
+                ? "subscribed"
+                : Notification.permission === "denied"
+                  ? "denied"
+                  : "inactive",
+            );
+          }
+          return;
         }
+      } else {
+        setPushServerEnabled(false);
       }
+      setPushState(
+        !pushSupported()
+          ? "unsupported"
+          : Notification.permission === "denied"
+            ? "denied"
+            : "inactive",
+      );
     });
 
     notificationsApi.unreadCount().then(({ unreadCount: count }) => {
@@ -214,24 +233,6 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
       window.removeEventListener("focus", onVisible);
     };
   }, [status, refresh, refreshUnread]);
-
-  useEffect(() => {
-    if (!pushSupported()) {
-      setPushState("unsupported");
-      return;
-    }
-    if (Notification.permission === "denied") {
-      setPushState("denied");
-      return;
-    }
-    currentPushSubscription()
-      .then((subscription) => {
-        if (mounted.current) setPushState(subscription ? "subscribed" : "inactive");
-      })
-      .catch(() => {
-        if (mounted.current) setPushState("inactive");
-      });
-  }, [status]);
 
   const markRead = useCallback(async (id: string) => {
     const wasUnread = items.some((item) => item.id === id && !item.readAt);

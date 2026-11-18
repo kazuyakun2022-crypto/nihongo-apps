@@ -73,11 +73,12 @@ export async function currentPushSubscription(): Promise<PushSubscription | null
 export async function subscribePush(): Promise<PushSubscription> {
   if (!pushSupported()) throw new Error("Fitur push tidak didukung oleh browser ini.");
 
-  const config = await notificationsApi.config();
-  if (!config.enabled || !config.publicKey) throw new Error("Push belum diaktifkan oleh admin server.");
-
+  // Minta izin sebelum operasi jaringan agar prompt tetap terkait dengan klik pengguna.
   const permission = Notification.permission === "default" ? await Notification.requestPermission() : Notification.permission;
   if (permission !== "granted") throw new Error("Izin notifikasi ditolak. Aktifkan lewat pengaturan browser.");
+
+  const config = await notificationsApi.config();
+  if (!config.enabled || !config.publicKey) throw new Error("Push belum diaktifkan oleh admin server.");
 
   const reg = await registration();
   const serverKey = urlBase64ToUint8Array(config.publicKey);
